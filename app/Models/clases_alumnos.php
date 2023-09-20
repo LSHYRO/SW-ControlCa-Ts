@@ -10,6 +10,8 @@ class clases_alumnos extends Model
 {
     use HasFactory;
 
+    protected $table = "clases_alumnos";
+
     protected $fillable = [
         'idClase',
         'idAlumno',
@@ -17,7 +19,7 @@ class clases_alumnos extends Model
 
     public function clases(): HasOne
     {
-        return $this->hasOne(clases::class, "idClas", "idClase");
+        return $this->hasOne(clases::class, "idClase", "idClase");
     }
 
     public function alumnos(): HasOne

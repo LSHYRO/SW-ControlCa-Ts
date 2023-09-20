@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('usuario')->unique()->nullable(false);
             $table->string('contrasenia')->nullable(false);           
             $table->rememberToken();
-            $table->foreignId(column:'idTipoUsuario')->references('idTipoUsuario')->on('tipoUsuarios');
             $table->softDeletes(column:'activo');
         });
     }

@@ -10,12 +10,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class tipoUsuarios extends Model
 {
     use HasFactory;
+
+    protected $table = "tipoUsuarios";
+
     protected $fillable = [
         'tipoUsuario',
     ];
 
-    public function Usuarios(): BelongsToMany
+    public function usuarios_tiposUsuarios(): BelongsToMany
     {
-        return $this->belongsToMany(usuarios::class, 'idTipoUsuario', 'idTipoUsuario');
+        return $this->belongsToMany(usuarios_tiposUsuarios::class, 'idTipoUsuario', 'idTipoUsuario');
     }
+
+    
 }

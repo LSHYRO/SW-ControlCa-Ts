@@ -13,6 +13,8 @@ class ciclos extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = "ciclos";
+
     protected $fillable = [
         'fecha_inicio',
         'fecha_fin',

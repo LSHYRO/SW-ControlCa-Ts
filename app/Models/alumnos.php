@@ -11,6 +11,8 @@ class alumnos extends Model
 {
     use HasFactory;
 
+    protected $table = "alumnos";
+
     protected $fillable = [
         'CURP',
         'estatus',

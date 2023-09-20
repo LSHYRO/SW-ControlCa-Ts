@@ -11,6 +11,8 @@ class periodos extends Model
 {
     use HasFactory;
 
+    protected $table = "periodos";
+
     protected $fillable = [
         'periodo', 
         'fecha_inicio',

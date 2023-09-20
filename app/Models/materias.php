@@ -13,6 +13,8 @@ class materias extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = "materias";
+
     protected $fillable = [
         'materia',
         'descripcion',

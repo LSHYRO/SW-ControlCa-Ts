@@ -11,6 +11,8 @@ class tutores extends Model
 {
     use HasFactory;
 
+    protected $table = "tutores";
+
     protected $fillable = [
         'numTelefono',
         'direccion',

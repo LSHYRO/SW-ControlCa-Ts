@@ -11,6 +11,8 @@ class clases extends Model
 {
     use HasFactory;
 
+    protected $table = "clases";
+
     protected $fillable = [
         'hora',
         'dias',

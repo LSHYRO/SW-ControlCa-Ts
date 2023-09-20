@@ -10,6 +10,8 @@ class tiposActividades extends Model
 {
     use HasFactory;
 
+    protected $table = "tiposActividades";
+
     protected $fillable = [
         'tipoActividad',
     ];

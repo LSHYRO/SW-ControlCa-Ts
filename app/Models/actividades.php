@@ -13,6 +13,8 @@ class actividades extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = "actividades";
+
     protected $fillable = [
         'descripcion',
         'idClase',

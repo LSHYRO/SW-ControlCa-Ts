@@ -10,6 +10,8 @@ class personal_escolar extends Model
 {
     use HasFactory;
 
+    protected $table = "personal_escolar";
+
     protected $fillable = [
         'correoElectronico',
         'numTelefono',
