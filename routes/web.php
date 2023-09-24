@@ -27,7 +27,7 @@ Route::get('cursos/{curso}',[ejemploRController::class, 'show']);
 
 //Grupo de rutas
 Route::controller(ejemploRController::class)->group(function(){
-    Route::get('cursos', 'index');
+    Route::get('cursos', 'index')->name('cursos.principal');
     Route::get('create', 'create');
     Route::get('cursos/{curso}', 'show');
 });

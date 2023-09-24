@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 class personas extends Model
 {
     use HasFactory;
@@ -51,5 +53,15 @@ class personas extends Model
     public function alumnos(): BelongsTo
     {
         return $this->belongsTo(alumnos::class, 'idPersona', 'idPersona');
+    }
+
+    protected function nombre(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
     }
 }
