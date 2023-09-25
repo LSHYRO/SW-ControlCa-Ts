@@ -9,6 +9,6 @@ class InicioController extends Controller
     public function __invoke()
     {
         //return "Bienvenido a la pagina principal";
-        return view('home');
+        return view('/layouts/principal');
     }
 }
