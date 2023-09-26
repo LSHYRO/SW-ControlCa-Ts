@@ -59,8 +59,8 @@
                     <!-- Señalador de ubicación -->
                     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
                    
-                    @yield('opcionesNav')
-                    
+                    @yield('opcionesNav') 
+
                 </nav>
                 <!-- Señalador de ubicación -->
                 <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
