@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ejemploRController;
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +14,7 @@ use App\Http\Controllers\ejemploRController;
 |
 */
 // Pagina de inicio
-Route::get('/', InicioController::class);
+Route::get('/', AdminController::class);
 
 //Tipos de rutas con controladores
 /*
