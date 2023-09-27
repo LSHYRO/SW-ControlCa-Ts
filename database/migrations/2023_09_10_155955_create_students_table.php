@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId(column:'idPersona')->references('idPersona')->on('personas');
             $table->foreignId(column:'idMateria')->references('idMateria')->on('materias');
             $table->foreignId(column:'idTutor')->references('idTutor')->on('tutores');
+            $table->boolean('activo');
             $table->timestamps();
         });
     }

@@ -34,7 +34,8 @@
             <div class="space-x-5">
                 <!-- Botón de Perfil -->
                 <div>
-                    <i class="fas fa-user text-white font-normal font-['DM Sans']"> Administrador </i>
+                    <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
+                    <i class="text-white font-['DM Sans']"> Administrador </i>
                 </div>
             </div>
         </div>

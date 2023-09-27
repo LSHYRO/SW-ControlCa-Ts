@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string(column:'materia')->unique()->nullable(false);
             $table->string(column:'descripcion')->nullable(false);
             $table->boolean(column:'extracurricular')->nullable(false);
-            $table->softDeletes(column:'activo');
+            $table->boolean('activo');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
