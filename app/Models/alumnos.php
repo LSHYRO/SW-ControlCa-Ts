@@ -21,6 +21,7 @@ class alumnos extends Model
         'idPersona',
         'idMateria',
         'idTutor',
+        'activo',
     ];
 
     public function grados(): HasOne

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date(column:'fecha_inicio')->nullable(false);
             $table->date(column:'fecha_fin')->nullable(false);
             $table->boolean(column:'act')->nullable(false);
-            $table->softDeletes(column:'activo');
+            $table->softDeletes();
             $table->foreignId(column:'idCiclo')->references('idCiclo')->on('ciclos');
             $table->timestamps();
         });

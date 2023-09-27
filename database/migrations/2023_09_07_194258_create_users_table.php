@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id(column:'idUsuario');
             $table->string('usuario')->unique()->nullable(false);
             $table->string('contrasenia')->nullable(false);           
+            $table->boolean('activo');
             $table->rememberToken();
-            $table->softDeletes(column:'activo');
+            $table->softDeletes();
         });
     }
 

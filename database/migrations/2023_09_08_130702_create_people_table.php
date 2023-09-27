@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string(column:'nombre')->nullable(false);
             $table->date(column:'fechaNacimiento')->nullable(false);
             $table->timestamps();            
-            $table->softDeletes(column:'activo');
+            $table->softDeletes();
             $table->foreignId(column:'idUsuario')->references('idUsuario')->on('usuarios');
         });
     }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string(column:'numTelefono')->nullable(false);
             $table->string(column:'direccion')->nullable(false);
             $table->foreignId(column:'idPersona')->references('idPersona')->on('personas');
+            $table->boolean('activo');
             $table->timestamps();
         });
     }

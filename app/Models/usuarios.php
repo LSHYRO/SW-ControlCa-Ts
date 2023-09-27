@@ -20,6 +20,7 @@ class usuarios extends Model
         'usuario',
         'contrasenia',
         'idTipoUsuario',
+        'activo',
     ];
     
     protected $hidden = [
