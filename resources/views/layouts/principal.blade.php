@@ -34,7 +34,8 @@
             <div class="space-x-5">
                 <!-- Botón de Perfil -->
                 <div>
-                    <i class="fas fa-user text-white font-normal font-['DM Sans']"> Administrador </i>
+                    <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
+                    <i class="text-white font-['DM Sans']"> Administrador </i>
                 </div>
             </div>
         </div>
@@ -42,7 +43,7 @@
         <!-- Contenido principal -->
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
-            <div class="p-2 bg-white w-full md:w-60 flex flex-col md:flex hidden" id="sideNav">
+            <div class="p-2 bg-white w-full md:w-60 flex flex-col md:flex" id="sideNav">
                 <nav>
                     <div class="w-60 h-16 justify-start items-center gap-4 inline-flex">
                         <div class="w-12 h-12 relative">
@@ -70,6 +71,7 @@
                     <i class="fas fa-sign-out-alt mr-2"></i>Cerrar sesión
                 </a>
             </div>
+
             <!-- Área de contenido principal -->
             <div class="flex-1 p-4 w-full md:w-1/2">
                 @yield('contenido')

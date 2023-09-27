@@ -17,6 +17,7 @@ class profesores extends Model
         'correoElectronico',
         'numTelefono', 
         'idPersona',
+        'activo',
     ];
 
     public function personas(): HasOne

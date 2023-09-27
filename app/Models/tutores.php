@@ -17,6 +17,7 @@ class tutores extends Model
         'numTelefono',
         'direccion',
         'idPersona',
+        'activo',
     ];
 
     public function personas():HasOne

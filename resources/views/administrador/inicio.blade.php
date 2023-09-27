@@ -8,7 +8,7 @@
         <i class="fas fa-home mr-2"></i>Inicio
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        href="#">
+        href="{{route('admin.profesores')}}">
         <i class="fas fa-file-alt mr-2"></i>Profesores
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
@@ -32,9 +32,9 @@
 @section('contenido')
     <div class="container mx-auto">
         <h1>Hola</h1>
+        <a href="tel:9515776171">9615776151</a>
     </div>
 
-    <h2>Hola</h2>
-    <h3>Hola</h3>
-
 @endsection()
+
+

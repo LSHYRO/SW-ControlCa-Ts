@@ -16,6 +16,7 @@ class director extends Model
         'correoElectronico',
         'numTelefono',
         'idPersona',
+        'activo',
     ];
 
     public function personas(): HasOne
