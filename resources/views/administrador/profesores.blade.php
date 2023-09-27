@@ -137,7 +137,6 @@
     <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancelar</button>
     <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">Guardar</button>
   </div>
-
 <div class="mt-8 bg-white p-4 shadow rounded-lg">
     <h2 class="text-black text-lg text-center font-semibold pb-4">Profesores</h2>
     <div class="my-1"></div> <!-- Espacio de separación -->

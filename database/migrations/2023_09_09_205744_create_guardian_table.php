@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tutores', function (Blueprint $table) {
             $table->id(column:'idTutor');
             $table->string(column:'numTelefono')->nullable(false);
-            $table->string(column:'direccion')->nullable(false);
+            $table->foreignId(column:'idDireccion')->references('idDireccion')->on('direcciones');
             $table->foreignId(column:'idPersona')->references('idPersona')->on('personas');
             $table->boolean('activo');
             $table->timestamps();
