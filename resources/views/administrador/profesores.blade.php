@@ -81,7 +81,7 @@
     <!-- Botón "Ver más" para la tabla de Autorizaciones Pendientes -->
     <div class="text-right mt-4">
         <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-            Ver más
+            Ver más 
         </button>
     </div>
 </div>
