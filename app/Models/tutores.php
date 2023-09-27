@@ -15,7 +15,7 @@ class tutores extends Model
 
     protected $fillable = [
         'numTelefono',
-        'direccion',
+        'idDireccion',
         'idPersona',
         'activo',
     ];
@@ -27,6 +27,11 @@ class tutores extends Model
 
     public function alumnos(): BelongsToMany{
         return $this->belongsToMany(alumnos::class, 'idTutor', 'idTutor');
+    }
+
+    public function direcciones(): HasOne
+    {
+        return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
     }
 
 }
