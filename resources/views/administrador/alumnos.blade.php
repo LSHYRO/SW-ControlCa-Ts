@@ -1,6 +1,6 @@
 @extends('layouts.principal')
 
-@section('title', 'Profesores')
+@section('title', 'Alumnos')
 
 @section('opcionesNav')
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
@@ -8,11 +8,11 @@
         <i class="fas fa-home mr-2"></i>Inicio
     </a>
     <a class="block text-white bg-cyan-500 py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        href="#">
+        href="{{route('admin.profesores')}}">
         <i class="fas fa-file-alt mr-2"></i>Profesores
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        href="{{route('admin.alumnos')}}">
+        href="#">
         <i class="fas fa-users mr-2"></i>Alumnos
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
@@ -30,9 +30,9 @@
 @endsection()
 
 @section('contenido')
-      <div class="border-b border-gray-900/10 pb-12">
-      <h2 class="text-base font-semibold leading-7 text-gray-900">Datos del profesor</h2>
-      <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar a un nuevo profesor</p>
+<div class="border-b border-gray-900/10 pb-12">
+      <h2 class="text-base font-semibold leading-7 text-gray-900">Datos del alumno</h2>
+      <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar a un nuevo alumno</p>
 
       <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
         <div class="sm:col-span-2">
@@ -56,91 +56,78 @@
           </div>
         </div>
 
-        <div class="sm:col-span-2">
-          <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Correo electrónico</label>
+        <div class="sm:col-span-1">
+          <label for="CURP" class="block text-sm font-medium leading-6 text-gray-900">CURP</label>
           <div class="mt-2">
-            <input id="email" name="email" type="email" autocomplete="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <input type="text" name="CURP" id="CURP" autocomplete="family-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
           </div>
         </div>
 
         <div class="sm:col-span-1">
-          <label for="telefono" class="block text-sm font-medium leading-6 text-gray-900">Número de teléfono</label>
+          <label for="estatus" class="block text-sm font-medium leading-6 text-gray-900">Estatus</label>
           <div class="mt-2">
-            <input id="telefono" name="telefono" type="email" autocomplete="telefono" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-          </div>
-        </div>
-
-        <div class="sm:col-span-3">
-          <label for="street-address" class="block text-sm font-medium leading-6 text-gray-900">Calle</label>
-          <div class="mt-2">
-            <input type="text" name="street-address" id="street-address" autocomplete="street-address" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-          </div>
-        </div>
-
-        <div class="sm:col-span-2">
-          <label for="region" class="block text-sm font-medium leading-6 text-gray-900">Ciudad / Provincia</label>
-          <div class="mt-2">
-            <input type="text" name="region" id="region" autocomplete="address-level1" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-          </div>
-        </div>
-
-        <div class="sm:col-span-2">
-          <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
-          <div class="mt-2">
-            <select id="country" name="country" autocomplete="country-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-              <option>Aguascalientes</option>
-              <option>Baja California</option>
-              <option>Baja California Sur</option>
-              <option>Campeche</option>
-              <option>Chiapas</option>
-              <option>Chihuahua</option>
-              <option>Coahuila</option>
-              <option>Colima</option>
-              <option>Distrito Federal</option>
-              <option>Durango</option>
-              <option>Guanajuato</option>
-              <option>Guerrero</option>
-              <option>Hidalgo</option>
-              <option>Jalisco</option>
-              <option>México</option>
-              <option>Michoacán</option>
-              <option>Morelos</option>
-              <option>Nayarit</option>
-              <option>Nuevo León</option>
-              <option>Oaxaca</option>
-              <option>Puebla</option>
-              <option>Querétaro</option>
-              <option>Quintana Roo</option>
-              <option>San Luis Potosí</option>
-              <option>Sinaloa</option>
-              <option>Sonora</option>
-              <option>Tabasco</option>
-              <option>Tamaulipas</option>
-              <option>Tlaxcala</option>
-              <option>Veracruz</option>
-              <option>Yucatán</option>
-              <option>Zacatecas</option>
+            <select id="estatus" name="estatus" autocomplete="estatus" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+              <option>Activo</option>
+              <option>Inactivo</option>
             </select>
           </div>
         </div>
 
         <div class="sm:col-span-1">
-          <label for="postal-code" class="block text-sm font-medium leading-6 text-gray-900">Código Postal</label>
+          <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
           <div class="mt-2">
-            <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <select id="grado" name="grado" autocomplete="number" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+              <option>1°</option>
+              <option>2°</option>
+              <option>3°</option>
+            </select>
           </div>
         </div>
-      </div>
-    </div>
 
-   <div class="mt-6 flex items-center justify-end gap-x-6">
+        <div class="sm:col-span-1">
+          <label for="materia" class="block text-sm font-medium leading-6 text-gray-900">Materia</label>
+          <div class="mt-2">
+            <select id="materia" name="materia" autocomplete="materia" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+              <option>Matemáticas</option>
+              <option>Español</option>
+              <option>Ciencias Naturales</option>
+              <option>Geografía</option>
+              <option>Historia</option>
+              <option>Física</option>
+              <option>Química</option>
+              <option>Computación</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sm:col-span-1">
+          <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
+          <div class="mt-2">
+            <select id="grupo" name="grupo" autocomplete="grupo" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+              <option>A</option>
+              <option>B</option>
+              <option>C</option>
+              <option>D</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sm:col-span-3">
+          <label for="tutor" class="block text-sm font-medium leading-6 text-gray-900">Tutor</label>
+          <div class="mt-2">
+            <input type="text" name="tutor" id="tutor" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end gap-x-6">
     <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancelar</button>
     <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">Guardar</button>
     </div>
 
 
-    <div class="mt-8 bg-white p-4 shadow rounded-lg">
-    <h2 class="text-black text-lg text-center font-semibold pb-4">Profesores</h2>
+
+  <div class="mt-8 bg-white p-4 shadow rounded-lg">
+    <h2 class="text-black text-lg text-center font-semibold pb-4">Alumnos</h2>
     <div class="my-1"></div> <!-- Espacio de separación -->
     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
     <!-- Línea con gradiente -->
@@ -161,32 +148,49 @@
                 </th>
                 <th
                     class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                    Fecha de nacimiento
+                    CURP
                 </th>
                 <th
                     class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                    Correo Electronico
+                    Estatus
                 </th>
                 <th
                     class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                    Numero de telefono
+                    Grado
+                </th>
+                <th
+                    class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                    Grupo
+                </th>
+                <th
+                    class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                    Materias
+                </th>
+                <th
+                    class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                    Tutor
                 </th>
             </tr>
         </thead>
+
         <tbody>
             <!-- Se llaman los datos a traves de un foreach -->
-            @foreach ($profesores as $profesor)
+            @foreach ($alumnos as $alumno)
             <tr class="hover:bg-grey-lighter">
-                <td class="py-2 px-4 border-b border-grey-light">{{$profesor->personas->apellidoP}}</td>
-                <td class="py-2 px-4 border-b border-grey-light">{{$profesor->personas->apellidoM}}</td>
-                <td class="py-2 px-4 border-b border-grey-light">{{$profesor->personas->nombre}}</td>
-                <td class="py-2 px-4 border-b border-grey-light">{{$profesor->personas->fechaNacimiento}}</td>
-                <td class="py-2 px-4 border-b border-grey-light">{{$profesor->correoElectronico}}</td>
-                <td class="py-2 px-4 border-b border-grey-light"><a href="tel:{{$profesor->numTelefono}}">{{$profesor->numTelefono}}</a></td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->personas->apellidoP}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->personas->apellidoM}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->personas->nombre}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->CURP}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->Estatus}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->Grado}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->Grupo}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->Materias}}</td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$alumno->Tutor}}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
+
     <!-- Botón "Ver más" para la tabla de Autorizaciones Pendientes -->
     <div class="text-right mt-4">
         <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
@@ -194,4 +198,5 @@
         </button>
     </div>
 </div>
+
 @endsection()

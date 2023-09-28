@@ -6,6 +6,7 @@ use App\Models\personas;
 use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
+use App\Models\alumnos;
 
 class AdminController extends Controller
 {
@@ -24,5 +25,12 @@ class AdminController extends Controller
 
         //return "Bienvenido a la pagina principal";
         return view('/administrador/profesores', compact('profesores','personas'));
+    }
+    public function alumnos(){
+        $alumnos = alumnos::all();
+        $usuarios = usuarios::all();
+        $personas = personas::all();
+
+        return view('/administrador/alumnos', compact('alumnos','personas'));
     }
 }
