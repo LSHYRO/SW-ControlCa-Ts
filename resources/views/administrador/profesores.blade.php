@@ -180,7 +180,7 @@
                 <td class="py-2 px-4 border-b border-grey-light">{{$profesor->personas->nombre}}</td>
                 <td class="py-2 px-4 border-b border-grey-light">{{$profesor->personas->fechaNacimiento}}</td>
                 <td class="py-2 px-4 border-b border-grey-light">{{$profesor->correoElectronico}}</td>
-                <td class="py-2 px-4 border-b border-grey-light"><a href="tel:{{$profesor->numTelefono}}">{{$profesor->numTelefono}}</a></td>
+                <td class="py-2 px-4 border-b border-grey-light">{{$profesor->numTelefono}}<a href="tel:{{$profesor->numTelefono}}"><i class="fa fa-phone" aria-hidden="true"></i></a></td>
             </tr>
             @endforeach
         </tbody>
