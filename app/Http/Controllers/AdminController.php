@@ -36,6 +36,36 @@ class AdminController extends Controller
         return view('/administrador/profesores', compact('profesores','personas'));
     }
 
+    public function alumnos(){
+        $alumnos = alumnos::all();
+        $usuarios = usuarios::all();
+        $personas = personas::all();
+
+        return view('/administrador/alumnos', compact('alumnos','personas'));
+    }
+
+    public function directivos(){
+        $directivos = personal_escolar::all();
+        //$personas = personas::all();
+        //$direcciones = direcciones::all();
+
+        return view('/administrador/directivos');
+    }
+
+    public function materias(){
+        $materias = materias::all();
+        
+        return view('/administrador/materias', compact('materias'));
+    }
+
+    public function tutores(){
+        $tutores = tutores::all();
+        $personas = personas::all();
+        $direcciones = direcciones::all();
+
+        return view('/administrador/tutores', compact('tutores','personas'));
+    }
+
     public function addProfesores(Request $request){
         //fechaFormateada
         $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
@@ -76,33 +106,15 @@ class AdminController extends Controller
         return redirect()->route('admin.profesores');
     }
 
-    public function alumnos(){
-        $alumnos = alumnos::all();
-        $usuarios = usuarios::all();
-        $personas = personas::all();
+    public function addMaterias(Request $request){
+        $materia = new materias();
+        $materia -> materia = $request -> nombre_materia;
+        $materia -> descripcion = $request -> descripcion;
+        $materia -> activo = 1;
+        $materia -> extracurricular = $request -> extracurricular;
 
-        return view('/administrador/alumnos', compact('alumnos','personas'));
-    }
+        $materia -> save();
 
-    public function directivos(){
-        $directivos = personal_escolar::all();
-        //$personas = personas::all();
-        //$direcciones = direcciones::all();
-
-        return view('/administrador/directivos');
-    }
-
-    public function materias(){
-        $materias = materias::all();
-        
-        return view('/administrador/materias', compact('materias'));
-    }
-
-    public function tutores(){
-        $tutores = tutores::all();
-        $personas = personas::all();
-        $direcciones = direcciones::all();
-
-        return view('/administrador/tutores', compact('tutores','personas'));
+        return redirect()->route('admin.materias');
     }
 }
