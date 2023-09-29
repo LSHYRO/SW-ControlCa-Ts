@@ -7,6 +7,10 @@ use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\alumnos;
+use App\Models\materias;
+use App\Models\tutores;
+use App\Models\direcciones;
+
 
 class AdminController extends Controller
 {
@@ -32,5 +36,23 @@ class AdminController extends Controller
         $personas = personas::all();
 
         return view('/administrador/alumnos', compact('alumnos','personas'));
+    }
+    public function directivos(){
+        $directivos = personal_escolar::all();
+        //$personas = personas::all();
+        //$direcciones = direcciones::all();
+
+        return view('/administrador/directivos');
+    }
+    public function materias(){
+        $materias = materias::all();
+        return view('/administrador/materias', compact('materias'));
+    }
+    public function tutores(){
+        $tutores = tutores::all();
+        $personas = personas::all();
+        $direcciones = direcciones::all();
+
+        return view('/administrador/tutores', compact('tutores','personas'));
     }
 }
