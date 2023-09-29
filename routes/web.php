@@ -17,6 +17,9 @@ use App\Http\Controllers\ejemploRController;
 Route::get('/', [AdminController::class, 'index'])->name('admin.inicio');
 Route::get('/profesores', [AdminController::class, 'profesores'])->name('admin.profesores');
 Route::get('/alumnos', [AdminController::class, 'alumnos'])->name('admin.alumnos');
+Route::get('/directivos', [AdminController::class, 'directivos'])->name('admin.directivos');
+Route::get('/tutores', [AdminController::class, 'tutores'])->name('admin.tutores');
+Route::get('/materias', [AdminController::class, 'materias'])->name('admin.materias');
 
 //Tipos de rutas con controladores
 /*
