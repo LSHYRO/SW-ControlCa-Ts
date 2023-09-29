@@ -21,6 +21,7 @@ Route::get('/directivos', [AdminController::class, 'directivos'])->name('admin.d
 Route::get('/tutores', [AdminController::class, 'tutores'])->name('admin.tutores');
 Route::get('/materias', [AdminController::class, 'materias'])->name('admin.materias');
 
+Route::post('/profesores', [AdminController::class, 'addProfesores'])->name('admin.addProfesores');
 //Tipos de rutas con controladores
 /*
 Route::get('cursos', [ejemploRController::class, 'index']);
