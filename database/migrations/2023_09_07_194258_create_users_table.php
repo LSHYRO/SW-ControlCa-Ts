@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('activo');
             $table->rememberToken();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string(column:'colonia');
             $table->string(column:'municipio');
             $table->string(column:'ciudad');
-            $table->string(column:'estado');
+            $table->foreignId(column:'idEstado')->references('idEstado')->on('estados');
             $table->timestamps();
         });
     }
