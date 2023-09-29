@@ -10,7 +10,7 @@ use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\tutores;
 use App\Models\direcciones;
-
+use App\Models\personal_escolar;
 
 class AdminController extends Controller
 {
@@ -46,6 +46,7 @@ class AdminController extends Controller
     }
     public function materias(){
         $materias = materias::all();
+        
         return view('/administrador/materias', compact('materias'));
     }
     public function tutores(){
