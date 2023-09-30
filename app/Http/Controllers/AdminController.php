@@ -10,6 +10,7 @@ use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\tutores;
 use App\Models\direcciones;
+use App\Models\estados;
 use App\Models\personal_escolar;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
@@ -62,8 +63,9 @@ class AdminController extends Controller
         $tutores = tutores::all();
         $personas = personas::all();
         $direcciones = direcciones::all();
+        $estados = estados::all();
 
-        return view('/administrador/tutores', compact('tutores','personas'));
+        return view('/administrador/tutores', compact('tutores','personas','estados'));
     }
 
     public function addProfesores(Request $request){
@@ -116,5 +118,55 @@ class AdminController extends Controller
         $materia -> save();
 
         return redirect()->route('admin.materias');
+    }
+
+    public function addTutores(Request $request){
+        //fechaFormateada
+        $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+        //Contraseña generada
+        $contrasenia = Str::random(8);
+        //Creacion de usuario
+        $usuario = new usuarios();
+        $usuario -> usuario = strtolower(substr($request->apellidoPaterno,0,2) . substr($request->apellidoMaterno,0,1) . substr($request->nombres,0,1) . $fechaFormateada . Str::random(3));
+        $usuario -> contrasenia = $contrasenia;//Hash::make($contrasenia);
+        $usuario -> activo = 1;
+        //echo "Tu contraseña generada es: $contrasenia";
+        //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+        $usuario -> save();
+        
+        //Se busca el tipo de usuario en la BD
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
+        
+        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+        $usuarioTipoUsuario -> idUsuario = $usuario -> id;
+        $usuarioTipoUsuario -> idTipoUsuario = $tipoUsuario -> idTipoUsuario;
+        $usuarioTipoUsuario -> save();
+
+        $persona = new personas();
+        $persona -> nombre = $request -> nombres;
+        $persona -> apellidoP = $request -> apellidoPaterno;
+        $persona -> apellidoM = $request -> apellidoMaterno;
+        $persona -> fechaNacimiento = $request -> fechaNacimiento;
+        $persona -> idUsuario = $usuario -> id;
+        $persona -> save();
+
+        $direccion = new direcciones();
+        $direccion -> calle = $request -> calle;
+        $direccion -> numero = $request -> numero;
+        $direccion -> colonia = $request -> colonia;
+        $direccion -> municipio = $request -> municipio;
+        $direccion -> ciudad = $request -> region;
+        $direccion -> idEstado = $request -> estado;
+        $direccion -> save();
+        
+        
+        $tutor = new tutores();
+        $tutor -> numTelefono = $request -> telefono;
+        $tutor -> idDireccion = $direccion -> id;
+        $tutor -> idPersona = $persona -> id;
+        $tutor -> activo = 1;
+        $tutor -> save();
+
+        return redirect()->route('admin.tutores');
     }
 }
