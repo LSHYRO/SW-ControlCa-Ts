@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('alumnos', function (Blueprint $table) {
             $table->id(column:'idAlumno');
+            $table->string(column:'apellidoP')->nullable(false);
+            $table->string(column:'apellidoM')->nullable(false);
+            $table->string(column:'nombre')->nullable(false);
             $table->string(column:'CURP')->unique()->nullable(false);
             $table->boolean(column:'estatus')->nullable(false);
             $table->foreignId(column:'idGrado')->references('idGrado')->on('grados');
             $table->foreignId(column:'idGrupo')->references('idGrupo')->on('grupos');
-            $table->foreignId(column:'idPersona')->references('idPersona')->on('personas');
             $table->foreignId(column:'idMateria')->references('idMateria')->on('materias');
             $table->foreignId(column:'idTutor')->references('idTutor')->on('tutores');
+            $table->foreignId(column:'idUsuario')->references('idUsuario')->on('usuarios');
             $table->boolean('activo');
             $table->timestamps();
         });

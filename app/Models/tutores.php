@@ -20,9 +20,9 @@ class tutores extends Model
         'activo',
     ];
 
-    public function personas():HasOne
+    public function usuarios():HasOne
     {
-        return $this->hasOne(personas::class, 'idPersona', 'idPersona');
+        return $this->hasOne(usuarios::class, 'idUsuario', 'idUsuario');
     }
 
     public function alumnos(): BelongsToMany{

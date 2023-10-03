@@ -11,7 +11,9 @@ use App\Models\materias;
 use App\Models\tutores;
 use App\Models\direcciones;
 use App\Models\estados;
+use App\Models\personal;
 use App\Models\personal_escolar;
+use App\Models\tipo_personal;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Illuminate\Support\Facades\Auth;
@@ -27,146 +29,162 @@ class AdminController extends Controller
     }
 
     public function profesores()
-    {   
-        
-        $profesores = profesores::all();
-        $usuarios = usuarios::all();
-        $personas = personas::all();
-
+    {
+        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->where('tipo_personal.tipo_personal','profesor')
+            ->get();
         //return "Bienvenido a la pagina principal";
-        return view('/administrador/profesores', compact('profesores','personas'));
+        return view('/administrador/profesores', compact('personal'));
     }
 
-    public function alumnos(){
+    public function alumnos()
+    {
         $alumnos = alumnos::all();
-        $usuarios = usuarios::all();
-        $personas = personas::all();
 
-        return view('/administrador/alumnos', compact('alumnos','personas'));
+        return view('/administrador/alumnos', compact('alumnos'));
     }
 
-    public function directivos(){
-        $directivos = personal_escolar::all();
-        //$personas = personas::all();
-        //$direcciones = direcciones::all();
+    public function directivos()
+    {
+        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->where('tipo_personal.tipo_personal','personal_escolar')
+            ->get();
 
-        return view('/administrador/directivos');
+        return view('/administrador/directivos', compact('personal'));
     }
 
-    public function materias(){
+    public function materias()
+    {
         $materias = materias::all();
-        
+
         return view('/administrador/materias', compact('materias'));
     }
 
-    public function tutores(){
+    public function tutores()
+    {
         $tutores = tutores::all();
-        $personas = personas::all();
-        $direcciones = direcciones::all();
-        $estados = estados::all();
 
-        return view('/administrador/tutores', compact('tutores','personas','estados'));
+        return view('/administrador/tutores', compact('tutores'));
     }
 
-    public function addProfesores(Request $request){
+    public function addProfesores(Request $request)
+    {
         //fechaFormateada
         $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
         //Contraseña generada
         $contrasenia = Str::random(8);
         //Creacion de usuario
         $usuario = new usuarios();
-        $usuario -> usuario = strtolower(substr($request->apellidoPaterno,0,2) . substr($request->apellidoMaterno,0,1) . substr($request->nombres,0,1) . $fechaFormateada . Str::random(3));
-        $usuario -> contrasenia = $contrasenia;//Hash::make($contrasenia);
-        $usuario -> activo = 1;
+        $usuario->usuario = strtolower(substr($request->apellidoPaterno, 0, 2) . substr($request->apellidoMaterno, 0, 1) . substr($request->nombres, 0, 1) . $fechaFormateada . Str::random(3));
+        $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+        $usuario->activo = 1;
         //echo "Tu contraseña generada es: $contrasenia";
         //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-        $usuario -> save();
-        
+        $usuario->save();
+
         //Se busca el tipo de usuario en la BD
         $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
-        
-        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
-        $usuarioTipoUsuario -> idUsuario = $usuario -> id;
-        $usuarioTipoUsuario -> idTipoUsuario = $tipoUsuario -> idTipoUsuario;
-        $usuarioTipoUsuario -> save();
 
-        $persona = new personas();
-        $persona -> nombre = $request -> nombres;
-        $persona -> apellidoP = $request -> apellidoPaterno;
-        $persona -> apellidoM = $request -> apellidoMaterno;
-        $persona -> fechaNacimiento = $request -> fechaNacimiento;
-        $persona -> idUsuario = $usuario -> id;
-        $persona -> save();
-        
-        $profesor = new profesores();
-        $profesor -> correoElectronico = $request -> email;
-        $profesor -> numTelefono = $request -> telefono;
-        $profesor -> idPersona = $persona -> id;
-        $profesor -> activo = 1;
-        $profesor -> save();
+        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+        $usuarioTipoUsuario->idUsuario = $usuario->id;
+        $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+        $usuarioTipoUsuario->save();
+
+        //Se busca el tipo de personal en la BD
+        $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+        $personal = new personal();
+        $personal->apellidoP = $request->apellidoPaterno;
+        $personal->nombre = $request->nombres;
+        $personal->apellidoM = $request->apellidoMaterno;
+        $personal->fechaNacimiento = $request->fechaNacimiento;
+        $personal->idUsuario = $usuario->id;
+        $personal->correoElectronico = $request->email;
+        $personal->numTelefono = $request->telefono;
+        $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
+        $personal->activo = 1;
+        $personal->save();
 
         return redirect()->route('admin.profesores');
     }
 
-    public function addMaterias(Request $request){
+    public function addMaterias(Request $request)
+    {
         $materia = new materias();
-        $materia -> materia = $request -> nombre_materia;
-        $materia -> descripcion = $request -> descripcion;
-        $materia -> activo = 1;
-        $materia -> extracurricular = $request -> extracurricular;
+        $materia->materia = $request->nombre_materia;
+        $materia->descripcion = $request->descripcion;
+        $materia->activo = 1;
+        $materia->extracurricular = $request->extracurricular;
 
-        $materia -> save();
+        $materia->save();
 
         return redirect()->route('admin.materias');
     }
 
-    public function addTutores(Request $request){
+    public function addTutores(Request $request)
+    {
         //fechaFormateada
         $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
         //Contraseña generada
         $contrasenia = Str::random(8);
         //Creacion de usuario
         $usuario = new usuarios();
-        $usuario -> usuario = strtolower(substr($request->apellidoPaterno,0,2) . substr($request->apellidoMaterno,0,1) . substr($request->nombres,0,1) . $fechaFormateada . Str::random(3));
-        $usuario -> contrasenia = $contrasenia;//Hash::make($contrasenia);
-        $usuario -> activo = 1;
+        $usuario->usuario = strtolower(substr($request->apellidoPaterno, 0, 2) . substr($request->apellidoMaterno, 0, 1) . substr($request->nombres, 0, 1) . $fechaFormateada . Str::random(3));
+        $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+        $usuario->activo = 1;
         //echo "Tu contraseña generada es: $contrasenia";
         //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-        $usuario -> save();
-        
+        $usuario->save();
+
         //Se busca el tipo de usuario en la BD
         $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
-        
-        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
-        $usuarioTipoUsuario -> idUsuario = $usuario -> id;
-        $usuarioTipoUsuario -> idTipoUsuario = $tipoUsuario -> idTipoUsuario;
-        $usuarioTipoUsuario -> save();
 
-        $persona = new personas();
-        $persona -> nombre = $request -> nombres;
-        $persona -> apellidoP = $request -> apellidoPaterno;
-        $persona -> apellidoM = $request -> apellidoMaterno;
-        $persona -> fechaNacimiento = $request -> fechaNacimiento;
-        $persona -> idUsuario = $usuario -> id;
-        $persona -> save();
+        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+        $usuarioTipoUsuario->idUsuario = $usuario->id;
+        $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+        $usuarioTipoUsuario->save();     
 
         $direccion = new direcciones();
-        $direccion -> calle = $request -> calle;
-        $direccion -> numero = $request -> numero;
-        $direccion -> colonia = $request -> colonia;
-        $direccion -> municipio = $request -> municipio;
-        $direccion -> ciudad = $request -> region;
-        $direccion -> idEstado = $request -> estado;
-        $direccion -> save();
-        
-        
+        $direccion->calle = $request->calle;
+        $direccion->numero = $request->numero;
+        $direccion->colonia = $request->colonia;
+        $direccion->municipio = $request->municipio;
+        $direccion->ciudad = $request->region;
+        $direccion->idEstado = $request->estado;
+        $direccion->save();
+
         $tutor = new tutores();
-        $tutor -> numTelefono = $request -> telefono;
-        $tutor -> idDireccion = $direccion -> id;
-        $tutor -> idPersona = $persona -> id;
-        $tutor -> activo = 1;
-        $tutor -> save();
+        $tutor->nombre = $request->nombres;
+        $tutor->apellidoP = $request->apellidoPaterno;
+        $tutor->apellidoM = $request->apellidoMaterno;
+        $tutor->fechaNacimiento = $request->fechaNacimiento;
+        $tutor->idUsuario = $usuario->id;
+        $tutor->numTelefono = $request->telefono;
+        $tutor->idDireccion = $direccion->id;
+        $tutor->activo = 1;
+        $tutor->save();
 
         return redirect()->route('admin.tutores');
+    }
+
+    public function buscarT(Request $request)
+    {
+        $query = $request->input('query');
+
+        $tutors = tutores::whereHas('personas', function ($queryBuilder) use ($query) {
+            $queryBuilder->where('nombre', 'like', '%' . $query . '%')
+                ->orWhere('apellidoP', 'like', '%' . $query . '%')
+                ->orWhere('apellidoM', 'like', '%' . $query . '%');
+        })->get();
+
+        // Formatea los resultados como se espera en Select2
+        $results = [];
+        foreach ($tutors as $tutor) {
+            $results[] = [
+                'id' => $tutor->id, // El ID del tutor
+                'text' => $tutor->persona->nombre . ' ' . $tutor->persona->apellidoP, // Nombre completo del tutor
+            ];
+        }
+
+        return response()->json($results);
     }
 }

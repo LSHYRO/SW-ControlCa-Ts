@@ -25,6 +25,8 @@ Route::get('/materias', 'materias')->name('admin.materias');
 Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
 Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
 Route::post('/tutores', 'addTutores')->name('admin.addTutores');
+
+Route::get('/admin/search', 'buscarT') ->name('ad.busquedaTutor');
 });
 //Tipos de rutas con controladores
 /*

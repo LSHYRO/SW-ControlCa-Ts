@@ -27,9 +27,19 @@ class usuarios extends Model
         'contrasenia'
     ];
 
-    public function personas(): BelongsTo
+    public function alumnos(): BelongsTo
     {
-        return $this->belongsTo(personas::class, 'idUsuario', 'idUsuario');
+        return $this->belongsTo(alumnos::class, 'idUsuario', 'idUsuario');
+    }
+
+    public function tutores(): BelongsTo
+    {
+        return $this->belongsTo(tutores::class, 'idUsuario', 'idUsuario');
+    }
+
+    public function personal(): BelongsTo
+    {
+        return $this->belongsTo(personal::class, 'idUsuario', 'idUsuario');
     }
 
     public function usuarios_tiposUsuarios(): BelongsToMany{
