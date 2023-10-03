@@ -70,16 +70,6 @@
                     </div>
 
                     <div class="sm:col-span-1">
-                        <label for="fechaNacimiento" class="block text-sm font-medium leading-6 text-gray-900">Fecha de
-                            nacimiento</label>
-                        <div class="mt-2">
-
-                            <input type="date" name="fechaNacimiento" id="fechaNacimiento" autocomplete="fechaNacimiento"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-1">
                         <label for="telefono" class="block text-sm font-medium leading-6 text-gray-900">Número de
                             teléfono</label>
                         <div class="mt-2">
@@ -129,7 +119,7 @@
                         </div>
                     </div>
 
-                    <div class="sm:col-span-2">
+                    <div class="sm:col-span-1">
                         <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
                         <div class="mt-2">
                             <select id="estado" name="estado"
@@ -183,10 +173,6 @@
                     </th>
                     <th
                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                        Fecha de nacimiento
-                    </th>
-                    <th
-                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         Direccion
                     </th>
                     <th
@@ -203,10 +189,9 @@
                 <!-- Se llaman los datos a traves de un foreach -->
                 @foreach ($tutores as $tutor)
                     <tr class="hover:bg-grey-lighter">
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->personas->apellidoP }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->personas->apellidoM }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->personas->nombre }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->personas->fechaNacimiento }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->apellidoP }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->apellidoM }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->nombre }}</td>
                         <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->direcciones->calle." #".$tutor->direcciones->numero." ".$tutor->direcciones->colonia.", ".$tutor->direcciones->municipio.", ".$tutor->direcciones->ciudad.", ".$tutor->direcciones->estados->estado}}</td>
                         <td class="py-2 px-4 border-b border-grey-light">{{ $tutor->numTelefono}}</td>
                         <td class="py-2 px-4 border-b border-grey-light">

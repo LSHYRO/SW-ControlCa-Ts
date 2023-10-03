@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string(column:'correoElectronico')->unique()->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
             $table->boolean('activo');
+            $table->text('nombre_completo')->nullable()->fulltext();
             $table->timestamps();            
             $table->softDeletes();
             $table->foreignId(column:'id_tipo_personal')->references('id_tipo_personal')->on('tipo_personal');
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('personas');
+        Schema::dropIfExists('personal');
     }
 };

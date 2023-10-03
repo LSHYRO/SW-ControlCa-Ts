@@ -14,10 +14,14 @@ class tutores extends Model
     protected $table = "tutores";
 
     protected $fillable = [
+        'apellidoP',
+        'apellidoM',
+        'nombre',
         'numTelefono',
         'idDireccion',
-        'idPersona',
+        'idUsuario',
         'activo',
+        'nombre_completo',
     ];
 
     public function usuarios():HasOne

@@ -12,14 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tutores', function (Blueprint $table) {
-            $table->id(column:'idTutor');
-            $table->string(column:'apellidoP')->nullable(false);
-            $table->string(column:'apellidoM')->nullable(false);
-            $table->string(column:'nombre')->nullable(false);
-            $table->string(column:'numTelefono')->nullable(false);
-            $table->foreignId(column:'idDireccion')->references('idDireccion')->on('direcciones');
-            $table->foreignId(column:'idUsuario')->references('idUsuario')->on('usuarios');
+            $table->id(column: 'idTutor');
+            $table->string(column: 'apellidoP')->nullable(false);
+            $table->string(column: 'apellidoM')->nullable(false);
+            $table->string(column: 'nombre')->nullable(false);
+            $table->string(column: 'numTelefono')->nullable(false);
+            $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
+            $table->foreignId(column: 'idUsuario')->references('idUsuario')->on('usuarios');
             $table->boolean('activo');
+            $table->text('nombre_completo')->nullable()->fulltext();
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tutor');
+        Schema::dropIfExists('tutores');
     }
 };

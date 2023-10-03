@@ -24,7 +24,8 @@ class alumnos extends Model
         'idPersona',
         'idMateria',
         'idTutor',
-        'idUsuario'.
+        'idUsuario',
+        'nombre_completo',
         'activo',
     ];
 

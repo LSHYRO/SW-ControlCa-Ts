@@ -138,6 +138,10 @@
                     </th>
                     <th
                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        activo
+                    </th>
+                    <th
+                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         Numero de telefono
                     </th>
                     <th
@@ -148,13 +152,14 @@
             </thead>
             <tbody>
                 <!-- Se llaman los datos a traves de un foreach -->
-                @foreach ($profesores as $profesor)
+                @foreach ($personal as $profesor)
                     <tr class="hover:bg-grey-lighter">
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->personas->apellidoP }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->personas->apellidoM }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->personas->nombre }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->personas->fechaNacimiento }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->apellidoP }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->apellidoM }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->nombre }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->fechaNacimiento }}</td>
                         <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->correoElectronico }}</td>
+                        <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->activo }}</td>
                         <td class="py-2 px-4 border-b border-grey-light">{{ $profesor->numTelefono }}</td>
                         <td class="py-2 px-4 border-b border-grey-light">
                             <a href="tel:{{ $profesor->numTelefono }}">

@@ -25,6 +25,7 @@ class personal extends Model
         'correoElectronico',
         'numTelefono',
         'activo',
+        'nombre_completo',
         'id_tipo_personal',
         'idUsuario',
         'id_tipo_personal',
@@ -72,6 +73,13 @@ class personal extends Model
             set: function($value){
                 return strtolower($value);
             }
+        );
+    }
+    protected function activo(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => $value ? 'Si' : 'No', //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: fn($value) => $value
         );
     }
 }

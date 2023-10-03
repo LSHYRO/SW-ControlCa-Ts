@@ -18,6 +18,7 @@ use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -31,7 +32,7 @@ class AdminController extends Controller
     public function profesores()
     {
         $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal','profesor')
+            ->where('tipo_personal.tipo_personal', 'profesor')
             ->get();
         //return "Bienvenido a la pagina principal";
         return view('/administrador/profesores', compact('personal'));
@@ -47,7 +48,7 @@ class AdminController extends Controller
     public function directivos()
     {
         $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal','personal_escolar')
+            ->where('tipo_personal.tipo_personal', 'personal_escolar')
             ->get();
 
         return view('/administrador/directivos', compact('personal'));
@@ -63,8 +64,9 @@ class AdminController extends Controller
     public function tutores()
     {
         $tutores = tutores::all();
+        $estados = estados::all();
 
-        return view('/administrador/tutores', compact('tutores'));
+        return view('/administrador/tutores', compact('tutores', 'estados'));
     }
 
     public function addProfesores(Request $request)
@@ -92,6 +94,7 @@ class AdminController extends Controller
 
         //Se busca el tipo de personal en la BD
         $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+
         $personal = new personal();
         $personal->apellidoP = $request->apellidoPaterno;
         $personal->nombre = $request->nombres;
@@ -102,6 +105,12 @@ class AdminController extends Controller
         $personal->numTelefono = $request->telefono;
         $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
         $personal->activo = 1;
+
+        //columna nombre completo
+        $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+        $personal->nombre_completo = $nombreCompleto;
+
+        //Guardado
         $personal->save();
 
         return redirect()->route('admin.profesores');
@@ -141,7 +150,7 @@ class AdminController extends Controller
         $usuarioTipoUsuario = new usuarios_tiposUsuarios();
         $usuarioTipoUsuario->idUsuario = $usuario->id;
         $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-        $usuarioTipoUsuario->save();     
+        $usuarioTipoUsuario->save();
 
         $direccion = new direcciones();
         $direccion->calle = $request->calle;
@@ -156,11 +165,16 @@ class AdminController extends Controller
         $tutor->nombre = $request->nombres;
         $tutor->apellidoP = $request->apellidoPaterno;
         $tutor->apellidoM = $request->apellidoMaterno;
-        $tutor->fechaNacimiento = $request->fechaNacimiento;
         $tutor->idUsuario = $usuario->id;
         $tutor->numTelefono = $request->telefono;
         $tutor->idDireccion = $direccion->id;
         $tutor->activo = 1;
+
+        //columna nombre completo
+        $nombreCompleto = $tutor->nombre . ' ' . $tutor->apellidoP . ' ' . $tutor->apellidoM;
+        $tutor->nombre_completo = $nombreCompleto;
+
+        //Guardado
         $tutor->save();
 
         return redirect()->route('admin.tutores');
@@ -170,20 +184,18 @@ class AdminController extends Controller
     {
         $query = $request->input('query');
 
-        $tutors = tutores::whereHas('personas', function ($queryBuilder) use ($query) {
-            $queryBuilder->where('nombre', 'like', '%' . $query . '%')
-                ->orWhere('apellidoP', 'like', '%' . $query . '%')
-                ->orWhere('apellidoM', 'like', '%' . $query . '%');
-        })->get();
+        // Realiza la búsqueda full-text en la columna "nombre_completo"
+        $tutores = tutores::whereRaw('MATCH(nombre_completo) AGAINST(? IN BOOLEAN MODE)', [$query])
+            ->get();
 
-        // Formatea los resultados como se espera en Select2
+        // Formatea los resultados para enviarlos como respuesta JSON
         $results = [];
-        foreach ($tutors as $tutor) {
+        foreach ($tutores as $tutor) {
             $results[] = [
-                'id' => $tutor->id, // El ID del tutor
-                'text' => $tutor->persona->nombre . ' ' . $tutor->persona->apellidoP, // Nombre completo del tutor
+                'id' => $tutor->idTutor, // Corrige esto para usar el campo idTutor
+                'text' => $tutor->nombre_completo // El nombre completo del tutor
             ];
-        }
+        }    
 
         return response()->json($results);
     }

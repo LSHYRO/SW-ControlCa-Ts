@@ -229,7 +229,7 @@
             // Inicializa Select2 en el campo de entrada
             $(searchInput).select2({
                 ajax: {
-                    url: '/admin/search',
+                    url: '/admin/search', // Ruta que maneja la búsqueda
                     dataType: 'json',
                     delay: 250,
                     data: function(params) {
@@ -244,9 +244,9 @@
                     },
                     cache: true
                 },
-                placeholder: 'Buscar personas por apellido o nombres...',
-                minimumInputLength: 1 // Mínimo de caracteres para iniciar la búsqueda
+                placeholder: 'Buscar tutores por nombre o apellidos...',
+                minimumInputLength: 3 // Mínimo de caracteres para iniciar la búsqueda
             });
-        }); </script>
-
-    @endsection()
+        });
+    </script>
+@endsection()
