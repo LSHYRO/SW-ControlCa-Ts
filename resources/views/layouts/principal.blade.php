@@ -9,6 +9,11 @@
 <head>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     @vite('resources/css/app.css')
 
 </head>
@@ -59,8 +64,8 @@
                     </div>
                     <!-- Señalador de ubicación -->
                     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
-                   
-                    @yield('opcionesNav') 
+
+                    @yield('opcionesNav')
 
                 </nav>
                 <!-- Señalador de ubicación -->
@@ -79,6 +84,7 @@
         </div>
     </div>
     </div>
+    @yield('scripts');
     <script>
         // Agregar lógica para mostrar/ocultar la navegación lateral al hacer clic en el ícono de menú
         const menuBtn = document.getElementById('menuBtn');

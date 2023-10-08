@@ -14,6 +14,9 @@ class alumnos extends Model
     protected $table = "alumnos";
 
     protected $fillable = [
+        'apellidoP',
+        'apellidoM',
+        'nombre',
         'CURP',
         'estatus',
         'idGrado',
@@ -21,6 +24,8 @@ class alumnos extends Model
         'idPersona',
         'idMateria',
         'idTutor',
+        'idUsuario',
+        'nombre_completo',
         'activo',
     ];
 
@@ -34,9 +39,9 @@ class alumnos extends Model
         return $this->hasOne(grupos::class, 'idGrupo', 'idGrupo');
     }
 
-    public function personas(): HasOne
+    public function usuarios(): HasOne
     {
-        return $this->hasOne(personas::class, 'idPersona', 'idPersona');
+        return $this->hasOne(alumnos::class, 'idUsuario', 'idUsuario');
     }
 
     public function materias(): HasOne

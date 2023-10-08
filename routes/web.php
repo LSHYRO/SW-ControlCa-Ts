@@ -13,14 +13,21 @@ use App\Http\Controllers\ejemploRController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-// Pagina de inicio
-Route::get('/', [AdminController::class, 'index'])->name('admin.inicio');
-Route::get('/profesores', [AdminController::class, 'profesores'])->name('admin.profesores');
-Route::get('/alumnos', [AdminController::class, 'alumnos'])->name('admin.alumnos');
-Route::get('/directivos', [AdminController::class, 'directivos'])->name('admin.directivos');
-Route::get('/tutores', [AdminController::class, 'tutores'])->name('admin.tutores');
-Route::get('/materias', [AdminController::class, 'materias'])->name('admin.materias');
+// Pagina Admin
+Route::controller(AdminController::class)->group(function(){
+Route::get('/', 'index')->name('admin.inicio');
+Route::get('/profesores', 'profesores')->name('admin.profesores');
+Route::get('/alumnos', 'alumnos')->name('admin.alumnos');
+Route::get('/directivos', 'directivos')->name('admin.directivos');
+Route::get('/tutores', 'tutores')->name('admin.tutores');
+Route::get('/materias', 'materias')->name('admin.materias');
 
+Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
+Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
+Route::post('/tutores', 'addTutores')->name('admin.addTutores');
+
+Route::get('/admin/search', 'buscarT') ->name('ad.busquedaTutor');
+});
 //Tipos de rutas con controladores
 /*
 Route::get('cursos', [ejemploRController::class, 'index']);

@@ -131,9 +131,11 @@
                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
+                <div class="sm:col-span-3">
+                    <input type="text" id="search-input" class="w-full p-2 border rounded-md"
+                        placeholder="Buscar personas por apellido o nombres...">
+                </div>
             </div>
-
-
         </div>
         <div class="mt-6 flex items-center justify-end gap-x-6">
             <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancelar</button>
@@ -150,6 +152,7 @@
         <div class="my-1"></div> <!-- Espacio de separación -->
         <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
         <!-- Línea con gradiente -->
+        <div class="overflow-x-auto">
         <table class="w-full table-auto text-sm">
             <thead>
                 <tr class="text-sm leading-normal">
@@ -209,7 +212,7 @@
                 @endforeach
             </tbody>
         </table>
-
+        </div>
         <!-- Botón "Ver más" para la tabla de Autorizaciones Pendientes -->
         <div class="text-right mt-4">
             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
@@ -218,4 +221,33 @@
         </div>
     </div>
 
+@endsection()
+@section('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById('search-input');
+
+            // Inicializa Select2 en el campo de entrada
+            $(searchInput).select2({
+                ajax: {
+                    url: '/admin/search', // Ruta que maneja la búsqueda
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            query: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Buscar tutores por nombre o apellidos...',
+                minimumInputLength: 3 // Mínimo de caracteres para iniciar la búsqueda
+            });
+        });
+    </script>
 @endsection()

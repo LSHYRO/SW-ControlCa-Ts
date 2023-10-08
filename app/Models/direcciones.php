@@ -28,8 +28,8 @@ class direcciones extends Model
         return $this->belongsToMany(tutores::class, 'idDireccion', 'idDireccion');
     }
 
-    public function estados(): HasMany
+    public function estados(): HasOne
     {
-        return $this->hasMany(estados::class, 'idEstado', 'idEstado');
+        return $this->hasOne(estados::class, 'idEstado', 'idEstado');
     }
 }

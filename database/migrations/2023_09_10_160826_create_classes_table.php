@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string(column:'dias');
             $table->foreignId(column:'idGrupo')->references('idGrupo')->on('grupos');
             $table->foreignId(column:'idGrado')->references('idGrado')->on('grados');
-            $table->foreignId(column:'idProfesor')->references('idProfesor')->on('profesores');
+            $table->foreignId(column:'idPersonal')->references('idPersonal')->on('personal');
             $table->foreignId(column:'idMateria')->references('idMateria')->on('materias');
             $table->foreignId(column:'idCiclo')->references('idCiclo')->on('ciclos');
             $table->timestamps();
