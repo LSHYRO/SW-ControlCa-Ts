@@ -14,15 +14,19 @@ class tutores extends Model
     protected $table = "tutores";
 
     protected $fillable = [
+        'apellidoP',
+        'apellidoM',
+        'nombre',
         'numTelefono',
         'idDireccion',
-        'idPersona',
+        'idUsuario',
         'activo',
+        'nombre_completo',
     ];
 
-    public function personas():HasOne
+    public function usuarios():HasOne
     {
-        return $this->hasOne(personas::class, 'idPersona', 'idPersona');
+        return $this->hasOne(usuarios::class, 'idUsuario', 'idUsuario');
     }
 
     public function alumnos(): BelongsToMany{

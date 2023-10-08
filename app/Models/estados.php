@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class estados extends Model
 {
@@ -16,8 +17,8 @@ class estados extends Model
         'estado',
     ];
 
-    public function direcciones(): BelongsTo
+    public function direcciones(): BelongsToMany
     {
-        return $this->belongsTo(direcciones::class, 'idEstado', 'idEstado');
+        return $this->belongsToMany(direcciones::class, 'idEstado', 'idEstado');
     }
 }

@@ -10,19 +10,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
-class personas extends Model
+class personal extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = "personas";
+    protected $table = "personal";
 
     protected $fillable = [
         'apellidoP',
         'apellidoM',
         'nombre',
         'fechaNacimiento',
+        'correoElectronico',
+        'numTelefono',
+        'activo',
+        'nombre_completo',
+        'id_tipo_personal',
         'idUsuario',
+        'id_tipo_personal',
     ];
 
     public function usuarios(): HasOne
@@ -30,6 +36,11 @@ class personas extends Model
         return $this->hasOne(usuarios::class, 'idUsuario', 'idUsuario');
     }
 
+    public function tipo_personal(): HasOne
+    {
+        return $this->hasOne(tipo_personal::class, 'id_tipo_personal', 'id_tipo_personal');
+    }
+    /*
     public function personal_escolar(): BelongsTo
     {
         return $this->belongsTo(personal_escolar::class, 'idPersona', 'idPersona');
@@ -54,7 +65,7 @@ class personas extends Model
     {
         return $this->belongsTo(alumnos::class, 'idPersona', 'idPersona');
     }
-
+    */
     protected function nombre(): Attribute
     {
         return new Attribute(
@@ -62,6 +73,13 @@ class personas extends Model
             set: function($value){
                 return strtolower($value);
             }
+        );
+    }
+    protected function activo(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => $value ? 'Si' : 'No', //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: fn($value) => $value
         );
     }
 }
