@@ -22,7 +22,7 @@ var person = ({});
 const form = useForm({});
 const abrirE = ($profe) => {
     person = $profe;
-    mostrarModalE.value = true;    
+    mostrarModalE.value = true;
     console.log($profe);
     console.log(person);
 }
@@ -57,17 +57,19 @@ const eliminarProfesor = (idPersonal, nombre) => {
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Profesores</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
-            <div class="p-4 grid grid-cols-12 ">
-                <search-bar class="lg:col-start-1 lg:col-span-4 md:col-span-5" />
-                <button
-                    class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded lg:col-start-8 lg:w-48 md:w-36 md:col-start-7">
-                    <i class="fa fa-trash mr-2"></i>Borrar Docente(s)
-                </button>
-                <button
-                    class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded lg:col-start-11 lg:w-48 md:w-36 md:col-start-10"
-                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-plus mr-2"></i>Agregar docente
-                </button>
+            <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
+                <div class="w-full md:w-1/3 mb-4 md:mb-0">
+                    <search-bar />
+                </div>
+                <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
+                    <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
+                        <i class="fa fa-trash mr-2"></i>Borrar Docente(s)
+                    </button>
+                    <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                        @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                        <i class="fa fa-plus mr-2"></i>Agregar docente
+                    </button>
+                </div>
             </div>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- Línea con gradiente -->
