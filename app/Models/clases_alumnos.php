@@ -11,6 +11,7 @@ class clases_alumnos extends Model
     use HasFactory;
 
     protected $table = "clases_alumnos";
+    protected $primaryKey = 'idClaseAlumno';
 
     protected $fillable = [
         'idClase',

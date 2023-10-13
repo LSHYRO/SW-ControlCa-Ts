@@ -21,16 +21,20 @@ class personalFactory extends Factory
     public function definition(): array
     {
         $tablaUsuario = usuarios::inRandomOrder()->first();
-        $tablaTipoPersonal = tipo_personal::inRandomOrder()->first();        
+        $tablaTipoPersonal = tipo_personal::inRandomOrder()->first();   
+        $nombre = $this->faker->name();
+        $apellidoP = $this->faker->lastName();
+        $apellidoM = $this->faker->lastName();
 
         return [
-            'apellidoP' => $this->faker->lastName(),
-            'apellidoM' => $this->faker->lastName(),
-            'nombre' => $this->faker->name(),
+            'apellidoP' => $apellidoP,
+            'apellidoM' => $apellidoM,
+            'nombre' => $nombre,
             'fechaNacimiento'=> $this->faker->date($format='Y-m-d', $max='now'),
             'correoElectronico' => $this->faker->email(),
             'numTelefono' => $this->faker->phoneNumber(),
             'activo' => $this->faker->boolean(),
+            'nombre_completo' => $nombre . ' ' . $apellidoP . ' ' . $apellidoM,
             'id_tipo_personal' => $tablaTipoPersonal->id_tipo_personal,
             'idUsuario' => $tablaUsuario->idUsuario
         ];

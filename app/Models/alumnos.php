@@ -12,6 +12,7 @@ class alumnos extends Model
     use HasFactory;
 
     protected $table = "alumnos";
+    protected $primaryKey = 'idAlumno';
 
     protected $fillable = [
         'apellidoP',

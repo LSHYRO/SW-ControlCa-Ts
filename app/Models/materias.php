@@ -15,6 +15,7 @@ class materias extends Model
     use SoftDeletes;
 
     protected $table = "materias";
+    protected $primaryKey = 'idMateria';
 
     protected $fillable = [
         'materia',

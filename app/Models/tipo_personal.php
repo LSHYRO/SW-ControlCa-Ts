@@ -10,6 +10,7 @@ class tipo_personal extends Model
 {
     use HasFactory;
     protected $table = "tipo_personal";
+    protected $primaryKey = 'id_Tipo_Personal';
 
     protected $fillable = [
         'tipo_personal',

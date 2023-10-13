@@ -12,6 +12,7 @@ class clases extends Model
     use HasFactory;
 
     protected $table = "clases";
+    protected $primaryKey = 'idClase';
 
     protected $fillable = [
         'hora',

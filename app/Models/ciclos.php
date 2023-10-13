@@ -14,6 +14,7 @@ class ciclos extends Model
     use SoftDeletes;
 
     protected $table = "ciclos";
+    protected $primaryKey = 'idCiclo';
 
     protected $fillable = [
         'fecha_inicio',
