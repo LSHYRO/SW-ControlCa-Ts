@@ -1,51 +1,70 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ejemploRController;
+use Inertia\Inertia;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
 |
 */
-// Pagina Admin
-Route::controller(AdminController::class)->group(function(){
-Route::get('/', 'index')->name('admin.inicio');
-Route::get('/profesores', 'profesores')->name('admin.profesores');
-Route::get('/alumnos', 'alumnos')->name('admin.alumnos');
-Route::get('/directivos', 'directivos')->name('admin.directivos');
-Route::get('/tutores', 'tutores')->name('admin.tutores');
-Route::get('/materias', 'materias')->name('admin.materias');
 
-Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
-Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
-Route::post('/tutores', 'addTutores')->name('admin.addTutores');
+Route::controller(AdminController::class)->group(function () {
+    Route::get('/a', 'index')->name('admin.principal');
+    Route::get('/', 'inicio')->name('admin.inicio');
+    Route::get('/profesores', 'profesores')->name('admin.profesores');
+    Route::get('/alumnos', 'alumnos')->name('admin.alumnos');
+    Route::get('/directivos', 'directivos')->name('admin.directivos');
+    Route::get('/tutores', 'tutores')->name('admin.tutores');
+    Route::get('/materias', 'materias')->name('admin.materias');
 
-Route::get('/admin/search', 'buscarT') ->name('ad.busquedaTutor');
-});
-//Tipos de rutas con controladores
-/*
-Route::get('cursos', [ejemploRController::class, 'index']);
+    Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
+    Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
+    Route::post('/tutores', 'addTutores')->name('admin.addTutores');
 
-Route::get('create',[ejemploRController::class, 'create']);
+    Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');    
+    Route::delete('/profesores/{idPersonal}', 'eliminarProfesores')->name('admin.eliminarProfesores');
 
-Route::get('cursos/{curso}',[ejemploRController::class, 'show']);
-*/
+    Route::put('/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('admin.actualizarProfesores');
+    
 
-//Grupo de rutas
-Route::controller(ejemploRController::class)->group(function(){
-    Route::get('cursos', 'index')->name('cursos.principal');
-    Route::get('create', 'create');
-    Route::get('cursos/{curso}', 'show');
 });
 
+Route::resource('Admin', AdminController::class);
 /*
 Route::get('/', function () {
-    return view('welcome');
+    return Inertia::render('Principal',[
+        'ad.profesores' => Route::has('Admin/Profesores')
+    ]);
 });
+
+Route::get('/profesor', function () {
+    return Inertia::render('Admin/Profesores');
+})->name('adm.prof');
 */
+
+Route::get('/f', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+});
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+});

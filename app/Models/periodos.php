@@ -12,6 +12,7 @@ class periodos extends Model
     use HasFactory;
 
     protected $table = "periodos";
+    protected $primaryKey = 'idPeriodo';
 
     protected $fillable = [
         'periodo', 

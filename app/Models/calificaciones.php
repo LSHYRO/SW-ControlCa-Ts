@@ -11,6 +11,7 @@ class calificaciones extends Model
     use HasFactory;
 
     protected $table = "calificaciones";
+    protected $primaryKey = 'idCalificacion';
 
     protected $fillable = [
         'idActividad',

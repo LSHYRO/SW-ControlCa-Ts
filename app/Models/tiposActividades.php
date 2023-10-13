@@ -11,6 +11,7 @@ class tiposActividades extends Model
     use HasFactory;
 
     protected $table = "tiposActividades";
+    protected $primaryKey = 'idTipoActividad';
 
     protected $fillable = [
         'tipoActividad',

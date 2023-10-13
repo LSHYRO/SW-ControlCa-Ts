@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string(column:'apellidoM')->nullable(false);
             $table->string(column:'nombre')->nullable(false);
             $table->date(column:'fechaNacimiento')->nullable(false);
-            $table->string(column:'correoElectronico')->unique()->nullable(false);
+            $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
             $table->boolean('activo');
             $table->text('nombre_completo')->nullable()->fulltext();

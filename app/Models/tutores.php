@@ -12,6 +12,7 @@ class tutores extends Model
     use HasFactory;
 
     protected $table = "tutores";
+    protected $primaryKey = 'idTutor';
 
     protected $fillable = [
         'apellidoP',

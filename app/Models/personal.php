@@ -16,6 +16,7 @@ class personal extends Model
     use SoftDeletes;
 
     protected $table = "personal";
+    protected $primaryKey = 'idPersonal';
 
     protected $fillable = [
         'apellidoP',

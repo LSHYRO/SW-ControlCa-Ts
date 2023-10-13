@@ -13,6 +13,7 @@ class direcciones extends Model
     use HasFactory;
     
     protected $table = "direcciones";
+    protected $primaryKey = 'idDireccion';
 
     protected $fillable = [
         'calle',

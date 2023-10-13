@@ -14,6 +14,7 @@ class actividades extends Model
     use SoftDeletes;
 
     protected $table = "actividades";
+    protected $primaryKey = 'idActividad';
 
     protected $fillable = [
         'descripcion',
