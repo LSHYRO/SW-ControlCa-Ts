@@ -8,6 +8,7 @@ use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\alumnos;
 use App\Models\materias;
+use App\Models\clases;
 use App\Models\tutores;
 use App\Models\direcciones;
 use App\Models\estados;
@@ -81,7 +82,14 @@ class AdminController extends Controller
     {
         $materias = materias::all();
 
-        return view('/administrador/materias', compact('materias'));
+        return Inertia::render('Admin/Materias');
+    }
+
+    public function clases()
+    {
+        $clases = clases::all();
+
+        return Inertia::render('Admin/Clases');
     }
 
     public function tutores()
@@ -140,19 +148,6 @@ class AdminController extends Controller
         //Guardado
         $personal->save();
         return redirect()->route('admin.profesores');
-    }
-
-    public function addMaterias(Request $request)
-    {
-        $materia = new materias();
-        $materia->materia = $request->nombre_materia;
-        $materia->descripcion = $request->descripcion;
-        $materia->activo = 1;
-        $materia->extracurricular = $request->extracurricular;
-
-        $materia->save();
-
-        return redirect()->route('admin.materias');
     }
 
     public function addTutores(Request $request)
@@ -241,7 +236,52 @@ class AdminController extends Controller
         return redirect()->route('admin.profesores');
     }
 
+
     public function actualizarProfesor(Request $request, $idPersonal){
+
+        $personal = personal::find($idPersonal);
+        $request->validate([
+            'nombre' => 'required',
+            'apellidoP' => 'required',
+            'apellidoM' => 'required',
+            'nombre' => 'required',
+            'numTelefono' => 'required',
+            'correoElectronico' => 'required',
+            'fechaNacimiento' => 'required',
+        ]);
+        
+        $personal->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.profesores');
+    }
+
+    public function addMaterias(Request $request)
+    {
+        $materia = new materias();
+        $materia->materia = $request->materia;
+        $materia->descripcion = $request->descripcion;
+        $materia->activo = 1;
+        $materia->extracurricular = $request->extracurricular;
+
+        $materia->save();
+        return redirect()->route('admin.materias');
+    }
+
+    public function eliminarMaterias($idMateria)
+    {
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+        $personal = personal::find($idPersonal);
+        $usuario = usuarios::find($personal->idUsuario);
+        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+            ->where('idTipoUsuario',$tipoUsuario->idTipoUsuario)
+            ->first();
+        $personal->delete();
+        $usuarioTipoUsuario->delete();
+        $usuario ->delete();
+        return redirect()->route('admin.profesores');
+    }
+
+    public function actualizarMateria(Request $request, $idPersonal){
 
         $personal = personal::find($idPersonal);
         $request->validate([

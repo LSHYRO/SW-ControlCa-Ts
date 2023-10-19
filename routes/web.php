@@ -24,15 +24,19 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/directivos', 'directivos')->name('admin.directivos');
     Route::get('/tutores', 'tutores')->name('admin.tutores');
     Route::get('/materias', 'materias')->name('admin.materias');
+    Route::get('/clases', 'clases')->name('admin.clases');
 
     Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
     Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
     Route::post('/tutores', 'addTutores')->name('admin.addTutores');
 
-    Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');    
-    Route::delete('/profesores/{idPersonal}', 'eliminarProfesores')->name('admin.eliminarProfesores');
+    Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');   
 
+    Route::delete('/profesores/{idPersonal}', 'eliminarProfesores')->name('admin.eliminarProfesores');
     Route::put('/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('admin.actualizarProfesores');
+
+    Route::delete('/materias/{idMateria}', 'eliminarMaterias')->name('admin.eliminarMaterias');
+    Route::put('/materias/{idMateria}/edit', 'actualizarMaterias')->name('admin.actualizarMaterias');
     
 
 });

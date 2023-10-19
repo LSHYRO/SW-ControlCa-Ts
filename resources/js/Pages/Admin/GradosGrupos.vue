@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioProf from '@/Components/admin/FormularioProf.vue';
+import FormularioProf from '@/Components/admin/FormularioMateria.vue';
 import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    personal: { type: Object },
+    materia: { type: Object },
 
 });
 const mostrarModal = ref(false);
@@ -16,15 +16,15 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var person = ({});
+var mater = ({});
 
 
 const form = useForm({});
-const abrirE = ($profe) => {
-    person = $profe;
+const abrirE = ($materiaa) => {
+    mater = $materiaa;
     mostrarModalE.value = true;
-    console.log($profe);
-    console.log(person);
+    console.log($materiaa);
+    console.log(mater);
 }
 const cerrarModal = () => {
     mostrarModal.value = false;
@@ -55,7 +55,7 @@ const eliminarProfesor = (idPersonal, nombre) => {
 <template>
     <AdminLayout title="profesores">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
-            <h2 class="text-black text-2xl text-center font-semibold p-5">Docentes</h2>
+            <h2 class="text-black text-2xl text-center font-semibold p-5">Grados y grupos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
                 <div class="w-full md:w-1/3 mb-4 md:mb-0">
@@ -63,11 +63,11 @@ const eliminarProfesor = (idPersonal, nombre) => {
                 </div>
                 <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
                     <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                        <i class="fa fa-trash mr-2"></i>Borrar Docente(s)
+                        <i class="fa fa-trash mr-2"></i>Borrar Materia(s)
                     </button>
                     <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                         @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                        <i class="fa fa-plus mr-2"></i>Agregar docente
+                        <i class="fa fa-plus mr-2"></i>Agregar Materia
                     </button>
                 </div>
             </div>

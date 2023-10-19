@@ -92,10 +92,10 @@ export default {
                         <inicio />
                     </div>
                     <div v-else-if="opcionSeleccionada === 'opcion2'">
-                        <profesores />
+                        <!-- Contenido para la opción 2 -->
                     </div>
                     <div v-else-if="opcionSeleccionada === 'opcion3'">
-                        <!-- Contenido para la opción 3 -->
+                        <profesores />
                     </div>
                     <div v-else-if="opcionSeleccionada === 'opcion4'">
                         <!-- Contenido para la opción 4 -->
