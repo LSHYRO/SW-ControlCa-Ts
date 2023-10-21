@@ -37,6 +37,9 @@ Route::controller(AdminController::class)->group(function () {
 
     Route::delete('/materias/{idMateria}', 'eliminarMaterias')->name('admin.eliminarMaterias');
     Route::put('/materias/{idMateria}/edit', 'actualizarMaterias')->name('admin.actualizarMaterias');
+
+    Route::delete('/clases/{idClase}', 'eliminarClases')->name('admin.eliminarClases');
+    Route::put('/clases/{idClase}/edit', 'actualizarClases')->name('admin.actualizarClases');
     
 
 });

@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioProf from '@/Components/admin/FormularioMateria.vue';
+import FormularioProf from '@/Components/admin/FormularioClases.vue';
 import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    materia: { type: Object },
+    clases: { type: Object },
 
 });
 const mostrarModal = ref(false);
@@ -20,11 +20,11 @@ var mater = ({});
 
 
 const form = useForm({});
-const abrirE = ($materiaa) => {
-    mater = $materiaa;
+const abrirE = ($clasee) => {
+    clas = $clasee;
     mostrarModalE.value = true;
-    console.log($materiaa);
-    console.log(mater);
+    console.log($clasee);
+    console.log(clas);
 }
 const cerrarModal = () => {
     mostrarModal.value = false;
@@ -33,19 +33,19 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
-const eliminarProfesor = (idPersonal, nombre) => {
+const eliminarClase = (idClase, clase) => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + clase + '?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarProfesores', idPersonal));
+            form.delete(route('admin.eliminarClases', idClase));
         }
 
     })
@@ -53,7 +53,7 @@ const eliminarProfesor = (idPersonal, nombre) => {
 </script>
 
 <template>
-    <AdminLayout title="profesores">
+    <AdminLayout title="clases">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
@@ -63,11 +63,11 @@ const eliminarProfesor = (idPersonal, nombre) => {
                 </div>
                 <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
                     <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                        <i class="fa fa-trash mr-2"></i>Borrar Materia(s)
+                        <i class="fa fa-trash mr-2"></i>Borrar Clase(s)
                     </button>
                     <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                         @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                        <i class="fa fa-plus mr-2"></i>Agregar Materia
+                        <i class="fa fa-plus mr-2"></i>Agregar Clase
                     </button>
                 </div>
             </div>
@@ -83,31 +83,35 @@ const eliminarProfesor = (idPersonal, nombre) => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido P
+                                Clase
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido M
+                                Hora
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre
+                                Días
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Fecha de nacimiento
+                                Grupo
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Correo Electronico
+                                Grado
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                activo
+                                Docente
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Numero de telefono
+                                Materia
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Ciclo
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -120,25 +124,21 @@ const eliminarProfesor = (idPersonal, nombre) => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="profesor in personal" :key="profesor.idPersonal" class="hover:bg-grey-lighter">
+                        <tr v-for="clase in clases" :key="clase.idClase" class="hover:bg-grey-lighter">
                             <td><input type="checkbox"></td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.apellidoP }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.apellidoM }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.nombre }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.fechaNacimiento }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.correoElectronico }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.activo }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.numTelefono }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.clase }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.hora }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.dias }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.grupo }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.grado }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.docente }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.materia }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ clase.ciclo }}</td>
                             <td class="py-2 px-4 border-b border-grey-light">
-                                <a href="tel:{{ profesor.numTelefono }}">
-                                    <i class="fa fa-phone" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                            <td class="py-2 px-4 border-b border-grey-light">
-                                <button @click="abrirE(profesor)" data-bs-toggle="modal" data-bs-target="#modalEdit">
+                                <button @click="abrirE(clase)" data-bs-toggle="modal" data-bs-target="#modalEdit">
                                     <i class="fa fa-pencil"></i>
                                 </button>
-                                <button @click="eliminarProfesor(profesor.idPersonal, profesor.nombre_completo)">
+                                <button @click="eliminarClase(clase.idClase, clase.clase)">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </td>
@@ -155,9 +155,9 @@ const eliminarProfesor = (idPersonal, nombre) => {
         </div>
 
         <formulario-prof :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir profesor'" :op="'1'" :modal="'modalCreate'"></formulario-prof>
+            :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'"></formulario-prof>
         <formulario-prof :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-prof>
+            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-prof>
 
     </AdminLayout>
 </template>

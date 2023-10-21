@@ -297,4 +297,53 @@ class AdminController extends Controller
         $personal->fill($request->input())->saveOrFail();
         return redirect()->route('admin.profesores');
     }
+
+    public function addClases(Request $request)
+    {
+        $clase = new clases();
+        $clase->clase = $request->clase;
+        $clase->hora = $request->hora;
+        $clase->dias = $request->dias;
+        $clase->hora = $request->hora;
+        $clase->grupo = $request->grupo;
+        $clase->grado = $request->grado;
+        $clase->docente = $request->docente;
+        $clase->materia = $request->materia;
+        $clase->ciclo = $request->ciclo;
+
+        $clase->save();
+        return redirect()->route('admin.clases');
+    }
+
+    public function eliminarClases($idClase)
+    {
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+        $personal = personal::find($idPersonal);
+        $usuario = usuarios::find($personal->idUsuario);
+        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+            ->where('idTipoUsuario',$tipoUsuario->idTipoUsuario)
+            ->first();
+        $personal->delete();
+        $usuarioTipoUsuario->delete();
+        $usuario ->delete();
+        return redirect()->route('admin.profesores');
+    }
+
+    public function actualizarClases(Request $request, $idPersonal){
+
+        $personal = personal::find($idPersonal);
+        $request->validate([
+            'nombre' => 'required',
+            'apellidoP' => 'required',
+            'apellidoM' => 'required',
+            'nombre' => 'required',
+            'numTelefono' => 'required',
+            'correoElectronico' => 'required',
+            'fechaNacimiento' => 'required',
+        ]);
+        
+        $personal->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.profesores');
+    }
 }
