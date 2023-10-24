@@ -9,9 +9,13 @@ use Illuminate\Http\Request;
 use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
+use App\Models\ciclos;
+use App\Models\periodos;
 use App\Models\tutores;
 use App\Models\direcciones;
 use App\Models\estados;
+use App\Models\grados;
+use App\Models\grupos;
 use App\Models\personal;
 use App\Models\personal_escolar;
 use App\Models\tipo_personal;
@@ -98,6 +102,22 @@ class AdminController extends Controller
         $estados = estados::all();
 
         return view('/administrador/tutores', compact('tutores', 'estados'));
+    }
+
+    public function gradosgrupos()
+    {
+        $grados = grados::all();
+        $grupos = grupos::all();
+
+        return Inertia::render('Admin/GradosGrupos');
+    }
+
+    public function ciclosperiodos()
+    {
+        $ciclos = ciclos::all();
+        $periodos = periodos::all();
+
+        return Inertia::render('Admin/CiclosPeriodos');
     }
 
     public function addProfesores(Request $request)
@@ -259,7 +279,7 @@ class AdminController extends Controller
         $materia = new materias();
         $materia->materia = $request->materia;
         $materia->descripcion = $request->descripcion;
-        $materia->activo = 1;
+        $materia->activo = $request->activo;
         $materia->extracurricular = $request->extracurricular;
 
         $materia->save();
@@ -345,5 +365,49 @@ class AdminController extends Controller
         
         $personal->fill($request->input())->saveOrFail();
         return redirect()->route('admin.profesores');
+    }
+
+    public function addGrados(Request $request)
+    {
+        $grado = new grados();
+        $grado->grado = $request->grado;
+        $grado->ciclo = $request->ciclo;
+
+        $clase->save();
+        return redirect()->route('admin.gradosgrupos');
+    }
+    public function addGrupos(Request $request)
+    {
+        $grupo = new grupos();
+        $grupo->grupo = $request->grupo;
+        $grupo->ciclo = $request->ciclo;
+
+        $clase->save();
+        return redirect()->route('admin.gradosgrupos');
+    }
+
+    public function addCiclos(Request $request)
+    {
+        $ciclo = new ciclos();
+        $ciclo->ciclo = $request->ciclo;
+        $ciclo->fecha_inicio = $request->fecha_inicio;
+        $ciclo->fecha_fin = $request->fecha_fin;
+        $ciclo->descripcion = $request->descripcion;
+        $ciclo->activo = $request->activo;
+
+        $ciclo->save();
+        return redirect()->route('admin.ciclosperiodos');
+    }
+    public function addPeriodos(Request $request)
+    {
+        $periodo = new periodos();
+        $periodo->periodo = $request->perido;
+        $periodo->fecha_inicio = $request->fecha_inicio;
+        $periodo->fecha_fin = $request->fecha_fin;
+        $periodo->activo = $request->activo;
+        $periodo->ciclo = $request->ciclo;
+
+        $periodo->save();
+        return redirect()->route('admin.ciclosperiodos');
     }
 }

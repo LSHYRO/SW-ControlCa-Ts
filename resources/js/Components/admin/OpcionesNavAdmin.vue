@@ -28,11 +28,11 @@ defineProps({
         <i class="fas fa-desktop mr-2"></i>Clases
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        href="{{ route('admin.materias') }}">
+        :href="route('admin.gradosgrupos')">
         <i class="fas fa-balance-scale mr-2"></i>Grados y grupos
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        href="{{ route('admin.materias') }}">
+        :href="route('admin.ciclosperiodos')">
         <i class="fas fa-calendar mr-2"></i>Ciclos y periodos
     </a>
 </template>

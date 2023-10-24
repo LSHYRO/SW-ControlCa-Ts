@@ -19,53 +19,47 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    materias: {
+    grados: {
         type: Object,
         default: () => ({}),
     },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    materia: String,
-    descripcion: String,
-    extracurricular: Boolean,
-    activo: Boolean,
+    grado: { type: Number},
+
 },
 );
-
-
 const close = () => {
     emit('close');
     form.reset;
 };
 
 const form = useForm({
-    idMateria: props.materias.idMateria,
-    materia: props.materias.materia,
-    descripcion: props.materias.descripcion,
-    extracurricular: props.materias.extracurricular,
-    activo: props.materias.activo
+    idGrado: props.grados.idGrado,
+    grado: props.grados.grado,
+   idCiclo: props.grados.idCiclo
+
 });
 
 const save = () => {
-    form.post(route('admin.addMaterias'), {
+    form.post(route('admin.addGrados'), {
         onSuccess: () => close()
     });
 }
 
 const update = () => {
-    var idMateria = document.getElementById('idMateria2').value;
-    console.log(idMateria);
-    console.log(document.getElementById('materia2').value);
-    form.put(route('admin.actualizarMaterias', idMateria), {
+    var idGrado = document.getElementById('idGrado2').value;
+    console.log(idGrado);
+    console.log(document.getElementById('grado2').value);
+    form.put(route('admin.actualizarGrados', idGrado), {
         onSuccess: () => close()
     });
 }
-watch(() => props.materias, (newVal) => {
-    form.idMateria = newVal.idMateria;
-    form.materia = newVal.materia;
-    form.descripcion = newVal.descripcion;
-    form.activo = newVal.activo;
+watch(() => props.grados, (newVal) => {
+    form.idGrado= newVal.idGrado;
+    form.grado = newVal.grado;
+    form.idCiclo = newVal.idCiclo;
 }, { deep: true });
 
 </script>
@@ -78,48 +72,37 @@ watch(() => props.materias, (newVal) => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva materia </p>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un nuevo grado
+                    </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idMateria" class="block text-sm font-medium leading-6 text-gray-900">id</label>
+                            <label for="idGrado" class="block text-sm font-medium leading-6 text-gray-900">id</label>
                             <div class="mt-2">
-                                <input type="number" name="idMateria" v-model="form.idMateria" placeholder="Ingrese id"
-                                    :id="'idMateria' + op"
+                                <input type="number" name="idGrado" v-model="form.idGrado" placeholder="Ingrese id"
+                                    :id="'idGrado' + op"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
                         <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="materia" class="block text-sm font-medium leading-6 text-gray-900">Materia</label>
+                            <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
-                                <input type="text" name="materia" :id="'materia' + op" v-model="form.materia"
-                                    placeholder="Ingrese el nombre de la materia"
+                                <input type="text" name="grado" :id="'grado' + op" v-model="form.grado"
+                                    placeholder="Ingrese grado"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-2">
-                            <label for="descripcion" class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
+                            <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <input type="text" name="descripcion" :id="'descripcion' + op" v-model="form.descripcion"
-                                    placeholder="Ingrese descripción"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="extracurricular" class="block text-sm font-medium leading-6 text-gray-900">Extracurricular</label>
-                            <div class="mt-2">
-                                <input type="checkbox" name="extracurricular" id="extracurricular" v-model="checked">
-                                <label for="extracurricular">{{ checked }}</label>
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="activo" class="block text-sm font-medium leading-6 text-gray-900">Activo</label>
-                            <div class="mt-2">
-                                <input type="checkbox" name="activo" id="activo" v-model="checked">
-                                <label for="activo">{{ checked }}</label>
+                                <select name="ciclo" v-model="form.idCiclo" :id="'ciclo' + op"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option disabled value="">Seleccione el grado</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
                             </div>
                         </div>
 

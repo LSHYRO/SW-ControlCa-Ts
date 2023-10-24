@@ -79,7 +79,6 @@ const eliminarProfesor = (idPersonal, nombre) => {
                         <tr class="text-sm leading-normal">
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -111,11 +110,9 @@ const eliminarProfesor = (idPersonal, nombre) => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
                             </th>
                         </tr>
                     </thead>

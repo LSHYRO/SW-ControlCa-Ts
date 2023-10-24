@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioProf from '@/Components/admin/FormularioClases.vue';
+import FormularioClases from '@/Components/admin/FormularioClases.vue';
 import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
@@ -16,7 +16,7 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var mater = ({});
+var clas = ({});
 
 
 const form = useForm({});
@@ -154,10 +154,10 @@ const eliminarClase = (idClase, clase) => {
             </div>
         </div>
 
-        <formulario-prof :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'"></formulario-prof>
-        <formulario-prof :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-prof>
+        <formulario-clases :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+            :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'"></formulario-clases>
+        <formulario-clases :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-clases>
 
     </AdminLayout>
 </template>

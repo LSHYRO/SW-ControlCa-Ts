@@ -2,15 +2,13 @@
 import { ref } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioGrado from '@/Components/admin/FormularioGrado.vue';
-import FormularioGrupo from '@/Components/admin/FormularioGrupo.vue';
 import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    grados: { type: Object },
-    grupos: { type: Object },
+    ciclos: { type: Object },
+    periodos: { type: Object },
 
 });
 const mostrarModal = ref(false);
@@ -18,18 +16,18 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var grad = ({});
-var grup = ({});
+var cic = ({});
+var per = ({});
 
 
 const form = useForm({});
-const abrirGrados = ($gradoss) => {
+const abrirCiclos = ($gradoss) => {
     grad = $gradoss;
     mostrarModalE.value = true;
     console.log($gradoss);
     console.log(grad);
 }
-const abrirGrupos = ($gruposs) => {
+const abrirPeriodos = ($gruposs) => {
     grup = $gruposs;
     mostrarModalEGrupo.value = true;
     console.log($gruposs);
@@ -42,39 +40,39 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
-const mostrarModalGrupo = ref(false);
-const mostrarModalEGrupo = ref(false);
+const mostrarModalPeriodos = ref(false);
+const mostrarModalEPeriodos = ref(false);
 
-const cerrarModalGrupo = () => {
-    mostrarModalGrupo.value = false;
+const cerrarModalPeriodos = () => {
+    mostrarModalPeriodos.value = false;
 };
-const cerrarModalEGrupo = () => {
-    mostrarModalEGrupo.value = false;
+const cerrarModalEPeriodos = () => {
+    mostrarModalEPeriodos.value = false;
 };
 
-const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado"
+const selectedOption = ref('Ciclos'); // Inicialmente, muestra la tabla de "Grado"
 
 </script>
 
 <template>
-    <AdminLayout title="Grados y Grupos">
+    <AdminLayout title="Ciclos y Periodos">
 
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
              <!-- Botón o selector para elegir entre "Grado" y "Grupo" -->
              <div class="p-4 flex items-center justify-center">
-                <button @click="selectedOption = 'Grado'" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mr-2">
-                Grados
+                <button @click="selectedOption = 'Ciclos'" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mr-2">
+                Ciclos
                 </button>
-                <button @click="selectedOption = 'Grupo'" class="bg-cyan-500 hover-bg-cyan-600 text-white font-semibold py-2 px-4 rounded mr-2">
-                Grupos
+                <button @click="selectedOption = 'Periodos'" class="bg-cyan-500 hover-bg-cyan-600 text-white font-semibold py-2 px-4 rounded mr-2">
+                Periodos
                 </button>
              </div>
 
              <!-- Sección para mostrar la tabla de "Grado" -->
-             <div v-if="selectedOption === 'Grado'">
+             <div v-if="selectedOption === 'Ciclos'">
                     <!-- Agrega la tabla de datos específica para "Grado" aquí -->
                     <div class="mt-8 bg-white p-4 shadow rounded-lg">
-                    <h2 class="text-black text-2xl text-center font-semibold p-5">Grados</h2>
+                    <h2 class="text-black text-2xl text-center font-semibold p-5">Ciclos</h2>
                     <div class="my-1"></div> <!-- Espacio de separación -->
                     <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div class="w-full md:w-1/3 mb-4 md:mb-0">
@@ -82,11 +80,11 @@ const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado
                         </div>
                         <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
                             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                                <i class="fa fa-trash mr-2"></i>Borrar Grado(s)
+                                <i class="fa fa-trash mr-2"></i>Borrar Ciclo(s)
                             </button>
                             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                                 @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                                <i class="fa fa-plus mr-2"></i>Agregar Grado
+                                <i class="fa fa-plus mr-2"></i>Agregar Ciclo
                             </button>
                         </div>
                     </div>
@@ -102,11 +100,23 @@ const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                        Grado
+                                        Ciclo
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                        Ciclo
+                                        Fecha de inicio
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        Fecha de terminación
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        Descripción
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        Activo
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -119,15 +129,18 @@ const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado
                                 </tr>
                             </thead>
                                 <tbody>
-                                <tr v-for="grado in grados" :key="grado.idGrado" class="hover:bg-grey-lighter">
+                                <tr v-for="ciclo in ciclos" :key="ciclo.idCiclo" class="hover:bg-grey-lighter">
                                     <td><input type="checkbox"></td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ grado.grado }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ grado.ciclo }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.ciclo }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.fecha_inicio }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.fecha_fin }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.descripcion }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.activo }}</td>
                                     <td class="py-2 px-4 border-b border-grey-light">
-                                        <button @click="abrirGrados(grado)" data-bs-toggle="modal" data-bs-target="#modalEdit">
+                                        <button @click="abrirCiclos(ciclo)" data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             <i class="fa fa-pencil"></i>
                                         </button>
-                                        <button @click="eliminarGrado(grado.idGrado, grado.grado)">
+                                        <button @click="eliminarCiclo(ciclo.idCiclo, ciclo.ciclo)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
@@ -144,18 +157,18 @@ const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado
                 </div>
 
                  <formulario-grado :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-                    :title="'Añadir grado'" :op="'1'" :modal="'modalCreate'"></formulario-grado>
+                    :title="'Añadir ciclo'" :op="'1'" :modal="'modalCreate'"></formulario-grado>
                 <formulario-grado :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-                    :title="'Editar grado'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-grado>
+                    :title="'Editar ciclo'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-grado>
 
             </div> <!-- Aquí termina "Grado" -->
 
             <!-- Sección para mostrar la tabla de "Grupo" -->
-            <div v-if="selectedOption === 'Grupo'">
+            <div v-if="selectedOption === 'Periodos'">
                 <!-- Agrega la tabla de datos específica para "Grupo" aquí -->
 
                 <div class="mt-8 bg-white p-4 shadow rounded-lg">
-                    <h2 class="text-black text-2xl text-center font-semibold p-5">Grupos</h2>
+                    <h2 class="text-black text-2xl text-center font-semibold p-5">Periodos</h2>
                     <div class="my-1"></div> <!-- Espacio de separación -->
                     <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div class="w-full md:w-1/3 mb-4 md:mb-0">
@@ -163,11 +176,11 @@ const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado
                         </div>
                         <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
                             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                                <i class="fa fa-trash mr-2"></i>Borrar Grupo(s)
+                                <i class="fa fa-trash mr-2"></i>Borrar Periodo(s)
                             </button>
                             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                                 @click="mostrarModalGrupo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                                <i class="fa fa-plus mr-2"></i>Agregar Grupo
+                                <i class="fa fa-plus mr-2"></i>Agregar Periodo
                             </button>
                         </div>
                     </div>
@@ -183,7 +196,19 @@ const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                        Grupo
+                                        Periodo
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        Fecha de inicio
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        Fecha de terminación
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        Activo
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -200,15 +225,18 @@ const selectedOption = ref('Grado'); // Inicialmente, muestra la tabla de "Grado
                                 </tr>
                             </thead>
                                 <tbody>
-                                <tr v-for="grupo in grupos" :key="grupo.idGrupo" class="hover:bg-grey-lighter">
+                                <tr v-for="periodo in periodos" :key="periodo.idPeriodo" class="hover:bg-grey-lighter">
                                     <td><input type="checkbox"></td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ grupo.grupo }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ grupo.ciclo }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.periodo }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.fecha_inicio }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.fecha_fin }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.activo }}</td>
+                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.ciclo }}</td>
                                     <td class="py-2 px-4 border-b border-grey-light">
-                                        <button @click="abrirGrupos(grupo)" data-bs-toggle="modal" data-bs-target="#modalEdit">
+                                        <button @click="abrirPeriodos(periodo)" data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             <i class="fa fa-pencil"></i>
                                         </button>
-                                        <button @click="eliminarGrupo(grupo.idGrupo, grupo.grupo)">
+                                        <button @click="eliminarPeriodo(periodo.idPeriodo, periodo.periodo)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
