@@ -16,8 +16,8 @@ defineProps({
         <i class="fas fa-file-alt mr-2"></i>Profesores
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        href="{{ route('admin.alumnos') }}">
-        <i class="fas fa-users mr-2"></i>Alumnos
+        :href="route('admin.tutoresAlum')">
+        <i class="fas fa-users mr-2"></i>Tutores y Alumnos
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
         href="{{ route('admin.directivos') }}">

@@ -26,32 +26,16 @@ class AdminController extends Controller
 {
     public function index()
     {
-        /*
-        //return "Bienvenido a la pagina principal";
-        return view('/administrador/inicio');
-        */
-        //Con vue
         return Inertia::render('Principal');
     }
 
     public function inicio()
     {
-        /*
-        //return "Bienvenido a la pagina principal";
-        return view('/administrador/inicio');
-        */
-        //Con vue
         return Inertia::render('Admin/Inicio');
     }
 
     public function profesores()
-    {   /*
-        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'profesor')
-            ->get();
-        //return "Bienvenido a la pagina principal";
-        return view('/administrador/profesores', compact('personal'));
-        */
+    {   
         $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->where('tipo_personal.tipo_personal', 'profesor')
             ->get();
@@ -59,37 +43,6 @@ class AdminController extends Controller
         return Inertia::render('Admin/Profesores', [
             'personal' => $personal,
         ]);
-    }
-
-    public function alumnos()
-    {
-        $alumnos = alumnos::all();
-
-        return view('/administrador/alumnos', compact('alumnos'));
-    }
-
-    public function directivos()
-    {
-        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'personal_escolar')
-            ->get();
-
-        return view('/administrador/directivos', compact('personal'));
-    }
-
-    public function materias()
-    {
-        $materias = materias::all();
-
-        return view('/administrador/materias', compact('materias'));
-    }
-
-    public function tutores()
-    {
-        $tutores = tutores::all();
-        $estados = estados::all();
-
-        return view('/administrador/tutores', compact('tutores', 'estados'));
     }
 
     public function addProfesores(Request $request)
@@ -141,6 +94,85 @@ class AdminController extends Controller
         $personal->save();
         return redirect()->route('admin.profesores');
     }
+
+    public function eliminarProfesores($idPersonal)
+    {
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+        $personal = personal::find($idPersonal);
+        $usuario = usuarios::find($personal->idUsuario);
+        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+            ->where('idTipoUsuario',$tipoUsuario->idTipoUsuario)
+            ->first();
+        $personal->delete();
+        $usuarioTipoUsuario->delete();
+        $usuario ->delete();
+        return redirect()->route('admin.profesores');
+    }
+
+    public function actualizarProfesor(Request $request, $idPersonal){
+
+        $personal = personal::find($idPersonal);
+        $request->validate([
+            'nombre' => 'required',
+            'apellidoP' => 'required',
+            'apellidoM' => 'required',
+            'nombre' => 'required',
+            'numTelefono' => 'required',
+            'correoElectronico' => 'required',
+            'fechaNacimiento' => 'required',
+        ]);
+        
+        $personal->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.profesores');
+    }
+
+    public function tutores_alumnos(){
+        $tutores = tutores::all();
+        $estados = estados::all();
+        return Inertia::render('Admin/Tutores_Alumnos', [
+            'tutores' => $tutores,
+            'estados' => $estados,
+        ]);
+    }
+
+    public function tutores()
+    {
+        $tutores = tutores::all();
+        $estados = estados::all();
+
+        return Inertia::render('Admin/Tutores', [
+            'tutores' => $tutores,
+            'estados' => $estados,
+        ]);
+    }
+
+    public function alumnos()
+    {
+        $alumnos = alumnos::all();
+
+        return view('/administrador/alumnos', compact('alumnos'));
+    }
+
+    public function directivos()
+    {
+        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->where('tipo_personal.tipo_personal', 'personal_escolar')
+            ->get();
+
+        return view('/administrador/directivos', compact('personal'));
+    }
+
+    public function materias()
+    {
+        $materias = materias::all();
+
+        return view('/administrador/materias', compact('materias'));
+    }
+
+    
+
+    
 
     public function addMaterias(Request $request)
     {
@@ -226,35 +258,5 @@ class AdminController extends Controller
         return response()->json($results);
     }
 
-    public function eliminarProfesores($idPersonal)
-    {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
-
-        $personal = personal::find($idPersonal);
-        $usuario = usuarios::find($personal->idUsuario);
-        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
-            ->where('idTipoUsuario',$tipoUsuario->idTipoUsuario)
-            ->first();
-        $personal->delete();
-        $usuarioTipoUsuario->delete();
-        $usuario ->delete();
-        return redirect()->route('admin.profesores');
-    }
-
-    public function actualizarProfesor(Request $request, $idPersonal){
-
-        $personal = personal::find($idPersonal);
-        $request->validate([
-            'nombre' => 'required',
-            'apellidoP' => 'required',
-            'apellidoM' => 'required',
-            'nombre' => 'required',
-            'numTelefono' => 'required',
-            'correoElectronico' => 'required',
-            'fechaNacimiento' => 'required',
-        ]);
-        
-        $personal->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.profesores');
-    }
+    
 }

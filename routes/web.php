@@ -20,6 +20,10 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/a', 'index')->name('admin.principal');
     Route::get('/', 'inicio')->name('admin.inicio');
     Route::get('/profesores', 'profesores')->name('admin.profesores');
+
+    Route::get('/tutores_alumnos', 'tutores_alumnos')->name('admin.tutoresAlum');
+
+    
     Route::get('/alumnos', 'alumnos')->name('admin.alumnos');
     Route::get('/directivos', 'directivos')->name('admin.directivos');
     Route::get('/tutores', 'tutores')->name('admin.tutores');
