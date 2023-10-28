@@ -18,8 +18,6 @@ class periodos extends Model
         'periodo', 
         'fecha_inicio',
         'fecha_fin',
-        'act',
-        'activo',
         'idCiclo',
     ];
 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id(column:'idClaseAlumno');
             $table->foreignId(column:'idClase')->references('idClase')->on('clases');
             $table->foreignId(column:'idAlumno')->references('idAlumno')->on('alumnos');
+            $table->integer(column:'calificacionClase');
             $table->timestamps();
         });
     }

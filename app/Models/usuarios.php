@@ -21,7 +21,6 @@ class usuarios extends Model
         'usuario',
         'contrasenia',
         'idTipoUsuario',
-        'activo',
     ];
     
     protected $hidden = [
@@ -45,5 +44,15 @@ class usuarios extends Model
 
     public function usuarios_tiposUsuarios(): BelongsToMany{
         return $this->belongsToMany(tipoUsuarios::class,'idUsuario', 'idUsuario');
+    }
+
+    public function avisos(): BelongsToMany
+    {
+        return $this->belongsToMany(avisos::class, 'idUsuario', 'idUsuario');
+    }
+
+    public function accesos(): BelongsToMany
+    {
+        return $this->belongsToMany(accesos::class, 'idUsuario', 'idUsuario');
     }
 }

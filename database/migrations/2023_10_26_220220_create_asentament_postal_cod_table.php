@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('direcciones', function (Blueprint $table) {
-            $table->id(column:'idDireccion');
-            $table->string(column:'calle');
-            $table->string(column:'numero');    
+        Schema::create('asentamiento_codPostal', function (Blueprint $table) {
+            $table->id(column:'idAsentamiento_CodP');
+            $table->foreignId(column:'idCodigoPostal')->references('idCodigoPostal')->on('codigoPostal');
             $table->foreignId(column:'idAsentamiento')->references('idAsentamiento')->on('asentamientos');
             $table->timestamps();
         });
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('direcciones');
+        Schema::dropIfExists('asentamiento_codPostal');
     }
 };

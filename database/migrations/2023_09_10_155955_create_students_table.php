@@ -16,16 +16,23 @@ return new class extends Migration
             $table->string(column: 'apellidoP')->nullable(false);
             $table->string(column: 'apellidoM')->nullable(false);
             $table->string(column: 'nombre')->nullable(false);
-            $table->string(column: 'CURP')->unique()->nullable(false);
-            $table->boolean(column: 'estatus')->nullable(false);
+            $table->date(column:'fechaNacimiento')->nullable(false);
+            $table->string(column:'CURP')->nullable(false);
+            $table->string(column:'correoElectronico')->nullable(false);
+            $table->string(column:'numTelefono')->nullable(false);
+            $table->string(column:'tipoSangre')->nullable(false);
+            $table->string(column:'alergias')->nullable(false);
+            $table->string(column:'discapacidad')->nullable(false);
+            $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
+            $table->boolean(column:'esForaneo');
             $table->foreignId(column: 'idGrado')->references('idGrado')->on('grados');
             $table->foreignId(column: 'idGrupo')->references('idGrupo')->on('grupos');
-            $table->foreignId(column: 'idMateria')->references('idMateria')->on('materias');
+            $table->foreignId(column: 'idMateria')->references('idMateria')->on('materias')->nullable(true);
             $table->foreignId(column: 'idTutor')->references('idTutor')->on('tutores');
             $table->foreignId(column: 'idUsuario')->references('idUsuario')->on('usuarios');
             $table->text('nombre_completo')->nullable()->fulltext();
-            $table->boolean('activo');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -23,13 +23,17 @@ class personal extends Model
         'apellidoM',
         'nombre',
         'fechaNacimiento',
+        'CURP',
+        'RFC',
         'correoElectronico',
         'numTelefono',
-        'activo',
+        'tipoSangre',
+        'alergias',
+        'discapacidad',
         'nombre_completo',
+        'idDireccion',
         'id_tipo_personal',
         'idUsuario',
-        'id_tipo_personal',
     ];
 
     public function usuarios(): HasOne
@@ -41,32 +45,12 @@ class personal extends Model
     {
         return $this->hasOne(tipo_personal::class, 'id_tipo_personal', 'id_tipo_personal');
     }
-    /*
-    public function personal_escolar(): BelongsTo
-    {
-        return $this->belongsTo(personal_escolar::class, 'idPersona', 'idPersona');
-    }
 
-    public function director(): BelongsTo
+    public function direcciones(): HasOne
     {
-        return $this->belongsTo(director::class, 'idPersona', 'idPersona');
+        return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
     }
-
-    public function tutores(): BelongsTo
-    {
-        return $this->belongsTo(tutores::class, 'idPersona', 'idPersona');
-    }
-
-    public function profesores(): BelongsTo
-    {
-        return $this->belongsTo(profesores::class, 'idPersona', 'idPersona');
-    }
-
-    public function alumnos(): BelongsTo
-    {
-        return $this->belongsTo(alumnos::class, 'idPersona', 'idPersona');
-    }
-    */
+    
     protected function nombre(): Attribute
     {
         return new Attribute(
@@ -76,6 +60,7 @@ class personal extends Model
             }
         );
     }
+    /*
     protected function activo(): Attribute
     {
         return new Attribute(
@@ -83,4 +68,8 @@ class personal extends Model
             set: fn($value) => $value
         );
     }
+    */
+
+    
+
 }

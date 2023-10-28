@@ -17,14 +17,19 @@ return new class extends Migration
             $table->string(column:'apellidoM')->nullable(false);
             $table->string(column:'nombre')->nullable(false);
             $table->date(column:'fechaNacimiento')->nullable(false);
+            $table->string(column:'CURP')->nullable(false);
+            $table->string(column:'RFC')->nullable(false);
             $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
-            $table->boolean('activo');
-            $table->text('nombre_completo')->nullable()->fulltext();
-            $table->timestamps();            
-            $table->softDeletes();
+            $table->string(column:'tipoSangre')->nullable(false);
+            $table->string(column:'alergias')->nullable(false);
+            $table->string(column:'discapacidad')->nullable(false);
+            $table->text('nombre_completo')->nullable()->fulltext();            
+            $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
             $table->foreignId(column:'id_tipo_personal')->references('id_tipo_personal')->on('tipo_personal');
             $table->foreignId(column:'idUsuario')->references('idUsuario')->on('usuarios');
+            $table->timestamps();            
+            $table->softDeletes();
         });
     }
 

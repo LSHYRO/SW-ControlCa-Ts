@@ -21,8 +21,7 @@ class materiasFactory extends Factory
         return [
             'materia' => $this->faker->sentence(),
             'descripcion' => $this->faker->paragraph(),
-            'extracurricular' => $this->faker->boolean(),
-            'activo' => $this->faker->boolean()
+            'esTaller' => $this->faker->boolean()
         ];
     }
 }
