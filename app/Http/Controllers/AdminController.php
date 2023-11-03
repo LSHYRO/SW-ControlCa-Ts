@@ -31,32 +31,16 @@ class AdminController extends Controller
 {
     public function index()
     {
-        /*
-        //return "Bienvenido a la pagina principal";
-        return view('/administrador/inicio');
-        */
-        //Con vue
         return Inertia::render('Principal');
     }
 
     public function inicio()
     {
-        /*
-        //return "Bienvenido a la pagina principal";
-        return view('/administrador/inicio');
-        */
-        //Con vue
         return Inertia::render('Admin/Inicio');
     }
 
     public function profesores()
-    {   /*
-        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'profesor')
-            ->get();
-        //return "Bienvenido a la pagina principal";
-        return view('/administrador/profesores', compact('personal'));
-        */
+    {   
         $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->where('tipo_personal.tipo_personal', 'profesor')
             ->get();

@@ -13,10 +13,8 @@ return new class extends Migration
     {
         Schema::create('clases', function (Blueprint $table) {
             $table->id(column:'idClase');
-            $table->time(column:'hora');
-            $table->string(column:'dias');
-            $table->foreignId(column:'idGrupo')->references('idGrupo')->on('grupos');
-            $table->foreignId(column:'idGrado')->references('idGrado')->on('grados');
+            $table->foreignId(column:'idGrupo')->references('idGrupo')->on('grupos')->nullable(true);
+            $table->foreignId(column:'idGrado')->references('idGrado')->on('grados')->nullable(true);
             $table->foreignId(column:'idPersonal')->references('idPersonal')->on('personal');
             $table->foreignId(column:'idMateria')->references('idMateria')->on('materias');
             $table->foreignId(column:'idCiclo')->references('idCiclo')->on('ciclos');

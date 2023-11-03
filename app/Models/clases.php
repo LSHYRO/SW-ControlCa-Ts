@@ -15,8 +15,6 @@ class clases extends Model
     protected $primaryKey = 'idClase';
 
     protected $fillable = [
-        'hora',
-        'dias',
         'idGrupo',
         'idGrado',
         'idProfesor',

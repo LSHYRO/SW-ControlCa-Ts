@@ -20,8 +20,7 @@ class materias extends Model
     protected $fillable = [
         'materia',
         'descripcion',
-        'extracurricular',
-        'activo',
+        'esTaller',
     ];
 
     public function alumnos(): BelongsToMany
@@ -34,7 +33,7 @@ class materias extends Model
         return $this->belongsToMany(clases::class, 'idMateria', 'idMateria');
     }
     
-    protected function extracurricular(): Attribute
+    protected function esTaller(): Attribute
     {
         return new Attribute(
             get: fn($value) => $value ? 'Si' : 'No', //Funcion flecha (Como en JavaScript), Laravel > 8

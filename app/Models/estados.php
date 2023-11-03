@@ -22,4 +22,9 @@ class estados extends Model
     {
         return $this->belongsToMany(direcciones::class, 'idEstado', 'idEstado');
     }
+
+    public function codigoPostal(): BelongsToMany
+    {
+        return $this->belongsToMany(codigoPostal::class, 'idEstado', 'idEstado');
+    }
 }

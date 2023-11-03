@@ -18,12 +18,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(EstadosSeeder::class);
+        $this->call(MunicipiosSeeder::class);
         $this->call(TiposUsuariosSeeder::class);
         $this->call(Tipo_personalSeeder::class);
         
-        usuarios::factory(50)->create();
-        usuarios_tiposUsuarios::factory(50)->create();
+        //usuarios::factory(50)->create();
+        //usuarios_tiposUsuarios::factory(50)->create();
         materias::factory(30)->create();
-        personal::factory(50)->create();
+        //personal::factory(50)->create();
     }
 }

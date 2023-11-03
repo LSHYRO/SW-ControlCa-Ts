@@ -16,6 +16,7 @@ class clases_alumnos extends Model
     protected $fillable = [
         'idClase',
         'idAlumno',
+        'calificacionClase'
     ];
 
     public function clases(): HasOne

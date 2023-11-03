@@ -19,9 +19,9 @@ class tutores extends Model
         'apellidoM',
         'nombre',
         'numTelefono',
+        'correoElectronico',
         'idDireccion',
         'idUsuario',
-        'activo',
         'nombre_completo',
     ];
 

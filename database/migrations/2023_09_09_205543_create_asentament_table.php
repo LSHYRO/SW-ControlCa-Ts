@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\municipios;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,12 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materias', function (Blueprint $table) {
-            $table->id(column:'idMateria');
-            $table->string(column:'materia')->unique()->nullable(false);
-            $table->string(column:'descripcion')->nullable(false);
-            $table->boolean(column:'esTaller')->nullable(false);
-            $table->softDeletes();
+        Schema::create('asentamientos', function (Blueprint $table) {
+            $table->id(column:'idAsentamiento');
+            $table->string(column:'Asentamiento');
+            $table->foreignId(column:'idMunicipio')->references('idMunicipio')->on('municipios');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('materias');
+        Schema::dropIfExists('asentamientos');
     }
 };

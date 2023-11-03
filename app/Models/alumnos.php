@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class alumnos extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = "alumnos";
     protected $primaryKey = 'idAlumno';
@@ -18,16 +20,21 @@ class alumnos extends Model
         'apellidoP',
         'apellidoM',
         'nombre',
+        'fechaNacimiento',
         'CURP',
-        'estatus',
+        'correoElectronico',
+        'numTelefono',
+        'tipoSangre',
+        'alergias',
+        'discapacidad',
+        'idDireccion',
+        'esForaneo',
         'idGrado',
         'idGrupo',
-        'idPersona',
         'idMateria',
         'idTutor',
         'idUsuario',
         'nombre_completo',
-        'activo',
     ];
 
     public function grados(): HasOne
@@ -63,5 +70,10 @@ class alumnos extends Model
     public function calificaciones(): BelongsToMany
     {
         return $this->belongsToMany(calificaciones::class, 'idAlumno', 'idAlumno');
+    }
+
+    public function direcciones(): HasOne
+    {
+        return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
     }
 }

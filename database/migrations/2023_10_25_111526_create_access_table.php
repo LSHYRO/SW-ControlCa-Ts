@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materias', function (Blueprint $table) {
-            $table->id(column:'idMateria');
-            $table->string(column:'materia')->unique()->nullable(false);
-            $table->string(column:'descripcion')->nullable(false);
-            $table->boolean(column:'esTaller')->nullable(false);
-            $table->softDeletes();
+        Schema::create('accesos', function (Blueprint $table) {
+            $table->id(column:'idAcceso');
+            $table->foreignId(column:'idUsuario')->references('idUsuario')->on('usuarios');
+            $table->string(column:'direccion_ip');
+            $table->date(column:'fecha_acceso');
+            $table->time(column:'hora_acceso');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('materias');
+        Schema::dropIfExists('accesos');
     }
 };

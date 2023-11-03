@@ -18,10 +18,7 @@ class direcciones extends Model
     protected $fillable = [
         'calle',
         'numero',
-        'colonia',
-        'municipio',
-        'ciudad',
-        'idEstado',
+        'idAsentamiento',
     ];
 
     public function tutores(): BelongsToMany
@@ -29,8 +26,24 @@ class direcciones extends Model
         return $this->belongsToMany(tutores::class, 'idDireccion', 'idDireccion');
     }
 
+    public function alumnos(): BelongsToMany
+    {
+        return $this->belongsToMany(alumnos::class, 'idDireccion', 'idDireccion');
+    }
+
+    public function personal(): BelongsToMany
+    {
+        return $this->belongsToMany(personal::class, 'idDireccion', 'idDireccion');
+    }
+
+    public function asentamientos(): HasOne
+    {
+        return $this->hasOne(asentamientos::class, 'idAsentamiento', 'idAsentamiento');
+    }
+    /*
     public function estados(): HasOne
     {
         return $this->hasOne(estados::class, 'idEstado', 'idEstado');
     }
+    */
 }
