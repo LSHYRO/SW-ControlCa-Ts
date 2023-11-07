@@ -110,10 +110,17 @@ class AdminController extends Controller
             'nombre' => 'required',
             'apellidoP' => 'required',
             'apellidoM' => 'required',
-            'nombre' => 'required',
             'numTelefono' => 'required',
             'correoElectronico' => 'required',
             'fechaNacimiento' => 'required',
+            'CURP' => 'required',
+            'RFC' => 'required',
+            'tipoSangre' => 'required',
+            'alergias' => 'required',
+            'discapacidad' => 'required',
+            'direccion' => 'required', 
+            'tipo_personal' => 'required',
+            'usuario' => 'required',
         ]);
 
         //fechaFormateada
@@ -124,7 +131,7 @@ class AdminController extends Controller
         $usuario = new usuarios();
         $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
         $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
-        $usuario->activo = 1;
+        //$usuario->activo = 1;
         //echo "Tu contraseña generada es: $contrasenia";
         //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
         $usuario->save();
@@ -143,7 +150,7 @@ class AdminController extends Controller
         $personal = new personal($request->input());
         $personal->idUsuario = $usuario->idUsuario;
         $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
-        $personal->activo = 1;
+        //$personal->activo = 1;
 
         //columna nombre completo
         $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;

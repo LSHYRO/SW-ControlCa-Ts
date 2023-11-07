@@ -82,11 +82,11 @@ const eliminarProfesor = (idPersonal, nombre) => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido P
+                                Apellido PATERNO
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido M
+                                Apellido MATERNO
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -102,11 +102,39 @@ const eliminarProfesor = (idPersonal, nombre) => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                activo
+                                CURP
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                RFC
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Numero de telefono
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Tipo sanguineo
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Alergias
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Discapacidad
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Dirección
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Tipo de personal
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Usuario
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -124,8 +152,15 @@ const eliminarProfesor = (idPersonal, nombre) => {
                             <td class="py-2 px-4 border-b border-grey-light">{{ profesor.nombre }}</td>
                             <td class="py-2 px-4 border-b border-grey-light">{{ profesor.fechaNacimiento }}</td>
                             <td class="py-2 px-4 border-b border-grey-light">{{ profesor.correoElectronico }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.activo }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.curp }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.rfc }}</td>
                             <td class="py-2 px-4 border-b border-grey-light">{{ profesor.numTelefono }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.tipoSangre }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.alergias }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.discapacidad }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.idDireccion }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.idTipoPersonal }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.usuario }}</td>
                             <td class="py-2 px-4 border-b border-grey-light">
                                 <a href="tel:{{ profesor.numTelefono }}">
                                     <i class="fa fa-phone" aria-hidden="true"></i>
