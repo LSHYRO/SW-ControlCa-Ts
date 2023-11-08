@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id(column:'idAsentamiento');
             $table->string(column:'Asentamiento');
             $table->foreignId(column:'idMunicipio')->references('idMunicipio')->on('municipios');
+            $table->foreignId(column:'idCodigoPostal')->references('idCodigoPostal')->on('codigoPostal');
             $table->timestamps();
         });
     }

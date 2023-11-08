@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\codigoPostal;
 use App\Models\municipios;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,298 +18,669 @@ class MunicipiosSeeder extends Seeder
         $municipio1->municipio = "AGUASCALIENTES";
         $municipio1->idEstado = 1;
         $municipio1->save();
+        $codPos1=[20000,20010,20016,20018,20020,20029,20030,20040,20049,20050,20059,20060,20064,20070,20078,20080,20089,20100,20110,20115,20116,20118,20119,20120,20123,20124,20126,20127,20128,20129,20130,20135,20136,20137,20138,20140,20146,20149,20150,20157,20158,20159,20160,20164,20169,20170,20172,20174,20175,20177,20179,20180,20190,20196,20198,20199,20200,20205,20206,20207,20208,20210,20217,20218,20219,20220,20229,20230,20234,20235,20236,20237,20238,20239,20240,20247,20248,20249,20250,20255,20256,20257,20259,20260,20263,20264,20265,20266,20267,20268,20269,20270,20276,20277,20278,20280,20283,20284,20285,20286,20287,20288,20289,20290,20296,20297,20298,20299,20310,20313,20314,20316,20320,20323,20324,20326,20328,20329,20340,20341,20342,20343,20344,20345,20346,20347,20348,20349,20363,20364,20366,20367,20369,20370,20371,20372,20373,20374,20375,20376,20377,20378,20384,20386,20388,20389,20392,20393,20394,20395,20396];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio1->idMunicipio]);
+        }
+
         $municipio2 = new municipios();
         $municipio2->municipio = "ASIENTOS";
         $municipio2->idEstado = 1;
         $municipio2->save();
+        $codPos1=[20700,20704,20705,20706,20708,20709,20710,20712,20713,20714,20715,20720,20721,20722,20723,20724,20727,20729,20730,20734,20736,20737,20739,20740,20741,20742,20744,20746,20748,20749,20750,20768,20770,20773,20780,20782,20785,20790,20795,20796,20799];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio2->idMunicipio]);
+        }
+
         $municipio3 = new municipios();
         $municipio3->municipio = "CALVILLO";
         $municipio3->idEstado = 1;
         $municipio3->save();
+        $codPos1=[20800,20802,20803,20804,20805,20810,20816,20820,20823,20830,20832,20834,20835,20836,20840,20842,20844,20850,20852,20854,20855,20856,20860,20862,20864,20870,20872,20874,20880,20882];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio3->idMunicipio]);
+        }
+
         $municipio4 = new municipios();
         $municipio4->municipio = "COSIO";
         $municipio4->idEstado = 1;
         $municipio4->save();
+        $codPos1=[20460,20462,20466,20467,20468,20469,20470,20472,20476,20478];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio4->idMunicipio]);
+        }
+
         $municipio5 = new municipios();
         $municipio5->municipio = "JESUS MARIA";
         $municipio5->idEstado = 1;
         $municipio5->save();
+        $codPos1=[20900,20901,20903,20904,20905,20907,20908,20909,20910,20913,20914,20915,20916,20917,20920,20922,20923,20924,20925,20926,20927,20928,20933,20934,20943,20947,20953,20954,20955,20956,20957,20970,20974,20983,20984,20990,20994,20995,20996,20997];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio5->idMunicipio]);
+        }
+
         $municipio6 = new municipios();
         $municipio6->municipio = "PABELLON DE ARTEAGA";
         $municipio6->idEstado = 1;
         $municipio6->save();
+        $codPos1=[20663,20665,20666,20667,20668,20670,20673,20674,20675,20676,20677,20678,20680,20683,20684,20686,20687];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio6->idMunicipio]);
+        }
+
         $municipio7 = new municipios();
         $municipio7->municipio = "RINCON DE ROMOS";
         $municipio7->idEstado = 1;
         $municipio7->save();
+        $codPos1=[20400,20403,20404,20405,20406,20410,20414,20415,20416,20417,20420,20423,20424,20425,20426,20427,20430,20434,20435,20436,20437,20440,20444,20450,20454];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio7->idMunicipio]);
+        }
+
         $municipio8 = new municipios();
         $municipio8->municipio = "SAN JOSE DE GRACIA";
         $municipio8->idEstado = 1;
         $municipio8->save();
+        $codPos1=[20500,20503,20504,20508,20510,20516,20520,20534,20538,20540,20545,20563,20564,20567,20570,20574,20575,20576];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio8->idMunicipio]);
+        }
+
         $municipio9 = new municipios();
         $municipio9->municipio = "TEPEZALA";
         $municipio9->idEstado = 1;
         $municipio9->save();
+        $codPos1=[20600,20602,20603,20607,20610,20614,20615,20616,20620,20622,20634,20635,20637,20650,20656,20657,20658,20659];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio9->idMunicipio]);
+        }
+
         $municipio10 = new municipios();
         $municipio10->municipio = "EL LLANO";
         $municipio10->idEstado = 1;
         $municipio10->save();
+        $codPos1=[20330,20333,20334,20335,20336,20337,20338,20339];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio10->idMunicipio]);
+        }
+
         $municipio11 = new municipios();
         $municipio11->municipio = "SAN FRANCISCO DE LOS ROMO";
         $municipio11->idEstado = 1;
         $municipio11->save();
+        $codPos1=[20300,20303,20304,20305,20306,20350,20355,20356,20357,20358];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 1, "idMunicipio" => $municipio11->idMunicipio]);
+        }
+
         $municipio12 = new municipios();
         $municipio12->municipio = "ENSENADA";
         $municipio12->idEstado = 2;
         $municipio12->save();
+        $codPos1=[22750,22753,22755,22756,22758,22760,22762,22765,22766,22767,22770,22771,22785,22790,22793,22794,22795,22796,22797,22798,22800,22810,22812,22813,22814,22818,22819,22820,22822,22823,22830,22835,22839,22840,22842,22847,22850,22852,22855,22859,22860,22863,22870,22873,22879,22880,22888,22889,22890,22895,22896,22897,22898,22900,22903,22904,22905,22906,22908,22909];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 2, "idMunicipio" => $municipio12->idMunicipio]);
+        }
+
         $municipio13 = new municipios();
         $municipio13->municipio = "MEXICALI";
         $municipio13->idEstado = 2;
         $municipio13->save();
+        $codPos1=[21000,21010,21020,21030,21038,21039,21040,21050,21060,21070,21079,21080,21090,21100,21110,21120,21130,21135,21137,21138,21139,21140,21147,21150,21160,21165,21170,21178,21179,21180,21185,21188,21190,21200,21210,21215,21216,21217,21218,21219,21220,21224,21225,21226,21229,21230,21239,21240,21250,21254,21255,21257,21258,21259,21260,21270,21279,21280,21285,21289,21290,21297,21298,21299,21300,21307,21309,21310,21320,21323,21324,21326,21327,21330,21337,21339,21340,21350,21353,21354,21355,21356,21360,21370,21376,21378,21379,21380,21383,21384,21385,21386,21387,21389,21390,21394,21395,21396,21397,21398,21399,21600,21606,21607,21609,21610,21611,21613,21614,21615,21620,21627,21628,21700,21703,21704,21705,21706,21710,21713,21720,21722,21723,21725,21730,21731,21735,21738,21740,21742,21743,21800,21801,21802,21810,21813,21820,21821,21830,21831,21832,21833,21840,21841,21843,21900,21902,21903,21904,21905,21910,21911,21912,21913,21920,21921,21925,21930,21950,21951,21960,21961,21963,21964,21965,21966,21970,21980];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 2, "idMunicipio" => $municipio13->idMunicipio]);
+        } 
+
         $municipio14 = new municipios();
         $municipio14->municipio = "TECATE";
         $municipio14->idEstado = 2;
         $municipio14->save();
+        $codPos1=[21400,21410,21420,21430,21432,21433,21440,21442,21447,21448,21449,21450,21452,21453,21460,21462,21470,21472,21477,21478,21479,21480,21482,21483,21484,21485,21490,21496,21500,21503,21505,21506,21507,21508,21510,21511,21514,21517,21519,21520,21530,21536,21550,21553,21570,21573];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 2, "idMunicipio" => $municipio14->idMunicipio]);
+        } 
+
         $municipio15 = new municipios();
         $municipio15->municipio = "TIJUANA";
         $municipio15->idEstado = 2;
         $municipio15->save();
+        $codPos1=[22000,22010,22014,22015,22020,22024,22025,22030,22034,22035,22040,22044,22045,22046,22050,22054,22055,22056,22100,22104,22105,22106,22110,22114,22115,22116,22117,22120,22123,22124,22125,22126,22127,22160,22163,22164,22165,22170,22180,22183,22185,22186,22190,22194,22195,22196,22200,22203,22204,22205,22206,22207,22210,22214,22215,22216,22217,22220,22223,22224,22225,22226,22230,22234,22235,22236,22237,22244,22245,22246,22250,22253,22254,22255,22260,22263,22330,22333,22334,22335,22400,22404,22405,22406,22410,22414,22415,22416,22420,22424,22425,22426,22427,22430,22434,22435,22436,22439,22440,22444,22446,22450,22454,22455,22456,22457,22460,22464,22465,22470,22473,22474,22476,22500,22504,22505,22506,22510,22515,22516,22517,22520,22523,22524,22525,22526,22530,22534,22535,22536,22537,22540,22544,22545,22550,22555,22557,22560,22564,22565,22566,22567,22600,22604,22605,22606,22607,22610,22614,22615,22616,22620,22624,22625,22626,22630,22634,22635,22636,22637,22640,22643,22644,22645,22646,22647,22650,22654,22660,22663,22664,22665,22666,22667];
+        $codPos1=[21400,21410,21420,21430,21432,21433,21440,21442,21447,21448,21449,21450,21452,21453,21460,21462,21470,21472,21477,21478,21479,21480,21482,21483,21484,21485,21490,21496,21500,21503,21505,21506,21507,21508,21510,21511,21514,21517,21519,21520,21530,21536,21550,21553,21570,21573];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 2, "idMunicipio" => $municipio15->idMunicipio]);
+        } 
+
         $municipio16 = new municipios();
         $municipio16->municipio = "PLAYAS DE ROSARITO";
         $municipio16->idEstado = 2;
         $municipio16->save();
+        $codPos1=[22700,22703,22704,22705,22706,22707,22710,22713,22715,22716,22717,22740,22744,22745,22746];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 2, "idMunicipio" => $municipio16->idMunicipio]);
+        }
+
         $municipio17 = new municipios();
         $municipio17->municipio = "SAN QUINTIN";
         $municipio17->idEstado = 2;
         $municipio17->save();
+        $codPos1=[22910,22914,22915,22920,22925,22930,22934,22937,22940,22943,22950,22951,22952,22955,22960,22964,22965,22967,22970,22973,22974,22980,22993,22994,22995,22997];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 2, "idMunicipio" => $municipio17->idMunicipio]);
+        }
+
         $municipio18 = new municipios();
         $municipio18->municipio = "SAN FELIPE";
         $municipio18->idEstado = 2;
         $municipio18->save();
+        $codPos1=[21850,21853,21854,21855];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 2, "idMunicipio" => $municipio18->idMunicipio]);
+        }
+
         $municipio19 = new municipios();
         $municipio19->municipio = "COMONDU";
         $municipio19->idEstado = 3;
         $municipio19->save();
+        $codPos1=[23600,23610,23620,23630,23640,23641,23650,23653,23658,23660,23670,23676,23677,23678,23680,23683,23690,23695,23696,23697,23700,23708,23710,23715,23720,23721,23723,23730,23734,23736,23737,23739,23740,23743,23748,23749,23750,23760,23765,23766,23767,23770,23771,23774,23775,23780,23789,23790,23800,23805,23810,23812,23813,23818,23820,23824,23830,23834,23837,23838,23840,23844,23845,23860,23870,23873];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 3, "idMunicipio" => $municipio19->idMunicipio]);
+        }
+
         $municipio20 = new municipios();
         $municipio20->municipio = "MULEGE";
         $municipio20->idEstado = 3;
         $municipio20->save();
+        $codPos1=[23900,23902,23903,23904,23910,23911,23912,23913,23914,23915,23916,23917,23920,23921,23922,23923,23924,23930,23934,23935,23936,23938,23940,23944,23948,23949,23950,23951,23952,23959,23960,23969,23970,23971,23972,23973,23980,23983,23988,23990,23997];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 3, "idMunicipio" => $municipio20->idMunicipio]);
+        }
+
         $municipio21 = new municipios();
         $municipio21->municipio = "LA PAZ";
         $municipio21->idEstado = 3;
         $municipio21->save();
+        $codPos1=[23000,23007,23009,23010,23017,23018,23019,23020,23026,23029,23030,23034,23037,23038,23039,23040,23050,23052,23054,23055,23056,23060,23070,23075,23076,23077,23078,23079,23080,23083,23084,23085,23086,23088,23089,23090,23094,23095,23096,23097,23098,23099,23100,23106,23130,23133,23134,23140,23143,23150,23154,23170,23174,23200,23203,23205,23206,23208,23209,23210,23213,23215,23216,23217,23230,23232,23234,23236,23240,23243,23244,23247,23248,23249,23250,23252,23257,23258,23280,23283,23289,23300,23302,23303,23304,23311,23312,23317,23320,23322,23328,23329,23330,23333,23334,23350,23354,23360,23361,23362,23363,23364,23365,23366,23390,23395];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 3, "idMunicipio" => $municipio21->idMunicipio]);
+        }
+
         $municipio22 = new municipios();
         $municipio22->municipio = "LOS CABOS";
         $municipio22->idEstado = 3;
         $municipio22->save();
+        $codPos1=[23400,23403,23405,23406,23407,23420,23425,23426,23427,23428,23429,23434,23435,23436,23437,23440,23443,23444,23445,23450,23453,23454,23455,23456,23457,23460,23462,23463,23467,23468,23469,23470,23472,23473,23474,23475,23476,23477,23478,23500,23501,23503,23510,23520,23522,23523,23530,23533,23535,23560,23563,23567,23570,23574,23575,23580,23581,23586,23590,23593,23597];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 3, "idMunicipio" => $municipio22->idMunicipio]);
+        }
+
         $municipio23 = new municipios();
         $municipio23->municipio = "LORETO";
         $municipio23->idEstado = 3;
         $municipio23->save();
+        $codPos1=[23880,23883,23884,23885,23886,23887,23888,23889,23890,23893,23894,23895,23896,23897,23898];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 3, "idMunicipio" => $municipio23->idMunicipio]);
+        }
+
         $municipio24 = new municipios();
         $municipio24->municipio = "CALKINI";
         $municipio24->idEstado = 4;
         $municipio24->save();
+        $codPos1=[24900,24902,24903,24904,24905,24910,24913,24914,24915,24916,24917,24919,24930,24933,24934,24935,24936,24940];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio24->idMunicipio]);
+        }
+
         $municipio25 = new municipios();
         $municipio25->municipio = "CAMPECHE";
         $municipio25->idEstado = 4;
         $municipio25->save();
+        $codPos1=[24000,24010,24014,24020,24022,24023,24024,24025,24026,24027,24028,24029,24030,24035,24036,24037,24038,24039,24040,24044,24049,24050,24058,24060,24069,24070,24073,24075,24079,24080,24083,24084,24085,24086,24087,24088,24089,24090,24093,24094,24095,24096,24097,24098,24099,24500,24505,24517,24520,24522,24523,24532,24536,24537,24540,24550,24552,24553,24557,24560,24561,24562,24564,24570,24572,24573,24574,24575];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio25->idMunicipio]);
+        }
+
         $municipio26 = new municipios();
         $municipio26->municipio = "CARMEN";
         $municipio26->idEstado = 4;
         $municipio26->save();
+        $codPos1=[24100,24108,24110,24114,24115,24116,24117,24118,24119,24120,24129,24130,24139,24140,24150,24153,24154,24155,24156,24157,24158,24160,24166,24167,24169,24170,24178,24179,24180,24185,24186,24187,24188,24189,24190,24195,24197,24198,24199,24300,24310,24313,24314,24315,24316,24317,24320,24322,24323,24324,24325,24326,24327];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio26->idMunicipio]);
+        }
+
         $municipio27 = new municipios();
         $municipio27->municipio = "CHAMPOTON";
         $municipio27->idEstado = 4;
         $municipio27->save();
+        $codPos1=[24400,24402,24404,24410,24411,24413,24414,24415,24416,24418,24419,24420,24421,24423,24424,24440,24441,24443,24450,24451,24459];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio27->idMunicipio]);
+        }
+
         $municipio28 = new municipios();
         $municipio28->municipio = "HECELCHAKAN";
         $municipio28->idEstado = 4;
         $municipio28->save();
+        $codPos1=[24800,24810,24813,24820,24826,24828,24830,24831,24836,24837,24839,24860,24863];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio28->idMunicipio]);
+        }
+
         $municipio29 = new municipios();
         $municipio29->municipio = "HOPELCHEN";
         $municipio29->idEstado = 4;
         $municipio29->save();
+        $codPos1=[24600,24604,24605,24606,24607,24609,24610,24611,24612,24613,24615,24620,24622,24623,24624,24660,24663,24667,24668,24670];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio29->idMunicipio]);
+        }
+
         $municipio30 = new municipios();
         $municipio30->municipio = "PALIZADA";
         $municipio30->idEstado = 4;
         $municipio30->save();
+        $codPos1=[24200,24203,24204,24205,24206,24207,24208];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio30->idMunicipio]);
+        }
+
         $municipio31 = new municipios();
         $municipio31->municipio = "TENABO";
         $municipio31->idEstado = 4;
         $municipio31->save();
+        $codPos1=[24700,24703,24704,24705,24706,24707,24720,24723,24730,24732,24733,24734,24740,24746];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio31->idMunicipio]);
+        }
+
         $municipio32 = new municipios();
         $municipio32->municipio = "ESCARCEGA";
         $municipio32->idEstado = 4;
         $municipio32->save();
+        $codPos1=[24350,24353,24354,24355,24356,24357,24358,24364,24365,24366,24367,24368,24369,24370,24372,24373,24374,24375,24376,24377];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio32->idMunicipio]);
+        }
+
         $municipio33 = new municipios();
         $municipio33->municipio = "CALAKMUL";
         $municipio33->idEstado = 4;
         $municipio33->save();
+        $codPos1=[24640,24643,24644,24645,24646,24647,24648,24653,24654,24656,24658];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio33->idMunicipio]);
+        }
+
         $municipio34 = new municipios();
         $municipio34->municipio = "CANDELARIA";
         $municipio34->idEstado = 4;
         $municipio34->save();
+        $codPos1=[24330,24333,24334,24335,24336,24337,24338,24342,24343,24344,24345,24346,24347,24348];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio34->idMunicipio]);
+        }
+
         $municipio35 = new municipios();
         $municipio35->municipio = "SEYBAPLAYA";
         $municipio35->idEstado = 4;
         $municipio35->save();
+        $codPos1=[24460,24462,24464];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio35->idMunicipio]);
+        }
+
         $municipio36 = new municipios();
         $municipio36->municipio = "DZITBALCHE";
         $municipio36->idEstado = 4;
         $municipio36->save();
+        $codPos1=[24920,24925,24929];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 4, "idMunicipio" => $municipio36->idMunicipio]);
+        }
+
         $municipio37 = new municipios();
         $municipio37->municipio = "ABASOLO";
         $municipio37->idEstado = 5;
         $municipio37->save();
+        $codPos1=[25540,25543,25544,25545,25547,25550,25554,25555,25560,25565,25567];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 5, "idMunicipio" => $municipio37->idMunicipio]);
+        }
+
         $municipio38 = new municipios();
         $municipio38->municipio = "ACUÑA";
         $municipio38->idEstado = 5;
         $municipio38->save();
+        $codPos1=[26200,26210,26215,26220,26230,26233,26234,26235,26236,26237,26238,26239,26240,26248,26249,26250,26260,26263,26264,26269,26270,26272,26278,26279,26280,26282,26283,26284,26288,26289,26290,26293,26299,26300,26302,26304,26305,26308,26309,26310,26315,26320,26328];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => 5, "idMunicipio" => $municipio38->idMunicipio]);
+        }
+
         $municipio39 = new municipios();
         $municipio39->municipio = "ALLENDE";
         $municipio39->idEstado = 5;
         $municipio39->save();
+        $codPos1=[26530,26532,26533,26534,26540,26543,26544,26545,26546,26547,26550,26553,26554,26555,26556,26557,26563,26564,26565,26566,26567,26570,26573,26574,26575,26577,26580,26584,26590,26593,26595,26596];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio39->idEstado, "idMunicipio" => $municipio39->idMunicipio]);
+        }
+
         $municipio40 = new municipios();
         $municipio40->municipio = "ARTEAGA";
         $municipio40->idEstado = 5;
         $municipio40->save();
+        $codPos1=[25350,25352,25353,25354,25355,25356,25357,25360,25363,25365,25366,25367,25368,25369,25370,25372,25373,25374,25375,25376,25380,25382,25385,25386,25387,25389,25390,25393,25395,25396,25398,25399];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio40->idEstado, "idMunicipio" => $municipio40->idMunicipio]);
+        }
+
         $municipio41 = new municipios();
         $municipio41->municipio = "CANDELA";
         $municipio41->idEstado = 5;
         $municipio41->save();
+        $codPos1=[25570,25571,25576,25580,25587,25590];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio41->idEstado, "idMunicipio" => $municipio41->idMunicipio]);
+        }
+
         $municipio42 = new municipios();
         $municipio42->municipio = "CASTAÑOS";
         $municipio42->idEstado = 5;
         $municipio42->save();
+        $codPos1=[25870,25873,25874,25875,25876,25877,25878,25879,25880,25884,25885,25886,25887,25890,25893,25894,25895,25896,25897];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio42->idEstado, "idMunicipio" => $municipio42->idMunicipio]);
+        }
+
         $municipio43 = new municipios();
         $municipio43->municipio = "CUATRO CIENEGAS";
         $municipio43->idEstado = 5;
         $municipio43->save();
+        $codPos1=[27640,27642,27643,27644,27645,27646,27650,27652,27654,27655,27656,27657,27660,27680,27682,27684,27689,27690,27695];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio43->idEstado, "idMunicipio" => $municipio43->idMunicipio]);
+        }
+
         $municipio44 = new municipios();
         $municipio44->municipio = "ESCOBEDO";
         $municipio44->idEstado = 5;
         $municipio44->save();
+        $codPos1=[25470,25480,25483,25490,25494,25495,25496];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio44->idEstado, "idMunicipio" => $municipio44->idMunicipio]);
+        }
+
         $municipio45 = new municipios();
         $municipio45->municipio = "FRANCISCO I. MADERO";
         $municipio45->idEstado = 5;
         $municipio45->save();
+        $codPos1=[27900,27902,27904,27905,27906,27907,27908,27911,27913,27914,27915,27916,27917,27918,27920,27923,27924,27925,27926,27927,27930,27933,27934,27935,27936,27937];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio45->idEstado, "idMunicipio" => $municipio45->idMunicipio]);
+        }
+
         $municipio46 = new municipios();
         $municipio46->municipio = "FRONTERA";
         $municipio46->idEstado = 5;
         $municipio46->save();
+        $codPos1=[25600,25610,25616,25617,25618,25619,25626,25627,25628,25629,25630,25640,25643,25644,25650,25660,25668,25669,25670,25680,25800,25802,25803,25804,25805,25810,25815,25820,25823];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio46->idEstado, "idMunicipio" => $municipio46->idMunicipio]);
+        }
+
         $municipio47 = new municipios();
         $municipio47->municipio = "GENERAL CEPEDA";
         $municipio47->idEstado = 5;
         $municipio47->save();
+        $codPos1=[25950,25952,25953,25954,25955,25956,25960,25970,25974,25975,25976,25977,25978,25980,25984,25985,25986,25987,25989,25990,25993];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio47->idEstado, "idMunicipio" => $municipio47->idMunicipio]);
+        }
+
         $municipio48 = new municipios();
         $municipio48->municipio = "GUERRERO";
         $municipio48->idEstado = 5;
         $municipio48->save();
+        $codPos1=[26640,26643,26646,26650,26659];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio48->idEstado, "idMunicipio" => $municipio48->idMunicipio]);
+        }
+
         $municipio49 = new municipios();
         $municipio49->municipio = "HIDALGO";
         $municipio49->idEstado = 5;
         $municipio49->save();
+        $codPos1=[26670,26690,26695];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio49->idEstado, "idMunicipio" => $municipio49->idMunicipio]);
+        }
+
         $municipio50 = new municipios();
         $municipio50->municipio = "JIMENEZ";
         $municipio50->idEstado = 5;
         $municipio50->save();
+        $codPos1=[26400,26401,26405,26406,26409,26410,26411,26412,26415,26416,26420,26423,26429,26431,26435];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio50->idEstado, "idMunicipio" => $municipio50->idMunicipio]);
+        }
+
         $municipio51 = new municipios();
         $municipio51->municipio = "JUAREZ";
         $municipio51->idEstado = 5;
         $municipio51->save();
+        $codPos1=[25400,25406,25410,25413,25418,25419];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio51->idEstado, "idMunicipio" => $municipio51->idMunicipio]);
+        }
+
         $municipio52 = new municipios();
         $municipio52->municipio = "LAMADRID";
         $municipio52->idEstado = 5;
         $municipio52->save();
+        $codPos1=[27700,27704,27720,27739];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio52->idEstado, "idMunicipio" => $municipio52->idMunicipio]);
+        }
+
         $municipio53 = new municipios();
         $municipio53->municipio = "MATAMOROS";
         $municipio53->idEstado = 5;
         $municipio53->save();
+        $codPos1=[27440,27442,27443,27444,27445,27446,27447,27448,27449,27450,27452,27453,27454,27455,27456,27457,27458,27459,27460,27463,27464,27465,27466,27467,27468,27470,27473,27474,27475,27476,27477,27478,27479];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio53->idEstado, "idMunicipio" => $municipio53->idMunicipio]);
+        }
+
         $municipio54 = new municipios();
         $municipio54->municipio = "MONCLOVA";
         $municipio54->idEstado = 5;
         $municipio54->save();
+        $codPos1=[25700,25710,25714,25716,25717,25718,25720,25724,25725,25726,25730,25732,25733,25734,25740,25743,25746,25747,25748,25749,25750,25756,25757,25758,25760,25766,25767,25768,25770,25775,25776,25777,25780,25785,25790,25793,25796,25799,25836,25843,25844,25845,25846,25847,25850,25851,25853,25855,25860,25865,25866];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio54->idEstado, "idMunicipio" => $municipio54->idMunicipio]);
+        }
+
         $municipio55 = new municipios();
         $municipio55->municipio = "MORELOS";
         $municipio55->idEstado = 5;
         $municipio55->save();
+        $codPos1=[26500,26506,26507,26510,26513,26514,26515,26516,26517,26520,26524,26525,26526];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio55->idEstado, "idMunicipio" => $municipio55->idMunicipio]);
+        }
+
         $municipio56 = new municipios();
         $municipio56->municipio = "MUZQUIZ";
         $municipio56->idEstado = 5;
         $municipio56->save();
+        $codPos1=[26340,26342,26343,26344,26345,26346,26348,26350,26356,26360,26363,26365,26366,26370,26380,26383,26384];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio56->idEstado, "idMunicipio" => $municipio56->idMunicipio]);
+        }
+
         $municipio57 = new municipios();
         $municipio57->municipio = "NADADORES";
         $municipio57->idEstado = 5;
         $municipio57->save();
+        $codPos1=[27550,27560,27565,27570,27575,27579,27580,27586,27587,27588];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio57->idEstado, "idMunicipio" => $municipio57->idMunicipio]);
+        }
+
         $municipio58 = new municipios();
         $municipio58->municipio = "NAVA";
         $municipio58->idEstado = 5;
         $municipio58->save();
+        $codPos1=[26170,26172,26173,26174,26175,26176,26177,26180,26183,26184,26185,26186,26190,26196];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio58->idEstado, "idMunicipio" => $municipio58->idMunicipio]);
+        }
+
         $municipio59 = new municipios();
         $municipio59->municipio = "OCAMPO";
         $municipio59->idEstado = 5;
         $municipio59->save();
+        $codPos1=[27500,27502,27505,27507,27508,27510,27511,27514,27515,27516,27517,27518,27520,27521,27522,27523,27524,27525,27526,27527,27528,27529,27530,27531,27532,27533,27534,27535,27536,27537,27540,27543,27544,27545,27546,27547,27548];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio59->idEstado, "idMunicipio" => $municipio59->idMunicipio]);
+        }
+
         $municipio60 = new municipios();
         $municipio60->municipio = "PARRAS";
         $municipio60->idEstado = 5;
         $municipio60->save();
+        $codPos1=[27980,27983,27984,27985,27986,27987,27988,27989,27990,27991,27992,27993,27994,27995,27996,27997];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio60->idEstado, "idMunicipio" => $municipio60->idMunicipio]);
+        }
+
         $municipio61 = new municipios();
         $municipio61->municipio = "PIEDRAS NEGRAS";
         $municipio61->idEstado = 5;
         $municipio61->save();
+        $codPos1=[26000,26010,26013,26014,26015,26016,26017,26018,26020,26025,26030,26033,26034,26035,26040,26050,26060,26063,26064,26065,26068,26069,26070,26073,26080,26083,26085,26086,26088,26089,26090,26092,26093,26094,26095,26096,26099,26110,26114,26119,26120,26133,26137,26140];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio61->idEstado, "idMunicipio" => $municipio61->idMunicipio]);
+        }
+
         $municipio62 = new municipios();
         $municipio62->municipio = "PROGRESO";
         $municipio62->idEstado = 5;
         $municipio62->save();
+        $codPos1=[25420,25428,25430,25431,25440,25443,25446,25447,25450,25460,25463];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio62->idEstado, "idMunicipio" => $municipio62->idMunicipio]);
+        }
+
         $municipio63 = new municipios();
         $municipio63->municipio = "RAMOS ARIZPE";
         $municipio63->idEstado = 5;
         $municipio63->save();
+        $codPos1=[25900,25902,25903,25904,25905,25908,25909,25910,25913,25914,25915,25916,25917,25918,25925,25927,25929,25930,25932,25933,25934,25935,25936,25937,25942,25943,25944,25946,25947];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio63->idEstado, "idMunicipio" => $municipio63->idMunicipio]);
+        }
+
         $municipio64 = new municipios();
         $municipio64->municipio = "SABINAS";
         $municipio64->idEstado = 5;
         $municipio64->save();
+        $codPos1=[26700,26710,26719,26720,26729,26730,26736,26737,26739,26740,26741,26747,26748,26749,26750,26759,26760,26763,26764,26765,26766,26768,26769,26770,26779,26780,26788,26790,26799,26950,26954,26959,26960,26963,26964,26980];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio64->idEstado, "idMunicipio" => $municipio64->idMunicipio]);
+        }
+
         $municipio65 = new municipios();
         $municipio65->municipio = "SACRAMENTO";
         $municipio65->idEstado = 5;
         $municipio65->save();
+        $codPos1=[27750,27755,27758,27760];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio65->idEstado, "idMunicipio" => $municipio65->idMunicipio]);
+        }
+
         $municipio66 = new municipios();
         $municipio66->municipio = "SALTILLO";
         $municipio66->idEstado = 5;
         $municipio66->save();
+        $codPos1=[25000,25010,25013,25014,25015,25016,25017,25019,25020,25022,25023,25030,25034,25036,25038,25039,25040,25043,25045,25047,25048,25049,25050,25056,25057,25060,25065,25067,25068,25069,25070,25075,25076,25077,25080,25083,25084,25085,25086,25087,25088,25090,25092,25093,25094,25096,25097,25100,25107,25110,25113,25114,25115,25116,25117,25120,25123,25124,25125,25128,25130,25137,25138,25140,25146,25147,25150,25154,25155,25156,25157,25160,25167,25168,25169,25170,25179,25180,25186,25188,25190,25193,25194,25195,25196,25197,25198,25199,25200,25203,25204,25206,25207,25208,25209,25210,25215,25220,25225,25230,25238,25239,25240,25250,25253,25254,25256,25260,25265,25270,25277,25279,25280,25284,25285,25286,25290,25293,25294,25295,25296,25297,25298,25300,25301,25302,25303,25304,25305,25306,25307,25310,25311,25313,25315,25316,25317,25318,25320,25321,25322,25324,25325,25326,25327,25328,25329,25330,25331,25332,25333,25334,25335,25336,25337,25338,25340,25343,25344,25345,25346,25347,25348];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio66->idEstado, "idMunicipio" => $municipio66->idMunicipio]);
+        }
+
         $municipio67 = new municipios();
         $municipio67->municipio = "SAN BUENAVENTURA";
         $municipio67->idEstado = 5;
         $municipio67->save();
+        $codPos1=[25500,25503,25504,25505,25506,25507,25508,25522,25530,25532,25533,25534,25535,25536];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio67->idEstado, "idMunicipio" => $municipio67->idMunicipio]);
+        }
+
         $municipio68 = new municipios();
         $municipio68->municipio = "SAN JUAN DE SABINAS";
         $municipio68->idEstado = 5;
         $municipio68->save();
+        $codPos1=[26800,26809,26810,26813,26820,26825,26830,26832,26834,26840,26843,26850,26860,26862,26870,26875,26879,26880,26885,26886,26890,26900,26903,26908,26910,26930,26940,26942,26943];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio68->idEstado, "idMunicipio" => $municipio68->idMunicipio]);
+        }
+
         $municipio69 = new municipios();
         $municipio69->municipio = "SAN PEDRO";
         $municipio69->idEstado = 5;
         $municipio69->save();
+        $codPos1=[27800,27804,27805,27810,27811,27812,27813,27820,27822,27823,27830,27838,27839,27840,27845,27846,27847,27848,27850,27860,27863,27870,27880,27890,27940,27943,27944,27945,27946,27948,27950,27953,27954,27955,27956,27957,27958,27960,27965,27966,27967,27970,27974,27975,27976,27977];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio69->idEstado, "idMunicipio" => $municipio69->idMunicipio]);
+        }
+
         $municipio70 = new municipios();
         $municipio70->municipio = "SIERRA MOJADA";
         $municipio70->idEstado = 5;
         $municipio70->save();
+        $codPos1=[27600,27601,27602,27603,27604,27605,27606,27607,27609,27610,27611,27612,27613,27614,27616,27618,27621,27622,27623,27624,27625,27626,27627];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio70->idEstado, "idMunicipio" => $municipio70->idMunicipio]);
+        }
+
         $municipio71 = new municipios();
         $municipio71->municipio = "TORREON";
         $municipio71->idEstado = 5;
         $municipio71->save();
+        $codPos1=[27000,27009,27010,27013,27014,27015,27016,27017,27018,27019,27020,27023,27029,27030,27039,27040,27050,27053,27054,27055,27056,27057,27058,27059,27060,27070,27073,27080,27083,27084,27085,27086,27087,27088,27089,27090,27096,27098,27100,27103,27104,27105,27106,27107,27108,27110,27119,27120,27130,27140,27148,27150,27159,27160,27167,27168,27170,27180,27190,27199,27200,27210,27217,27220,27228,27229,27230,27240,27250,27258,27260,27265,27266,27267,27268,27269,27270,27272,27273,27274,27275,27276,27277,27278,27279,27280,27287,27289,27290,27293,27294,27295,27296,27297,27298,27299,27300,27309,27310,27320,27329,27330,27338,27340,27349,27350,27357,27360,27364,27368,27370,27376,27377,27380,27390,27397,27399,27400,27403,27405,27406,27407,27410,27412,27413,27414,27415,27416,27420,27422,27423,27425,27426,27430,27433,27434,27435,27436,27438];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio71->idEstado, "idMunicipio" => $municipio71->idMunicipio]);
+        }
+
         $municipio72 = new municipios();
         $municipio72->municipio = "VIESCA";
         $municipio72->idEstado = 5;
         $municipio72->save();
+        $codPos1=[27480,27484,27485,27486,27487,27488,27489,27490,27494,27498,27499];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio72->idEstado, "idMunicipio" => $municipio72->idMunicipio]);
+        }
+
         $municipio73 = new municipios();
         $municipio73->municipio = "VILLA UNION";
         $municipio73->idEstado = 5;
         $municipio73->save();
+        $codPos1=[26600,26603,26604,26605,26606,26607,26610,26613,26614,26616,26617,26620,26623,26624,26625,26626,26627,26630,26634,26635,26636,26637];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio73->idEstado, "idMunicipio" => $municipio73->idMunicipio]);
+        }
+
         $municipio74 = new municipios();
         $municipio74->municipio = "ZARAGOZA";
         $municipio74->idEstado = 5;
         $municipio74->save();
+        $codPos1=[26450,26452,26453,26460,26463,26464,26465,26467,26470,26477,26485,26486];
+        foreach ($codPos1 as $codP) {
+            codigoPostal::create(['codigoPostal' => $codP, 'idEstado' => $municipio74->idEstado, "idMunicipio" => $municipio74->idMunicipio]);
+        }
+
         $municipio75 = new municipios();
         $municipio75->municipio = "ARMERIA";
         $municipio75->idEstado = 6;

@@ -56,4 +56,9 @@ class clases extends Model
     {
         return $this->belongsToMany(actividades::class, 'idClase', 'idClase');
     }
+
+    public function asistencias(): BelongsToMany
+    {
+        return $this->belongsToMany(asistencias::class, 'idClase', 'idClase');
+    }
 }

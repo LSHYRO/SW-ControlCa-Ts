@@ -16,12 +16,18 @@ class asentamientos extends Model
 
     protected $fillable = [
         'asentamiento',
-        'idMunicipio'
+        'idMunicipio',
+        'idCodigoPostal'
     ];
 
     public function municipios(): HasOne
     {
         return $this->hasOne(municipios::class, 'idMunicipio', 'idMunicipio');
+    }
+
+    public function codPostal(): HasOne
+    {
+        return $this->hasOne(codigoPostal::class, 'idCodigoPostal', 'idCodigoPostal');
     }
 
     public function direcciones(): BelongsToMany

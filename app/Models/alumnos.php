@@ -76,4 +76,9 @@ class alumnos extends Model
     {
         return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
     }
+
+    public function asistencias(): BelongsToMany
+    {
+        return $this->belongsToMany(asistencias::class, 'idAlumno', 'idAlumno');
+    }
 }

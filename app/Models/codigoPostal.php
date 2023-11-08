@@ -35,4 +35,9 @@ class codigoPostal extends Model
     {
         return $this->hasOne(municipios::class, 'idMunicipio', 'idMunicipio');
     }
+
+    public function asentamientos(): BelongsToMany
+    {
+        return $this->belongsToMany(asentamientos::class, 'idCodigoPostal', 'idCodigoPostal');
+    }
 }
