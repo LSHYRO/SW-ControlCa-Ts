@@ -22,7 +22,7 @@
         "@pinegrow/vite-plugin": "^3.0.21",
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/typography": "^0.5.2",
-        "@vitejs/plugin-vue": "^4.0.0",
+        "@vitejs/plugin-vue": "^4.4.0",
         "autoprefixer": "^10.4.7",
         "axios": "^1.5.1",
         "laravel-vite-plugin": "^0.8.0",
@@ -35,6 +35,7 @@
     "dependencies": {
         "jquery": "^3.7.1",
         "npm-watch": "^0.11.0",
-        "sweetalert2": "^11.7.32"
+        "sweetalert2": "^11.7.32",
+        "vue3-timepicker": "^1.0.0-beta.2"
     }
 }

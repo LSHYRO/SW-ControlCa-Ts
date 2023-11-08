@@ -14,7 +14,7 @@ export default {
 </script>
   
 <template>
-        <input type="text" v-model="searchTerm" @input="search" placeholder="Buscar profesor" />
+        <input type="text" v-model="searchTerm" @input="search" placeholder="Buscar" />
 </template>
   
   

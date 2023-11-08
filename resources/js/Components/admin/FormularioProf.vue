@@ -13,7 +13,7 @@ const props = defineProps({
     },
     maxWidth: {
         type: String,
-        default: '2xl',
+        default: '3xl',
     },
     closeable: {
         type: Boolean,
@@ -32,13 +32,17 @@ const props = defineProps({
     correoElectronico: String,
     numTelefono: String,
     fechaNacimiento: Date,
-
+    curp: String,
+    rfc: String,
+    tipoSangre: String,
+    alergias: String,
+    discapacidad: String,
 
 },
 );
 const close = () => {
     emit('close');
-    form.reset;
+    form.reset();
 };
 
 const form = useForm({
@@ -48,7 +52,12 @@ const form = useForm({
     apellidoM: props.personal.apellidoM,
     correoElectronico: props.personal.correoElectronico,
     numTelefono: props.personal.numTelefono,
-    fechaNacimiento: props.personal.fechaNacimiento
+    fechaNacimiento: props.personal.fechaNacimiento,
+    curp: props.personal.curp,
+    rfc: props.personal.rfc,
+    tipoSangre: props.personal.tipoSangre,
+    alergias: props.personal.alergias,
+    discapacidad: props.personal.discapacidad
 
 });
 
@@ -74,6 +83,11 @@ watch(() => props.personal, (newVal) => {
     form.correoElectronico = newVal.correoElectronico;
     form.numTelefono = newVal.numTelefono;
     form.fechaNacimiento = newVal.fechaNacimiento;
+    form.curp = newVal.curp;
+    form.rfc = newVal.rfc;
+    form.tipoSangre = newVal.tipoSangre;
+    form.alergias = newVal.alergias;
+    form.discapacidad = newVal.discapacidad;
 }, { deep: true });
 
 </script>
@@ -101,7 +115,7 @@ watch(() => props.personal, (newVal) => {
                         </div>
                         <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                P</label>
+                                Paterno</label>
                             <div class="mt-2">
                                 <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                     placeholder="Ingrese el apellido paterno"
@@ -111,7 +125,7 @@ watch(() => props.personal, (newVal) => {
 
                         <div class="sm:col-span-1 md:col-span-2">
                             <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                M</label>
+                                Materno</label>
                             <div class="mt-2">
                                 <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
                                     placeholder="Ingrese el apellido materno"
@@ -128,7 +142,7 @@ watch(() => props.personal, (newVal) => {
                             </div>
                         </div>
 
-                        <div class="sm:col-span-3 ">
+                        <div class="sm:col-span-4 ">
                             <label for="correoElectronico" class="block text-sm font-medium leading-6 text-gray-900">Correo
                                 electrónico</label>
                             <div class="mt-2">
@@ -157,15 +171,131 @@ watch(() => props.personal, (newVal) => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
+                        <div class="sm:col-span-3">
+                            <label for="curp" class="block text-sm font-medium leading-6 text-gray-900">CURP</label>
+                            <div class="mt-2">
+                                <input type="text" name="curp" :id="'curp' + op" v-model="form.curp"
+                                    placeholder="Ingrese la CURP"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="rfc" class="block text-sm font-medium leading-6 text-gray-900">RFC</label>
+                            <div class="mt-2">
+                                <input type="text" name="rfc" :id="'rfc' + op" v-model="form.rfc"
+                                    placeholder="Ingrese la RFC"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="tipoSangre" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                                sangre</label>
+                            <div class="mt-2">
+                                <input type="text" name="tipoSangre" :id="'tipoSangre' + op" v-model="form.tipoSangre"
+                                    placeholder="Ingrese el tipo de sangre"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="alergias" class="block text-sm font-medium leading-6 text-gray-900">Alergias</label>
+                            <div class="mt-2">
+                                <input type="text" name="alergias" :id="'alergias' + op" v-model="form.alergias"
+                                    placeholder="Ingrese si padece de alguna alergia"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="discapacidad"
+                                class="block text-sm font-medium leading-6 text-gray-900">Discapacidad</label>
+                            <div class="mt-2">
+                                <input type="text" name="discapacidad" :id="'discapacidad' + op" v-model="form.discapacidad"
+                                    placeholder="Ingrese si padece de alguna discapacidad"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="codigoPostal"
+                                class="block text-sm font-medium leading-6 text-gray-900">CódigoPostal</label>
+                            <div class="mt-2">
+                                <input type="number" name="codigoPostal" :id="'codigoPostal' + op"
+                                    v-model="form.idDireccion" placeholder="Ingrese el código Postal"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="ciudad" class="block text-sm font-medium leading-6 text-gray-900">Ciudad</label>
+                            <div class="mt-2">
+                                <select name="ciudad" :id="'ciudad' + op" v-model="form.idDireccion"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="">Seleccione la ciudad</option>
+                                    <option value="Ciudad 1">Ciudad 1</option>
+                                    <option value="Ciudad 2">Ciudad 2</option>
+                                    <option value="Ciudad 3">Ciudad 3</option>
+                                    <!-- Agrega más opciones según sea necesario -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="municipio" class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
+                            <div class="mt-2">
+                                <select name="municipio" :id="'municipio' + op" v-model="form.idDireccion"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="">Seleccione el municipio</option>
+                                    <option value="Municipio 1">Ciudad 1</option>
+                                    <option value="Municipio 2">Ciudad 2</option>
+                                    <option value="Municipio 3">Ciudad 3</option>
+                                    <!-- Agrega más opciones según sea necesario -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="asentamiento" class="block text-sm font-medium leading-6 text-gray-900">Asentamiento / Localidad</label>
+                            <div class="mt-2">
+                                <select name="asentamiento" :id="'asentamiento' + op" v-model="form.idDireccion"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="">Seleccione la localidad</option>
+                                    <option value="Localidad 1">Ciudad 1</option>
+                                    <option value="Localidad 2">Ciudad 2</option>
+                                    <option value="Localidad 3">Ciudad 3</option>
+                                    <!-- Agrega más opciones según sea necesario -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-6">
+                            <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle y
+                                número</label>
+                            <div class="mt-2">
+                                <input type="text" name="calle" :id="'calle' + op" v-model="form.calle"
+                                    placeholder="Ingrese la calle y número"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="tipoUsuario" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                                usuario</label>
+                            <div class="mt-2">
+                                <input type="text" name="tipoUsuario" :id="'tipoUsuario' + op" v-model="form.tipoUsuario"
+                                    placeholder="Seleccione tipo de usuario"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="usuario" class="block text-sm font-medium leading-6 text-gray-900">Usuario</label>
+                            <div class="mt-2">
+                                <input type="text" name="usuario" :id="'usuario' + op" v-model="form.usuario"
+                                    placeholder="Ingrese el usuario"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op" class="text-sm font-semibold leading-6 text-gray-900"
                         data-bs.dismiss="modal" @click="close">Cancelar</button>
-                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                        :disabled="form.processing"> <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar</button>
-                </div>
-            </form>
-        </div>
-    </Modal>
-</template>
+                <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    :disabled="form.processing"> <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar</button>
+            </div>
+        </form>
+    </div>
+</Modal></template>
