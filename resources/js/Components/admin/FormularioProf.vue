@@ -1,10 +1,10 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-const emit = defineEmits(['close']);
 import { router } from '@inertiajs/vue3';
 import { watch } from 'vue';
 
+const emit = defineEmits(['close']);
 
 const props = defineProps({
     show: {

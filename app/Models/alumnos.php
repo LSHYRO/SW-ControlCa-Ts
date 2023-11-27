@@ -24,7 +24,7 @@ class alumnos extends Model
         'CURP',
         'correoElectronico',
         'numTelefono',
-        'tipoSangre',
+        'idTipoSangre',
         'alergias',
         'discapacidad',
         'idDireccion',
@@ -80,5 +80,10 @@ class alumnos extends Model
     public function asistencias(): BelongsToMany
     {
         return $this->belongsToMany(asistencias::class, 'idAlumno', 'idAlumno');
+    }
+
+    public function tipoSangre(): HasOne 
+    {
+        return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
     }
 }

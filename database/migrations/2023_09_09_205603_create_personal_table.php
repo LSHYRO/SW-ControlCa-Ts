@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string(column:'RFC')->nullable(false);
             $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
-            $table->string(column:'tipoSangre')->nullable(false);
+            $table->foreignId(column:'idTipoSangre')->references('idTipoSangre')->on('tipo_Sangre');
             $table->string(column:'alergias')->nullable(false);
             $table->string(column:'discapacidad')->nullable(false);
             $table->text('nombre_completo')->nullable()->fulltext();            

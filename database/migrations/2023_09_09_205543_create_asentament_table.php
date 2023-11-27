@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('asentamientos', function (Blueprint $table) {
             $table->id(column:'idAsentamiento');
-            $table->string(column:'Asentamiento');
+            $table->string(column:'asentamiento');
             $table->foreignId(column:'idMunicipio')->references('idMunicipio')->on('municipios');
             $table->foreignId(column:'idCodigoPostal')->references('idCodigoPostal')->on('codigoPostal');
             $table->timestamps();

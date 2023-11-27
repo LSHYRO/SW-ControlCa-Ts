@@ -1,9 +1,10 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-const emit = defineEmits(['close']);
 import { router } from '@inertiajs/vue3';
 import { watch } from 'vue';
+const emit = defineEmits(['close']);
+
 
 
 const props = defineProps({
@@ -28,28 +29,28 @@ const props = defineProps({
     op: { type: String },
     materia: String,
     descripcion: String,
-    extracurricular: Boolean,
-    activo: Boolean,
+    esTaller: Boolean
 },
 );
 
 
 const close = () => {
     emit('close');
-    form.reset;
+    form.reset();
 };
 
 const form = useForm({
     idMateria: props.materias.idMateria,
     materia: props.materias.materia,
     descripcion: props.materias.descripcion,
-    extracurricular: props.materias.extracurricular,
-    activo: props.materias.activo
+    esTaller: props.materias.esTaller,
 });
 
 const save = () => {
     form.post(route('admin.addMaterias'), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+        }
     });
 }
 
@@ -65,7 +66,13 @@ watch(() => props.materias, (newVal) => {
     form.idMateria = newVal.idMateria;
     form.materia = newVal.materia;
     form.descripcion = newVal.descripcion;
-    form.activo = newVal.activo;
+    if(newVal.esTaller == "Si"){
+        //form.esTaller = newVal.esTaller;
+        form.esTaller = true;
+    }else{
+        form.esTaller = false;
+    }
+    
 }, { deep: true });
 
 </script>
@@ -78,7 +85,8 @@ watch(() => props.materias, (newVal) => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva materia </p>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
+                        materia </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
@@ -99,30 +107,22 @@ watch(() => props.materias, (newVal) => {
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-2">
-                            <label for="descripcion" class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
+                            <label for="descripcion"
+                                class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <div class="mt-2">
-                                <input type="text" name="descripcion" :id="'descripcion' + op" v-model="form.descripcion"
-                                    placeholder="Ingrese descripción"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <textarea type="text" name="descripcion" :id="'descripcion' + op" v-model="form.descripcion"
+                                    placeholder="Ingrese descripción" 
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 resize-none">
+                                    </textarea>
                             </div>
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label for="extracurricular" class="block text-sm font-medium leading-6 text-gray-900">Extracurricular</label>
+                            <label for="esTaller" class="block text-sm font-medium leading-6 text-gray-900">¿Taller?</label>
                             <div class="mt-2">
-                                <input type="checkbox" name="extracurricular" id="extracurricular" v-model="checked">
-                                <label for="extracurricular">{{ checked }}</label>
+                                <input type="checkbox" name="esTaller" :id="'esTaller' + op" :checked="form.esTaller" @change="form.esTaller = !form.esTaller">
                             </div>
                         </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="activo" class="block text-sm font-medium leading-6 text-gray-900">Activo</label>
-                            <div class="mt-2">
-                                <input type="checkbox" name="activo" id="activo" v-model="checked">
-                                <label for="activo">{{ checked }}</label>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">

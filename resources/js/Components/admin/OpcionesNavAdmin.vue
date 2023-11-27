@@ -1,7 +1,7 @@
 <script setup>
 defineProps({
-    data:{
-       opcionSeleccionada: 'opcion1',
+    data: {
+        opcionSeleccionada: 'opcion1',
     }
 });
 </script>
@@ -12,15 +12,15 @@ defineProps({
         <i class="fas fa-home mr-2"></i>Inicio
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        href="{{ route('admin.alumnos') }}">
-        <i class="fas fa-users mr-2"></i>Alumnos y tutores
+        :href="route('admin.tutoresAlum')">
+            <i class=" fas fa-users mr-2"></i>Alumnos y tutores
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-    :href="route('admin.profesores')" >
+        :href="route('admin.profesores')">
         <i class="fas fa-pencil mr-2"></i>Docentes
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        :href=" route('admin.materias')">
+        :href="route('admin.materias')">
         <i class="fa fa-book mr-2"></i>Materias
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"

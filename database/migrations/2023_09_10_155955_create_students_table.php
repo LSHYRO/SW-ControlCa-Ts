@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\tipo_personal;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->string(column:'CURP')->nullable(false);
             $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
-            $table->string(column:'tipoSangre')->nullable(false);
+            $table->foreignId(column:'idTipoSangre')->references('idTipoSangre')->on('tipo_Sangre');
             $table->string(column:'alergias')->nullable(false);
             $table->string(column:'discapacidad')->nullable(false);
             $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');

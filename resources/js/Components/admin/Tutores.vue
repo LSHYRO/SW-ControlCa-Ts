@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    $tutores: { type: Object },
+    tutores: { type: Object },
 });
 
 

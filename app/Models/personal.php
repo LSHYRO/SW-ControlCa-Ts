@@ -27,7 +27,7 @@ class personal extends Model
         'RFC',
         'correoElectronico',
         'numTelefono',
-        'tipoSangre',
+        'idTipoSangre',
         'alergias',
         'discapacidad',
         'nombre_completo',
@@ -69,7 +69,10 @@ class personal extends Model
         );
     }
     */
-
+    public function tipoSangre(): HasOne 
+    {
+        return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
+    }
     
 
 }
