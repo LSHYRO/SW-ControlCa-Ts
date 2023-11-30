@@ -69,17 +69,7 @@ class AdminController extends Controller
 
     public function materias()
     {
-        $materias = materias::paginate(15)->through(function ($materia) {
-            return [
-                'idMateria' => $materia->idMateria,
-                'materia' => $materia->materia,
-                'descripcion' => $materia->descripcion,
-                'esTaller' => $materia->esTaller
-            ];
-        });
-
-
-        //dd($materias);
+        $materias = materias::all();
         return Inertia::render('Admin/Materias', ['materias' => $materias]);
     }
 
@@ -291,14 +281,14 @@ class AdminController extends Controller
         $materia->esTaller = $request->esTaller;
 
         $materia->save();
-        return redirect()->route('admin.materias');
+        return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: ".$materia->materia);
     }
 
     public function eliminarMaterias($idMateria)
     {
         $materia = materias::find($idMateria);
         $materia->delete();
-        return redirect()->route('admin.materias');
+        return redirect()->route('admin.materias')->with('message', "Materia eliminada correctamente");
     }
 
     public function elimMaterias($materiasIds)
@@ -314,7 +304,7 @@ class AdminController extends Controller
         materias::whereIn('idMateria', $materiasIdsArray)->delete();
 
         // Redirige a la página deseada después de la eliminación
-        return redirect()->route('admin.materias');
+        return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente");
     } catch (\Exception $e) {
         // Manejo de errores
         dd("Controller error");
@@ -336,7 +326,7 @@ class AdminController extends Controller
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.materias');
+        return redirect()->route('admin.materias')->with('message', "Materia actualizada correctamente: ". $materias->materia);;
     }
 
     public function getMaterias($searchTerm)

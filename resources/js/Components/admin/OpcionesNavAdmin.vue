@@ -1,8 +1,6 @@
 <script setup>
 defineProps({
-    data: {
-        opcionSeleccionada: 'opcion1',
-    }
+    
 });
 </script>
 
