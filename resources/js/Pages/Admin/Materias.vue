@@ -258,8 +258,6 @@ onMounted(() => {
                 </button>
                 <!--</div>-->
             </div>
-
-            <!-- Línea con gradiente -->
             <div class="overflow-x-auto ">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
                     id="materiasTablaId" :columns="columns" :data="materias" :options="{

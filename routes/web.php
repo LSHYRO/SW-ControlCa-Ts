@@ -65,11 +65,14 @@ Route::controller(AdminController::class)->group(function () {
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales
 Route::controller(DireccionesApiController::class)->group(function () {
     //Se obtienen datos a partir del codigo postal 
-    Route::get('/obtener/codigoPostal/{codigo}', 'consultarCodPostal')->name('consultaCodPos');
+    Route::get('/obtener/asentamiento/codPostal/{codigo}', 'consultarAsentamCodP')->name('consultaCodPos');
+    Route::get('/obtener/estados', 'consultarEstados')->name('consultarEstados');
+    Route::get('/obtener/estados/codPostal/{codigo}', 'consultarEstadosCodP')->name('consultarEstadosCodP');
+    Route::get('/obtener/municipios/{estado}', 'consultarMunicipios')->name('consultarMunicipios');
 });
 
 
-/*
+/* 
 Route::get('/', function () {
     return Inertia::render('Principal',[
         'ad.profesores' => Route::has('Admin/Profesores')

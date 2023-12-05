@@ -22,6 +22,7 @@ class alumnos extends Model
         'nombre',
         'fechaNacimiento',
         'CURP',
+        'idGenero',
         'correoElectronico',
         'numTelefono',
         'idTipoSangre',
@@ -85,5 +86,10 @@ class alumnos extends Model
     public function tipoSangre(): HasOne 
     {
         return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
+    }
+
+    public function genero(): HasOne
+    {
+        return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }
 }

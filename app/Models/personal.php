@@ -23,6 +23,7 @@ class personal extends Model
         'apellidoM',
         'nombre',
         'fechaNacimiento',
+        'idGenero',
         'CURP',
         'RFC',
         'correoElectronico',
@@ -74,5 +75,9 @@ class personal extends Model
         return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
     }
     
+    public function genero(): HasOne
+    {
+        return $this->hasOne(genero::class, 'idGenero', 'idGenero');
+    }
 
 }

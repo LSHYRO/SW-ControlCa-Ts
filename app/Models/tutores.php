@@ -20,6 +20,7 @@ class tutores extends Model
         'nombre',
         'numTelefono',
         'correoElectronico',
+        'idGenero',
         'idDireccion',
         'idUsuario',
         'nombre_completo',
@@ -39,4 +40,8 @@ class tutores extends Model
         return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
     }
 
+    public function generos(): HasOne
+    {
+        return $this->hasOne(genero::class, 'idGenero', 'idGenero');
+    }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string(column: 'nombre')->nullable(false);
             $table->date(column:'fechaNacimiento')->nullable(false);
             $table->string(column:'CURP')->nullable(false);
+            $table->foreignId(column:'idGenero')->references('idGenero')->on('generos');
             $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
             $table->foreignId(column:'idTipoSangre')->references('idTipoSangre')->on('tipo_Sangre');

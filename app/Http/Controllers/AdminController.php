@@ -19,6 +19,7 @@ use App\Models\grupos;
 use App\Models\personal;
 use App\Models\personal_escolar;
 use App\Models\tipo_personal;
+use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Illuminate\Support\Facades\Auth;
@@ -45,9 +46,10 @@ class AdminController extends Controller
         $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->where('tipo_personal.tipo_personal', 'profesor')
             ->get();
+        $tipoSangre = tipo_Sangre::all();
 
         return Inertia::render('Admin/Profesores', [
-            'personal' => $personal,
+            'personal' => $personal, 'tipoSangre' => $tipoSangre
         ]);
     }
 
