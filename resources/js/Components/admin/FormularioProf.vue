@@ -1,8 +1,9 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { onMounted, watch, ref } from 'vue';
 const emit = defineEmits(['close']);
+import axios from 'axios';
 
 const props = defineProps({
     show: {
@@ -43,8 +44,7 @@ const props = defineProps({
 },
 );
 
-// Agrega una propiedad para manejar el estado de la validación del código postal en tiempo real
-let codigoPostalValido = true;
+var estados = new Array();
 
 const close = () => {
     emit('close');
@@ -97,6 +97,76 @@ watch(() => props.personal, (newVal) => {
     form.discapacidad = newVal.discapacidad;
 }, { deep: true }
 );
+
+const municipios = ref([]);
+const asentamientos = ref([]);
+
+const loadMunicipios = async () => {
+    try {
+        var idEstado = form.estado;
+        const response = await axios.get(route('consMunicipiosXIdEstado', idEstado));
+        municipios.value = response.data;
+        form.municipio = municipios.value[0].idMunicipio; // Seleccionar el primer municipio
+    } catch (error) {
+        console.error('Error al obtener municipios:', error);
+    }
+};
+
+const loadAsentamientos = async () => {
+    try {
+        var idMunicipio = form.municipio;
+        const response = await axios.get(route('consAsentamientosXIdMunicipio', idMunicipio));
+        asentamientos.value = response.data;
+        form.asentamiento = asentamientos.value[0].idAsentamiento; // Seleccionar el primer asentamiento
+    } catch (error) {
+        console.error('Error al obtener asentamientos:', error);
+    }
+};
+
+const buscarDatosXCodigoPostal = async () => {
+    try {
+        var codigoPostal = form.codigoPostal;
+        const response = await axios.get(route('consDatosXCodigoPostal', codigoPostal));
+        const datos = response.data;
+        console.log(datos);
+        if (datos.estado) {            
+            form.estado = datos.estado.idEstado;
+        }
+        if (datos.municipio) {            
+            form.municipio = datos.municipio.idMunicipio;
+            //loadAsentamientos(); // Esto cargará automáticamente los asentamientos correspondientes
+        }
+    } catch (error) {
+        console.error('Error al obtener datos por código postal:', error);
+    }
+};
+
+
+watch(() => form.estado, ()=>{
+    console.log("idEstado = " + form.estado);
+    console.log("cargando municipios");
+    loadMunicipios();
+});
+
+watch(() => form.municipio, ()=>{
+    console.log("idMunicipio = " + form.municipio);
+    console.log("cargando asentamientos");
+    loadAsentamientos();
+});
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(route('consEstados'));
+        estados = response.data;
+        console.log(estados);
+    } catch (error) {
+        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+        console.error('Error al obtener datos: ', error);
+    }
+    if (estados.length > 0) {
+      form.estado = estados[19].idEstado;
+    }
+});
 </script>
 
 
@@ -226,26 +296,25 @@ watch(() => props.personal, (newVal) => {
                             </div>
                         </div>
                         <div class="sm:col-span-2">
-                            <label for="codigoPostal"
-                                class="block text-sm font-medium leading-6 text-gray-900">CódigoPostal</label>
+                            <label for="codigoPostal" class="block text-sm font-medium leading-6 text-gray-900">Código
+                                Postal</label>
                             <div class="mt-2">
                                 <input type="number" name="codigoPostal" :id="'codigoPostal' + op"
                                     v-model="form.codigoPostal" placeholder="Ingrese el código Postal"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    maxlength="5" minlength="5">
+                                    maxlength="5" minlength="5" @blur="buscarDatosXCodigoPostal">
                             </div>
-                            <div v-if="!codigoPostalValido" class="text-red-500 text-sm mt-1">El código postal no es válido.</div>
+
                         </div>
                         <div class="sm:col-span-3">
-                            <label for="ciudad" class="block text-sm font-medium leading-6 text-gray-900">Ciudad</label>
+                            <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
                             <div class="mt-2">
-                                <select name="ciudad" :id="'ciudad' + op" v-model="form.idDireccion"
+                                <select name="estado" :id="'estado' + op" v-model="form.estado"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="">Seleccione la ciudad</option>
-                                    <option value="Ciudad 1">Ciudad 1</option>
-                                    <option value="Ciudad 2">Ciudad 2</option>
-                                    <option value="Ciudad 3">Ciudad 3</option>
-                                    <!-- Agrega más opciones según sea necesario -->
+                                    <option value="" disabled selected>Selecciona un estado</option>
+                                    <option v-for="estado in estados" :key="estado.idEstado" :value="estado.idEstado">
+                                        {{ estado.estado }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -253,13 +322,12 @@ watch(() => props.personal, (newVal) => {
                             <label for="municipio"
                                 class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
                             <div class="mt-2">
-                                <select name="municipio" :id="'municipio' + op" v-model="form.idDireccion"
+                                <select name="municipio" :id="'municipio' + op" v-model="form.municipio"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="">Seleccione el municipio</option>
-                                    <option value="Municipio 1">Ciudad 1</option>
-                                    <option value="Municipio 2">Ciudad 2</option>
-                                    <option value="Municipio 3">Ciudad 3</option>
-                                    <!-- Agrega más opciones según sea necesario -->
+                                    <option value="" disabled selected>Selecciona un municipio</option>
+                                    <option v-for="municipio in municipios" :key="municipio.idMunicipio" :value="municipio.idMunicipio">
+                                        {{ municipio.municipio }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -267,22 +335,28 @@ watch(() => props.personal, (newVal) => {
                             <label for="asentamiento" class="block text-sm font-medium leading-6 text-gray-900">Asentamiento
                                 / Localidad</label>
                             <div class="mt-2">
-                                <select name="asentamiento" :id="'asentamiento' + op" v-model="form.idDireccion"
+                                <select name="asentamiento" :id="'asentamiento' + op" v-model="form.asentamiento"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="">Seleccione la localidad</option>
-                                    <option value="Localidad 1">Ciudad 1</option>
-                                    <option value="Localidad 2">Ciudad 2</option>
-                                    <option value="Localidad 3">Ciudad 3</option>
-                                    <!-- Agrega más opciones según sea necesario -->
+                                    <option value="" disabled selected>Selecciona un asentamiento</option>
+                                    <option v-for="asentamiento in asentamientos" :key="asentamiento.idAsentamiento" :value="asentamiento.idAsentamiento">
+                                        {{ asentamiento.asentamiento }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
                         <div class="sm:col-span-6">
-                            <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle y
-                                número</label>
+                            <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle</label>
                             <div class="mt-2">
                                 <input type="text" name="calle" :id="'calle' + op" v-model="form.calle"
-                                    placeholder="Ingrese la calle y número"
+                                    placeholder="Ingrese la calle"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="numero" class="block text-sm font-medium leading-6 text-gray-900">Número</label>
+                            <div class="mt-2">
+                                <input type="number" name="numero" :id="'numero' + op" v-model="form.numero"
+                                    placeholder="Ingrese el número"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>

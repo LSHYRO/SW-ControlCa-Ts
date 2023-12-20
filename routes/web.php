@@ -64,11 +64,28 @@ Route::controller(AdminController::class)->group(function () {
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales
 Route::controller(DireccionesApiController::class)->group(function () {
+    // Ruta para obtener todos los estados
+    Route::get('obtener/estados','consultarEstados')->name('consEstados');
+
+    // Rutas para encontrar Estados, municipios, asentamientos por codigo postal
+    Route::get('obtener/estado/codigoPostal/{codigoPostal}','obtenerEstadoPorCodigoPostal')->name('consEstadoXCodPostal');
+    Route::get('obtener/municipios/codigoPostal/{codigoPostal}','obtenerMunicipiosPorCodigoPostal')->name('consMunicipiosXCodPostal');
+    Route::get('obtener/asentamientos/codigoPostal/{codigoPostal}','obtenerAsentamientosPorCodigoPostal')->name('consAsentamientosXCodPostal');
+
+    //Rutas para encotrar municipios y asentamientos por el codigo de estado y municipios respectivamente
+    Route::get('obtener/municipios/idEstado/{idEstado}','obtenerMunicipiosPorEstado')->name('consMunicipiosXIdEstado');
+    Route::get('obtener/asentamientos/idMunicipio/{idMunicipio}','obtenerAsentamientosPorMunicipio')->name('consAsentamientosXIdMunicipio');
+    
+    //Ruta para datos con codigo postal
+    Route::get('obtener/datos/estado/municipio/asentamientos/{codigoPostal}', 'consDatosPorCodigoPostal')->name('consDatosXCodigoPostal');
+    /*
     //Se obtienen datos a partir del codigo postal 
+    Route::get('/obtener/codPostal/{codigo}', 'consultarCodPostal')->name('consultaCodPostal');
     Route::get('/obtener/asentamiento/codPostal/{codigo}', 'consultarAsentamCodP')->name('consultaCodPos');
     Route::get('/obtener/estados', 'consultarEstados')->name('consultarEstados');
     Route::get('/obtener/estados/codPostal/{codigo}', 'consultarEstadosCodP')->name('consultarEstadosCodP');
     Route::get('/obtener/municipios/{estado}', 'consultarMunicipios')->name('consultarMunicipios');
+    */
 });
 
 

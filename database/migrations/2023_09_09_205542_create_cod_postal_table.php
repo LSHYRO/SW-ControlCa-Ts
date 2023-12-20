@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('codigoPostal', function (Blueprint $table) {
             $table->id(column:'idCodigoPostal');
-            $table->integer(column:'codigoPostal');
-            $table->foreignId(column:'idEstado')->references('idEstado')->on('estados');
-            $table->foreignId(column:'idMunicipio')->references('idMunicipio')->on('municipios');
+            $table->integer(column:'codigoPostal') -> unique();
             $table->timestamps();
         });
     }
