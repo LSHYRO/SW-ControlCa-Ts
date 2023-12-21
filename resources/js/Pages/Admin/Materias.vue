@@ -30,7 +30,7 @@ const props = defineProps({
     materias: { type: Object },
 
 });
-
+console.log(props.materias);
 const columns = [
     {
         data: null,
@@ -43,7 +43,9 @@ const columns = [
     },
     { data: 'materia' },
     { data: 'descripcion' },
-    { data: 'esTaller' },
+    { data: 'esTaller', render: function(data, type, row) {
+        return data ? 'Si' : 'No';
+    }},
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idMateria}"><i class="fa fa-pencil"></i></button>`;
@@ -55,14 +57,7 @@ const columns = [
         }
 
     }
-    /*
-    <button @click="abrirE(mmateria)" data-bs-toggle="modal" data-bs-target="#modalEdit">
-                                    <i class="fa fa-pencil"></i>
-                                </button>
-                                <button @click="eliminarMateria(mmateria.idMateria, mmateria.materia)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-    */
+    
 ];
 
 const botones = [{

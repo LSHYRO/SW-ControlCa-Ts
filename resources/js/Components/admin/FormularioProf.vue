@@ -1,7 +1,7 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, watch } from 'vue';
 const emit = defineEmits(['close']);
 import axios from 'axios';
 
