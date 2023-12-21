@@ -1,5 +1,6 @@
 <script setup>
 import Modal from '../Modal.vue';
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import { watch, ref } from 'vue';
@@ -30,6 +31,7 @@ const props = defineProps({
     materia: String,
     descripcion: String,
     esTaller: Boolean
+    esTaller: Boolean
 },
 );
 
@@ -38,12 +40,14 @@ const errorNombre = ref(false);
 const close = () => {
     emit('close');
     form.reset();
+    form.reset();
 };
 
 const form = useForm({
     idMateria: props.materias.idMateria,
     materia: props.materias.materia,
     descripcion: props.materias.descripcion,
+    esTaller: props.materias.esTaller,
     esTaller: props.materias.esTaller,
 });
 
@@ -97,6 +101,8 @@ watch(() => props.materias, (newVal) => {
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
                         materia </p>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
+                        materia </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
@@ -117,6 +123,8 @@ watch(() => props.materias, (newVal) => {
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-2">
+                            <label for="descripcion"
+                                class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <label for="descripcion"
                                 class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <div class="mt-2">
