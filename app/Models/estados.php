@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class estados extends Model
 {
@@ -26,5 +27,10 @@ class estados extends Model
     public function codigoPostal(): BelongsToMany
     {
         return $this->belongsToMany(codigoPostal::class, 'idEstado', 'idEstado');
+    }
+    
+    public function municipios(): HasMany
+    {
+        return $this->hasMany(municipios::class, 'idEstado', 'idEstado');
     }
 }

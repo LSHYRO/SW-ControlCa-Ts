@@ -17,11 +17,12 @@ return new class extends Migration
             $table->string(column:'apellidoM')->nullable(false);
             $table->string(column:'nombre')->nullable(false);
             $table->date(column:'fechaNacimiento')->nullable(false);
+            $table->foreignId(column:'idGenero')->references('idGenero')->on('generos');
             $table->string(column:'CURP')->nullable(false);
             $table->string(column:'RFC')->nullable(false);
             $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
-            $table->string(column:'tipoSangre')->nullable(false);
+            $table->foreignId(column:'idTipoSangre')->references('idTipoSangre')->on('tipo_Sangre');
             $table->string(column:'alergias')->nullable(false);
             $table->string(column:'discapacidad')->nullable(false);
             $table->text('nombre_completo')->nullable()->fulltext();            

@@ -17,10 +17,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(EstadosSeeder::class);
-        $this->call(MunicipiosSeeder::class);
+        //$this->call(EstadosSeeder::class);
+        //$this->call(MunicipiosSeeder::class);
         $this->call(TiposUsuariosSeeder::class);
         $this->call(Tipo_personalSeeder::class);
+        $this->call(TipoSangreSeeder::class);
+        $this->call(GeneroSeeder::class);
+        //$this->call(AsentamientosSeeder::class);
         
         //usuarios::factory(50)->create();
         //usuarios_tiposUsuarios::factory(50)->create();

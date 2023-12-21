@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DireccionesApiController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,7 +24,7 @@ Route::controller(AdminController::class)->group(function () {
 
     Route::get('/tutores_alumnos', 'tutores_alumnos')->name('admin.tutoresAlum');
 
-    
+
     Route::get('/alumnos', 'alumnos')->name('admin.alumnos');
     Route::get('/directivos', 'directivos')->name('admin.directivos');
     Route::get('/tutores', 'tutores')->name('admin.tutores');
@@ -40,13 +41,16 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/ciclos', 'addCiclos')->name('admin.addCiclos');
     Route::post('/periodos', 'addPeriodos')->name('admin.addPeriodos');
 
-    Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');   
-
+    Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');
+    
     Route::delete('/profesores/{idPersonal}', 'eliminarProfesores')->name('admin.eliminarProfesores');
     Route::put('/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('admin.actualizarProfesores');
 
+    Route::delete('/materias/delete/{materiasIds}', 'elimMaterias')->name('admin.elimMaterias');
+
     Route::delete('/materias/{idMateria}', 'eliminarMaterias')->name('admin.eliminarMaterias');
-    Route::put('/materias/{idMateria}/edit', 'actualizarMaterias')->name('admin.actualizarMaterias');
+    Route::put('/materias/{idMateria}/edit', 'actualizarMateria')->name('admin.actualizarMaterias');
+    
 
     Route::delete('/clases/{idClase}', 'eliminarClases')->name('admin.eliminarClases');
     Route::put('/clases/{idClase}/edit', 'actualizarClases')->name('admin.actualizarClases');
@@ -56,12 +60,36 @@ Route::controller(AdminController::class)->group(function () {
 
     Route::delete('/ciclos/{idCiclo}', 'eliminarCiclos')->name('admin.eliminarCiclos');
     Route::put('/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('admin.actualizarPeriodos');
-    
-
 });
 
-Route::resource('Admin', AdminController::class);
-/*
+//Rutas para obtener los estados, municipios, asentamientos y codigos postales
+Route::controller(DireccionesApiController::class)->group(function () {
+    // Ruta para obtener todos los estados
+    Route::get('obtener/estados','consultarEstados')->name('consEstados');
+
+    // Rutas para encontrar Estados, municipios, asentamientos por codigo postal
+    Route::get('obtener/estado/codigoPostal/{codigoPostal}','obtenerEstadoPorCodigoPostal')->name('consEstadoXCodPostal');
+    Route::get('obtener/municipios/codigoPostal/{codigoPostal}','obtenerMunicipiosPorCodigoPostal')->name('consMunicipiosXCodPostal');
+    Route::get('obtener/asentamientos/codigoPostal/{codigoPostal}','obtenerAsentamientosPorCodigoPostal')->name('consAsentamientosXCodPostal');
+
+    //Rutas para encotrar municipios y asentamientos por el codigo de estado y municipios respectivamente
+    Route::get('obtener/municipios/idEstado/{idEstado}','obtenerMunicipiosPorEstado')->name('consMunicipiosXIdEstado');
+    Route::get('obtener/asentamientos/idMunicipio/{idMunicipio}','obtenerAsentamientosPorMunicipio')->name('consAsentamientosXIdMunicipio');
+    
+    //Ruta para datos con codigo postal
+    Route::get('obtener/datos/estado/municipio/asentamientos/{codigoPostal}', 'consDatosPorCodigoPostal')->name('consDatosXCodigoPostal');
+    /*
+    //Se obtienen datos a partir del codigo postal 
+    Route::get('/obtener/codPostal/{codigo}', 'consultarCodPostal')->name('consultaCodPostal');
+    Route::get('/obtener/asentamiento/codPostal/{codigo}', 'consultarAsentamCodP')->name('consultaCodPos');
+    Route::get('/obtener/estados', 'consultarEstados')->name('consultarEstados');
+    Route::get('/obtener/estados/codPostal/{codigo}', 'consultarEstadosCodP')->name('consultarEstadosCodP');
+    Route::get('/obtener/municipios/{estado}', 'consultarMunicipios')->name('consultarMunicipios');
+    */
+});
+
+
+/* 
 Route::get('/', function () {
     return Inertia::render('Principal',[
         'ad.profesores' => Route::has('Admin/Profesores')
@@ -73,6 +101,7 @@ Route::get('/profesor', function () {
 })->name('adm.prof');
 */
 
+/*
 Route::get('/f', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -91,3 +120,4 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
+*/

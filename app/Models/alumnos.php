@@ -22,9 +22,10 @@ class alumnos extends Model
         'nombre',
         'fechaNacimiento',
         'CURP',
+        'idGenero',
         'correoElectronico',
         'numTelefono',
-        'tipoSangre',
+        'idTipoSangre',
         'alergias',
         'discapacidad',
         'idDireccion',
@@ -75,5 +76,20 @@ class alumnos extends Model
     public function direcciones(): HasOne
     {
         return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
+    }
+
+    public function asistencias(): BelongsToMany
+    {
+        return $this->belongsToMany(asistencias::class, 'idAlumno', 'idAlumno');
+    }
+
+    public function tipoSangre(): HasOne 
+    {
+        return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
+    }
+
+    public function genero(): HasOne
+    {
+        return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }
 }

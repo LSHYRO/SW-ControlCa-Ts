@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class codigoPostal extends Model
@@ -17,10 +18,10 @@ class codigoPostal extends Model
 
     protected $fillable = [
         'codigoPostal',
-        'idEstado',
-        'idMunicipio'
+        /*'idEstado',
+        'idMunicipio'*/
     ];
-
+    /*
     public function estados(): HasOne
     {
         return $this->hasOne(estados::class, 'idEstado', 'idEstado');
@@ -34,5 +35,10 @@ class codigoPostal extends Model
     public function municipios(): HasOne
     {
         return $this->hasOne(municipios::class, 'idMunicipio', 'idMunicipio');
+    }
+    */
+    public function asentamientos(): HasMany
+    {
+        return $this->hasMany(asentamientos::class, 'idCodigoPostal', 'idCodigoPostal');
     }
 }

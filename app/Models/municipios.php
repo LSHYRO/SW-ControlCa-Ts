@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class municipios extends Model
 {
@@ -21,12 +23,12 @@ class municipios extends Model
         'idEstado',
     ];
 
-    public function estados(): HasOne
+    public function estados(): BelongsTo
     {
-        return $this->hasOne(estados::class, 'idEstado', 'idEstado');
+        return $this->belongsTo(estados::class, 'idEstado', 'idEstado');
     }
 
-    public function codPostal(): BelongsToMany
+    public function codigoPostal(): BelongsToMany
     {
         return $this->belongsToMany(codigoPostal::class, 'idMunicipio', 'idMunicipio');
     }
@@ -39,5 +41,10 @@ class municipios extends Model
                 return strtolower($value);
             }
         );
+    }
+
+    public function asentamientos(): HasMany
+    {
+        return $this->hasMany(asentamientos::class, 'idMunicipio', 'idMunicipio');
     }
 }
