@@ -1,16 +1,22 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import FormularioMateria from '@/Components/admin/FormularioMateria.vue';
 import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
+//import { ref, computed } from 'vue';
 
 const props = defineProps({
     materias: { type: Object },
 
 });
+
+const esTallerText = computed(() => {
+    return (materia) => materia.esTaller === 1 ? 'Si' : 'No';
+});
+
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
@@ -50,6 +56,13 @@ const eliminarMateria = (idMateria, materia) => {
 
     })
 };
+
+// Antes de abrir el formulario, reinicia el objeto form
+const openForm = () => {
+  form.value = { idMateria: null, materia: null, descripcion: null, esTaller: null };
+  mostrarModal.value = true;
+};
+
 </script>
 
 <template>
@@ -91,11 +104,7 @@ const eliminarMateria = (idMateria, materia) => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Extracurricular
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Activo
+                                Es Taller
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -110,8 +119,7 @@ const eliminarMateria = (idMateria, materia) => {
                             <td><input type="checkbox"></td>
                             <td class="py-2 px-4 border-b border-grey-light">{{ mmateria.materia }}</td>
                             <td class="py-2 px-4 border-b border-grey-light">{{ mmateria.descripcion }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ mmateria.extracurricular }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ mmateria.activo }}</td>
+                            <td class="py-2 px-4 border-b border-grey-light">{{ esTallerText(mmateria) }}</td>
                             <td class="py-2 px-4 border-b border-grey-light">
                                 <button @click="abrirE(mmateria)" data-bs-toggle="modal" data-bs-target="#modalEdit">
                                     <i class="fa fa-pencil"></i>

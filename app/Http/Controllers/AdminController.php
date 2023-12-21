@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Response;
 
 class AdminController extends Controller
 {
@@ -70,7 +71,10 @@ class AdminController extends Controller
     {
         $materias = materias::all();
 
-        return Inertia::render('Admin/Materias');
+        //return Inertia::render('Admin/Materias');
+        return Inertia::render('Admin/Materias', [
+            'materias' => $materias,
+        ]);
     }
 
     public function clases()
@@ -95,14 +99,30 @@ class AdminController extends Controller
 
         return Inertia::render('Admin/GradosGrupos');
     }
-
+    
     public function ciclosperiodos()
     {
         $ciclos = ciclos::all();
         $periodos = periodos::all();
 
-        return Inertia::render('Admin/CiclosPeriodos');
+        return Inertia::render('Admin/CiclosPeriodos', [
+            'ciclos' => $ciclos,
+            'periodos' => $periodos,
+        ]);
     }
+    /*
+    //Muestra el dato de ciclo
+    public function obtenerciclos()
+    {
+    $ciclos = ciclos::select('descripcionCiclo')->get();
+
+    return Response::json([
+        'ciclos' => $ciclos,
+    ]);
+    }
+    */
+    
+
 
     public function addProfesores(Request $request)
     {
@@ -267,11 +287,11 @@ class AdminController extends Controller
 
     public function addMaterias(Request $request)
     {
+    
         $materia = new materias();
         $materia->materia = $request->materia;
         $materia->descripcion = $request->descripcion;
-        $materia->activo = $request->activo;
-        $materia->extracurricular = $request->extracurricular;
+        $materia->esTaller = $request->esTaller;
 
         $materia->save();
         return redirect()->route('admin.materias');
@@ -380,11 +400,9 @@ class AdminController extends Controller
     public function addCiclos(Request $request)
     {
         $ciclo = new ciclos();
-        $ciclo->ciclo = $request->ciclo;
         $ciclo->fecha_inicio = $request->fecha_inicio;
         $ciclo->fecha_fin = $request->fecha_fin;
-        $ciclo->descripcion = $request->descripcion;
-        $ciclo->activo = $request->activo;
+        $ciclo->descripcionCiclo = $request->descripcionCiclo;
 
         $ciclo->save();
         return redirect()->route('admin.ciclosperiodos');
@@ -395,8 +413,7 @@ class AdminController extends Controller
         $periodo->periodo = $request->perido;
         $periodo->fecha_inicio = $request->fecha_inicio;
         $periodo->fecha_fin = $request->fecha_fin;
-        $periodo->activo = $request->activo;
-        $periodo->ciclo = $request->ciclo;
+        $periodo->idCiclo = $request->idCiclo;
 
         $periodo->save();
         return redirect()->route('admin.ciclosperiodos');

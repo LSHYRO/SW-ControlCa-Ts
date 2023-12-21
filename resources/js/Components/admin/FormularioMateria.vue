@@ -1,5 +1,6 @@
 <script setup>
 import Modal from '../Modal.vue';
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 const emit = defineEmits(['close']);
 import { router } from '@inertiajs/vue3';
@@ -28,23 +29,21 @@ const props = defineProps({
     op: { type: String },
     materia: String,
     descripcion: String,
-    extracurricular: Boolean,
-    activo: Boolean,
+    esTaller: Boolean
 },
 );
 
 
 const close = () => {
     emit('close');
-    form.reset;
+    form.reset();
 };
 
 const form = useForm({
     idMateria: props.materias.idMateria,
     materia: props.materias.materia,
     descripcion: props.materias.descripcion,
-    extracurricular: props.materias.extracurricular,
-    activo: props.materias.activo
+    esTaller: props.materias.esTaller,
 });
 
 const save = () => {
@@ -65,7 +64,7 @@ watch(() => props.materias, (newVal) => {
     form.idMateria = newVal.idMateria;
     form.materia = newVal.materia;
     form.descripcion = newVal.descripcion;
-    form.activo = newVal.activo;
+    form.esTaller = newVal.esTaller;
 }, { deep: true });
 
 </script>
@@ -78,7 +77,8 @@ watch(() => props.materias, (newVal) => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva materia </p>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
+                        materia </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
@@ -99,7 +99,8 @@ watch(() => props.materias, (newVal) => {
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-2">
-                            <label for="descripcion" class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
+                            <label for="descripcion"
+                                class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <div class="mt-2">
                                 <input type="text" name="descripcion" :id="'descripcion' + op" v-model="form.descripcion"
                                     placeholder="Ingrese descripción"
@@ -108,18 +109,12 @@ watch(() => props.materias, (newVal) => {
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label for="extracurricular" class="block text-sm font-medium leading-6 text-gray-900">Extracurricular</label>
+                            <label for="esTaller" class="block text-sm font-medium leading-6 text-gray-900">Es
+                                Taller</label>
                             <div class="mt-2">
-                                <input type="checkbox" name="extracurricular" id="extracurricular" v-model="checked">
-                                <label for="extracurricular">{{ checked }}</label>
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="activo" class="block text-sm font-medium leading-6 text-gray-900">Activo</label>
-                            <div class="mt-2">
-                                <input type="checkbox" name="activo" id="activo" v-model="checked">
-                                <label for="activo">{{ checked }}</label>
+                                <input type="checkbox" name="esTaller" id="esTaller" v-model="form.esTaller" true-value="Si"
+                                    false-value="No" />
+                                <label for="esTaller">{{ form.esTaller }}</label>
                             </div>
                         </div>
 
