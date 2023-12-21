@@ -26,14 +26,14 @@ SET time_zone = "+00:00";
 --
 -- Estructura de tabla para la tabla `codigopostal`
 --
-
+/*
 CREATE TABLE `codigopostal` (
   `idCodigoPostal` bigint(20) UNSIGNED NOT NULL,
   `codigoPostal` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+*/
 --
 -- Volcado de datos para la tabla `codigopostal`
 --

@@ -1,6 +1,5 @@
 <script setup>
 import Modal from '../Modal.vue';
-import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import { watch, ref } from 'vue';
@@ -30,7 +29,6 @@ const props = defineProps({
     op: { type: String },
     materia: String,
     descripcion: String,
-    esTaller: Boolean
     esTaller: Boolean
 },
 );
@@ -101,8 +99,6 @@ watch(() => props.materias, (newVal) => {
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
                         materia </p>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
-                        materia </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
@@ -113,7 +109,7 @@ watch(() => props.materias, (newVal) => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
-                        <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
+                        <div class="sm:col-span-1 md:col-span-3"> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="materia" class="block text-sm font-medium leading-6 text-gray-900">Materia</label>
                             <div class="mt-2">
                                 <input type="text" name="materia" :id="'materia' + op" v-model="form.materia" required
@@ -122,9 +118,7 @@ watch(() => props.materias, (newVal) => {
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-2">
-                            <label for="descripcion"
-                                class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
+                        <div class="sm:col-span-1 md:col-span-3">
                             <label for="descripcion"
                                 class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <div class="mt-2">

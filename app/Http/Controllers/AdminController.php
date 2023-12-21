@@ -445,6 +445,37 @@ class AdminController extends Controller
         $ciclo->save();
         return redirect()->route('admin.ciclosperiodos');
     }
+
+    public function eliminarCiclos($idCiclo)
+    {
+        $ciclo = ciclos::find($idCiclo);
+        $ciclo->delete();
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Materia eliminada correctamente");
+    }
+
+    public function elimCiclos($ciclosIds)
+{
+    try {
+        // Convierte la cadena de IDs en un array
+        $ciclosIdsArray = explode(',', $ciclosIds);
+
+        // Limpia los IDs para evitar posibles problemas de seguridad
+        $ciclosIdsArray = array_map('intval', $ciclosIdsArray);
+
+        // Elimina los ciclos
+        ciclos::whereIn('idCiclo', $ciclosIdsArray)->delete();
+
+        // Redirige a la página deseada después de la eliminación
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclos eliminadas correctamente");
+    } catch (\Exception $e) {
+        // Manejo de errores
+        dd("Controller error");
+        return response()->json([
+            'error' => 'Ocurrió un error al eliminar'
+        ], 500);
+    }
+}
+
     public function addPeriodos(Request $request)
     {
         $periodo = new periodos();
@@ -456,4 +487,34 @@ class AdminController extends Controller
         $periodo->save();
         return redirect()->route('admin.ciclosperiodos');
     }
+
+    public function eliminarPeriodos($idPeriodo)
+    {
+        $periodo = periodos::find($idPeriodo);
+        $periodo->delete();
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo eliminada correctamente");
+    }
+
+    public function elimPeriodos($periodosIds)
+{
+    try {
+        // Convierte la cadena de IDs en un array
+        $periodosIdsArray = explode(',', $periodosIds);
+
+        // Limpia los IDs para evitar posibles problemas de seguridad
+        $periodosIdsArray = array_map('intval', $periodosIdsArray);
+
+        // Elimina los ciclos
+        periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();
+
+        // Redirige a la página deseada después de la eliminación
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodos eliminados correctamente");
+    } catch (\Exception $e) {
+        // Manejo de errores
+        dd("Controller error");
+        return response()->json([
+            'error' => 'Ocurrió un error al eliminar'
+        ], 500);
+    }
+}
 }

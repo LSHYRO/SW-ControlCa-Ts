@@ -227,8 +227,6 @@ onMounted(() => {
     });
 });
 
-
-
 </script>
 
 <template>

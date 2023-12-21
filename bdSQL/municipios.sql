@@ -26,7 +26,7 @@ SET time_zone = "+00:00";
 --
 -- Estructura de tabla para la tabla `municipios`
 --
-
+/*
 CREATE TABLE `municipios` (
   `idMunicipio` bigint(20) UNSIGNED NOT NULL,
   `municipio` varchar(255) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE `municipios` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+*/
 --
 -- Volcado de datos para la tabla `municipios`
 --

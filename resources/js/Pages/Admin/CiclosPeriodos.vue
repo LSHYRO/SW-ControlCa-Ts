@@ -7,11 +7,80 @@ import FormularioCiclos from '@/Components/admin/FormularioCiclos.vue';
 import FormularioPeriodos from '@/Components/admin/FormularioPeriodos.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
+window.JSZip = jsZip;
+
+pdfmake.vfs = pdfFonts.pdfMake.vfs;
+
+DataTable.use(DataTablesLib);
+DataTable.use(ButtonsHtml5);
+DataTable.use(pdfmake);
+DataTable.use(Select);
 
 const props = defineProps({
     ciclos: { type: Object },
     periodos: { type: Object },
 });
+
+const columns = [
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return `<input type="checkbox" class="ciclo-checkbox" data-id="${row.idCiclo}" ">`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) { return meta.row + 1 }
+    },
+    { data: 'fecha_inicio' },
+    { data: 'fecha_fin' },
+    { data: 'descripcionCiclo' },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idCiclo}"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="eliminar-button" data-id="${row.idCiclo}"><i class="fa fa-trash"></i></button>`;
+        }
+
+    }
+    /*
+    <button @click="abrirE(mmateria)" data-bs-toggle="modal" data-bs-target="#modalEdit">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                <button @click="eliminarMateria(mmateria.idMateria, mmateria.materia)">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+    */
+];
+
+const botones = [{
+    title: 'Ciclos registrados',
+    extend: 'excelHtml5',
+    text: '<i class="fa-solid fa-file-excel"></i> Excel',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Ciclos registrados',
+    extend: 'pdfHtml5',
+    text: '<i class="fa-solid fa-file-pdf"></i> PDF',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Ciclos registrados',
+    extend: 'print',
+    text: '<i class="fa-solid fa-print"></i> Imprimir',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Ciclos registrados',
+    extend: 'copy',
+    text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+
+];
 
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
@@ -21,6 +90,52 @@ const closeable = true;
 var cic = ({});
 var per = ({});
 
+const selectedCiclos = ref([]);
+const selectedPeriodos = ref([]);
+
+const toggleCiclosSelection = (ciclo) => {
+    if (selectedCiclos.value.includes(ciclo)) {
+        // Si la materia ya está seleccionada, la eliminamos del array
+        console.log("Se quito la materia del la seleccion");
+        selectedCiclos.value = selectedCiclos.value.filter((c) => c !== ciclo);
+    } else {
+        // Si la materia no está seleccionada, la agregamos al array
+        console.log("Se agrego una materia a la selección");
+        selectedCiclos.value.push(ciclo);
+
+    }
+    const botonEliminar = document.getElementById("eliminarMBtn");
+
+    if (selectedCiclos.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+        console.log("Se ha habilitado el botón");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+        console.log("Se ha deshabilitado el botón");
+    }
+};
+
+const togglePeriodosSelection = (periodo) => {
+    if (selectedPeriodos.value.includes(periodo)) {
+        // Si la materia ya está seleccionada, la eliminamos del array
+        console.log("Se quito la materia del la seleccion");
+        selectedPeriodos.value = selectedPeriodos.value.filter((p) => p !== periodo);
+    } else {
+        // Si la materia no está seleccionada, la agregamos al array
+        console.log("Se agrego una materia a la selección");
+        selectedPeriodos.value.push(periodo);
+
+    }
+    const botonEliminar = document.getElementById("eliminarMBtn");
+
+    if (selectedPeriodos.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+        console.log("Se ha habilitado el botón");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+        console.log("Se ha deshabilitado el botón");
+    }
+};
 
 const form = useForm({});
 const abrirCiclos = ($cicloss) => {
@@ -50,6 +165,100 @@ const cerrarModalPeriodos = () => {
 };
 const cerrarModalEPeriodos = () => {
     mostrarModalEPeriodos.value = false;
+};
+
+const eliminarCiclo = (idCiclo, ciclo) => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: `¿Estas seguro que deseas eliminar los datos de ` + ciclo + '?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('admin.eliminarCiclos', idCiclo));
+        }
+
+    })
+};
+
+const eliminarCiclos = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar los datos de los ciclos seleccionados?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const ciclosS = selectedCiclos.value.map((ciclo) => ciclo.idCiclo);
+                const $ciclosIds = ciclosS.join(',');
+                console.log(ciclosS);
+                await form.delete(route('admin.elimCiclos', $ciclosIds));
+
+                // Limpia las materias seleccionadas después de la eliminación
+                selectedCiclos.value = [];
+            } catch (error) {
+                console.log('El error se origina aquí');
+                console.log(error);
+            }
+        }
+    });
+};
+
+const eliminarPeriodo = (idPeriodo, periodo) => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: `¿Estas seguro que deseas eliminar los datos de ` + periodo + '?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('admin.eliminarPeriodos', idPeriodo));
+        }
+
+    })
+};
+
+const eliminarPeriodos = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar los datos de los periodos seleccionados?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const periodosS = selectedPeriodos.value.map((periodo) => periodo.idPeriodo);
+                const $periodosIds = periodosS.join(',');
+                console.log(periodosS);
+                await form.delete(route('admin.elimPeriodos', $periodosIds));
+
+                // Limpia los periodos seleccionados después de la eliminación
+                selectedCiclos.value = [];
+            } catch (error) {
+                console.log('El error se origina aquí');
+                console.log(error);
+            }
+        }
+    });
 };
 
 const selectedOption = ref('Ciclos'); // Inicialmente, muestra la tabla de "Ciclos"
