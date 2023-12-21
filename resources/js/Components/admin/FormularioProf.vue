@@ -98,15 +98,16 @@ watch(() => props.personal, (newVal) => {
 }, { deep: true }
 );
 
-const municipios = ref([]);
-const asentamientos = ref([]);
+var municipios = new Array();
+var asentamientos = new Array();
 
 const loadMunicipios = async () => {
     try {
         var idEstado = form.estado;
         const response = await axios.get(route('consMunicipiosXIdEstado', idEstado));
-        municipios.value = response.data;
-        form.municipio = municipios.value[0].idMunicipio; // Seleccionar el primer municipio
+        municipios = response.data;
+        //form.municipio = municipios.value[0].idMunicipio; // Seleccionar el primer municipio
+        form.municipio = await municipios[0].idMunicipio;
     } catch (error) {
         console.error('Error al obtener municipios:', error);
     }
@@ -116,8 +117,8 @@ const loadAsentamientos = async () => {
     try {
         var idMunicipio = form.municipio;
         const response = await axios.get(route('consAsentamientosXIdMunicipio', idMunicipio));
-        asentamientos.value = response.data;
-        form.asentamiento = asentamientos.value[0].idAsentamiento; // Seleccionar el primer asentamiento
+        asentamientos = response.data;
+        form.asentamiento = asentamientos[0].idAsentamiento; // Seleccionar el primer asentamiento
     } catch (error) {
         console.error('Error al obtener asentamientos:', error);
     }
@@ -129,10 +130,10 @@ const buscarDatosXCodigoPostal = async () => {
         const response = await axios.get(route('consDatosXCodigoPostal', codigoPostal));
         const datos = response.data;
         console.log(datos);
-        if (datos.estado) {            
+        if (datos.estado) {
             form.estado = datos.estado.idEstado;
         }
-        if (datos.municipio) {            
+        if (datos.municipio) {
             form.municipio = datos.municipio.idMunicipio;
             //loadAsentamientos(); // Esto cargará automáticamente los asentamientos correspondientes
         }
@@ -142,13 +143,13 @@ const buscarDatosXCodigoPostal = async () => {
 };
 
 
-watch(() => form.estado, ()=>{
+watch(() => form.estado, () => {
     console.log("idEstado = " + form.estado);
     console.log("cargando municipios");
     loadMunicipios();
 });
 
-watch(() => form.municipio, ()=>{
+watch(() => form.municipio, () => {
     console.log("idMunicipio = " + form.municipio);
     console.log("cargando asentamientos");
     loadAsentamientos();
@@ -164,7 +165,16 @@ onMounted(async () => {
         console.error('Error al obtener datos: ', error);
     }
     if (estados.length > 0) {
-      form.estado = estados[19].idEstado;
+        form.estado = await estados[19].idEstado;
+        /*
+        await loadMunicipios();
+        console.log(municipios);
+        if (municipios.length > 0) {
+            console.log("Dentro");
+            console.log(municipios[0]);
+            form.municipio = await municipios[0].idMunicipio;
+        }
+        */
     }
 });
 </script>
@@ -325,7 +335,8 @@ onMounted(async () => {
                                 <select name="municipio" :id="'municipio' + op" v-model="form.municipio"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un municipio</option>
-                                    <option v-for="municipio in municipios" :key="municipio.idMunicipio" :value="municipio.idMunicipio">
+                                    <option v-for="municipio in municipios" :key="municipio.idMunicipio"
+                                        :value="municipio.idMunicipio">
                                         {{ municipio.municipio }}
                                     </option>
                                 </select>
@@ -338,7 +349,8 @@ onMounted(async () => {
                                 <select name="asentamiento" :id="'asentamiento' + op" v-model="form.asentamiento"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un asentamiento</option>
-                                    <option v-for="asentamiento in asentamientos" :key="asentamiento.idAsentamiento" :value="asentamiento.idAsentamiento">
+                                    <option v-for="asentamiento in asentamientos" :key="asentamiento.idAsentamiento"
+                                        :value="asentamiento.idAsentamiento">
                                         {{ asentamiento.asentamiento }}
                                     </option>
                                 </select>
