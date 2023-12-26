@@ -25,12 +25,11 @@ DataTable.use(ButtonsHtml5);
 DataTable.use(pdfmake);
 DataTable.use(Select);
 
-
 const props = defineProps({
     materias: { type: Object },
 
 });
-console.log(props.materias);
+
 const columns = [
     {
         data: null,

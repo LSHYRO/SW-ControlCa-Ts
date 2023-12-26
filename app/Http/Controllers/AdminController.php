@@ -14,6 +14,7 @@ use App\Models\periodos;
 use App\Models\tutores;
 use App\Models\direcciones;
 use App\Models\estados;
+use App\Models\generos;
 use App\Models\grados;
 use App\Models\grupos;
 use App\Models\personal;
@@ -22,6 +23,7 @@ use App\Models\tipo_personal;
 use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -48,9 +50,10 @@ class AdminController extends Controller
             ->where('tipo_personal.tipo_personal', 'profesor')
             ->get();
         $tipoSangre = tipo_Sangre::all();
+        $generos = generos::all();
 
         return Inertia::render('Admin/Profesores', [
-            'personal' => $personal, 'tipoSangre' => $tipoSangre
+            'personal' => $personal, 'tipoSangre' => $tipoSangre, 'generos' => $generos
         ]);
     }
 
@@ -105,7 +108,7 @@ class AdminController extends Controller
 
         return Inertia::render('Admin/GradosGrupos');
     }
-    
+
     public function ciclosperiodos()
     {
         $ciclos = ciclos::all();
@@ -116,75 +119,87 @@ class AdminController extends Controller
             'periodos' => $periodos,
         ]);
     }
-    /*
-    //Muestra el dato de ciclo
-    public function obtenerciclos()
-    {
-    $ciclos = ciclos::select('descripcionCiclo')->get();
-
-    return Response::json([
-        'ciclos' => $ciclos,
-    ]);
-    }
-    */
-    
-
 
     public function addProfesores(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'apellidoP' => 'required',
-            'apellidoM' => 'required',
-            'numTelefono' => 'required',
-            'correoElectronico' => 'required',
-            'fechaNacimiento' => 'required',
-            'CURP' => 'required',
-            'RFC' => 'required',
-            'tipoSangre' => 'required',
-            'alergias' => 'required',
-            'discapacidad' => 'required',
-            'direccion' => 'required',
-            'tipo_personal' => 'required',
-            'usuario' => 'required',
-        ]);
+        try {
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'rfc' => 'required',
+                'tipoSangre' => 'required',             
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
 
-        //fechaFormateada
-        $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
-        //Contraseña generada
-        $contrasenia = Str::random(8);
-        //Creacion de usuario
-        $usuario = new usuarios();
-        $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
-        $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
-        //$usuario->activo = 1;
-        //echo "Tu contraseña generada es: $contrasenia";
-        //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-        $usuario->save();
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Contraseña generada
+            $contrasenia = Str::random(8);
+            //Creacion de usuario
+            $usuario = new usuarios();
+            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            //$usuario->activo = 1;
+            //echo "Tu contraseña generada es: $contrasenia";
+            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+            $usuario->save();
 
-        //Se busca el tipo de usuario en la BD
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+            //Se busca el tipo de usuario en la BD
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
 
-        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
-        $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
-        $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-        $usuarioTipoUsuario->save();
+            $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+            $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
+            $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            $usuarioTipoUsuario->save();
 
-        //Se busca el tipo de personal en la BD
-        $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+            //Se guarda el domicilio del profesor
+            $domicilio = new direcciones();
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
 
-        $personal = new personal($request->input());
-        $personal->idUsuario = $usuario->idUsuario;
-        $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
-        //$personal->activo = 1;
+            //Se busca el tipo de personal en la BD
+            $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
 
-        //columna nombre completo
-        $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
-        $personal->nombre_completo = $nombreCompleto;
+            //$personal = new personal($request->input());
+            $personal = new personal();
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->nombre = $request->nombre;
+            $personal->correoElectronico = $request->correoElectronico;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->idGenero = $request->genero;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->CURP = $request->curp;
+            $personal->rfc = $request->rfc;
+            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->alergias = $request->alergias;
+            $personal->discapacidad = $request->discapacidad;
+            $personal->idDireccion = $domicilio->idDireccion;
+            $personal->idUsuario = $usuario->idUsuario;
+            $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
+            //$personal->activo = 1;
 
-        //Guardado
-        $personal->save();
-        return redirect()->route('admin.profesores');
+            //columna nombre completo
+            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+            $personal->nombre_completo = $nombreCompleto;
+
+            //Guardado
+            $personal->save();
+            return redirect()->route('admin.profesores');
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 
     public function addTutores(Request $request)
@@ -294,7 +309,7 @@ class AdminController extends Controller
 
     public function addMaterias(Request $request)
     {
-    
+
         $materia = new materias();
         $materia->materia = $request->materia;
         $materia->descripcion = $request->descripcion;
@@ -302,7 +317,7 @@ class AdminController extends Controller
         $materia->esTaller = $request->esTaller;
 
         $materia->save();
-        return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: ".$materia->materia);
+        return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
     }
 
     public function eliminarMaterias($idMateria)
@@ -313,27 +328,27 @@ class AdminController extends Controller
     }
 
     public function elimMaterias($materiasIds)
-{
-    try {
-        // Convierte la cadena de IDs en un array
-        $materiasIdsArray = explode(',', $materiasIds);
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $materiasIdsArray = explode(',', $materiasIds);
 
-        // Limpia los IDs para evitar posibles problemas de seguridad
-        $materiasIdsArray = array_map('intval', $materiasIdsArray);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $materiasIdsArray = array_map('intval', $materiasIdsArray);
 
-        // Elimina las materias
-        materias::whereIn('idMateria', $materiasIdsArray)->delete();
+            // Elimina las materias
+            materias::whereIn('idMateria', $materiasIdsArray)->delete();
 
-        // Redirige a la página deseada después de la eliminación
-        return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente");
-    } catch (\Exception $e) {
-        // Manejo de errores
-        dd("Controller error");
-        return response()->json([
-            'error' => 'Ocurrió un error al eliminar'
-        ], 500);
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
-}
 
 
     public function actualizarMateria(Request $request, $idMateria)
@@ -347,7 +362,7 @@ class AdminController extends Controller
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.materias')->with('message', "Materia actualizada correctamente: ". $materias->materia);;
+        return redirect()->route('admin.materias')->with('message', "Materia actualizada correctamente: " . $materias->materia);;
     }
 
     public function getMaterias($searchTerm)

@@ -26,6 +26,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    generos: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -59,13 +63,16 @@ const form = useForm({
     correoElectronico: props.personal.correoElectronico,
     numTelefono: props.personal.numTelefono,
     fechaNacimiento: props.personal.fechaNacimiento,
-    curp: props.personal.curp,
+    genero: props.personal.idGenero,
+    curp: props.personal.CURP,
     rfc: props.personal.rfc,
     tipoSangre: props.personal.tipoSangre,
     alergias: props.personal.alergias,
     discapacidad: props.personal.discapacidad,
-    codigoPostal: props.personal.idDireccion,
-
+    tipoSangre: props.personal.idTipoSangre,    
+    asentamiento: props.personal.idDireccion,
+    calle: props.personal.idDireccion,
+    numero: props.personal.idDireccion,
 });
 
 const save = () => {
@@ -166,15 +173,7 @@ onMounted(async () => {
     }
     if (estados.length > 0) {
         form.estado = await estados[19].idEstado;
-        /*
-        await loadMunicipios();
-        console.log(municipios);
-        if (municipios.length > 0) {
-            console.log("Dentro");
-            console.log(municipios[0]);
-            form.municipio = await municipios[0].idMunicipio;
-        }
-        */
+        
     }
 });
 </script>
@@ -248,7 +247,19 @@ onMounted(async () => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
-
+                        <div class="sm:col-span-2">
+                            <label for="genero" class="block text-sm font-medium leading-6 text-gray-900">Genero</label>
+                            <div class="mt-2">
+                                <select name="genero" :id="'genero' + op" v-model="form.genero"
+                                    placeholder="Seleccione el tipo de sangre"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option v-for="genero in generos" :key="genero.idGenero"
+                                        :value="genero.idGenero">
+                                        {{genero.genero}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="sm:col-span-2">
                             <label for="fechaNacimiento" class="block text-sm font-medium leading-6 text-gray-900">Fecha de
                                 nacimiento</label>
@@ -356,7 +367,7 @@ onMounted(async () => {
                                 </select>
                             </div>
                         </div>
-                        <div class="sm:col-span-6">
+                        <div class="sm:col-span-4">
                             <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle</label>
                             <div class="mt-2">
                                 <input type="text" name="calle" :id="'calle' + op" v-model="form.calle"
@@ -364,7 +375,7 @@ onMounted(async () => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
-                        <div class="sm:col-span-3">
+                        <div class="sm:col-span-2">
                             <label for="numero" class="block text-sm font-medium leading-6 text-gray-900">Número</label>
                             <div class="mt-2">
                                 <input type="number" name="numero" :id="'numero' + op" v-model="form.numero"
@@ -372,24 +383,14 @@ onMounted(async () => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
-                        <div class="sm:col-span-3">
-                            <label for="tipoUsuario" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
-                                usuario</label>
+                        <div class="sm:col-span-3" hidden>
+                            <label for="idUsuario" class="block text-sm font-medium leading-6 text-gray-900">idUsuario</label>
                             <div class="mt-2">
-                                <input type="text" name="tipoUsuario" :id="'tipoUsuario' + op" v-model="form.tipoUsuario"
-                                    placeholder="Seleccione tipo de usuario"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>
-                        <div class="sm:col-span-3">
-                            <label for="usuario" class="block text-sm font-medium leading-6 text-gray-900">Usuario</label>
-                            <div class="mt-2">
-                                <input type="text" name="usuario" :id="'usuario' + op" v-model="form.usuario"
+                                <input type="text" name="idUsuario" :id="'idUsuario' + op" v-model="form.idUsuario"
                                     placeholder="Ingrese el usuario"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">

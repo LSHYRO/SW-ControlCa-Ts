@@ -26,7 +26,7 @@ DataTable.use(Select);
 const props = defineProps({
     personal: { type: Object },
     tipoSangre: { type: Object },
-
+    generos: { type: Object },
 });
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
@@ -346,7 +346,7 @@ const eliminarProfesor = (idPersonal, nombre) => {
         </div>
 
         <formulario-prof :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir profesor'" :op="'1'" :modal="'modalCreate'" :tipoSangre="props.tipoSangre"></formulario-prof>
+            :title="'Añadir profesor'" :op="'1'" :modal="'modalCreate'" :tipoSangre="props.tipoSangre" :generos="props.generos"></formulario-prof>
         <formulario-prof :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-prof>
 
