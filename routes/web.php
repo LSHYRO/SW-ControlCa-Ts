@@ -32,6 +32,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/clases', 'clases')->name('admin.clases');
     Route::get('/gradosgrupos', 'gradosgrupos')->name('admin.gradosgrupos');
     Route::get('/ciclosperiodos', 'ciclosperiodos')->name('admin.ciclosperiodos');
+    Route::get('/obtenerciclos', 'obtenerciclos')->name('admin.obtenerciclos');
 
     Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
     Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
@@ -40,6 +41,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/grupos', 'addGrupos')->name('admin.addGrupos');
     Route::post('/ciclos', 'addCiclos')->name('admin.addCiclos');
     Route::post('/periodos', 'addPeriodos')->name('admin.addPeriodos');
+
 
     Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');
     
@@ -66,6 +68,8 @@ Route::controller(AdminController::class)->group(function () {
 Route::controller(DireccionesApiController::class)->group(function () {
     // Ruta para obtener todos los estados
     Route::get('obtener/estados','consultarEstados')->name('consEstados');
+    // Ruta para obtener todos los ciclos
+    Route::get('obtener/ciclos','consultarCiclos')->name('consCiclos');
 
     // Rutas para encontrar Estados, municipios, asentamientos por codigo postal
     Route::get('obtener/estado/codigoPostal/{codigoPostal}','obtenerEstadoPorCodigoPostal')->name('consEstadoXCodPostal');

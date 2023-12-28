@@ -116,19 +116,6 @@ class AdminController extends Controller
             'periodos' => $periodos,
         ]);
     }
-    /*
-    //Muestra el dato de ciclo
-    public function obtenerciclos()
-    {
-    $ciclos = ciclos::select('descripcionCiclo')->get();
-
-    return Response::json([
-        'ciclos' => $ciclos,
-    ]);
-    }
-    */
-    
-
 
     public function addProfesores(Request $request)
     {
@@ -478,11 +465,15 @@ class AdminController extends Controller
 
     public function addPeriodos(Request $request)
     {
+        $request->validate([
+            'ciclos' => 'required',
+        ]);
+        
         $periodo = new periodos();
-        $periodo->periodo = $request->perido;
+        $periodo->periodo = $request->periodo;
         $periodo->fecha_inicio = $request->fecha_inicio;
         $periodo->fecha_fin = $request->fecha_fin;
-        $periodo->idCiclo = $request->idCiclo;
+        $periodo->idCiclo= $request->ciclos;
 
         $periodo->save();
         return redirect()->route('admin.ciclosperiodos');

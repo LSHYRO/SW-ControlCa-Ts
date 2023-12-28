@@ -2,8 +2,6 @@
 import { ref, onMounted } from 'vue';
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-const emit = defineEmits(['close']);
-import { router } from '@inertiajs/vue3';
 import { watch } from 'vue';
 import axios from 'axios';
 
@@ -25,45 +23,34 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    ciclos: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
     periodo: String,
     fecha_inicio: Date,
     fecha_fin: Date,
-    idCiclo: Object
+    idCiclo: String,
 },
 );
+
+const emit = defineEmits(['close']);
 
 const close = () => {
     emit('close');
     form.reset();
 };
 
-
 const form = useForm({
     idPeriodo: props.periodos.idPeriodo,
     periodo: props.periodos.periodo,
     fecha_inicio: props.periodos.fecha_inicio,
     fecha_fin: props.periodos.fecha_fin,
-    idCiclo: null // Inicialmente nulo, se llenará con los ciclos obtenidos
-});
-
-const ciclos = ref([]); // Aquí almacenarás los ciclos obtenidos de la base de datos
-
-const obtenerCiclos = () => {
-    axios.get('/ciclosperiodos')
-        .then(response => {
-            ciclos.value = response.data.ciclos;
-        })
-        .catch(error => {
-            console.error('Error al obtener ciclos:', error);
-        });
-};
-
-
-onMounted(() => {
-    obtenerCiclos();
+    ciclos: props.periodos.idCiclo,//Le agregué la s
+    ciclos: props.periodos.descripcionCiclo//Le agregue la s a ciclo
 });
 
 const save = () => {
@@ -85,7 +72,7 @@ watch(() => props.periodos, (newVal) => {
     form.periodo = newVal.periodo;
     form.fecha_inicio = newVal.fecha_inicio;
     form.fecha_fin = newVal.fecha_fin;
-    form.idCiclo = newVal.idCiclo;
+    form.ciclos = newVal.ciclos;
 }, { deep: true });
 
 </script>
@@ -141,29 +128,28 @@ watch(() => props.periodos, (newVal) => {
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-3">
-                            <label for="idCiclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
+                        <div class="sm:col-span-3">
+                            <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <select name="idCiclo" :id="'idCiclo' + op" v-model="form.idCiclo"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled>Seleccione el ciclo</option>
-                                    <!-- Utiliza v-for para iterar sobre los ciclos y llenar las opciones -->
-                                    <option v-for="ciclo in ciclos" :key="ciclo.id" :value="ciclo.id">{{ ciclo.descripcionCiclo }}
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un ciclo</option>
+                                    <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
+                                        {{ ciclo.descripcionCiclo }}
                                     </option>
                                 </select>
                             </div>
                         </div>
 
-
+                    </div>
                 </div>
-        </div>
-        <div class="mt-6 flex items-center justify-end gap-x-6">
-            <button type="button" :id="'cerrar' + op" class="text-sm font-semibold leading-6 text-gray-900"
-                data-bs.dismiss="modal" @click="close">Cancelar</button>
-            <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                :disabled="form.processing"> <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar</button>
-        </div>
-        </form>
+                <div class="mt-6 flex items-center justify-end gap-x-6">
+                    <button type="button" :id="'cerrar' + op" class="text-sm font-semibold leading-6 text-gray-900"
+                        data-bs.dismiss="modal" @click="close">Cancelar</button>
+                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                        :disabled="form.processing"> <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar</button>
+                </div>
+            </form>
         </div>
     </Modal>
 </template>

@@ -1,12 +1,22 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, getCurrentInstance, onMounted } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import FormularioCiclos from '@/Components/admin/FormularioCiclos.vue';
 import FormularioPeriodos from '@/Components/admin/FormularioPeriodos.vue';
 import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage, Link } from '@inertiajs/vue3';
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib from 'datatables.net';
+import Buttons from 'datatables.net-buttons-dt';
+import pdfmake from 'pdfmake';
+import print from 'datatables.net-buttons/js/buttons.print'
+import pdfFonts from 'pdfmake/build/vfs_fonts.js';
+import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-responsive-dt';
+import Select from 'datatables.net-select-dt';
+import jsZip from 'jszip';
 window.JSZip = jsZip;
 
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
@@ -21,7 +31,7 @@ const props = defineProps({
     periodos: { type: Object },
 });
 
-const columns = [
+const columnsCiclo = [
     {
         data: null,
         render: function (data, type, row, meta) {
@@ -45,17 +55,42 @@ const columns = [
         }
 
     }
-    /*
-    <button @click="abrirE(mmateria)" data-bs-toggle="modal" data-bs-target="#modalEdit">
-                                    <i class="fa fa-pencil"></i>
-                                </button>
-                                <button @click="eliminarMateria(mmateria.idMateria, mmateria.materia)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-    */
 ];
 
-const botones = [{
+const columnsPeriodo = [
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return `<input type="checkbox" class="ciclo-checkbox" data-id="${row.idPeriodo}" ">`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) { return meta.row + 1 }
+    },
+    { data: 'periodo' },
+    { data: 'fecha_inicio' },
+    { data: 'fecha_fin' },
+    {data: 'idCiclo',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === data);
+            return ciclo ? ciclo.descripcionCiclo : '';
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idPeriodo}"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="eliminar-button" data-id="${row.idPeriodo}"><i class="fa fa-trash"></i></button>`;
+        }
+    }
+];
+
+
+const botonesCiclo = [{
     title: 'Ciclos registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
@@ -79,7 +114,32 @@ const botones = [{
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
+];
 
+const botonesPeriodo = [{
+    title: 'Periodos registrados',
+    extend: 'excelHtml5',
+    text: '<i class="fa-solid fa-file-excel"></i> Excel',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Periodos registrados',
+    extend: 'pdfHtml5',
+    text: '<i class="fa-solid fa-file-pdf"></i> PDF',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Periodos registrados',
+    extend: 'print',
+    text: '<i class="fa-solid fa-print"></i> Imprimir',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Periodos registrados',
+    extend: 'copy',
+    text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
 ];
 
 const mostrarModal = ref(false);
@@ -93,7 +153,9 @@ var per = ({});
 const selectedCiclos = ref([]);
 const selectedPeriodos = ref([]);
 
-const toggleCiclosSelection = (ciclo) => {
+const cicloEdit = ref(null);
+
+const toggleCicloSelection = (ciclo) => {
     if (selectedCiclos.value.includes(ciclo)) {
         // Si la materia ya está seleccionada, la eliminamos del array
         console.log("Se quito la materia del la seleccion");
@@ -115,7 +177,7 @@ const toggleCiclosSelection = (ciclo) => {
     }
 };
 
-const togglePeriodosSelection = (periodo) => {
+const togglePeriodoSelection = (periodo) => {
     if (selectedPeriodos.value.includes(periodo)) {
         // Si la materia ya está seleccionada, la eliminamos del array
         console.log("Se quito la materia del la seleccion");
@@ -261,18 +323,143 @@ const eliminarPeriodos = () => {
     });
 };
 
+const searchQuery = ref("");
+
+const handleSearch = (term) => {
+    searchQuery.value = term;
+};
+//Esto es de ciclos y periodos
+onMounted(() => {
+    const ciclosTabla = document.getElementById('ciclosTablaId');
+    const periodosTabla = document.getElementById('periodosTablaId');
+
+    if (ciclosTabla) {
+        ciclosTabla.addEventListener('click', (event) => {
+            const checkbox = event.target;
+            if (checkbox.classList.contains('ciclo-checkbox')) {
+                const cicloId = parseInt(checkbox.getAttribute('data-id'));
+                console.log(cicloId);
+                if (props.ciclos) {
+                    const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === cicloId);
+                    console.log(ciclo);
+                    if (ciclo) {
+                        toggleCicloSelection(ciclo);
+                    } else {
+                        console.log("No se tiene ciclo");
+                    }
+                }
+            }
+        });
+
+        // Manejar clic en el botón de editar Ciclo
+        $('#ciclosTablaId').on('click', '.editar-button', function () {
+            const cicloId = $(this).data('id');
+            const ciclo = props.ciclos.find(c => c.idCiclo === cicloId);
+            abrirCiclos(ciclo);
+        });
+
+        // Manejar clic en el botón de eliminar Ciclo
+        $('#ciclosTablaId').on('click', '.eliminar-button', function () {
+            const cicloId = $(this).data('id');
+            const ciclo = props.ciclos.find(c => c.idCiclo === cicloId);
+            eliminarCiclo(cicloId, ciclo);
+        });
+    }
+
+    if (periodosTabla) {
+        periodosTabla.addEventListener('click', (event) => {
+            const checkbox = event.target;
+            if (checkbox.classList.contains('periodo-checkbox')) {
+                const periodoId = parseInt(checkbox.getAttribute('data-id'));
+                console.log(periodoId);
+                if (props.periodos) {
+                    const periodo = props.periodos.find(periodo => periodo.idPeriodo === periodoId);
+                    console.log(periodo);
+                    if (periodo) {
+                        togglePeriodoSelection(periodo);
+                    } else {
+                        console.log("No se tiene periodo");
+                    }
+                }
+            }
+        });
+
+        // Manejar clic en el botón de editar Periodo
+        $('#periodosTablaId').on('click', '.editar-button', function () {
+            const periodoId = $(this).data('id');
+            const periodo = props.periodos.find(p => p.idPeriodo === periodoId);
+            abrirPeriodos(periodo);
+        });
+
+        // Manejar clic en el botón de eliminar Periodo
+        $('#periodosTablaId').on('click', '.eliminar-button', function () {
+            const periodoId = $(this).data('id');
+            const periodo = props.periodos.find(p => p.idPeriodo === periodoId);
+            eliminarPeriodo(periodoId, periodo);
+        });
+    }
+});
+
+
 const selectedOption = ref('Ciclos'); // Inicialmente, muestra la tabla de "Ciclos"
+
+// Declaración de optionsCiclo y optionsPeriodo
+const optionsCiclo = {
+    responsive: true,
+    autoWidth: false,
+    dom: 'Bfrtip',
+    language: {
+        search: 'Buscar',
+        zeroRecords: 'No hay registros para mostrar',
+        info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+        infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+        infoFiltered: '(filtrado de un total de _MAX_ registros)',
+        lengthMenu: 'Mostrar _MENU_ registros',
+        paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
+    },
+    buttons: botonesCiclo,
+};
+
+const optionsPeriodo = {
+    responsive: true,
+    autoWidth: false,
+    dom: 'Bfrtip',
+    language: {
+        search: 'Buscar',
+        zeroRecords: 'No hay registros para mostrar',
+        info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+        infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+        infoFiltered: '(filtrado de un total de _MAX_ registros)',
+        lengthMenu: 'Mostrar _MENU_ registros',
+        paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
+    },
+    buttons: botonesPeriodo,
+};
 
 // Antes de abrir el formulario, reinicia el objeto form
 const openFormCiclos = () => {
     form.value = { idCiclo: null, fecha_inicio: null, fecha_fin: null, descripcionCiclo: null };
     mostrarModal.value = true;
+
+    // Desvincula eventos y destruye DataTable antes de cambiar de vista
+    $('#periodosTablaId').off();
+    $('#periodosTablaId').DataTable().destroy();
+
+    // Reinicializa el DataTable después de cambiar de vista
+    $('#ciclosTablaId').DataTable(optionsCiclo); // Reemplaza 'options' con tus opciones
 };
 
 // Antes de abrir el formulario, reinicia el objeto form
 const openFormPeriodos = () => {
     form.value = { idCiclo: null, fecha_inicio: null, fecha_fin: null, idCiclo: null };
-    mostrarModal.value = true;
+    mostrarModalPeriodos.value = true;
+
+    // Desvincula eventos y destruye DataTable antes de cambiar de vista
+    $('#ciclosTablaId').off();
+    $('#ciclosTablaId').DataTable().destroy();
+
+    // Reinicializa el DataTable después de cambiar de vista
+    $('#periodosTablaId').DataTable(optionsPeriodo); // Reemplaza 'options' con tus opciones
 };
 
 </script>
@@ -299,30 +486,41 @@ const openFormPeriodos = () => {
                 <div class="mt-8 bg-white p-4 shadow rounded-lg">
                     <h2 class="text-black text-2xl text-center font-semibold p-5">Ciclos</h2>
                     <div class="my-1"></div> <!-- Espacio de separación -->
-                    <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div class="w-full md:w-1/3 mb-4 md:mb-0">
-                            <search-bar />
-                        </div>
-                        <div
-                            class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
-                            <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                                <i class="fa fa-trash mr-2"></i>Borrar Ciclo(s)
-                            </button>
-                            <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                                @click="openFormCiclos" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                                <i class="fa fa-plus mr-2"></i>Agregar Ciclo
-                            </button>
-                        </div>
-                    </div>
                     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+                    <!-- flash message start -->
+                    <div v-if="$page.props.flash.message"
+                        class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                        role="alert">
+                        <span class="font-medium">
+                            {{ $page.props.flash.message }}
+                        </span>
+                    </div>
+                    <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+                        <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
+                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                            @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                            <i class="fa fa-plus mr-2"></i>Agregar Ciclo
+                        </button>
+                        <button id="eliminarMBtn" disabled="true"
+                            class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                            @click="eliminarCiclos">
+                            <i class="fa fa-trash mr-2"></i>Borrar Ciclo(s)
+                        </button>
+                        <!--</div>-->
+                    </div>
+                    <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
                     <!-- Línea con gradiente -->
                     <div class="overflow-x-auto">
-                        <table class="w-full table-auto text-sm">
+                        <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
+                            id="ciclosTablaId" :columns="columnsCiclo" :data="ciclos" :options="optionsCiclo">
                             <thead>
                                 <tr class="text-sm leading-normal">
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        #
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -338,38 +536,13 @@ const openFormPeriodos = () => {
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr v-for="ciclo in ciclos" :key="ciclo.idCiclo" class="hover:bg-grey-lighter">
-                                    <td><input type="checkbox"></td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.fecha_inicio }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.fecha_fin }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ ciclo.descripcionCiclo }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">
-                                        <button @click="abrirCiclos(ciclo)" data-bs-toggle="modal"
-                                            data-bs-target="#modalEdit">
-                                            <i class="fa fa-pencil"></i>
-                                        </button>
-                                        <button @click="eliminarCiclo(ciclo.idCiclo)">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Botón "Ver más" para la tabla de Autorizaciones Pendientes -->
-                    <div class="text-right mt-4">
-                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                            Ver más
-                        </button>
+                        </DataTable>
                     </div>
                 </div>
 
@@ -383,33 +556,44 @@ const openFormPeriodos = () => {
             <!-- Sección para mostrar la tabla de "Periodos" -->
             <div v-if="selectedOption === 'Periodos'">
                 <!-- Agrega la tabla de datos específica para "Grupo" aquí -->
-
                 <div class="mt-8 bg-white p-4 shadow rounded-lg">
                     <h2 class="text-black text-2xl text-center font-semibold p-5">Periodos</h2>
                     <div class="my-1"></div> <!-- Espacio de separación -->
-                    <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div class="w-full md:w-1/3 mb-4 md:mb-0">
-                            <search-bar />
-                        </div>
-                        <div
-                            class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
-                            <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                                <i class="fa fa-trash mr-2"></i>Borrar Periodo(s)
-                            </button>
-                            <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                                @click="mostrarModalPeriodos = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                                <i class="fa fa-plus mr-2"></i>Agregar Periodo
-                            </button>
-                        </div>
-                    </div>
                     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+                    <!-- flash message start -->
+                    <div v-if="$page.props.flash.message"
+                        class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                        role="alert">
+                        <span class="font-medium">
+                            {{ $page.props.flash.message }}
+                        </span>
+                    </div>
+                    <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+                        <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
+                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                            @click="mostrarModalPeriodos = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                            <i class="fa fa-plus mr-2"></i>Agregar Periodo
+                        </button>
+                        <button id="eliminarMBtn" disabled="true"
+                            class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                            @click="eliminarPeriodos">
+                            <i class="fa fa-trash mr-2"></i>Borrar Periodo(s)
+                        </button>
+                        <!--</div>-->
+                    </div>
+                    <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
                     <!-- Línea con gradiente -->
                     <div class="overflow-x-auto">
-                        <table class="w-full table-auto text-sm">
+                        <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
+                            id="periodosTablaId" :columns="columnsPeriodo" :data="periodos" :options="optionsPeriodo">
                             <thead>
                                 <tr class="text-sm leading-normal">
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                    </th>
+                                    <th
+                                        class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                        #
                                     </th>
                                     <th
                                         class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -435,43 +619,18 @@ const openFormPeriodos = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr v-for="periodo in periodos" :key="periodo.idPeriodo" class="hover:bg-grey-lighter">
-                                    <td><input type="checkbox"></td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.periodo }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.fecha_inicio }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.fecha_fin }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">{{ periodo.idCiclo }}</td>
-                                    <td class="py-2 px-4 border-b border-grey-light">
-                                        <button @click="abrirPeriodos(periodo)" data-bs-toggle="modal"
-                                            data-bs-target="#modalEdit">
-                                            <i class="fa fa-pencil"></i>
-                                        </button>
-                                        <button @click="eliminarPeriodo(periodo.idPeriodo, periodo.periodo)">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Botón "Ver más" para la tabla de Autorizaciones Pendientes -->
-                    <div class="text-right mt-4">
-                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                            Ver más
-                        </button>
+                        </DataTable>
                     </div>
                 </div>
 
                 <formulario-periodos :show="mostrarModalPeriodos" :max-width="maxWidth" :closeable="closeable"
                     @close="cerrarModalPeriodos" :title="'Añadir periodo'" :op="'1'"
-                    :modal="'modalCreate'"></formulario-periodos>
-                <formulario-periodos :show="mostrarModalPeriodos" :max-width="maxWidth" :closeable="closeable"
+                    :modal="'modalCreate'" :ciclos="props.ciclos"></formulario-periodos>
+                <formulario-periodos :show="mostrarModalEPeriodos" :max-width="maxWidth" :closeable="closeable"
                     @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'"
-                    :personal="person"></formulario-periodos>
+                    :ciclo="cicloEdit"></formulario-periodos>
+            </div> <!-- Aquí termina "Grupo" -->
+        </div>
 
-
-        </div> <!-- Aquí termina "Grupo" -->
-    </div>
-
-</AdminLayout></template>
+    </AdminLayout>
+</template>
