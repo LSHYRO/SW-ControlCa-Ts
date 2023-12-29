@@ -354,16 +354,21 @@ class AdminController extends Controller
 
     public function addClases(Request $request)
     {
+        $request->validate([
+            'grupos' => 'required',
+            'grados' => 'required',
+            'personal' => 'required',
+            'materias' => 'required',
+            'ciclos' => 'required',
+        ]);
+
         $clase = new clases();
         $clase->clase = $request->clase;
-        $clase->hora = $request->hora;
-        $clase->dias = $request->dias;
-        $clase->hora = $request->hora;
-        $clase->grupo = $request->grupo;
-        $clase->grado = $request->grado;
-        $clase->docente = $request->docente;
-        $clase->materia = $request->materia;
-        $clase->ciclo = $request->ciclo;
+        $clase->idGrupo = $request->grupos;
+        $clase->idGrado = $request->grados;
+        $clase->idPersonal = $request->personal;
+        $clase->idMateria = $request->materias;
+        $clase->idCiclo = $request->ciclos;
 
         $clase->save();
         return redirect()->route('admin.clases');
@@ -449,6 +454,22 @@ class AdminController extends Controller
     }
 }
 
+public function actualizarGrado(Request $request, $idGrado)
+{
+    $request->validate([
+        'ciclos' => 'required',
+    ]);
+
+    $grados = grados::find($idGrado);
+    $request->validate([
+        'grado' => 'required',
+        'idCiclo' => 'required',
+    ]);
+
+    $grados->fill($request->input())->saveOrFail();
+    return redirect()->route('admin.gradosgrupos')->with('message', "Grado actualizado correctamente: ". $grados->grado);;
+}
+
     public function addGrupos(Request $request)
     {
         $request->validate([
@@ -494,6 +515,22 @@ class AdminController extends Controller
     }
 }
 
+public function actualizarGrupo(Request $request, $idGrupo)
+{
+    $request->validate([
+        'ciclos' => 'required',
+    ]);
+
+    $grupos = grupos::find($idGrupo);
+    $request->validate([
+        'grupo' => 'required',
+        'idCiclo' => 'required',
+    ]);
+
+    $grupos->fill($request->input())->saveOrFail();
+    return redirect()->route('admin.gradosgrupos')->with('message', "Grupo actualizado correctamente: ". $grupos->grupo);;
+}
+
     public function addCiclos(Request $request)
     {
         $ciclo = new ciclos();
@@ -533,6 +570,20 @@ class AdminController extends Controller
             'error' => 'Ocurrió un error al eliminar'
         ], 500);
     }
+}
+
+public function actualizarCiclo(Request $request, $idCiclo)
+{
+
+    $ciclo = ciclos::find($idCiclo);
+    $request->validate([
+        'fecha_inicio' => 'required',
+        'fecha_fin' => 'required',
+        'descripcionCiclo' => 'required',
+    ]);
+
+    $ciclo->fill($request->input())->saveOrFail();
+    return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: ". $ciclo->descripcionCiclo);;
 }
 
     public function addPeriodos(Request $request)
@@ -580,4 +631,22 @@ class AdminController extends Controller
         ], 500);
     }
 }
+public function actualizarPeriodo(Request $request, $idPeriodo)
+{
+    $request->validate([
+        'ciclos' => 'required',
+    ]);
+
+    $periodos = periodos::find($idPeriodo);
+    $request->validate([
+        'periodo' => 'required',
+        'fecha_inicio' => 'required',
+        'fecha_fin' => 'required',
+        'idCiclo' => 'required',
+    ]);
+
+    $periodos->fill($request->input())->saveOrFail();
+    return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo actualizado correctamente: ". $periodos->periodo);;
+}
+
 }

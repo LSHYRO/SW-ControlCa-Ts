@@ -629,7 +629,7 @@ const openFormPeriodos = () => {
                     :modal="'modalCreate'" :ciclos="props.ciclos"></formulario-periodos>
                 <formulario-periodos :show="mostrarModalEPeriodos" :max-width="maxWidth" :closeable="closeable"
                     @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'"
-                    :periodo="periodoEdit"></formulario-periodos>
+                    :periodo="periodoEdit" :ciclos="props.ciclos"></formulario-periodos>
             </div> <!-- Aquí termina "Grupo" -->
         </div>
 

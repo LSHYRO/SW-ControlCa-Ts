@@ -89,8 +89,8 @@ const botones = [{
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
-
 ];
+
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
