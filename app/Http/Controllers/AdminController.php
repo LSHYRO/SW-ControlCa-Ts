@@ -100,10 +100,15 @@ class AdminController extends Controller
 */
     public function gradosgrupos()
     {
+        $ciclos = ciclos::all();
         $grados = grados::all();
         $grupos = grupos::all();
 
-        return Inertia::render('Admin/GradosGrupos');
+        return Inertia::render('Admin/GradosGrupos',[
+            'ciclos' => $ciclos,
+            'grados' => $grados,
+            'grupos' => $grupos,
+        ]);
     }
     
     public function ciclosperiodos()
@@ -401,26 +406,93 @@ class AdminController extends Controller
 
     public function addGrados(Request $request)
     {
-        /*
+        $request->validate([
+            'ciclos' => 'required',
+        ]);
+        
         $grado = new grados();
         $grado->grado = $request->grado;
-        $grado->ciclo = $request->ciclo;
+        $grado->idCiclo = $request->ciclos;
 
-        $clase->save();
+        $grado->save();
         return redirect()->route('admin.gradosgrupos');
-        */
+        
     }
+
+    public function eliminarGrados($idGrado)
+    {
+        $grado = grados::find($idGrado);
+        $grado->delete();
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grado eliminado correctamente");
+    }
+
+    public function elimGrados($gradosIds)
+    {
+    try {
+        // Convierte la cadena de IDs en un array
+        $gradosIdsArray = explode(',', $gradosIds);
+
+        // Limpia los IDs para evitar posibles problemas de seguridad
+        $gradosIdsArray = array_map('intval', $gradosIdsArray);
+
+        // Elimina los ciclos
+        grados::whereIn('idGrado', $gradosIdsArray)->delete();
+
+        // Redirige a la página deseada después de la eliminación
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grados eliminados correctamente");
+    } catch (\Exception $e) {
+        // Manejo de errores
+        dd("Controller error");
+        return response()->json([
+            'error' => 'Ocurrió un error al eliminar'
+        ], 500);
+    }
+}
+
     public function addGrupos(Request $request)
     {
-        /*
+        $request->validate([
+            'ciclos' => 'required',
+        ]);
+        
         $grupo = new grupos();
         $grupo->grupo = $request->grupo;
-        $grupo->ciclo = $request->ciclo;
+        $grupo->idCiclo = $request->ciclos;
 
-        $clase->save();
+        $grupo->save();
         return redirect()->route('admin.gradosgrupos');
-        */
+        
     }
+
+    public function eliminarGrupos($idGrupo)
+    {
+        $grupo = grupos::find($idGrupo);
+        $grupo->delete();
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grupo eliminada correctamente");
+    }
+
+    public function elimGrupos($gruposIds)
+    {
+    try {
+        // Convierte la cadena de IDs en un array
+        $gruposIdsArray = explode(',', $gruposIds);
+
+        // Limpia los IDs para evitar posibles problemas de seguridad
+        $gruposIdsArray = array_map('intval', $gruposIdsArray);
+
+        // Elimina los ciclos
+        grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
+
+        // Redirige a la página deseada después de la eliminación
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grupos eliminadas correctamente");
+    } catch (\Exception $e) {
+        // Manejo de errores
+        dd("Controller error");
+        return response()->json([
+            'error' => 'Ocurrió un error al eliminar'
+        ], 500);
+    }
+}
 
     public function addCiclos(Request $request)
     {
@@ -441,7 +513,7 @@ class AdminController extends Controller
     }
 
     public function elimCiclos($ciclosIds)
-{
+    {
     try {
         // Convierte la cadena de IDs en un array
         $ciclosIdsArray = explode(',', $ciclosIds);

@@ -1,8 +1,6 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-const emit = defineEmits(['close']);
-import { router } from '@inertiajs/vue3';
 import { watch } from 'vue';
 
 
@@ -23,22 +21,30 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    ciclos: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    grado: { type: Number},
-
+    grado: Number,
+    idCiclo: String,
 },
 );
+
+const emit = defineEmits(['close']);
+
 const close = () => {
     emit('close');
-    form.reset;
+    form.reset(); // Llamar a la función reset para restablecer el formulario
 };
 
 const form = useForm({
     idGrado: props.grados.idGrado,
     grado: props.grados.grado,
-   idCiclo: props.grados.idCiclo
+    ciclos: props.grados.idCiclo,//Le agregué la s
+    ciclos: props.grados.descripcionCiclo//Le agregue la s a ciclo
 
 });
 
@@ -59,7 +65,7 @@ const update = () => {
 watch(() => props.grados, (newVal) => {
     form.idGrado= newVal.idGrado;
     form.grado = newVal.grado;
-    form.idCiclo = newVal.idCiclo;
+    form.ciclos = newVal.ciclos;
 }, { deep: true });
 
 </script>
@@ -93,15 +99,15 @@ watch(() => props.grados, (newVal) => {
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-2">
+                        <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <select name="ciclo" v-model="form.idCiclo" :id="'ciclo' + op"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option disabled value="">Seleccione el grado</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un ciclo</option>
+                                    <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
+                                        {{ ciclo.descripcionCiclo }}
+                                    </option>
                                 </select>
                             </div>
                         </div>

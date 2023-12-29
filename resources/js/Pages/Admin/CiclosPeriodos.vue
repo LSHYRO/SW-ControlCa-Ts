@@ -6,7 +6,7 @@ import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import FormularioCiclos from '@/Components/admin/FormularioCiclos.vue';
 import FormularioPeriodos from '@/Components/admin/FormularioPeriodos.vue';
 import Swal from 'sweetalert2';
-import { useForm, usePage, Link } from '@inertiajs/vue3';
+import { useForm} from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import Buttons from 'datatables.net-buttons-dt';
@@ -154,6 +154,7 @@ const selectedCiclos = ref([]);
 const selectedPeriodos = ref([]);
 
 const cicloEdit = ref(null);
+const periodoEdit = ref(null);
 
 const toggleCicloSelection = (ciclo) => {
     if (selectedCiclos.value.includes(ciclo)) {
@@ -628,7 +629,7 @@ const openFormPeriodos = () => {
                     :modal="'modalCreate'" :ciclos="props.ciclos"></formulario-periodos>
                 <formulario-periodos :show="mostrarModalEPeriodos" :max-width="maxWidth" :closeable="closeable"
                     @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'"
-                    :ciclo="cicloEdit"></formulario-periodos>
+                    :periodo="periodoEdit"></formulario-periodos>
             </div> <!-- Aquí termina "Grupo" -->
         </div>
 

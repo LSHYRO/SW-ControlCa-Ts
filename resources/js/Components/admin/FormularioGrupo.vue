@@ -1,8 +1,6 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-const emit = defineEmits(['close']);
-import { router } from '@inertiajs/vue3';
 import { watch } from 'vue';
 
 
@@ -23,13 +21,19 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    ciclos: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
     grupo: String,
-
+    idCiclo: String,
 },
 );
+
+const emit = defineEmits(['close']);
 
 const close = () => {
     emit('close');
@@ -38,8 +42,9 @@ const close = () => {
 
 const form = useForm({
     idGrupo: props.grupos.idGrupo,
-    grupo: props.grrupos.grupo,
-   idCiclo: props.grupos.idCiclo
+    grupo: props.grupos.grupo,
+    ciclos: props.grupos.idCiclo,//Le agregué la s
+    ciclos: props.grupos.descripcionCiclo//Le agregue la s a ciclo
 
 });
 
@@ -60,7 +65,7 @@ const update = () => {
 watch(() => props.grupos, (newVal) => {
     form.idGrupo= newVal.idGrupo;
     form.grupo = newVal.grupo;
-    form.idCiclo = newVal.idCiclo;
+    form.ciclos = newVal.ciclos;
 }, { deep: true });
 
 </script>
@@ -85,6 +90,7 @@ watch(() => props.grupos, (newVal) => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
+
                         <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
                             <div class="mt-2">
@@ -94,15 +100,15 @@ watch(() => props.grupos, (newVal) => {
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-2">
+                        <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <select name="ciclo" v-model="form.idCiclo" :id="'ciclo' + op"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option disabled value="">Seleccione el grupo</option>
-                                    <option>A</option>
-                                    <option>B</option>
-                                    <option>C</option>
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un ciclo</option>
+                                    <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
+                                        {{ ciclo.descripcionCiclo }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
