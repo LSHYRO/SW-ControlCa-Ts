@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
             $table->foreignId(column:'idTipoSangre')->references('idTipoSangre')->on('tipo_Sangre');
-            $table->string(column:'alergias')->nullable(false);
-            $table->string(column:'discapacidad')->nullable(false);
+            $table->string(column:'alergias')->nullable(true);
+            $table->string(column:'discapacidad')->nullable(true);
             $table->text('nombre_completo')->nullable()->fulltext();            
             $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
             $table->foreignId(column:'id_tipo_personal')->references('id_tipo_personal')->on('tipo_personal');

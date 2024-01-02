@@ -45,6 +45,8 @@ Route::controller(AdminController::class)->group(function () {
 
     Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');
     
+    Route::delete('/profesores/delete/{personalIds}', 'elimProfesores')->name('admin.elimProfesores');
+
     Route::delete('/profesores/{idPersonal}', 'eliminarProfesores')->name('admin.eliminarProfesores');
     Route::put('/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('admin.actualizarProfesores');
 

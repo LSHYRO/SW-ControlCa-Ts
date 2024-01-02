@@ -1,7 +1,6 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { router } from '@inertiajs/vue3';
 import { watch, ref } from 'vue';
 const emit = defineEmits(['close']);
 
@@ -37,7 +36,6 @@ const errorNombre = ref(false);
 
 const close = () => {
     emit('close');
-    form.reset();
     form.reset();
 };
 
@@ -78,13 +76,15 @@ watch(() => props.materias, (newVal) => {
     form.idMateria = newVal.idMateria;
     form.materia = newVal.materia;
     form.descripcion = newVal.descripcion;
+    form.esTaller = newVal.esTaller;
+    /*
     if (newVal.esTaller == "Si") {
         //form.esTaller = newVal.esTaller;
         form.esTaller = true;
     } else {
         form.esTaller = false;
     }
-
+    */
 }, { deep: true });
 
 </script>
@@ -99,7 +99,6 @@ watch(() => props.materias, (newVal) => {
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
                         materia </p>
-
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="idMateria" class="block text-sm font-medium leading-6 text-gray-900">id</label>
@@ -118,7 +117,7 @@ watch(() => props.materias, (newVal) => {
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-3">
+                        <div class="sm:col-span-1 md:col-span-2">
                             <label for="descripcion"
                                 class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <div class="mt-2">

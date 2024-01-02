@@ -14,6 +14,7 @@ use App\Models\periodos;
 use App\Models\tutores;
 use App\Models\direcciones;
 use App\Models\estados;
+use App\Models\generos;
 use App\Models\grados;
 use App\Models\grupos;
 use App\Models\personal;
@@ -22,6 +23,7 @@ use App\Models\tipo_personal;
 use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +31,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
+use Mockery\Undefined;
 
 class AdminController extends Controller
 {
@@ -43,14 +46,47 @@ class AdminController extends Controller
     }
 
     public function profesores()
-    {
+    {   /*
         $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->where('tipo_personal.tipo_personal', 'profesor')
             ->get();
+        */
+
+        $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
+            ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
+            ->where('tipo_personal.tipo_personal', 'profesor')
+            ->get();
+
         $tipoSangre = tipo_Sangre::all();
+        $generos = generos::all();
+        $direcciones = direcciones::all();
+        /*
+        // Mapear los nombres de géneros al array de personal
+        $personalConGeneros = $personal->map(function ($persona) use ($generos) {
+            $genero = $generos->where('idGenero', $persona->idGenero)->first();
+            $persona->genero = $genero ? $genero->genero : null;
+            return $persona;
+        });*/
+
+        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
+            $genero = $generos->where('idGenero', $persona->idGenero)->first();
+            $tipoSangre = $tipoSangre->where('idTipoSangre', $persona->idTipoSangre)->first();
+            $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
+            $persona->genero = $genero ? $genero->genero : null;
+            $persona->tipoSangre = $tipoSangre ? $tipoSangre->tipoSangre : null;
+            $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
+            $persona->calle = $direccion ? $direccion->calle : null;
+            $persona->numero = $direccion ? $direccion->numero : null;
+            $persona->codigoPos = $direccion ? $direccion->asentamientos->codigoPostal->codigoPostal : null;
+            $persona->idAsentamiento = $direccion ? $direccion->asentamientos->idAsentamiento : null;
+            $persona->idMunicipio = $direccion ? $direccion->asentamientos->municipios->idMunicipio : null;
+            $persona->idEstado = $direccion ? $direccion->asentamientos->municipios->estados->idEstado : null;
+            return $persona;
+        });
 
         return Inertia::render('Admin/Profesores', [
-            'personal' => $personal, 'tipoSangre' => $tipoSangre
+            'personal' => $personalConNombres, 'tipoSangre' => $tipoSangre, 'generos' => $generos
         ]);
     }
 
@@ -104,13 +140,13 @@ class AdminController extends Controller
         $grados = grados::all();
         $grupos = grupos::all();
 
-        return Inertia::render('Admin/GradosGrupos',[
+        return Inertia::render('Admin/GradosGrupos', [
             'ciclos' => $ciclos,
             'grados' => $grados,
             'grupos' => $grupos,
         ]);
     }
-    
+
     public function ciclosperiodos()
     {
         $ciclos = ciclos::all();
@@ -124,59 +160,92 @@ class AdminController extends Controller
 
     public function addProfesores(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'apellidoP' => 'required',
-            'apellidoM' => 'required',
-            'numTelefono' => 'required',
-            'correoElectronico' => 'required',
-            'fechaNacimiento' => 'required',
-            'CURP' => 'required',
-            'RFC' => 'required',
-            'tipoSangre' => 'required',
-            'alergias' => 'required',
-            'discapacidad' => 'required',
-            'direccion' => 'required',
-            'tipo_personal' => 'required',
-            'usuario' => 'required',
-        ]);
+        try {
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'rfc' => 'required',
+                'tipoSangre' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
 
-        //fechaFormateada
-        $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
-        //Contraseña generada
-        $contrasenia = Str::random(8);
-        //Creacion de usuario
-        $usuario = new usuarios();
-        $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
-        $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
-        //$usuario->activo = 1;
-        //echo "Tu contraseña generada es: $contrasenia";
-        //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-        $usuario->save();
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Contraseña generada
+            $contrasenia = Str::random(8);
+            //Creacion de usuario
+            $usuario = new usuarios();
+            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            //$usuario->activo = 1;
+            //echo "Tu contraseña generada es: $contrasenia";
+            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+            $usuario->save();
 
-        //Se busca el tipo de usuario en la BD
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+            //Se busca el tipo de usuario en la BD
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
 
-        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
-        $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
-        $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-        $usuarioTipoUsuario->save();
+            $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+            $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
+            $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            $usuarioTipoUsuario->save();
 
-        //Se busca el tipo de personal en la BD
-        $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+            //Se guarda el domicilio del profesor
+            $domicilio = new direcciones();
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
 
-        $personal = new personal($request->input());
-        $personal->idUsuario = $usuario->idUsuario;
-        $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
-        //$personal->activo = 1;
+            //Se busca el tipo de personal en la BD
+            $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
 
-        //columna nombre completo
-        $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
-        $personal->nombre_completo = $nombreCompleto;
+            //$personal = new personal($request->input());
+            $personal = new personal();
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->nombre = $request->nombre;
+            $personal->correoElectronico = $request->correoElectronico;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->idGenero = $request->genero;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->CURP = $request->curp;
+            $personal->rfc = $request->rfc;
+            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->alergias = $request->alergias;
+            $personal->discapacidad = $request->discapacidad;
+            $personal->idDireccion = $domicilio->idDireccion;
+            $personal->idUsuario = $usuario->idUsuario;
+            $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
+            //$personal->activo = 1;
 
-        //Guardado
-        $personal->save();
-        return redirect()->route('admin.profesores');
+            //columna nombre completo
+            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+            $personal->nombre_completo = $nombreCompleto;
+
+            if ($personal->alergias == null) {
+                $personal->alergias = "Ninguna";
+            }
+
+            if ($personal->discapacidad == null) {
+                $personal->discapacidad = "Ninguna";
+            }
+
+            //Guardado
+            $personal->save();
+            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 
     public function addTutores(Request $request)
@@ -262,31 +331,119 @@ class AdminController extends Controller
         $personal->delete();
         $usuarioTipoUsuario->delete();
         $usuario->delete();
-        return redirect()->route('admin.profesores');
+        return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
+    }
+
+    public function elimprofesores($personalIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $personalIdsArray = explode(',', $personalIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $personalIdsArray = array_map('intval', $personalIdsArray);
+
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+            for ($i = 0; $i < count($personalIdsArray); $i++) {
+                $personal = personal::find($personalIdsArray[$i]);
+                $usuario = usuarios::find($personal->idUsuario);
+                $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                    ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                    ->first();
+                $personal->delete();
+                $usuarioTipoUsuario->delete();
+                $usuario->delete();
+            }
+            return redirect()->route('admin.profesores')->With("message", "Profesores eliminados correctamente");
+            /*
+            // Elimina las materias
+            materias::whereIn('idMateria', $personalIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente"); */
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
 
 
     public function actualizarProfesor(Request $request, $idPersonal)
     {
+        try {
+            $personal = personal::find($idPersonal);
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'rfc' => 'required',
+                'tipoSangre' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
 
-        $personal = personal::find($idPersonal);
-        $request->validate([
-            'nombre' => 'required',
-            'apellidoP' => 'required',
-            'apellidoM' => 'required',
-            'nombre' => 'required',
-            'numTelefono' => 'required',
-            'correoElectronico' => 'required',
-            'fechaNacimiento' => 'required',
-        ]);
+            //$personal->fill($request->input())->saveOrFail();
+            //Se guarda el domicilio del profesor
+            $domicilio = direcciones::findOrFail($request->idDomicilio);
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
 
-        $personal->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.profesores');
+            //Se busca el tipo de personal en la BD
+            $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+
+            //$personal = new personal($request->input());
+            $personal = personal::findOrFail($request->idPersonal);
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->nombre = $request->nombre;
+            $personal->correoElectronico = $request->correoElectronico;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->idGenero = $request->genero;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->CURP = $request->curp;
+            $personal->RFC = $request->rfc;
+            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->alergias = $request->alergias;
+            $personal->discapacidad = $request->discapacidad;
+            $personal->idDireccion = $domicilio->idDireccion;
+            $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
+
+            //columna nombre completo
+            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+            $personal->nombre_completo = $nombreCompleto;
+
+            if ($personal->alergias == null) {
+                $personal->alergias = "Ninguna";
+            }
+
+            if ($personal->discapacidad == null) {
+                $personal->discapacidad = "Ninguna";
+            }
+
+            //Guardado
+            $personal->save();
+            return redirect()->route('admin.profesores')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 
     public function addMaterias(Request $request)
     {
-    
+
         $materia = new materias();
         $materia->materia = $request->materia;
         $materia->descripcion = $request->descripcion;
@@ -294,7 +451,7 @@ class AdminController extends Controller
         $materia->esTaller = $request->esTaller;
 
         $materia->save();
-        return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: ".$materia->materia);
+        return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
     }
 
     public function eliminarMaterias($idMateria)
@@ -305,27 +462,27 @@ class AdminController extends Controller
     }
 
     public function elimMaterias($materiasIds)
-{
-    try {
-        // Convierte la cadena de IDs en un array
-        $materiasIdsArray = explode(',', $materiasIds);
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $materiasIdsArray = explode(',', $materiasIds);
 
-        // Limpia los IDs para evitar posibles problemas de seguridad
-        $materiasIdsArray = array_map('intval', $materiasIdsArray);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $materiasIdsArray = array_map('intval', $materiasIdsArray);
 
-        // Elimina las materias
-        materias::whereIn('idMateria', $materiasIdsArray)->delete();
+            // Elimina las materias
+            materias::whereIn('idMateria', $materiasIdsArray)->delete();
 
-        // Redirige a la página deseada después de la eliminación
-        return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente");
-    } catch (\Exception $e) {
-        // Manejo de errores
-        dd("Controller error");
-        return response()->json([
-            'error' => 'Ocurrió un error al eliminar'
-        ], 500);
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
-}
 
 
     public function actualizarMateria(Request $request, $idMateria)
@@ -339,7 +496,7 @@ class AdminController extends Controller
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.materias')->with('message', "Materia actualizada correctamente: ". $materias->materia);;
+        return redirect()->route('admin.materias')->with('message', "Materia actualizada correctamente: " . $materias->materia);;
     }
 
     public function getMaterias($searchTerm)
@@ -414,14 +571,13 @@ class AdminController extends Controller
         $request->validate([
             'ciclos' => 'required',
         ]);
-        
+
         $grado = new grados();
         $grado->grado = $request->grado;
         $grado->idCiclo = $request->ciclos;
 
         $grado->save();
         return redirect()->route('admin.gradosgrupos');
-        
     }
 
     public function eliminarGrados($idGrado)
@@ -433,56 +589,55 @@ class AdminController extends Controller
 
     public function elimGrados($gradosIds)
     {
-    try {
-        // Convierte la cadena de IDs en un array
-        $gradosIdsArray = explode(',', $gradosIds);
+        try {
+            // Convierte la cadena de IDs en un array
+            $gradosIdsArray = explode(',', $gradosIds);
 
-        // Limpia los IDs para evitar posibles problemas de seguridad
-        $gradosIdsArray = array_map('intval', $gradosIdsArray);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $gradosIdsArray = array_map('intval', $gradosIdsArray);
 
-        // Elimina los ciclos
-        grados::whereIn('idGrado', $gradosIdsArray)->delete();
+            // Elimina los ciclos
+            grados::whereIn('idGrado', $gradosIdsArray)->delete();
 
-        // Redirige a la página deseada después de la eliminación
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grados eliminados correctamente");
-    } catch (\Exception $e) {
-        // Manejo de errores
-        dd("Controller error");
-        return response()->json([
-            'error' => 'Ocurrió un error al eliminar'
-        ], 500);
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.gradosgrupos')->with('message', "Grados eliminados correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
-}
 
-public function actualizarGrado(Request $request, $idGrado)
-{
-    $request->validate([
-        'ciclos' => 'required',
-    ]);
+    public function actualizarGrado(Request $request, $idGrado)
+    {
+        $request->validate([
+            'ciclos' => 'required',
+        ]);
 
-    $grados = grados::find($idGrado);
-    $request->validate([
-        'grado' => 'required',
-        'idCiclo' => 'required',
-    ]);
+        $grados = grados::find($idGrado);
+        $request->validate([
+            'grado' => 'required',
+            'idCiclo' => 'required',
+        ]);
 
-    $grados->fill($request->input())->saveOrFail();
-    return redirect()->route('admin.gradosgrupos')->with('message', "Grado actualizado correctamente: ". $grados->grado);;
-}
+        $grados->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grado actualizado correctamente: " . $grados->grado);;
+    }
 
     public function addGrupos(Request $request)
     {
         $request->validate([
             'ciclos' => 'required',
         ]);
-        
+
         $grupo = new grupos();
         $grupo->grupo = $request->grupo;
         $grupo->idCiclo = $request->ciclos;
 
         $grupo->save();
         return redirect()->route('admin.gradosgrupos');
-        
     }
 
     public function eliminarGrupos($idGrupo)
@@ -494,42 +649,42 @@ public function actualizarGrado(Request $request, $idGrado)
 
     public function elimGrupos($gruposIds)
     {
-    try {
-        // Convierte la cadena de IDs en un array
-        $gruposIdsArray = explode(',', $gruposIds);
+        try {
+            // Convierte la cadena de IDs en un array
+            $gruposIdsArray = explode(',', $gruposIds);
 
-        // Limpia los IDs para evitar posibles problemas de seguridad
-        $gruposIdsArray = array_map('intval', $gruposIdsArray);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $gruposIdsArray = array_map('intval', $gruposIdsArray);
 
-        // Elimina los ciclos
-        grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
+            // Elimina los ciclos
+            grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
 
-        // Redirige a la página deseada después de la eliminación
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grupos eliminadas correctamente");
-    } catch (\Exception $e) {
-        // Manejo de errores
-        dd("Controller error");
-        return response()->json([
-            'error' => 'Ocurrió un error al eliminar'
-        ], 500);
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.gradosgrupos')->with('message', "Grupos eliminadas correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
-}
 
-public function actualizarGrupo(Request $request, $idGrupo)
-{
-    $request->validate([
-        'ciclos' => 'required',
-    ]);
+    public function actualizarGrupo(Request $request, $idGrupo)
+    {
+        $request->validate([
+            'ciclos' => 'required',
+        ]);
 
-    $grupos = grupos::find($idGrupo);
-    $request->validate([
-        'grupo' => 'required',
-        'idCiclo' => 'required',
-    ]);
+        $grupos = grupos::find($idGrupo);
+        $request->validate([
+            'grupo' => 'required',
+            'idCiclo' => 'required',
+        ]);
 
-    $grupos->fill($request->input())->saveOrFail();
-    return redirect()->route('admin.gradosgrupos')->with('message', "Grupo actualizado correctamente: ". $grupos->grupo);;
-}
+        $grupos->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grupo actualizado correctamente: " . $grupos->grupo);;
+    }
 
     public function addCiclos(Request $request)
     {
@@ -551,102 +706,54 @@ public function actualizarGrupo(Request $request, $idGrupo)
 
     public function elimCiclos($ciclosIds)
     {
-    try {
-        // Convierte la cadena de IDs en un array
-        $ciclosIdsArray = explode(',', $ciclosIds);
+        try {
+            // Convierte la cadena de IDs en un array
+            $ciclosIdsArray = explode(',', $ciclosIds);
 
-        // Limpia los IDs para evitar posibles problemas de seguridad
-        $ciclosIdsArray = array_map('intval', $ciclosIdsArray);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $ciclosIdsArray = array_map('intval', $ciclosIdsArray);
 
-        // Elimina los ciclos
-        ciclos::whereIn('idCiclo', $ciclosIdsArray)->delete();
+            // Elimina los ciclos
+            ciclos::whereIn('idCiclo', $ciclosIdsArray)->delete();
 
-        // Redirige a la página deseada después de la eliminación
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclos eliminadas correctamente");
-    } catch (\Exception $e) {
-        // Manejo de errores
-        dd("Controller error");
-        return response()->json([
-            'error' => 'Ocurrió un error al eliminar'
-        ], 500);
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclos eliminadas correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
-}
 
-public function actualizarCiclo(Request $request, $idCiclo)
-{
+    public function actualizarCiclo(Request $request, $idCiclo)
+    {
 
-    $ciclo = ciclos::find($idCiclo);
-    $request->validate([
-        'fecha_inicio' => 'required',
-        'fecha_fin' => 'required',
-        'descripcionCiclo' => 'required',
-    ]);
+        $ciclo = ciclos::find($idCiclo);
+        $request->validate([
+            'fecha_inicio' => 'required',
+            'fecha_fin' => 'required',
+            'descripcionCiclo' => 'required',
+        ]);
 
-    $ciclo->fill($request->input())->saveOrFail();
-    return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: ". $ciclo->descripcionCiclo);;
-}
+        $ciclo->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclo->descripcionCiclo);;
+    }
 
     public function addPeriodos(Request $request)
     {
         $request->validate([
             'ciclos' => 'required',
         ]);
-        
+
         $periodo = new periodos();
         $periodo->periodo = $request->periodo;
         $periodo->fecha_inicio = $request->fecha_inicio;
         $periodo->fecha_fin = $request->fecha_fin;
-        $periodo->idCiclo= $request->ciclos;
+        $periodo->idCiclo = $request->ciclos;
 
         $periodo->save();
         return redirect()->route('admin.ciclosperiodos');
     }
-
-    public function eliminarPeriodos($idPeriodo)
-    {
-        $periodo = periodos::find($idPeriodo);
-        $periodo->delete();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo eliminada correctamente");
-    }
-
-    public function elimPeriodos($periodosIds)
-{
-    try {
-        // Convierte la cadena de IDs en un array
-        $periodosIdsArray = explode(',', $periodosIds);
-
-        // Limpia los IDs para evitar posibles problemas de seguridad
-        $periodosIdsArray = array_map('intval', $periodosIdsArray);
-
-        // Elimina los ciclos
-        periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();
-
-        // Redirige a la página deseada después de la eliminación
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodos eliminados correctamente");
-    } catch (\Exception $e) {
-        // Manejo de errores
-        dd("Controller error");
-        return response()->json([
-            'error' => 'Ocurrió un error al eliminar'
-        ], 500);
-    }
-}
-public function actualizarPeriodo(Request $request, $idPeriodo)
-{
-    $request->validate([
-        'ciclos' => 'required',
-    ]);
-
-    $periodos = periodos::find($idPeriodo);
-    $request->validate([
-        'periodo' => 'required',
-        'fecha_inicio' => 'required',
-        'fecha_fin' => 'required',
-        'idCiclo' => 'required',
-    ]);
-
-    $periodos->fill($request->input())->saveOrFail();
-    return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo actualizado correctamente: ". $periodos->periodo);;
-}
-
 }

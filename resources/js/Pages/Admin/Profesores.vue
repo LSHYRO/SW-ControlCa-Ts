@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import FormularioProf from '@/Components/admin/FormularioProf.vue';
 import Swal from 'sweetalert2';
@@ -26,7 +26,7 @@ DataTable.use(Select);
 const props = defineProps({
     personal: { type: Object },
     tipoSangre: { type: Object },
-
+    generos: { type: Object },
 });
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
@@ -47,15 +47,15 @@ const columns = [
     { data: 'apellidoP' },
     { data: 'apellidoM' },
     { data: 'fechaNacimiento' },
-    { data: 'idGenero' },
+    { data: 'genero' },
     { data: 'CURP' },
-    { data: 'RFC'} ,
-    { data: 'correoElectronico'},
+    { data: 'RFC' },
+    { data: 'correoElectronico' },
     { data: 'numTelefono' },
-    { data: 'idTipoSangre' },
-    { data: 'alergias'},
+    { data: 'tipoSangre' },
+    { data: 'alergias' },
     { data: 'discapacidad' },
-    { data: 'idDireccion' },
+    { data: 'direccion' },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idPersonal}"><i class="fa fa-pencil"></i></button>`;
@@ -130,6 +130,98 @@ const eliminarProfesor = (idPersonal, nombre) => {
 
     })
 };
+
+const selectedPersonal = ref([]);
+
+const togglePersonalSelection = (personal) => {
+    if (selectedPersonal.value.includes(personal)) {
+        // Si la personal ya está seleccionada, la eliminamos del array
+        console.log("Se quito la personal del la seleccion");
+        selectedPersonal.value = selectedPersonal.value.filter((m) => m !== personal);
+    } else {
+        // Si la personal no está seleccionada, la agregamos al array
+        console.log("Se agrego una personal a la selección");
+        selectedPersonal.value.push(personal);
+
+    }
+    const botonEliminar = document.getElementById("eliminarPBtn");
+
+    if (selectedPersonal.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+        console.log("Se ha habilitado el botón");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+        console.log("Se ha deshabilitado el botón");
+    }
+};
+
+const eliminarProfesores = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar los datos de los profesores seleccionados?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const personalS = selectedPersonal.value.map((personal) => personal.idPersonal);
+                const $personalIds = personalS.join(',');
+                console.log(personalS);
+                await form.delete(route('admin.elimProfesores', $personalIds));
+                const botonEliminar = document.getElementById("eliminarPBtn");
+                // Limpia las materias seleccionadas después de la eliminación
+                selectedPersonal.value = [];
+                botonEliminar.setAttribute("disabled", "");
+                console.log("Se ha deshabilitado el botón");
+            } catch (error) {
+                console.log('El error se origina aquí');
+                console.log(error);
+            }
+        }
+    });
+};
+
+
+onMounted(() => {
+    // Agrega un escuchador de eventos fuera de la lógica de Vue
+    document.getElementById('profesoresTablaId').addEventListener('click', (event) => {
+        const checkbox = event.target;
+        if (checkbox.classList.contains('profesor-checkbox')) {
+            const personalId = parseInt(checkbox.getAttribute('data-id'));
+            console.log(personalId);
+            // Asegúrate de que props.materias.data esté definido antes de usar find
+            console.log(props.personal);
+            if (props.personal) {
+                const personal = props.personal.find(personal => personal.idPersonal === personalId);
+                console.log(personal);
+                if (personal) {
+                    togglePersonalSelection(personal);
+                } else {
+                    console.log("No se tiene materia");
+                }
+            }
+        }
+    });
+
+    // Manejar clic en el botón de editar
+    $('#profesoresTablaId').on('click', '.editar-button', function () {
+        const personalId = $(this).data('id');
+        const personal = props.personal.find(m => m.idPersonal === personalId);
+        abrirE(personal);
+    });
+
+    // Manejar clic en el botón de eliminar
+    $('#profesoresTablaId').on('click', '.eliminar-button', function () {
+        const personalId = $(this).data('id');
+        const personal = props.personal.find(m => m.idPersonal === personalId);
+        eliminarProfesor(personalId, personal.nombre + " " + personal.apellidoP + " " + personal.apellidoM);
+    });
+});
 </script>
 
 <template>
@@ -137,25 +229,36 @@ const eliminarProfesor = (idPersonal, nombre) => {
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Docentes</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
-            <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between">
-                <div class="w-full md:w-1/3 mb-4 md:mb-0">
-                </div>
-                <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end">
-                    <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                        <i class="fa fa-trash mr-2"></i>Borrar Docente(s)
-                    </button>
-                    <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                        @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                        <i class="fa fa-plus mr-2"></i>Agregar docente
-                    </button>
-                </div>
-            </div>
             <!-- Línea con gradiente -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+            <!-- flash message start -->
+            <div v-if="$page.props.flash.message"
+                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                role="alert">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div>
+            <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+                <!-- <div class="w-full md:w-1/3 mb-4 md:mb-0 "></div> -->
+                <!-- <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end"> -->
+                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-plus mr-2"></i>Agregar docente
+                </button>
+                <button id="eliminarPBtn" disabled="true"
+                    class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    @click="eliminarProfesores">
+                    <i class="fa fa-trash mr-2"></i>Borrar Docente(s)
+                </button>
+
+                <!-- </div> -->
+            </div>
+
             <div class="overflow-x-auto ">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
                     id="profesoresTablaId" :columns="columns" :data="personal" :options="{
-                        responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
+                        autoWidth: false, dom: 'Bfrtip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
                             infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
@@ -235,120 +338,14 @@ const eliminarProfesor = (idPersonal, nombre) => {
                     </thead>
                 </DataTable>
             </div>
-            <!--
-            <div class="overflow-x-auto">
-                <table class="w-full table-auto text-sm">
-                    <thead>
-                        <tr class="text-sm leading-normal">
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido PATERNO
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido MATERNO
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Fecha de nacimiento
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Correo Electronico
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                CURP
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                RFC
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Numero de telefono
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Tipo sanguineo
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Alergias
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Discapacidad
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Dirección
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Tipo de personal
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Usuario
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="profesor in personal" :key="profesor.idPersonal" class="hover:bg-grey-lighter">
-                            <td><input type="checkbox"></td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.apellidoP }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.apellidoM }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.nombre }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.fechaNacimiento }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.correoElectronico }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.curp }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.rfc }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.numTelefono }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.tipoSangre }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.alergias }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.discapacidad }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.idDireccion }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.idTipoPersonal }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">{{ profesor.usuario }}</td>
-                            <td class="py-2 px-4 border-b border-grey-light">
-                                <a href="tel:{{ profesor.numTelefono }}">
-                                    <i class="fa fa-phone" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                            <td class="py-2 px-4 border-b border-grey-light">
-                                <button @click="abrirE(profesor)" data-bs-toggle="modal" data-bs-target="#modalEdit">
-                                    <i class="fa fa-pencil"></i>
-                                </button>
-                                <button @click="eliminarProfesor(profesor.idPersonal, profesor.nombre_completo)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            -->
-            
         </div>
 
         <formulario-prof :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir profesor'" :op="'1'" :modal="'modalCreate'" :tipoSangre="props.tipoSangre"></formulario-prof>
+            :title="'Añadir profesor'" :op="'1'" :modal="'modalCreate'" :tipoSangre="props.tipoSangre"
+            :generos="props.generos"></formulario-prof>
         <formulario-prof :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-prof>
+            :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person" :tipoSangre="props.tipoSangre"
+            :generos="props.generos"></formulario-prof>
 
     </AdminLayout>
 </template>
