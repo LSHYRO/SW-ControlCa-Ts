@@ -37,7 +37,6 @@ const errorNombre = ref(false);
 const close = () => {
     emit('close');
     form.reset();
-    form.reset();
 };
 
 const form = useForm({

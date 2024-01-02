@@ -178,13 +178,6 @@ const eliminarMaterias = () => {
     });
 };
 
-
-const searchQuery = ref("");
-
-const handleSearch = (term) => {
-    searchQuery.value = term;
-};
-
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('materiasTablaId').addEventListener('click', (event) => {
