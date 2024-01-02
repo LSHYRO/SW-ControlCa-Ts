@@ -4,7 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import { onMounted, watch, ref } from 'vue';
 const emit = defineEmits(['close']);
 import axios from 'axios';
-
+////////////////////////////////////////////////////////////////
 const props = defineProps({
     show: {
         type: Boolean,
@@ -47,14 +47,14 @@ const props = defineProps({
 
 },
 );
-
+//////////////////////////////////////////////////////////////////////
 var estados = new Array();
 
 const close = () => {
     emit('close');
     form.reset();
 };
-
+//--------------------------------------------------------------------//
 const form = useForm({
     idPersonal: props.personal.idPersonal,
     nombre: props.personal.nombre,
@@ -79,6 +79,7 @@ const form = useForm({
     idDomicilio: props.personal.idDireccion,
 
 });
+//----------------------------------------------------------------//
 ////////////////////////////////
 //Variables para los mensajes de validación
 const curpError = ref('');
@@ -325,15 +326,23 @@ const loadAsentamientos = async () => {
 const buscarDatosXCodigoPostal = async () => {
     try {
         var codigoPostal = form.codigoPostal;
-        const response = await axios.get(route('consDatosXCodigoPostal', codigoPostal));
-        const datos = response.data;
-        console.log(datos);
-        if (datos.estado) {
-            form.estado = datos.estado.idEstado;
-        }
-        if (datos.municipio) {
-            form.municipio = datos.municipio.idMunicipio;
-            //loadAsentamientos(); // Esto cargará automáticamente los asentamientos correspondientes
+        if (validateCodigoPostal(codigoPostal)) {
+            const response = await axios.get(route('consDatosXCodigoPostal', codigoPostal));
+            const datos = response.data;
+            console.log(datos);
+            if(datos.length <= 0) {
+                codigoPError.value = 'Codigo postal no existente';
+                return;
+            }
+            if (datos.estado) {
+                form.estado = datos.estado.idEstado;
+            }
+            if (datos.municipio) {
+                form.municipio = datos.municipio.idMunicipio;
+            }
+            codigoPError.value = '';
+        }else{
+            codigoPError.value = 'Ingrese el codigo postal completo';
         }
     } catch (error) {
         console.error('Error al obtener datos por código postal:', error);
