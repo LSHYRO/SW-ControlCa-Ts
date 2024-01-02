@@ -103,7 +103,7 @@ const tipoSError = ref('');
 const validateCURP = (curp) => {
     // Validación con expresión regular
     // Devuelve true si la CURP es válida, de lo contrario, devuelve false
-    return /^[A-Z]{4}\d{6}[HM]{1}[A-Z]{5}[A-Z0-9]{2}\d{1}$/.test(curp);
+    return /^[A-Z]{4}\d{6}[HM]{1}[A-Z]{5}[A-Z0-9]{1}\d{1}$/.test(curp);
 }
 
 // Función para validar RFC
@@ -218,8 +218,8 @@ const update = () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
     rfcError.value = validateRFC(form.rfc) ? '' : 'RFC no válido';
-    curpError.value = validateStringNotEmpty(form.curp) ? '' : 'Ingrese la CURP';
-    rfcError.value = validateStringNotEmpty(form.rfc) ? '' : 'Ingrese el RFC';
+    //curpError.value = validateStringNotEmpty(form.curp) ? '' : 'Ingrese la CURP';
+    //rfcError.value = validateStringNotEmpty(form.rfc) ? '' : 'Ingrese el RFC';
     // Validacion de nombre
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
