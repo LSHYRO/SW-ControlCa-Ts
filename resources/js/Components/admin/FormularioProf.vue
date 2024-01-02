@@ -252,8 +252,6 @@ const update = () => {
     }
 
     var idPersonal = document.getElementById('idPersonal2').value;
-    console.log(idPersonal);
-    console.log(document.getElementById('nombre2').value);
     form.put(route('admin.actualizarProfesores', idPersonal), {
         onSuccess: () => {
             close()
@@ -329,7 +327,6 @@ const buscarDatosXCodigoPostal = async () => {
         if (validateCodigoPostal(codigoPostal)) {
             const response = await axios.get(route('consDatosXCodigoPostal', codigoPostal));
             const datos = response.data;
-            console.log(datos);
             if(datos.length <= 0) {
                 codigoPError.value = 'Codigo postal no existente';
                 return;
@@ -351,14 +348,10 @@ const buscarDatosXCodigoPostal = async () => {
 
 
 watch(() => form.estado, () => {
-    console.log("idEstado = " + form.estado);
-    console.log("cargando municipios");
     loadMunicipios();
 });
 
 watch(() => form.municipio, () => {
-    console.log("idMunicipio = " + form.municipio);
-    console.log("cargando asentamientos");
     loadAsentamientos();
 });
 
@@ -366,7 +359,6 @@ onMounted(async () => {
     try {
         const response = await axios.get(route('consEstados'));
         estados = response.data;
-        console.log(estados);
     } catch (error) {
         // Manejar el error, por ejemplo, mostrar un mensaje al usuario
         console.error('Error al obtener datos: ', error);
@@ -376,22 +368,17 @@ onMounted(async () => {
 
     }
 });
-
-
 </script>
-
 
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar a un nuevo
                         profesor o actualizar los datos
                     </p>
-
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="idPersonal" class="block text-sm font-medium leading-6 text-gray-900">id</label>
@@ -411,7 +398,6 @@ onMounted(async () => {
                             </div>
                             <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}</div>
                         </div>
-
                         <div class="sm:col-span-1 md:col-span-2">
                             <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
                                 Materno</label>
@@ -422,7 +408,6 @@ onMounted(async () => {
                             </div>
                             <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}</div>
                         </div>
-
                         <div class="sm:col-span-2">
                             <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres</label>
                             <div class="mt-2">
@@ -432,7 +417,6 @@ onMounted(async () => {
                             </div>
                             <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
                         </div>
-
                         <div class="sm:col-span-4 ">
                             <label for="correoElectronico" class="block text-sm font-medium leading-6 text-gray-900">Correo
                                 electrónico</label>
@@ -443,7 +427,6 @@ onMounted(async () => {
                             </div>
                             <div v-if="correoEError != ''" class="text-red-500 text-xs mt-1">{{ correoEError }}</div>
                         </div>
-
                         <div class="sm:col-span-2">
                             <label for="numTelefono" class="block text-sm font-medium leading-6 text-gray-900">Número de
                                 teléfono</label>
