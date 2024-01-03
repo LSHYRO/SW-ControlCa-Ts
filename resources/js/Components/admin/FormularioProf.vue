@@ -425,7 +425,10 @@ onMounted(async () => {
                                     placeholder="Ingrese el apellido paterno"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
                             <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}</div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                         </div>
                         <div class="sm:col-span-1 md:col-span-2">
                             <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
