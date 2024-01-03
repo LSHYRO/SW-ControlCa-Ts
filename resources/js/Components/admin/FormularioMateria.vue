@@ -1,11 +1,15 @@
 <script setup>
+////////////////////////////////////////////////////////////////
+ // Importaciones necesarias para el funcionamiento del 
+ // formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import { watch, ref } from 'vue';
 const emit = defineEmits(['close']);
+////////////////////////////////////////////////////////////////
 
-
-
+////////////////////////////////////////////////////////////////
+ // Propiedades que recibirá el formulario 
 const props = defineProps({
     show: {
         type: Boolean,
@@ -26,19 +30,36 @@ const props = defineProps({
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    materia: String,
-    descripcion: String,
-    esTaller: Boolean
 },
 );
+////////////////////////////////////////////////////////////////
 
-const errorNombre = ref(false);
-
+////////////////////////////////////////////////////////////////
+ // Funcion para cerrar el formulario
 const close = () => {
     emit('close');
     form.reset();
 };
+////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////
+// Variables para mensajes de validaciones
+const nombreMateriaError = ref('');
+const descripcionMateriaError = ref('');
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+// Funciones para la validacion del nombre de la materia y 
+// descripcion
+
+// Validacion de cadenas no vacias
+const validateStringNotEmpty = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+}
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+ // Actualizacion del formulario al editar el objeto
 const form = useForm({
     idMateria: props.materias.idMateria,
     materia: props.materias.materia,
@@ -46,22 +67,39 @@ const form = useForm({
     esTaller: props.materias.esTaller,
     esTaller: props.materias.esTaller,
 });
+////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////
+ // Guardar la materia, en dado caso que la informacion no se 
+ // valide, no avanza (No guarda la materia) y muestra los 
+ // mensajes
 const save = () => {
-    if (!form.materia) {
-        errorNombre.value = true;
+    nombreMateriaError.value = validateStringNotEmpty(form.materia) ? '' : 'Ingrese el nombre de la materia';
+    descripcionMateriaError.value = validateStringNotEmpty(form.descripcion) ? '' : 'Ingrese la descripcion de la materia';
+
+    if (nombreMateriaError.value || descripcionMateriaError.value) {
         return;
     }
+
     form.post(route('admin.addMaterias'), {
         onSuccess: () => {
             close()
+            nombreMateriaError.value = '';
+            descripcionMateriaError.value = '';
         }
     });
 }
+////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////
+ // Actualiza la información de la materia, en dado caso que la 
+ // informacion no se valide, no avanza (No guarda la materia) 
+ // y muestra los mensajes
 const update = () => {
-    if (!form.materia) {
-        errorNombre.value = true;
+    nombreMateriaError.value = validateStringNotEmpty(form.materia) ? '' : 'Ingrese el nombre de la materia';
+    descripcionMateriaError.value = validateStringNotEmpty(form.descripcion) ? '' : 'Ingrese la descripcion de la materia';
+
+    if (nombreMateriaError.value || descripcionMateriaError.value) {
         return;
     }
 
@@ -69,36 +107,40 @@ const update = () => {
     console.log(idMateria);
     console.log(document.getElementById('materia2').value);
     form.put(route('admin.actualizarMaterias', idMateria), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            nombreMateriaError.value = '';
+            descripcionMateriaError.value = '';
+        }
     });
 }
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+ // Observa la propíedad materias (si materia tiene algun valor)
+ // y actualiza los datos
 watch(() => props.materias, (newVal) => {
     form.idMateria = newVal.idMateria;
     form.materia = newVal.materia;
     form.descripcion = newVal.descripcion;
     form.esTaller = newVal.esTaller;
-    /*
-    if (newVal.esTaller == "Si") {
-        //form.esTaller = newVal.esTaller;
-        form.esTaller = true;
-    } else {
-        form.esTaller = false;
-    }
-    */
 }, { deep: true });
-
+////////////////////////////////////////////////////////////////
 </script>
-
 
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
+            <!-- //////////////////////////////////////////////////////////////// -->
+            <!--  // Dependiendo del valor de op (operación guardar o actualizar) -->
+            <!--  // el formulario servira para editar la información de la       -->
+            <!--  // materia o crear una nueva                                    -->
             <form @submit.prevent="(op === '1' ? save() : update())"
                 @keydown.enter.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
-                        materia </p>
+                        materia o editar su información</p>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="idMateria" class="block text-sm font-medium leading-6 text-gray-900">id</label>
@@ -111,12 +153,14 @@ watch(() => props.materias, (newVal) => {
                         <div class="sm:col-span-1 md:col-span-3"> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="materia" class="block text-sm font-medium leading-6 text-gray-900">Materia</label>
                             <div class="mt-2">
-                                <input type="text" name="materia" :id="'materia' + op" v-model="form.materia" required
-                                    @input="errorNombre = false" placeholder="Ingrese el nombre de la materia"
+                                <input type="text" name="materia" :id="'materia' + op" v-model="form.materia" placeholder="Ingrese el nombre de la materia"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  //Div para mostrar el mensaje de validación                                                                    -->
+                            <div v-if=" nombreMateriaError != ''" class="text-red-500 text-xs mt-1">{{  nombreMateriaError }}</div>
+                            <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
                         </div>
-
                         <div class="sm:col-span-1 md:col-span-2">
                             <label for="descripcion"
                                 class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
@@ -124,10 +168,10 @@ watch(() => props.materias, (newVal) => {
                                 <textarea type="text" name="descripcion" :id="'descripcion' + op" v-model="form.descripcion"
                                     placeholder="Ingrese descripción"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 resize-none">
-                                                    </textarea>
+                                </textarea>
                             </div>
+                            <div v-if=" descripcionMateriaError != ''" class="text-red-500 text-xs mt-1">{{ descripcionMateriaError }}</div>
                         </div>
-
                         <div class="sm:col-span-2">
                             <label for="esTaller" class="block text-sm font-medium leading-6 text-gray-900">¿Taller?</label>
                             <div class="mt-2">
@@ -135,14 +179,6 @@ watch(() => props.materias, (newVal) => {
                                     @change="form.esTaller = !form.esTaller">
                             </div>
                         </div>
-                    </div>
-
-                    <div v-if="errorNombre"
-                        class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-                        role="alert">
-                        <span class="font-medium">
-                            Ingrese el nombre de la materia
-                        </span>
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">

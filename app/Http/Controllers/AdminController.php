@@ -46,12 +46,7 @@ class AdminController extends Controller
     }
 
     public function profesores()
-    {   /*
-        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'profesor')
-            ->get();
-        */
-
+    {   
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
@@ -61,13 +56,6 @@ class AdminController extends Controller
         $tipoSangre = tipo_Sangre::all();
         $generos = generos::all();
         $direcciones = direcciones::all();
-        /*
-        // Mapear los nombres de géneros al array de personal
-        $personalConGeneros = $personal->map(function ($persona) use ($generos) {
-            $genero = $generos->where('idGenero', $persona->idGenero)->first();
-            $persona->genero = $genero ? $genero->genero : null;
-            return $persona;
-        });*/
 
         $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
             $genero = $generos->where('idGenero', $persona->idGenero)->first();

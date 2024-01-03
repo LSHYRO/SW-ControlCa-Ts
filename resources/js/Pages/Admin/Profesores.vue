@@ -1,4 +1,6 @@
 <script setup>
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Importaciones necesarias para la vista 
 import { ref, onMounted } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import FormularioProf from '@/Components/admin/FormularioProf.vue';
@@ -14,25 +16,42 @@ import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
 import jsZip from 'jszip';
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Variables e inicializaciones para el datatable
 window.JSZip = jsZip;
-
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
-
 DataTable.use(DataTablesLib);
 DataTable.use(ButtonsHtml5);
 DataTable.use(pdfmake);
 DataTable.use(Select);
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Variables que recibe la vista para la funcionalidad
 const props = defineProps({
     personal: { type: Object },
     tipoSangre: { type: Object },
     generos: { type: Object },
 });
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Constantes para el funcionamientos del modal y su configuración
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
+ // Constantes para el formulario
+var person = ({});
+const form = useForm({});
+const selectedPersonal = ref([]);
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Creación de la constante para el llenado de datos del datatable, donde tambien se crea los 
+ // checkboxes y los botones editar y eliminar
 const columns = [
     {
         data: null,
@@ -68,7 +87,11 @@ const columns = [
 
     }
 ];
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Constante de botones para la generación de documentos además de la configuración del titulo
+ // de los documentos
 const botones = [{
     title: 'Profesores registradas',
     extend: 'excelHtml5',
@@ -93,18 +116,14 @@ const botones = [{
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
-
 ];
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-var person = ({});
-
-
-const form = useForm({});
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Funciones para el funcionamiento del modal
 const abrirE = ($profe) => {
     person = $profe;
     mostrarModalE.value = true;
-    console.log($profe);
-    console.log(person);
 }
 const cerrarModal = () => {
     mostrarModal.value = false;
@@ -112,7 +131,10 @@ const cerrarModal = () => {
 const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función para elimnar profesores a través del botón del datatable
 const eliminarProfesor = (idPersonal, nombre) => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -130,31 +152,30 @@ const eliminarProfesor = (idPersonal, nombre) => {
 
     })
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-const selectedPersonal = ref([]);
-
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función para el llenado de selectedPersonal a través de los checkboxes
 const togglePersonalSelection = (personal) => {
     if (selectedPersonal.value.includes(personal)) {
         // Si la personal ya está seleccionada, la eliminamos del array
-        console.log("Se quito la personal del la seleccion");
         selectedPersonal.value = selectedPersonal.value.filter((m) => m !== personal);
     } else {
         // Si la personal no está seleccionada, la agregamos al array
-        console.log("Se agrego una personal a la selección");
         selectedPersonal.value.push(personal);
-
     }
     const botonEliminar = document.getElementById("eliminarPBtn");
 
     if (selectedPersonal.value.length > 0) {
-        botonEliminar.removeAttribute("disabled");
-        console.log("Se ha habilitado el botón");
+        botonEliminar.removeAttribute("disabled");        
     } else {
         botonEliminar.setAttribute("disabled", "");
-        console.log("Se ha deshabilitado el botón");
     }
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función para eliminar varios profesores con el botón eliminar
 const eliminarProfesores = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -171,34 +192,31 @@ const eliminarProfesores = () => {
             try {
                 const personalS = selectedPersonal.value.map((personal) => personal.idPersonal);
                 const $personalIds = personalS.join(',');
-                console.log(personalS);
                 await form.delete(route('admin.elimProfesores', $personalIds));
                 const botonEliminar = document.getElementById("eliminarPBtn");
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedPersonal.value = [];
-                botonEliminar.setAttribute("disabled", "");
-                console.log("Se ha deshabilitado el botón");
+                botonEliminar.setAttribute("disabled", "");                
             } catch (error) {
-                console.log('El error se origina aquí');
-                console.log(error);
+                console.log("Error al eliminar varias materias: " + error);
             }
         }
     });
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función onMounted que se ejecuta al iniciar la página 
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('profesoresTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
         if (checkbox.classList.contains('profesor-checkbox')) {
             const personalId = parseInt(checkbox.getAttribute('data-id'));
-            console.log(personalId);
             // Asegúrate de que props.materias.data esté definido antes de usar find
             console.log(props.personal);
             if (props.personal) {
                 const personal = props.personal.find(personal => personal.idPersonal === personalId);
-                console.log(personal);
                 if (personal) {
                     togglePersonalSelection(personal);
                 } else {
@@ -222,6 +240,7 @@ onMounted(() => {
         eliminarProfesor(personalId, personal.nombre + " " + personal.apellidoP + " " + personal.apellidoM);
     });
 });
+////////////////////////////////////////////////////////////////////////////////////////////////
 </script>
 
 <template>
@@ -231,7 +250,8 @@ onMounted(() => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <!-- Línea con gradiente -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
-            <!-- flash message start -->
+            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+            <!--  // Mensaje para mostrar si se guardo o borro un profesor                                        -->
             <div v-if="$page.props.flash.message"
                 class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
                 role="alert">
@@ -239,6 +259,7 @@ onMounted(() => {
                     {{ $page.props.flash.message }}
                 </span>
             </div>
+            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <!-- <div class="w-full md:w-1/3 mb-4 md:mb-0 "></div> -->
                 <!-- <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end"> -->
@@ -251,7 +272,6 @@ onMounted(() => {
                     @click="eliminarProfesores">
                     <i class="fa fa-trash mr-2"></i>Borrar Docente(s)
                 </button>
-
                 <!-- </div> -->
             </div>
 
@@ -339,13 +359,11 @@ onMounted(() => {
                 </DataTable>
             </div>
         </div>
-
         <formulario-prof :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir profesor'" :op="'1'" :modal="'modalCreate'" :tipoSangre="props.tipoSangre"
             :generos="props.generos"></formulario-prof>
         <formulario-prof :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person" :tipoSangre="props.tipoSangre"
             :generos="props.generos"></formulario-prof>
-
     </AdminLayout>
 </template>

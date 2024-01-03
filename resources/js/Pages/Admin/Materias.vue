@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, getCurrentInstance, onMounted } from 'vue';
-import SearchBar from '@/Components/SearchBar.vue';
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Importaciones necesarias para la funcionalidad de la vista en general
+import { ref, onMounted } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import FormularioMateria from '@/Components/admin/FormularioMateria.vue';
-import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import Swal from 'sweetalert2';
-import { useForm, usePage, Link } from '@inertiajs/vue3';
+import { useForm} from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import Buttons from 'datatables.net-buttons-dt';
@@ -16,20 +16,29 @@ import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
 import jsZip from 'jszip';
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
+ // documentos
 window.JSZip = jsZip;
-
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
-
 DataTable.use(DataTablesLib);
 DataTable.use(ButtonsHtml5);
 DataTable.use(pdfmake);
 DataTable.use(Select);
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Variables que recibe la vista 
 const props = defineProps({
     materias: { type: Object },
-
 });
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Configuración de las columnas con los valores correspondientes de las materias, ademas de
+ // la creacion de las checkboxes y los botones de editar y modificar
 const columns = [
     {
         data: null,
@@ -58,7 +67,11 @@ const columns = [
     }
     
 ];
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Creación de los botones para al generación de documentos, ademas de la configuración de los
+ // titulos de los documentos
 const botones = [{
     title: 'Materias registradas',
     extend: 'excelHtml5',
@@ -84,40 +97,46 @@ const botones = [{
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 ];
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Constantes para los modales
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
+ // Constantes para la configuracion del modal
 const maxWidth = 'xl';
 const closeable = true;
-
+ // Variable y constante para las materias y la seleccion de estas
 var mater = ({});
-
 const selectedMaterias = ref([]);
+ // Creación de la constante para el formulario (guardar los datos)
+const form = useForm({});
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Metodo para la seleccion y llenado del arreglo de materias (selectedMaterias) por medio del 
+ // checkbox
 const toggleMateriaSelection = (materia) => {
     if (selectedMaterias.value.includes(materia)) {
         // Si la materia ya está seleccionada, la eliminamos del array
-        console.log("Se quito la materia del la seleccion");
         selectedMaterias.value = selectedMaterias.value.filter((m) => m !== materia);
     } else {
         // Si la materia no está seleccionada, la agregamos al array
-        console.log("Se agrego una materia a la selección");
         selectedMaterias.value.push(materia);
-
     }
+    // Llamado del botón de eliminar para cambiar su estado deshabilitado
     const botonEliminar = document.getElementById("eliminarMBtn");
-
+    // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
     if (selectedMaterias.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
-        console.log("Se ha habilitado el botón");
     } else {
         botonEliminar.setAttribute("disabled", "");
-        console.log("Se ha deshabilitado el botón");
     }
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-const form = useForm({});
-
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Metodos para el manejo del modal del formulario
 const abrirE = ($materiaa) => {
     mater = $materiaa;
     mostrarModalE.value = true;
@@ -130,7 +149,10 @@ const cerrarModal = () => {
 const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función para eliminar materia (a tráves del botón dentro la tabla)
 const eliminarMateria = (idMateria, materia) => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -148,12 +170,14 @@ const eliminarMateria = (idMateria, materia) => {
 
     })
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función para eliminar varias materias a la vez (a tráves del bóton eliminar)
 const eliminarMaterias = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
-
     swal.fire({
         title: '¿Estas seguro que deseas eliminar los datos de las materias seleccionadas?',
         icon: 'warning',
@@ -165,31 +189,28 @@ const eliminarMaterias = () => {
             try {
                 const materiasS = selectedMaterias.value.map((materia) => materia.idMateria);
                 const $materiasIds = materiasS.join(',');
-                console.log(materiasS);
                 await form.delete(route('admin.elimMaterias', $materiasIds));
-
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedMaterias.value = [];
             } catch (error) {
-                console.log('El error se origina aquí');
-                console.log(error);
+                console.log("Error al eliminar varias materias: " + error);
             }
         }
     });
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función onMounted que se ejecuta al iniciar la vista
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('materiasTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
         if (checkbox.classList.contains('materia-checkbox')) {
             const materiaId = parseInt(checkbox.getAttribute('data-id'));
-            console.log(materiaId);
-            // Asegúrate de que props.materias.data esté definido antes de usar find
-            console.log(props.materias);
+            // Se asegura que props.materias.data esté definido antes de usar find
             if (props.materias) {
                 const materia = props.materias.find(materia => materia.idMateria === materiaId);
-                console.log(materia);
                 if (materia) {
                     toggleMateriaSelection(materia);
                 } else {
@@ -213,7 +234,7 @@ onMounted(() => {
         eliminarMateria(materiaId, materia.materia);
     });
 });
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 </script>
 
 <template>
@@ -222,7 +243,8 @@ onMounted(() => {
             <h2 class="text-black text-2xl text-center font-semibold p-5">Materias</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
-            <!-- flash message start -->
+            <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+            <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente una materia            -->
             <div v-if="$page.props.flash.message"
                 class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
                 role="alert">
@@ -230,6 +252,7 @@ onMounted(() => {
                     {{ $page.props.flash.message }}
                 </span>
             </div>
+            <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
                 <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"

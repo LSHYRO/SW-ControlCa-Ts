@@ -108,32 +108,24 @@ class DireccionesApiController extends Controller
     public function consDatosPorCodigoPostal($codigoPostal)
     {
         $datos = [];
-
         // Buscar el asentamiento por código postal
-        $codigoPostalModel = codigoPostal::where('codigoPostal', $codigoPostal)->first();
-        
+        $codigoPostalModel = codigoPostal::where('codigoPostal', $codigoPostal)->first();        
         if ($codigoPostalModel) {
             // Obtener el primer asentamiento asociado al código postal
-            $asentamiento = $codigoPostalModel->asentamientos->first();
-            
+            $asentamiento = $codigoPostalModel->asentamientos->first();            
             if ($asentamiento) {
                 // Acceder al municipio a través de la relación en el modelo Asentamientos
                 $municipio = $asentamiento->municipios;
                 $datos['municipio'] = $municipio;
                 if ($municipio) {
                     // Acceder al estado a través de la relación en el modelo Municipios
-                    $estado = $municipio->estados;
-                    
-                    
+                    $estado = $municipio->estados;                  
                     if ($estado) {
                         $datos['estado'] = $estado;
-
-                        // Puedes agregar lógica para obtener otros datos según sea necesario
                     }
                 }
             }
         }
-
         return response()->json($datos);
     }
 

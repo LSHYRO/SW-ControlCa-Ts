@@ -1,10 +1,16 @@
 <script setup>
+////////////////////////////////////////////////////////////////
+// Importaciones necesarias para el funcionamiento del 
+// formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import { onMounted, watch, ref } from 'vue';
 const emit = defineEmits(['close']);
 import axios from 'axios';
 ////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+// Variables o propiedades que recibe el formulario
 const props = defineProps({
     show: {
         type: Boolean,
@@ -33,28 +39,28 @@ const props = defineProps({
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    nombre: String,
-    apellidoM: String,
-    apellidoP: String,
-    correoElectronico: String,
-    numTelefono: String,
-    fechaNacimiento: Date,
-    curp: String,
-    rfc: String,
-    idTipoSangre: String,
-    alergias: String,
-    discapacidad: String,
-
 },
 );
 //////////////////////////////////////////////////////////////////////
-var estados = new Array();
 
+//////////////////////////////////////////////////////////////////////
+// Constantes para cargar los estados, municipios y asentamientos
+const estados = ref([]);
+const municipios = ref([]);
+const asentamientos = ref([]);
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+// Función para cerrar el formulario
 const close = () => {
     emit('close');
     form.reset();
 };
-//--------------------------------------------------------------------//
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+// Función para actualizar los datos del formulario con la variable
+// personal que recibe el formulario
 const form = useForm({
     idPersonal: props.personal.idPersonal,
     nombre: props.personal.nombre,
@@ -79,9 +85,10 @@ const form = useForm({
     idDomicilio: props.personal.idDireccion,
 
 });
-//----------------------------------------------------------------//
-////////////////////////////////
-//Variables para los mensajes de validación
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+// Variables para los mensajes de validación
 const curpError = ref('');
 const rfcError = ref('');
 const nombreError = ref('');
@@ -95,10 +102,10 @@ const calleError = ref('');
 const numeroCError = ref('');
 const generoError = ref('');
 const tipoSError = ref('');
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
-////////////////////////////////
-//Validacion de CURP y RFC
+//////////////////////////////////////////////////////////////////////
+// Validacion de CURP y RFC
 // Función para validar CURP
 const validateCURP = (curp) => {
     // Validación con expresión regular
@@ -112,51 +119,56 @@ const validateRFC = (rfc) => {
     // Devuelve true si el RFC es válido, de lo contrario, devuelve false
     return /^[A-Z&Ñ]{4}\d{6}[A-Z0-9]{3}$/.test(rfc);
 }
-// Validacion del correo a través de una expresion regular 
+
+// Validación del correo a través de una expresion regular 
 const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 };
 
-// Validacion de cadenas no vacias
+// Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
     return typeof value === 'string' && value.trim() !== '';
 }
 
-// Validacion de fecha de nacimiento
+// Validación de fecha de nacimiento
 const validateFechaNacimiento = (fechaNacimiento) => {
     const fechaNac = new Date(fechaNacimiento);
     const fechaActual = new Date();
     return fechaNac < fechaActual;
 }
-// Validacion de numero telefonico a traves de espresion regular
+
+// Validación de numero telefonico a traves de espresion regular
 const validateNumeroTelefono = (numeroTelefono) => {
     const numeroTExpReg = /^\d{10}$/;
     return numeroTExpReg.test(numeroTelefono);
 };
 
-// Validacion de codigo postal a traves de expresion regular
+// Validación de codigo postal a traves de expresion regular
 const validateCodigoPostal = (codigoPostal) => {
     const codigoPostalRegex = /^\d{5}$/;
     return codigoPostalRegex.test(codigoPostal);
 };
 
-//Validacion de numero de casa
+// Validación de numero de casa
 const validateNumeroCasa = (numeroCasa) => {
     // Aquí puedes ajustar la expresión regular según tus requisitos
     const numeroCasaRegex = /^\d+$/;
     return numeroCasaRegex.test(numeroCasa);
 };
-
+// Validación de los select 
 const validateSelect = (selectedValue) => {
     if (selectedValue == undefined) {
         return false;
     }
     return true;
 };
+//////////////////////////////////////////////////////////////////////
 
-////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////
+// Función para crear (guardar) un nuevo profesor, donde primero se
+// se realizan las validaciones y dependiendo del resultado se 
+// guarda o se muestran los mensajes de error
 const save = () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
@@ -213,7 +225,12 @@ const save = () => {
         }
     });
 }
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+// Función para modificar (actualizar) un profesor, donde primero se
+// se realizan las validaciones y dependiendo del resultado se 
+// guarda o se muestran los mensajes de error
 const update = () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
@@ -271,6 +288,11 @@ const update = () => {
         }
     });
 }
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+// Observa la variable personal que se le pasa al formulario, en dado
+// donde al cambiar los datos se actualiza el formulario
 watch(() => props.personal, (newVal) => {
     form.idPersonal = newVal.idPersonal;
     form.nombre = newVal.nombre;
@@ -294,80 +316,87 @@ watch(() => props.personal, (newVal) => {
     form.idDomicilio = newVal.idDireccion;
 }, { deep: true }
 );
+//////////////////////////////////////////////////////////////////////
 
-var municipios = new Array();
-var asentamientos = new Array();
-
-const loadMunicipios = async () => {
+//////////////////////////////////////////////////////////////////////
+// Constante con función para cargar los municipios dependiendo de
+// la selección del select estado
+const cargarMunicipios = async () => {
     try {
         var idEstado = form.estado;
         const response = await axios.get(route('consMunicipiosXIdEstado', idEstado));
-        municipios = response.data;
-        //form.municipio = municipios.value[0].idMunicipio; // Seleccionar el primer municipio
-        form.municipio = await municipios[0].idMunicipio;
+        municipios.value = response.data;
     } catch (error) {
         console.error('Error al obtener municipios:', error);
     }
 };
+//////////////////////////////////////////////////////////////////////
 
-const loadAsentamientos = async () => {
+//////////////////////////////////////////////////////////////////////
+// Constante con función para cargar los asentamientos dependiendo de
+// la selección del select municipio
+const cargarAsentamientos = async () => {
     try {
         var idMunicipio = form.municipio;
         const response = await axios.get(route('consAsentamientosXIdMunicipio', idMunicipio));
-        asentamientos = response.data;
-        form.asentamiento = asentamientos[0].idAsentamiento; // Seleccionar el primer asentamiento
+        asentamientos.value = await response.data;
     } catch (error) {
         console.error('Error al obtener asentamientos:', error);
     }
 };
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+// Constante con función para cargar los datos de estado, municipio
+// y asentamientos dependiendo del codigo postal que se coloque en
+// el formulario
 const buscarDatosXCodigoPostal = async () => {
     try {
         var codigoPostal = form.codigoPostal;
         if (validateCodigoPostal(codigoPostal)) {
             const response = await axios.get(route('consDatosXCodigoPostal', codigoPostal));
             const datos = response.data;
-            if(datos.length <= 0) {
+            console.log(datos);
+            if (datos.length <= 0) {
                 codigoPError.value = 'Codigo postal no existente';
                 return;
             }
             if (datos.estado) {
-                form.estado = datos.estado.idEstado;
+                form.estado = await datos.estado.idEstado;
+                await cargarMunicipios();
+                
             }
             if (datos.municipio) {
-                form.municipio = datos.municipio.idMunicipio;
+                form.municipio = await datos.municipio.idMunicipio;
+                await cargarAsentamientos();
+                form.asentamiento = asentamientos.value[0]?.idAsentamiento;
             }
             codigoPError.value = '';
-        }else{
+        } else {
             codigoPError.value = 'Ingrese el codigo postal completo';
         }
     } catch (error) {
         console.error('Error al obtener datos por código postal:', error);
     }
 };
+//////////////////////////////////////////////////////////////////////
 
-
-watch(() => form.estado, () => {
-    loadMunicipios();
-});
-
-watch(() => form.municipio, () => {
-    loadAsentamientos();
-});
-
+//////////////////////////////////////////////////////////////////////
+// Funcion onMounted para al rellenar los datos del select estado
 onMounted(async () => {
-    try {
-        const response = await axios.get(route('consEstados'));
-        estados = response.data;
-    } catch (error) {
-        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
-        console.error('Error al obtener datos: ', error);
-    }
-    if (estados.length > 0) {
-        form.estado = await estados[19].idEstado;
-
+    try{
+    const response = await axios.get(route('consEstados'));
+    estados.value = response.data;
+    form.estado = estados.value[19]?.idEstado;
+    await cargarMunicipios();
+    form.municipio = municipios.value[0]?.idMunicipio;
+    await cargarAsentamientos();
+    form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+    }catch(error){
+        console.log("Error generado en onMounted: " + error);
     }
 });
+//////////////////////////////////////////////////////////////////////
 </script>
 
 <template>
@@ -396,7 +425,10 @@ onMounted(async () => {
                                     placeholder="Ingrese el apellido paterno"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
                             <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}</div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                         </div>
                         <div class="sm:col-span-1 md:col-span-2">
                             <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
@@ -526,7 +558,8 @@ onMounted(async () => {
                         <div class="sm:col-span-3">
                             <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
                             <div class="mt-2">
-                                <select name="estado" :id="'estado' + op" v-model="form.estado"
+                                <select name="estado" :id="'estado' + op" v-model="form.estado" 
+                                @change="cargarMunicipios"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un estado</option>
                                     <option v-for="estado in estados" :key="estado.idEstado" :value="estado.idEstado">
@@ -540,6 +573,7 @@ onMounted(async () => {
                                 class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
                             <div class="mt-2">
                                 <select name="municipio" :id="'municipio' + op" v-model="form.municipio"
+                                    @change="cargarAsentamientos"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un municipio</option>
                                     <option v-for="municipio in municipios" :key="municipio.idMunicipio"
