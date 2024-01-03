@@ -44,35 +44,40 @@ const columns = [
     {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
-    { data: 'idGrado', 
+    {
+        data: 'idGrado',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const grado = props.grados.find(grado => grado.idGrado === data);
             return grado ? grado.grado : '';
         }
     },
-    { data: 'idGrupo', 
+    {
+        data: 'idGrupo',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const grupo = props.grupos.find(grupo => grupo.idGrupo === data);
             return grupo ? grupo.grupo : '';
         }
     },
-    { data: 'idPersonal', 
+    {
+        data: 'idPersonal',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const docente = props.personal.find(docente => docente.idPersonal === data);
             return docente ? docente.nombre_completo : '';
         }
     },
-    { data: 'idMateria', 
+    {
+        data: 'idMateria',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const materia = props.materias.find(materia => materia.idMateria === data);
             return materia ? materia.materia : '';
         }
     },
-    {data: 'idCiclo',
+    {
+        data: 'idCiclo',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === data);
@@ -347,9 +352,11 @@ onMounted(() => {
         </div>
 
         <formulario-clases :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'"></formulario-clases>
+            :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'" :grados="props.grados" :grupos="props.grupos"
+            :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
         <formulario-clases :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :personal="person"></formulario-clases>
+            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :grados="props.grados" :grupos="props.grupos"
+            :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
 
     </AdminLayout>
 </template>

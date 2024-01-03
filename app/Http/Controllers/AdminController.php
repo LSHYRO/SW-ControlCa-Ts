@@ -79,8 +79,20 @@ class AdminController extends Controller
     public function clases()
     {
         $clases = clases::all();
+        $grupos = grupos::all();
+        $grados = grados::all();
+        $personal = personal::all();
+        $materias = materias::all();
+        $ciclos = ciclos::all();
 
-        return Inertia::render('Admin/Clases');
+        return Inertia::render('Admin/Clases',[
+            'clases' => $clases,
+            'grupos' => $grupos,
+            'grados' => $grados,
+            'personal' => $personal,
+            'materias' => $materias,
+            'ciclos' => $ciclos,
+        ]);
     }
 
     public function tutores_alumnos()

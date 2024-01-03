@@ -2,7 +2,6 @@
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-const emit = defineEmits(['close']);
 import { router } from '@inertiajs/vue3';
 import { watch } from 'vue';
 import TimePicker from 'vue3-timepicker';
@@ -26,21 +25,39 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    grados: {
+        type: Object,
+        default: () => ({}),
+    },
+    grupos: {
+        type: Object,
+        default: () => ({}),
+    },
+    personal: {
+        type: Object,
+        default: () => ({}),
+    },
+    materias: {
+        type: Object,
+        default: () => ({}),
+    },
+    ciclos: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    clase: String,
-    hora: TimeRanges,
-    dias: String,
-    grupo: Boolean,
-    grado: Boolean,
-    docente: String,
-    materia: String,
-    Ciclo: String,
+    idGrado: String,
+    idGrupo: String,
+    idPersonal: String,
+    idMateria: String,
+    idCiclo: String,
 },
 );
 
 const selectedTime = ref(props.hora);
+const emit = defineEmits(['close']);
 
 const close = () => {
     emit('close');
@@ -49,16 +66,16 @@ const close = () => {
 
 const form = useForm({
     idClase: props.clases.idClase,
-    clase: props.clases.clase,
-    hora: props.clases.hora,
-    dias: props.clases.dias,
-    grupo: props.clases.grupo,
-    grado: props.clases.grado,
-    docente: props.clases.docente,
-    materia: props.clases.materia,
-    hora: props.hora,
-    ciclo: props.clases.ciclo,
-    dias: []
+    grados: props.clases.idGrado,
+    grados: props.clases.grado,
+    grupos: props.clases.idGrupo,
+    grupos: props.clases.grupo,
+    docentes: props.clases.idPersonal,
+    docentes: props.clases.nombre_completo,
+    materias: props.clases.idMateria,
+    materias: props.clases.materia,
+    ciclos: props.clases.idCiclo,//Le agregué la s
+    ciclos: props.clases.descripcionCiclo,//Le agregue la s a ciclo
 });
 
 const save = () => {
@@ -77,14 +94,11 @@ const update = () => {
 }
 watch(() => props.clases, (newVal) => {
     form.idClase = newVal.idClase;
-    form.clase = newVal.clase;
-    form.hora = newVal.hora;
-    form.dias= newVal.dias;
-    form.grupo= newVal.grupo;
-    form.grado= newVal.grado;
-    form.docente= newVal.docente;
-    form.materia= newVal.materia;
-    form.ciclo= newVal.ciclo;
+    form.grados= newVal.grados;
+    form.grupos= newVal.grupos;
+    form.docentes= newVal.docentes;
+    form.materias= newVal.materias;
+    form.ciclos= newVal.ciclos;
 }, { deep: true });
 
 </script>
@@ -108,94 +122,68 @@ watch(() => props.clases, (newVal) => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
-                        <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="clase" class="block text-sm font-medium leading-6 text-gray-900">Clase</label>
-                            <div class="mt-2">
-                                <input type="text" name="clase" :id="'clase' + op" v-model="form.clase"
-                                    placeholder="Ingrese la clase"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>
 
-                        <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="hora" class="block text-sm font-medium leading-6 text-gray-900">Hora</label>
-                            <div class="mt-2">
-                                <input type="TimeRanges" name="hora" :id="'hora' + op" v-model="form.hora"
-                                    placeholder="Ingrese la hora"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="dias" class="block text-sm font-medium leading-6 text-gray-900">Días</label>
-                            <div class="mt-2">
-                                <input type="text" name="dias" :id="'dias' + op" v-model="form.dias"
-                                    placeholder="Ingrese los días"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1 md:col-span-2">
-                            <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
-                            <div class="mt-2">
-                                <select name="grupo" v-model="form.grupo" :id="'grupo' + op"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option disabled value="">Seleccione el grupo</option>
-                                    <option>A</option>
-                                    <option>B</option>
-                                    <option>C</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-1 md:col-span-2">
+                        <div class="sm:col-span-3">
                             <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
-                                <select name="grado" v-model="form.grado" :id="'grado' + op"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option disabled value="">Seleccione el grado</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
+                                <select name="grado" :id="'grado' + op" v-model="form.grados"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un grado</option>
+                                    <option v-for="grado in grados" :key="grado.idGrado" :value="grado.idGrado">
+                                        {{ grado.grado }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-3">
+                        <div class="sm:col-span-3">
+                            <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
+                            <div class="mt-2">
+                                <select name="grupo" :id="'grupo' + op" v-model="form.grupos"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un grupo</option>
+                                    <option v-for="grupo in grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
+                                        {{ grupo.grupo }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-6">
                             <label for="docente" class="block text-sm font-medium leading-6 text-gray-900">Docente</label>
                             <div class="mt-2">
-                                <select name="docente" v-model="form.docente" :id="'docente' + op"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option disabled value="">Seleccione al docente</option>
-                                    <option>Se debe cargar</option>
-                                    <option>Se debe cargar</option>
-                                    <option>Se debe cargar</option>
+                                <select name="docente" :id="'docente' + op" v-model="form.docentes"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un docente</option>
+                                    <option v-for="docente in personal" :key="docente.idPersonal" :value="docente.idPersonal">
+                                        {{ docente.nombre_completo }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-3">
+                        <div class="sm:col-span-3">
                             <label for="materia" class="block text-sm font-medium leading-6 text-gray-900">Materia</label>
                             <div class="mt-2">
-                                <select name="materia" v-model="form.materia" :id="'materia' + op"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option disabled value="">Seleccione la materia</option>
-                                    <option>Falta materia</option>
-                                    <option>Falta materia</option>
-                                    <option>Falta materia</option>
+                                <select name="materia" :id="'materia' + op" v-model="form.materias"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona una materia</option>
+                                    <option v-for="materia in materias" :key="materia.idMateria" :value="materia.idMateria">
+                                        {{ materia.materia }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-2">
+                        <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <select name="ciclo" v-model="form.ciclo" :id="'ciclo' + op"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option disabled value="">Seleccione el ciclo</option>
-                                    <option>Falta ciclo</option>
-                                    <option>Falta ciclo</option>
-                                    <option>Falta ciclo</option>
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un ciclo</option>
+                                    <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
+                                        {{ ciclo.descripcionCiclo }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
