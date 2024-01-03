@@ -77,7 +77,7 @@ class personal extends Model
     
     public function genero(): HasOne
     {
-        return $this->hasOne(genero::class, 'idGenero', 'idGenero');
+        return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }
 
 }
