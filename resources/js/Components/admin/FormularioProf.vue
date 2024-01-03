@@ -33,18 +33,6 @@ const props = defineProps({
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    nombre: String,
-    apellidoM: String,
-    apellidoP: String,
-    correoElectronico: String,
-    numTelefono: String,
-    fechaNacimiento: Date,
-    curp: String,
-    rfc: String,
-    idTipoSangre: String,
-    alergias: String,
-    discapacidad: String,
-
 },
 );
 //////////////////////////////////////////////////////////////////////
@@ -81,7 +69,7 @@ const form = useForm({
 });
 //----------------------------------------------------------------//
 ////////////////////////////////
-//Variables para los mensajes de validación
+// Variables para los mensajes de validación
 const curpError = ref('');
 const rfcError = ref('');
 const nombreError = ref('');
@@ -302,7 +290,7 @@ const loadMunicipios = async () => {
     try {
         var idEstado = form.estado;
         const response = await axios.get(route('consMunicipiosXIdEstado', idEstado));
-        municipios = response.data;
+        municipios = await response.data;
         //form.municipio = municipios.value[0].idMunicipio; // Seleccionar el primer municipio
         form.municipio = await municipios[0].idMunicipio;
     } catch (error) {
@@ -314,8 +302,8 @@ const loadAsentamientos = async () => {
     try {
         var idMunicipio = form.municipio;
         const response = await axios.get(route('consAsentamientosXIdMunicipio', idMunicipio));
-        asentamientos = response.data;
-        form.asentamiento = asentamientos[0].idAsentamiento; // Seleccionar el primer asentamiento
+        asentamientos = await response.data;
+        form.asentamiento = await asentamientos[0].idAsentamiento; // Seleccionar el primer asentamiento
     } catch (error) {
         console.error('Error al obtener asentamientos:', error);
     }
@@ -335,7 +323,9 @@ const buscarDatosXCodigoPostal = async () => {
                 form.estado = datos.estado.idEstado;
             }
             if (datos.municipio) {
+                
                 form.municipio = datos.municipio.idMunicipio;
+                
             }
             codigoPError.value = '';
         }else{
@@ -348,11 +338,11 @@ const buscarDatosXCodigoPostal = async () => {
 
 
 watch(() => form.estado, () => {
-    loadMunicipios();
+     loadMunicipios();
 });
 
 watch(() => form.municipio, () => {
-    loadAsentamientos();
+     loadAsentamientos();
 });
 
 onMounted(async () => {
