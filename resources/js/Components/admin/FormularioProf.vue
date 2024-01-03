@@ -1,10 +1,16 @@
 <script setup>
+////////////////////////////////////////////////////////////////
+ // Importaciones necesarias para el funcionamiento del 
+ // formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import { onMounted, watch, ref } from 'vue';
 const emit = defineEmits(['close']);
 import axios from 'axios';
 ////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+ // Variables o propiedades que recibe el formulario
 const props = defineProps({
     show: {
         type: Boolean,
@@ -36,13 +42,25 @@ const props = defineProps({
 },
 );
 //////////////////////////////////////////////////////////////////////
-var estados = new Array();
 
+//////////////////////////////////////////////////////////////////////
+ // Constantes para cargar los estados, municipios y asentamientos
+const estados = ref([]);
+const municipios = ref([]);
+const asentamientos = ref([]);
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+ // Función para cerrar el formulario
 const close = () => {
     emit('close');
     form.reset();
 };
-//--------------------------------------------------------------------//
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+ // Función para actualizar los datos del formulario con la variable
+ // personal que recibe el formulario
 const form = useForm({
     idPersonal: props.personal.idPersonal,
     nombre: props.personal.nombre,
@@ -67,9 +85,10 @@ const form = useForm({
     idDomicilio: props.personal.idDireccion,
 
 });
-//----------------------------------------------------------------//
-////////////////////////////////
-// Variables para los mensajes de validación
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+ // Variables para los mensajes de validación
 const curpError = ref('');
 const rfcError = ref('');
 const nombreError = ref('');
@@ -83,68 +102,73 @@ const calleError = ref('');
 const numeroCError = ref('');
 const generoError = ref('');
 const tipoSError = ref('');
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
-////////////////////////////////
-//Validacion de CURP y RFC
-// Función para validar CURP
+//////////////////////////////////////////////////////////////////////
+ // Validacion de CURP y RFC
+  // Función para validar CURP
 const validateCURP = (curp) => {
     // Validación con expresión regular
     // Devuelve true si la CURP es válida, de lo contrario, devuelve false
     return /^[A-Z]{4}\d{6}[HM]{1}[A-Z]{5}[A-Z0-9]{1}\d{1}$/.test(curp);
 }
 
-// Función para validar RFC
+  // Función para validar RFC
 const validateRFC = (rfc) => {
     // Validación con expresión regular
     // Devuelve true si el RFC es válido, de lo contrario, devuelve false
     return /^[A-Z&Ñ]{4}\d{6}[A-Z0-9]{3}$/.test(rfc);
 }
-// Validacion del correo a través de una expresion regular 
+
+  // Validación del correo a través de una expresion regular 
 const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 };
 
-// Validacion de cadenas no vacias
+  // Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
     return typeof value === 'string' && value.trim() !== '';
 }
 
-// Validacion de fecha de nacimiento
+  // Validación de fecha de nacimiento
 const validateFechaNacimiento = (fechaNacimiento) => {
     const fechaNac = new Date(fechaNacimiento);
     const fechaActual = new Date();
     return fechaNac < fechaActual;
 }
-// Validacion de numero telefonico a traves de espresion regular
+
+  // Validación de numero telefonico a traves de espresion regular
 const validateNumeroTelefono = (numeroTelefono) => {
     const numeroTExpReg = /^\d{10}$/;
     return numeroTExpReg.test(numeroTelefono);
 };
 
-// Validacion de codigo postal a traves de expresion regular
+  // Validación de codigo postal a traves de expresion regular
 const validateCodigoPostal = (codigoPostal) => {
     const codigoPostalRegex = /^\d{5}$/;
     return codigoPostalRegex.test(codigoPostal);
 };
 
-//Validacion de numero de casa
+  // Validación de numero de casa
 const validateNumeroCasa = (numeroCasa) => {
     // Aquí puedes ajustar la expresión regular según tus requisitos
     const numeroCasaRegex = /^\d+$/;
     return numeroCasaRegex.test(numeroCasa);
 };
-
+  // Validación de los select 
 const validateSelect = (selectedValue) => {
     if (selectedValue == undefined) {
         return false;
     }
     return true;
 };
+//////////////////////////////////////////////////////////////////////
 
-////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////
+ // Función para crear (guardar) un nuevo profesor, donde primero se
+ // se realizan las validaciones y dependiendo del resultado se 
+ // guarda o se muestran los mensajes de error
 const save = () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
@@ -201,7 +225,12 @@ const save = () => {
         }
     });
 }
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+ // Función para modificar (actualizar) un profesor, donde primero se
+ // se realizan las validaciones y dependiendo del resultado se 
+ // guarda o se muestran los mensajes de error
 const update = () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
@@ -259,6 +288,11 @@ const update = () => {
         }
     });
 }
+//////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+ // Observa la variable personal que se le pasa al formulario, en dado
+ // donde al cambiar los datos se actualiza el formulario
 watch(() => props.personal, (newVal) => {
     form.idPersonal = newVal.idPersonal;
     form.nombre = newVal.nombre;
@@ -282,33 +316,43 @@ watch(() => props.personal, (newVal) => {
     form.idDomicilio = newVal.idDireccion;
 }, { deep: true }
 );
+//////////////////////////////////////////////////////////////////////
 
-var municipios = new Array();
-var asentamientos = new Array();
-
+//////////////////////////////////////////////////////////////////////
+ // Constante con función para cargar los municipios dependiendo de
+ // la selección del select estado
 const loadMunicipios = async () => {
     try {
         var idEstado = form.estado;
         const response = await axios.get(route('consMunicipiosXIdEstado', idEstado));
-        municipios = await response.data;
+        municipios.value = await response.data;
         //form.municipio = municipios.value[0].idMunicipio; // Seleccionar el primer municipio
-        form.municipio = await municipios[0].idMunicipio;
+        form.municipio = await municipios.value[0].idMunicipio;
     } catch (error) {
         console.error('Error al obtener municipios:', error);
     }
 };
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+ // Constante con función para cargar los asentamientos dependiendo de
+ // la selección del select municipio
 const loadAsentamientos = async () => {
     try {
         var idMunicipio = form.municipio;
         const response = await axios.get(route('consAsentamientosXIdMunicipio', idMunicipio));
-        asentamientos = await response.data;
-        form.asentamiento = await asentamientos[0].idAsentamiento; // Seleccionar el primer asentamiento
+        asentamientos.value = await response.data;
+        form.asentamiento = await asentamientos.value[0].idAsentamiento; // Seleccionar el primer asentamiento
     } catch (error) {
         console.error('Error al obtener asentamientos:', error);
     }
 };
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+ // Constante con función para cargar los datos de estado, municipio
+ // y asentamientos dependiendo del codigo postal que se coloque en
+ // el formulario
 const buscarDatosXCodigoPostal = async () => {
     try {
         var codigoPostal = form.codigoPostal;
@@ -335,29 +379,40 @@ const buscarDatosXCodigoPostal = async () => {
         console.error('Error al obtener datos por código postal:', error);
     }
 };
+//////////////////////////////////////////////////////////////////////
 
-
+//////////////////////////////////////////////////////////////////////
+ // Funciones watch para los select, los cuales actualizan los datos
+ // de los select
+  // Cambia los datos del select municipio dependiendo del contenido
+  // del select de estado
 watch(() => form.estado, () => {
      loadMunicipios();
 });
 
+  // Cambia los datos del select asentamiento dependiendo del 
+  // contenido del select municipio
 watch(() => form.municipio, () => {
      loadAsentamientos();
 });
+//////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+ // Funcion onMounted para al rellenar los datos del select estado
 onMounted(async () => {
     try {
         const response = await axios.get(route('consEstados'));
-        estados = response.data;
+        estados.value = response.data;
     } catch (error) {
         // Manejar el error, por ejemplo, mostrar un mensaje al usuario
         console.error('Error al obtener datos: ', error);
     }
-    if (estados.length > 0) {
-        form.estado = await estados[19].idEstado;
-
+    if (estados.value.length > 0) {
+        form.estado = await estados.value[19]?.idEstado;
+        console.log(estados.value[19]?.idEstado);
     }
 });
+//////////////////////////////////////////////////////////////////////
 </script>
 
 <template>
