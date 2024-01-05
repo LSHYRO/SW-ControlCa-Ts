@@ -1,11 +1,8 @@
 <script setup>
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { watch } from 'vue';
-import TimePicker from 'vue3-timepicker';
-
 
 const props = defineProps({
     show: {
@@ -56,12 +53,11 @@ const props = defineProps({
 },
 );
 
-const selectedTime = ref(props.hora);
 const emit = defineEmits(['close']);
 
 const close = () => {
     emit('close');
-    form.reset;
+    form.reset();
 };
 
 const form = useForm({
@@ -94,11 +90,11 @@ const update = () => {
 }
 watch(() => props.clases, (newVal) => {
     form.idClase = newVal.idClase;
-    form.grados= newVal.grados;
-    form.grupos= newVal.grupos;
-    form.docentes= newVal.docentes;
-    form.materias= newVal.materias;
-    form.ciclos= newVal.ciclos;
+    form.grados = newVal.grados;
+    form.grupos = newVal.grupos;
+    form.docentes = newVal.docentes;
+    form.materias = newVal.materias;
+    form.ciclos = newVal.ciclos;
 }, { deep: true });
 
 </script>
@@ -108,16 +104,18 @@ watch(() => props.clases, (newVal) => {
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
 
-            <form @submit.prevent="(op === '1' ? save() : update())">
+            <form @submit.prevent="(op === '1' ? save() : update())"
+                @keydown.enter.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva clase </p>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
+                        clase </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="idClase" class="block text-sm font-medium leading-6 text-gray-900">id</label>
                             <div class="mt-2">
-                                <input type="number" name="idClase" v-model="form.idMateria" placeholder="Ingrese id"
+                                <input type="number" name="idClase" v-model="form.idClase" placeholder="Ingrese id"
                                     :id="'idClase' + op"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
@@ -155,7 +153,8 @@ watch(() => props.clases, (newVal) => {
                                 <select name="docente" :id="'docente' + op" v-model="form.docentes"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un docente</option>
-                                    <option v-for="docente in personal" :key="docente.idPersonal" :value="docente.idPersonal">
+                                    <option v-for="docente in personal" :key="docente.idPersonal"
+                                        :value="docente.idPersonal">
                                         {{ docente.nombre_completo }}
                                     </option>
                                 </select>
@@ -198,5 +197,4 @@ watch(() => props.clases, (newVal) => {
                 </div>
             </form>
         </div>
-    </Modal>
-</template>
+</Modal></template>

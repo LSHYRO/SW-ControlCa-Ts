@@ -5,7 +5,6 @@ use App\Http\Controllers\DireccionesApiController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,14 +15,12 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::controller(AdminController::class)->group(function () {
     Route::get('/a', 'index')->name('admin.principal');
     Route::get('/', 'inicio')->name('admin.inicio');
     Route::get('/profesores', 'profesores')->name('admin.profesores');
 
     Route::get('/tutores_alumnos', 'tutores_alumnos')->name('admin.tutoresAlum');
-
 
     Route::get('/alumnos', 'alumnos')->name('admin.alumnos');
     Route::get('/directivos', 'directivos')->name('admin.directivos');
@@ -41,6 +38,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/grupos', 'addGrupos')->name('admin.addGrupos');
     Route::post('/ciclos', 'addCiclos')->name('admin.addCiclos');
     Route::post('/periodos', 'addPeriodos')->name('admin.addPeriodos');
+    Route::post('/clases', 'addClases')->name('admin.addClases');
 
 
     Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');

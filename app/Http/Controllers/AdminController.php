@@ -520,7 +520,6 @@ class AdminController extends Controller
         ]);
 
         $clase = new clases();
-        $clase->clase = $request->clase;
         $clase->idGrupo = $request->grupos;
         $clase->idGrado = $request->grados;
         $clase->idPersonal = $request->personal;
