@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -58,9 +59,9 @@ class alumnos extends Model
         return $this->hasOne(materias::class, 'idMateria', 'idMateria');
     }
 
-    public function tutores(): HasOne
+    public function tutores(): BelongsTo
     {
-        return $this->hasOne(tutores::class, 'idTutor', 'idTutor');
+        return $this->belongsTo(tutores::class, 'idTutor', 'idTutor');
     }
 
     public function clases_alumnos(): BelongsToMany

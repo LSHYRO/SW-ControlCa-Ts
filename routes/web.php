@@ -23,8 +23,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/tutores_alumnos', 'tutores_alumnos')->name('admin.tutoresAlum');
 
     Route::get('/alumnos', 'alumnos')->name('admin.alumnos');
-    Route::get('/directivos', 'directivos')->name('admin.directivos');
-    Route::get('/tutores', 'tutores')->name('admin.tutores');
+    Route::get('/directivos', 'directivos')->name('admin.directivos');    
     Route::get('/materias', 'materias')->name('admin.materias');
     Route::get('/clases', 'clases')->name('admin.clases');
     Route::get('/gradosgrupos', 'gradosgrupos')->name('admin.gradosgrupos');
@@ -53,6 +52,9 @@ Route::controller(AdminController::class)->group(function () {
     Route::delete('/materias/{idMateria}', 'eliminarMaterias')->name('admin.eliminarMaterias');
     Route::put('/materias/{idMateria}/edit', 'actualizarMateria')->name('admin.actualizarMaterias');
     
+    Route::delete('/tutores/delete/{tutoresIds}', 'elimTutores')->name('admin.elimTutores');
+    Route::delete('/tutores/{idTutor}', 'eliminarTutor')->name('admin.eliminarTutor');
+    Route::put('/tutores/{idTutor}/edit', 'actualizarTutor')->name('admin.actualizarTutor');
 
     Route::delete('/clases/{idClase}', 'eliminarClases')->name('admin.eliminarClases');
     Route::put('/clases/{idClase}/edit', 'actualizarClases')->name('admin.actualizarClases');

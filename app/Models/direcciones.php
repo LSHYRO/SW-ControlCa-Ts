@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -46,4 +47,13 @@ class direcciones extends Model
         return $this->hasOne(estados::class, 'idEstado', 'idEstado');
     }
     */
+    protected function calle(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
+    }
 }

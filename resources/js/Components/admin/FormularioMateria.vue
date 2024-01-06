@@ -81,6 +81,10 @@ const save = () => {
         return;
     }
 
+    if(form.esTaller == null){
+        form.esTaller = false;
+    }
+
     form.post(route('admin.addMaterias'), {
         onSuccess: () => {
             close()

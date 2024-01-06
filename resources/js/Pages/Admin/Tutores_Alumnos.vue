@@ -1,41 +1,51 @@
 <script setup>
-import { ref } from 'vue';
-import SearchBar from '@/Components/SearchBar.vue';
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Importaciones necesarias para la funcionalidad de la vista en general
+import { onMounted, ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Tutores from '@/Components/admin/Tutores.vue';
-import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/vue3';
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Datos que recibe la vista desde el controlador
 const props = defineProps({
     tutores: { type: Object },
     alumnos: { type: Object },
-
+    generos: { type: Object },
 });
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Variables y constantes para los datos
 const tutoresB = ref(true);
 const alumnosB = ref(false);
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Funciones para el cambio de tablas 
 const mostrarTutores = () => {
-    const btnT = document.getElementById("btnTutores");
-    const btnA = document.getElementById("btnAlumnos");
+    const btnTutores = document.getElementById("btnTutores");
+    const btnAlumnos = document.getElementById("btnAlumnos");
     tutoresB.value = true;
     alumnosB.value = false;
-    //btnT.setAttribute("disabled", "true");
-    //btnA.setAttribute("disabled", "false");
-
-    return tutoresB;
+    btnAlumnos.removeAttribute("disabled");
+    btnTutores.setAttribute("disabled", "");
+    console.log("Mostrando tutores");
 }
-
 const mostrarAlumnos = () => {
-    const btnT = document.getElementById("btnTutores");
-    const btnA = document.getElementById("btnAlumnos");
+    const btnTutores = document.getElementById("btnTutores");
+    const btnAlumnos = document.getElementById("btnAlumnos");
     tutoresB.value = false;
     alumnosB.value = true;
-    //btnT.setAttribute("disabled", "false");
-    //btnA.setAttribute("disabled", "true");
-
-    return alumnosB;
+    btnTutores.removeAttribute("disabled");
+    btnAlumnos.setAttribute("disabled", "");
+    console.log("Mostrando alumnos");
 }
+////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+onMounted(() => {
+   
+});
 </script>
 
 <template>
@@ -44,20 +54,20 @@ const mostrarAlumnos = () => {
             <div class="flex items-center justify-center w-full">
                 <div class="rounded-3xl border bg-slate-200 flex justify-between w-1/6">
                     <button class="bg-cyan-500 hover:bg-cyan-600 text-white rounded-3xl px-4 py-2 transition duration-300"
-                        id="btnTutores" @click="mostrarTutores" >
+                        id="btnTutores" @click="mostrarTutores" disabled>
                         Tutores
                     </button>
                     <button class="bg-cyan-500 hover:bg-cyan-600 text-white rounded-3xl px-4 py-2 transition duration-300"
-                        id="btnAlumnos" @click="mostrarAlumnos" >
+                        id="btnAlumnos" @click="mostrarAlumnos">
                         Alumnos
                     </button>
                 </div>
             </div>
-            <div v-if="tutoresB">
-                <Tutores :tutores="tutores"></Tutores>
+            <div v-show="tutoresB">
+                <Tutores :tutores="props.tutores" :generos="props.generos"></Tutores>
             </div>
-            <div v-else-if="alumnosB">
-
+            <div v-show="alumnosB">
+                
             </div>
         </div>
     </AdminLayout>

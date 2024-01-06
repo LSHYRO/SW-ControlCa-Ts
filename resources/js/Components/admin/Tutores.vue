@@ -1,28 +1,291 @@
 <script setup>
-import { ref } from 'vue';
-import SearchBar from '@/Components/SearchBar.vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioProf from '@/Components/admin/FormularioProf.vue';
-import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Importaciones necesarias para la funcionalidad de la vista en general
+import { ref, onMounted } from 'vue';
+import FormularioTutores from './FormularioTutores.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
+import DataTable from 'datatables.net-vue3';
+import DataTablesLib from 'datatables.net';
+import Buttons from 'datatables.net-buttons-dt';
+import pdfmake from 'pdfmake';
+import print from 'datatables.net-buttons/js/buttons.print'
+import pdfFonts from 'pdfmake/build/vfs_fonts.js';
+import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-responsive-dt';
+import Select from 'datatables.net-select-dt';
+import jsZip from 'jszip';
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
+// documentos
+window.JSZip = jsZip;
+pdfmake.vfs = pdfFonts.pdfMake.vfs;
+DataTable.use(DataTablesLib);
+DataTable.use(ButtonsHtml5);
+DataTable.use(pdfmake);
+DataTable.use(Select);
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Datos que recibe la vista para su uso
 const props = defineProps({
     tutores: { type: Object },
+    generos: { type: Object },
 });
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Constantes para los modales
+const mostrarModal = ref(false);
+const mostrarModalE = ref(false);
+// Constantes para la configuracion del modal
+const maxWidth = 'xl';
+const closeable = true;
+// Variable y constante para las materias y la seleccion de estas
+var tutorE = ({});
+const tutoresSeleccionados = ref([]);
+// Creación de la constante para el formulario (guardar los datos)
+const form = useForm({});
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Metodos para el manejo del modal del formulario
+const abrirE = ($tutor) => {
+    tutorE = $tutor;
+    mostrarModalE.value = true;
+    console.log($tutor);
+    console.log(tutorE);
+}
+const cerrarModal = () => {
+    mostrarModal.value = false;
+};
+const cerrarModalE = () => {
+    mostrarModalE.value = false;
+};
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Configuración de las columnas con los valores correspondientes de las materias, ademas de
+// la creacion de las checkboxes y los botones de editar y modificar
+const columns = [
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return `<input type="checkbox" class="tutores-checkbox" data-id="${row.idTutor}" ">`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) { return meta.row + 1 }
+    },
+    { data: 'apellidoP' },
+    { data: 'apellidoM' },
+    { data: 'nombre' },
+    { data: 'numTelefono' },
+    { data: 'correoElectronico' },
+    { data: 'genero' },
+    { data: 'domicilio' },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idTutor}"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="eliminar-button" data-id="${row.idTutor}"><i class="fa fa-trash"></i></button>`;
+        }
+
+    }
+    //{ data: 'esTaller', render: function(data, type, row) {
+    //    return data ? 'Si' : 'No';
+    //}},    
+];
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Creación de los botones para al generación de documentos, ademas de la configuración de los
+// titulos de los documentos
+const botones = [{
+    title: 'Tutores registrados',
+    extend: 'excelHtml5',
+    text: '<i class="fa-solid fa-file-excel"></i> Excel',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Tutores registrados',
+    extend: 'pdfHtml5',
+    text: '<i class="fa-solid fa-file-pdf"></i> PDF',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Tutores registrados',
+    extend: 'print',
+    text: '<i class="fa-solid fa-print"></i> Imprimir',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+{
+    title: 'Tutores registrados',
+    extend: 'copy',
+    text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+},
+];
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Metodo para la seleccion y llenado del arreglo de tutores (selectedTutores) por medio del 
+// checkbox
+const toggleTutorSelection = (tutor) => {
+    if (tutoresSeleccionados.value.includes(tutor)) {
+        // Si el tutor ya está seleccionado, la eliminamos del array
+        tutoresSeleccionados.value = tutoresSeleccionados.value.filter((t) => t !== tutor);
+    } else {
+        // Si el tutor no está seleccionado, la agregamos al array
+        tutoresSeleccionados.value.push(tutor);
+    }
+    // Llamado del botón de eliminar para cambiar su estado deshabilitado
+    const botonEliminar = document.getElementById("eliminarMBtn");
+    // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
+    if (tutoresSeleccionados.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+    }
+};
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Funcion para eliminar tutor por tutor
+const eliminarTutor = (idTutor, tutor) => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: `¿Estas seguro que deseas eliminar los datos de ` + tutor + '?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('admin.eliminarTutor', idTutor));
+        }
+
+    })
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función para eliminar varios tutores a la vez (a tráves del bóton eliminar)
+ const eliminarTutores = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar los datos de los tutores seleccionadas?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const tutoresE = tutoresSeleccionados.value.map((tutor) => tutor.idTutor);
+                const $tutoresIds = tutoresE.join(',');
+                await form.delete(route('admin.elimTutores', $tutoresIds));
+                // Limpia las materias seleccionadas después de la eliminación
+                tutoresSeleccionados.value = [];
+            } catch (error) {
+                console.log("Error al eliminar varios tutores: " + error);
+            }
+        }
+    });
+};
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Función onMounted que se ejecuta al iniciar la vista
+onMounted(() => {
+    // Agrega un escuchador de eventos fuera de la lógica de Vue
+    document.getElementById('tutoresTablaId').addEventListener('click', (event) => {
+        const checkbox = event.target;
+        if (checkbox.classList.contains('tutores-checkbox')) {
+            const tutorId = parseInt(checkbox.getAttribute('data-id'));
+            // Se asegura que props.materias.data esté definido antes de usar find
+            if (props.tutores) {
+                const tutor = props.tutores.find(tutor => tutor.idTutor === tutorId);
+                if (tutor) {
+                    toggleTutorSelection(tutor);
+                } else {
+                    console.log("No se tiene tutor");
+                }
+            }
+        }
+    });
+
+    // Manejar clic en el botón de editar
+    $('#tutoresTablaId').on('click', '.editar-button', function () {
+        const tutorId = $(this).data('id');
+        const tutor = props.tutores.find(t => t.idTutor === tutorId);
+        abrirE(tutor);
+    });
+
+    // Manejar clic en el botón de eliminar
+    $('#tutoresTablaId').on('click', '.eliminar-button', function () {
+        const tutorId = $(this).data('id');
+        const tutor = props.tutores.find(t => t.idTutor === tutorId);
+        eliminarTutor(tutorId, tutor.apellidoP + " " + tutor.apellidoM + " " + tutor.nombre);
+    });
+});
+////////////////////////////////////////////////////////////////////////////////////////////////
 </script>
 <template>
     <div class="mt-8 bg-white p-4 shadow rounded-lg">
         <h2 class="text-black text-lg text-center font-semibold pb-4">Tutores</h2>
         <div class="my-1"></div> <!-- Espacio de separación -->
         <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
-        <!-- Línea con gradiente -->
+        <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+        <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente un tutor               -->
+        <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+            <span class="font-medium">
+                {{ $page.props.flash.message }}
+            </span>
+        </div>
+        <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+        <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+            <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                <i class="fa fa-plus mr-2"></i>Agregar Tutor
+            </button>
+            <button id="eliminarMBtn" disabled="true"
+                class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded" @click="eliminarTutores">
+                <i class="fa fa-trash mr-2"></i>Borrar Tutor(es)
+            </button>
+        </div>
         <div class="overflow-x-auto">
-            <table class="w-full table-auto text-sm">
+            <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column" id="tutoresTablaId"
+                :columns="columns" :data="tutores" :options="{
+                    responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
+                        search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
+                        info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+                        infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+                        infoFiltered: '(filtrado de un total de _MAX_ registros)',
+                        lengthMenu: 'Mostrar _MENU_ registros',
+                        paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
+                    }, buttons: botones
+                }">
                 <thead>
                     <tr class="text-sm leading-normal">
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            #
+                        </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             Apellido P
@@ -37,40 +300,33 @@ const props = defineProps({
                         </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Direccion
+                            Telefono
                         </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Numero de telefono
+                            Correo electronico
                         </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
+                            Genero
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Dirrecion
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         </th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Se llaman los datos a traves de un foreach -->
-                    <tr class="hover:bg-grey-lighter" v-for="tutor in tutores" :key="tutor.idTutor">
-                        <td class="py-2 px-4 border-b border-grey-light">{{ tutor.apellidoP }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ tutor.apellidoM }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ tutor.nombre }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">
-                            {{ tutor.direcciones.calle+" #"+tutor.direcciones.numero+" "+tutor.direcciones.colonia+", "+tutor.direcciones.municipio+", "+tutor.direcciones.ciudad+", "+tutor.direcciones.estados.estado}}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">{{ tutor.numTelefono }}</td>
-                        <td class="py-2 px-4 border-b border-grey-light">
-                            <a href="tel:{{tutor.numTelefono}}">
-                                <i class="fa fa-phone" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            </DataTable>
         </div>
-        <!-- Botón "Ver más" para la tabla de Autorizaciones Pendientes -->
-        <div class="text-right mt-4">
-            <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-                Ver más
-            </button>
-        </div>
-</div></template>
+    </div>
+    <formulario-tutores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+        :title="'Añadir tutor'" :op="'1'" :modal="'modalCreate'" :generos="props.generos"></formulario-tutores>
+    <formulario-tutores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+        :title="'Editar materia'" :op="'2'" :modal="'modalEdit'" :tutor="tutorE" :generos="props.generos"></formulario-tutores>
+</template>
