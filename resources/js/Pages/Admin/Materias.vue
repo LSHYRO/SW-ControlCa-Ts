@@ -246,7 +246,7 @@ onMounted(() => {
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente una materia            -->
             <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                class="p-4 mb-4 text-sm rounded-lg text-green-700 bg-green-100 dark:bg-green-200 dark:text-green-800"
                 role="alert">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
@@ -311,12 +311,10 @@ onMounted(() => {
             </div>
 
         </div>
-
         <formulario-materia :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir materia'" :op="'1'" :modal="'modalCreate'"></formulario-materia>
         <formulario-materia :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar materia'" :op="'2'" :modal="'modalEdit'" :materias="mater"></formulario-materia>
-
     </AdminLayout>
 </template>
 <style>

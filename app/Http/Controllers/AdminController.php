@@ -46,7 +46,7 @@ class AdminController extends Controller
     }
 
     public function profesores()
-    {   
+    {
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
@@ -109,10 +109,31 @@ class AdminController extends Controller
 
     public function tutores_alumnos()
     {
-        $tutores = tutores::all();
+        $tutoresPrincipal = tutores::with(['generos', 'direcciones', 'alumnos.apellidoP', 'alumnos.apellidoM', 'alumnos.nombre'])->get();
+
+        $tutores = $tutoresPrincipal->map(function ($tutor) {
+            $genero = $tutor->generos ? $tutor->generos->genero : null;
+            $calle = $tutor->direcciones ? $tutor->direcciones->calle : null;
+            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;
+
+            $tutor->genero = $genero;
+            $tutor->calle = $calle;
+            $tutor->numero = $numero;
+            $tutor->codigoPos = $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $tutor->domicilio = $tutor->direcciones->calle . " #" . $tutor->direcciones->numero . ", " . $tutor->direcciones->asentamientos->asentamiento
+                . ", " . $tutor->direcciones->asentamientos->municipios->municipio . ", " . $tutor->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $tutor->idEstado = $tutor->direcciones->asentamientos->municipios->estados->idEstado;
+            $tutor->idMunicipio = $tutor->direcciones->asentamientos->municipios->idMunicipio;
+            $tutor->idAsentamiento = $tutor->direcciones->asentamientos->idAsentamiento;
+            return $tutor;
+        });
+        //$tutores = tutores::all();
+        $generos = generos::all();
         $alumnos = alumnos::all();
-        return Inertia::render('Admin/Tutores_Alumnos', compact('tutores', 'alumnos'));
+        return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos]);
     }
+
     /*
     public function tutores()
     {
@@ -233,53 +254,162 @@ class AdminController extends Controller
 
     public function addTutores(Request $request)
     {
-        //fechaFormateada
-        $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
-        //Contraseña generada
-        $contrasenia = Str::random(8);
-        //Creacion de usuario
-        $usuario = new usuarios();
-        $usuario->usuario = strtolower(substr($request->apellidoPaterno, 0, 2) . substr($request->apellidoMaterno, 0, 1) . substr($request->nombres, 0, 1) . $fechaFormateada . Str::random(3));
-        $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
-        $usuario->activo = 1;
-        //echo "Tu contraseña generada es: $contrasenia";
-        //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-        $usuario->save();
+        try {
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
+            //Contraseña generada
+            $contrasenia = Str::random(8);
+            //Creacion de usuario
+            $usuario = new usuarios();
+            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . substr($request->correoElectronico, 0, 2) . Str::random(3));
+            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            //echo "Tu contraseña generada es: $contrasenia";
+            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+            $usuario->save();
 
-        //Se busca el tipo de usuario en la BD
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
+            //Se busca el tipo de usuario en la BD
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
 
-        $usuarioTipoUsuario = new usuarios_tiposUsuarios();
-        $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
-        $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-        $usuarioTipoUsuario->save();
+            $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+            $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
+            $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            $usuarioTipoUsuario->save();
 
-        $direccion = new direcciones();
-        $direccion->calle = $request->calle;
-        $direccion->numero = $request->numero;
-        $direccion->colonia = $request->colonia;
-        $direccion->municipio = $request->municipio;
-        $direccion->ciudad = $request->region;
-        $direccion->idEstado = $request->estado;
-        $direccion->save();
+            $direccion = new direcciones();
+            $direccion->calle = $request->calle;
+            $direccion->numero = $request->numero;
+            $direccion->idAsentamiento = $request->asentamiento;
+            $direccion->save();
 
-        $tutor = new tutores();
-        $tutor->nombre = $request->nombres;
-        $tutor->apellidoP = $request->apellidoPaterno;
-        $tutor->apellidoM = $request->apellidoMaterno;
-        $tutor->idUsuario = $usuario->idUsuario;
-        $tutor->numTelefono = $request->telefono;
-        $tutor->idDireccion = $direccion->idDireccion;
-        $tutor->activo = 1;
+            $tutor = new tutores();
+            $tutor->nombre = $request->nombre;
+            $tutor->apellidoP = $request->apellidoP;
+            $tutor->apellidoM = $request->apellidoM;
+            $tutor->idUsuario = $usuario->idUsuario;
+            $tutor->numTelefono = $request->numTelefono;
+            $tutor->idDireccion = $direccion->idDireccion;
+            $tutor->correoElectronico = $request->correoElectronico;
+            $tutor->idGenero = $request->genero;
+            //columna nombre completo
+            $nombreCompleto = $tutor->nombre . ' ' . $tutor->apellidoP . ' ' . $tutor->apellidoM;
+            $tutor->nombre_completo = $nombreCompleto;
 
-        //columna nombre completo
-        $nombreCompleto = $tutor->nombre . ' ' . $tutor->apellidoP . ' ' . $tutor->apellidoM;
-        $tutor->nombre_completo = $nombreCompleto;
+            //Guardado
+            $tutor->save();
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "El tutor no se agrego correctamente", "color" => "red"]);
+            dd($e);
+        }
+    }
 
-        //Guardado
-        $tutor->save();
+    public function actualizarTutor(Request $request)
+    {
+        try {
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
 
-        return redirect()->route('admin.tutores');
+            $direccion = direcciones::find($request->idDomicilio);
+            $direccion->calle = $request->calle;
+            $direccion->numero = $request->numero;
+            $direccion->idAsentamiento = $request->asentamiento;
+            $direccion->save();
+
+            $tutor = tutores::find($request->idTutor);
+            $tutor->nombre = $request->nombre;
+            $tutor->apellidoP = $request->apellidoP;
+            $tutor->apellidoM = $request->apellidoM;
+            $tutor->numTelefono = $request->numTelefono;
+            $tutor->idDireccion = $direccion->idDireccion;
+            $tutor->correoElectronico = $request->correoElectronico;
+            $tutor->idGenero = $request->genero;
+            //columna nombre completo
+            $nombreCompleto = $tutor->nombre . ' ' . $tutor->apellidoP . ' ' . $tutor->apellidoM;
+            $tutor->nombre_completo = $nombreCompleto;
+
+            //Guardado
+            $tutor->save();
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor actualizado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "El tutor no se actualizo correctamente", "color" => "red"]);
+            dd($e);
+        }
+    }
+
+    public function eliminarTutor($idTutor)
+    {
+        try {
+            //Se busca el tipo de usuario en la BD
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
+
+            $tutor = tutores::find($idTutor);
+            $usuario = usuarios::find($tutor->idUsuario);
+            $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                ->first();
+            $direccion = direcciones::find($tutor->idDireccion);
+            $tutor->delete();
+            $usuarioTipoUsuario->delete();
+            $usuario->delete();
+            $direccion->delete();
+
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Tutor eliminado correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar al tutor: Primero debe eliminar a los tutorados" . $e, "color" => "red"]);
+        }
+    }
+
+    public function elimTutores($tutoresIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $tutoresIdsArray = explode(',', $tutoresIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $tutoresIdsArray = array_map('intval', $tutoresIdsArray);
+
+            //Se busca el tipo de usuario en la BD
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
+
+            for ($i = 0; $i < count($tutoresIdsArray); $i++) {
+                $tutor = tutores::find($tutoresIdsArray[$i]);
+                $usuario = usuarios::find($tutor->idUsuario);                
+                $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                    ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                    ->first();
+                $direccion = direcciones::find($tutor->idDireccion);
+                $tutor->delete();
+                $usuarioTipoUsuario->delete();
+                $usuario->delete();
+                $direccion->delete();
+            }
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Tutores eliminados correctamente", "color" => "green"]);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar a los tutor: Primero debe eliminar a los tutorados " . $e, "color" => "red"]);
+            // Manejo de errores            
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
 
     public function buscarT(Request $request)
@@ -308,12 +438,14 @@ class AdminController extends Controller
 
         $personal = personal::find($idPersonal);
         $usuario = usuarios::find($personal->idUsuario);
+        $direccion = direcciones::find($personal->idDireccion);
         $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
             ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
             ->first();
         $personal->delete();
         $usuarioTipoUsuario->delete();
         $usuario->delete();
+        $direccion->delete();
         return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
     }
 

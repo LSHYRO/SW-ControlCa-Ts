@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class tutores extends Model
 {
@@ -31,8 +33,8 @@ class tutores extends Model
         return $this->hasOne(usuarios::class, 'idUsuario', 'idUsuario');
     }
 
-    public function alumnos(): BelongsToMany{
-        return $this->belongsToMany(alumnos::class, 'idTutor', 'idTutor');
+    public function alumnos(): HasMany{
+        return $this->hasMany(alumnos::class, 'idTutor', 'idTutor');
     }
 
     public function direcciones(): HasOne
@@ -42,6 +44,18 @@ class tutores extends Model
 
     public function generos(): HasOne
     {
-        return $this->hasOne(genero::class, 'idGenero', 'idGenero');
+        return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }
+
+    protected function nombre(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
+    }
+
+    
 }
