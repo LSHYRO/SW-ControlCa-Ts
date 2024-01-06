@@ -532,37 +532,61 @@ class AdminController extends Controller
 
     public function eliminarClases($idClase)
     {
-        /*
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+        $clase = clases::find($idClase);
+        $clase->delete();
+        return redirect()->route('admin.clases')->with('message', "Clase eliminada correctamente");
+    }
 
-        $personal = personal::find($idPersonal);
-        $usuario = usuarios::find($personal->idUsuario);
-        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
-            ->where('idTipoUsuario',$tipoUsuario->idTipoUsuario)
-            ->first();
-        $personal->delete();
-        $usuarioTipoUsuario->delete();
-        $usuario ->delete();
-        return redirect()->route('admin.profesores');
-        */
+    public function elimClases($clasesIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $clasesIdsArray = explode(',', $clasesIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $clasesIdsArray = array_map('intval', $clasesIdsArray);
+
+            // Elimina los ciclos
+            clases::whereIn('idClase', $clasesIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.clases')->with('message', "Clases eliminadas correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
 
     public function actualizarClases(Request $request, $idPersonal)
     {
-
-        $personal = personal::find($idPersonal);
+        $clases = clases::find($idClase);
         $request->validate([
-            'nombre' => 'required',
-            'apellidoP' => 'required',
-            'apellidoM' => 'required',
-            'nombre' => 'required',
-            'numTelefono' => 'required',
-            'correoElectronico' => 'required',
-            'fechaNacimiento' => 'required',
+            'idGrupo' => 'required',
+            'idGrado' => 'required',
+            'idProfesor' => 'required',
+            'idMateria' => 'required',
+            'idCiclo' => 'required',
         ]);
 
-        $personal->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.profesores');
+        $clases->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.clases')->with('message', "Clase actualizada correctamente: ");
+    }
+
+    public function getClases($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $clases = clases::where('clase', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idGrupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idGrado', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idProfesor', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idMateria', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($clases);
     }
 
     public function addGrados(Request $request)
@@ -623,6 +647,28 @@ class AdminController extends Controller
 
         $grados->fill($request->input())->saveOrFail();
         return redirect()->route('admin.gradosgrupos')->with('message', "Grado actualizado correctamente: " . $grados->grado);;
+    }
+
+    public function getGrados($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $grados = grados::where('grado', 'like', '%' . $searchTerm . '%')
+            ->orWhere('grado', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($grupos);
+    }
+
+    public function getGrupos($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $grupos = grupos::where('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($grupos);
     }
 
     public function addGrupos(Request $request)
@@ -729,15 +775,27 @@ class AdminController extends Controller
     public function actualizarCiclo(Request $request, $idCiclo)
     {
 
-        $ciclo = ciclos::find($idCiclo);
+        $ciclos = ciclos::find($idCiclo);
         $request->validate([
             'fecha_inicio' => 'required',
             'fecha_fin' => 'required',
             'descripcionCiclo' => 'required',
         ]);
 
-        $ciclo->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclo->descripcionCiclo);;
+        $ciclos->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo);;
+    }
+
+    public function getCiclos($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $ciclos = ciclos::where('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_inicio', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_fin', 'like', '%' . $searchTerm . '%')
+            ->orWhere('descripcionCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($ciclos);
     }
 
     public function addPeriodos(Request $request)
@@ -754,5 +812,63 @@ class AdminController extends Controller
 
         $periodo->save();
         return redirect()->route('admin.ciclosperiodos');
+    }
+
+    public function eliminarPeriodos($idPeriodo)
+    {
+        $periodo = periodos::find($idPeriodo);
+        $periodo->delete();
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo eliminado correctamente");
+    }
+
+    public function elimPeriodos($periodosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $periodosIdsArray = explode(',', $periodosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $periodosIdsArray = array_map('intval', $periodossIdsArray);
+
+            // Elimina los ciclos
+            periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.ciclosperiodos')->with('message', "Periodos eliminados correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
+    }
+
+    public function actualizarPeriodo(Request $request, $idPeriodo)
+    {
+
+        $periodos = periodos::find($idPeriodo);
+        $request->validate([
+            'periodo' => 'required',
+            'fecha_inicio' => 'required',
+            'fecha_fin' => 'required',
+            'idCiclo' => 'required',
+        ]);
+
+        $periodos->fill($request->input())->saveOrFail();
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo actualizado correctamente: " . $periodos->periodo);;
+    }
+
+    public function getPeriodos($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $periodos = periodos::where('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('periodo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_inicio', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_fin', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($periodos);
     }
 }

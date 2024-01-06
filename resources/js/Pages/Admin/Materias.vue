@@ -1,11 +1,11 @@
 <script setup>
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Importaciones necesarias para la funcionalidad de la vista en general
+// Importaciones necesarias para la funcionalidad de la vista en general
 import { ref, onMounted } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import FormularioMateria from '@/Components/admin/FormularioMateria.vue';
 import Swal from 'sweetalert2';
-import { useForm} from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import Buttons from 'datatables.net-buttons-dt';
@@ -19,8 +19,8 @@ import jsZip from 'jszip';
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
- // documentos
+// Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
+// documentos
 window.JSZip = jsZip;
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 DataTable.use(DataTablesLib);
@@ -30,15 +30,15 @@ DataTable.use(Select);
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Variables que recibe la vista 
+// Variables que recibe la vista 
 const props = defineProps({
     materias: { type: Object },
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Configuración de las columnas con los valores correspondientes de las materias, ademas de
- // la creacion de las checkboxes y los botones de editar y modificar
+// Configuración de las columnas con los valores correspondientes de las materias, ademas de
+// la creacion de las checkboxes y los botones de editar y modificar
 const columns = [
     {
         data: null,
@@ -51,9 +51,11 @@ const columns = [
     },
     { data: 'materia' },
     { data: 'descripcion' },
-    { data: 'esTaller', render: function(data, type, row) {
-        return data ? 'Si' : 'No';
-    }},
+    {
+        data: 'esTaller', render: function (data, type, row) {
+            return data ? 'Si' : 'No';
+        }
+    },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idMateria}"><i class="fa fa-pencil"></i></button>`;
@@ -65,13 +67,13 @@ const columns = [
         }
 
     }
-    
+
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Creación de los botones para al generación de documentos, ademas de la configuración de los
- // titulos de los documentos
+// Creación de los botones para al generación de documentos, ademas de la configuración de los
+// titulos de los documentos
 const botones = [{
     title: 'Materias registradas',
     extend: 'excelHtml5',
@@ -100,22 +102,22 @@ const botones = [{
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Constantes para los modales
+// Constantes para los modales
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
- // Constantes para la configuracion del modal
+// Constantes para la configuracion del modal
 const maxWidth = 'xl';
 const closeable = true;
- // Variable y constante para las materias y la seleccion de estas
+// Variable y constante para las materias y la seleccion de estas
 var mater = ({});
 const selectedMaterias = ref([]);
- // Creación de la constante para el formulario (guardar los datos)
+// Creación de la constante para el formulario (guardar los datos)
 const form = useForm({});
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Metodo para la seleccion y llenado del arreglo de materias (selectedMaterias) por medio del 
- // checkbox
+// Metodo para la seleccion y llenado del arreglo de materias (selectedMaterias) por medio del 
+// checkbox
 const toggleMateriaSelection = (materia) => {
     if (selectedMaterias.value.includes(materia)) {
         // Si la materia ya está seleccionada, la eliminamos del array
@@ -136,7 +138,7 @@ const toggleMateriaSelection = (materia) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Metodos para el manejo del modal del formulario
+// Metodos para el manejo del modal del formulario
 const abrirE = ($materiaa) => {
     mater = $materiaa;
     mostrarModalE.value = true;
@@ -152,7 +154,7 @@ const cerrarModalE = () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Función para eliminar materia (a tráves del botón dentro la tabla)
+// Función para eliminar materia (a tráves del botón dentro la tabla)
 const eliminarMateria = (idMateria, materia) => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -173,7 +175,7 @@ const eliminarMateria = (idMateria, materia) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Función para eliminar varias materias a la vez (a tráves del bóton eliminar)
+// Función para eliminar varias materias a la vez (a tráves del bóton eliminar)
 const eliminarMaterias = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -201,7 +203,7 @@ const eliminarMaterias = () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Función onMounted que se ejecuta al iniciar la vista
+// Función onMounted que se ejecuta al iniciar la vista
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('materiasTablaId').addEventListener('click', (event) => {

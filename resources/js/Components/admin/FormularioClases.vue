@@ -104,8 +104,7 @@ watch(() => props.clases, (newVal) => {
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
 
-            <form @submit.prevent="(op === '1' ? save() : update())"
-                @keydown.enter.prevent="(op === '1' ? save() : update())">
+            <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
@@ -197,4 +196,5 @@ watch(() => props.clases, (newVal) => {
                 </div>
             </form>
         </div>
-</Modal></template>
+    </Modal>
+</template>

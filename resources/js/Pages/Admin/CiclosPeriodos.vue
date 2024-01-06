@@ -6,7 +6,7 @@ import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
 import FormularioCiclos from '@/Components/admin/FormularioCiclos.vue';
 import FormularioPeriodos from '@/Components/admin/FormularioPeriodos.vue';
 import Swal from 'sweetalert2';
-import { useForm} from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import Buttons from 'datatables.net-buttons-dt';
@@ -17,6 +17,8 @@ import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
 import jsZip from 'jszip';
+import 'datatables.net'; // Asegúrate de importar DataTables
+import $ from 'jquery';  // Importa jQuery si aún no lo has hecho
 window.JSZip = jsZip;
 
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
@@ -70,7 +72,8 @@ const columnsPeriodo = [
     { data: 'periodo' },
     { data: 'fecha_inicio' },
     { data: 'fecha_fin' },
-    {data: 'idCiclo',
+    {
+        data: 'idCiclo',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === data);
@@ -331,76 +334,81 @@ const handleSearch = (term) => {
 };
 //Esto es de ciclos y periodos
 onMounted(() => {
-    const ciclosTabla = document.getElementById('ciclosTablaId');
-    const periodosTabla = document.getElementById('periodosTablaId');
+    // Obtén la referencia a las tablas de ciclos y periodos
+    const ciclosTable = $('#ciclosTablaId');
+    const periodosTable = $('#periodosTablaId');
+
+    // Destruye las DataTable existentes si ya han sido inicializadas
+    if ($.fn.DataTable.isDataTable(ciclosTable)) {
+        ciclosTable.DataTable().destroy();
+    }
+
+    if ($.fn.DataTable.isDataTable(periodosTable)) {
+        periodosTable.DataTable().destroy();
+    }
+
+    // Inicializa las DataTables
+    const ciclosTabla = ciclosTable.DataTable(optionsCiclo);
+    const periodosTabla = periodosTable.DataTable(optionsPeriodo);
 
     if (ciclosTabla) {
-        ciclosTabla.addEventListener('click', (event) => {
-            const checkbox = event.target;
-            if (checkbox.classList.contains('ciclo-checkbox')) {
-                const cicloId = parseInt(checkbox.getAttribute('data-id'));
-                console.log(cicloId);
-                if (props.ciclos) {
-                    const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === cicloId);
-                    console.log(ciclo);
-                    if (ciclo) {
-                        toggleCicloSelection(ciclo);
-                    } else {
-                        console.log("No se tiene ciclo");
-                    }
+        ciclosTabla.on('click', '.ciclo-checkbox', function (event) {
+            const checkbox = event.target;//$(this);
+            const cicloId = parseInt(checkbox.data('idCiclo'));
+            console.log(cicloId);
+            if (props.ciclos) {
+                const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === cicloId);
+                console.log(ciclo);
+                if (ciclo) {
+                    toggleCicloSelection(ciclo);
+                } else {
+                    console.log("No se tiene ciclo");
                 }
             }
         });
 
-        // Manejar clic en el botón de editar Ciclo
-        $('#ciclosTablaId').on('click', '.editar-button', function () {
-            const cicloId = $(this).data('id');
+        ciclosTabla.on('click', '.editar-button', function () {
+            const cicloId = $(this).data('idCiclo');
             const ciclo = props.ciclos.find(c => c.idCiclo === cicloId);
             abrirCiclos(ciclo);
         });
 
-        // Manejar clic en el botón de eliminar Ciclo
-        $('#ciclosTablaId').on('click', '.eliminar-button', function () {
-            const cicloId = $(this).data('id');
+        ciclosTabla.on('click', '.eliminar-button', function () {
+            const cicloId = $(this).data('idCiclo');
             const ciclo = props.ciclos.find(c => c.idCiclo === cicloId);
             eliminarCiclo(cicloId, ciclo);
         });
     }
 
     if (periodosTabla) {
-        periodosTabla.addEventListener('click', (event) => {
-            const checkbox = event.target;
-            if (checkbox.classList.contains('periodo-checkbox')) {
-                const periodoId = parseInt(checkbox.getAttribute('data-id'));
-                console.log(periodoId);
-                if (props.periodos) {
-                    const periodo = props.periodos.find(periodo => periodo.idPeriodo === periodoId);
-                    console.log(periodo);
-                    if (periodo) {
-                        togglePeriodoSelection(periodo);
-                    } else {
-                        console.log("No se tiene periodo");
-                    }
+        periodosTabla.on('click', '.periodo-checkbox', function (event) {
+            const checkbox = event.target;//$(this);
+            const periodoId = parseInt(checkbox.data('idPeriodo'));
+            console.log(periodoId);
+            if (props.periodos) {
+                const periodo = props.periodos.find(periodo => periodo.idPeriodo === periodoId);
+                console.log(periodo);
+                if (periodo) {
+                    togglePeriodoSelection(periodo);
+                } else {
+                    console.log("No se tiene periodo");
                 }
             }
         });
 
-        // Manejar clic en el botón de editar Periodo
-        $('#periodosTablaId').on('click', '.editar-button', function () {
-            const periodoId = $(this).data('id');
+        periodosTabla.on('click', '.editar-button', function () {
+            const periodoId = $(this).data('idPeriodo');
             const periodo = props.periodos.find(p => p.idPeriodo === periodoId);
             abrirPeriodos(periodo);
         });
 
-        // Manejar clic en el botón de eliminar Periodo
-        $('#periodosTablaId').on('click', '.eliminar-button', function () {
-            const periodoId = $(this).data('id');
+        periodosTabla.on('click', '.eliminar-button', function () {
+            const periodoId = $(this).data('idPeriodo');
             const periodo = props.periodos.find(p => p.idPeriodo === periodoId);
             eliminarPeriodo(periodoId, periodo);
         });
     }
 });
-
 
 const selectedOption = ref('Ciclos'); // Inicialmente, muestra la tabla de "Ciclos"
 
@@ -550,7 +558,7 @@ const openFormPeriodos = () => {
                 <formulario-ciclos :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
                     :title="'Añadir ciclo'" :op="'1'" :modal="'modalCreate'"></formulario-ciclos>
                 <formulario-ciclos :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-                    :title="'Editar ciclo'" :op="'2'" :modal="'modalEdit'" :ciclo="cicloEdit"></formulario-ciclos>
+                    :title="'Editar ciclo'" :op="'2'" :modal="'modalEdit'" :ciclos="cic"></formulario-ciclos>
 
             </div> <!-- Aquí termina "Ciclos" -->
 
@@ -625,13 +633,12 @@ const openFormPeriodos = () => {
                 </div>
 
                 <formulario-periodos :show="mostrarModalPeriodos" :max-width="maxWidth" :closeable="closeable"
-                    @close="cerrarModalPeriodos" :title="'Añadir periodo'" :op="'1'"
-                    :modal="'modalCreate'" :ciclos="props.ciclos"></formulario-periodos>
+                    @close="cerrarModalPeriodos" :title="'Añadir periodo'" :op="'1'" :modal="'modalCreate'"
+                    :ciclos="props.ciclos"></formulario-periodos>
                 <formulario-periodos :show="mostrarModalEPeriodos" :max-width="maxWidth" :closeable="closeable"
-                    @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'"
-                    :periodo="periodoEdit" :ciclos="props.ciclos"></formulario-periodos>
+                    @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'" :periodos="per"
+                    :ciclos="props.ciclos"></formulario-periodos>
             </div> <!-- Aquí termina "Grupo" -->
         </div>
-
     </AdminLayout>
 </template>
