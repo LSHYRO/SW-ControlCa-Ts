@@ -1,7 +1,9 @@
 <script setup>
+// Importaciones necesarias para el funcionamiento del formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { onMounted, watch, ref } from 'vue';
+import axios from 'axios';
 
 
 const props = defineProps({
@@ -48,22 +50,68 @@ const form = useForm({
 
 });
 
+// Variables para los mensajes de validación
+const grupoError = ref('');
+const ciclosError = ref('');
+
+// Validación de cadenas no vacias
+const validateStringNotEmpty = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+}
+
+// Validación del select 
+const validateSelect = (selectedValue) => {
+    if (selectedValue == undefined) {
+        return false;
+    }
+    return true;
+};
+
 const save = () => {
+    grupoError.value = validateStringNotEmpty(form.grupo) ? '' : 'Ingrese el grupo';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        grupoError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+
     form.post(route('admin.addGrupos'), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            grupoError.value = '';
+            ciclosError.value = '';
+        }
     });
 }
 
 const update = () => {
+    grupoError.value = validateStringNotEmpty(form.grupo) ? '' : 'Ingrese el grupo';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        grupoError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+
     var idGrupo = document.getElementById('idGrupo2').value;
     console.log(idGrupo);
     console.log(document.getElementById('grupo2').value);
     form.put(route('admin.actualizarGrupos', idGrupo), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            grupoError.value = '';
+            ciclosError.value = '';
+        }
     });
 }
+
 watch(() => props.grupos, (newVal) => {
-    form.idGrupo= newVal.idGrupo;
+    form.idGrupo = newVal.idGrupo;
     form.grupo = newVal.grupo;
     form.ciclos = newVal.ciclos;
 }, { deep: true });
@@ -78,7 +126,8 @@ watch(() => props.grupos, (newVal) => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un nuevo grupo
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un nuevo
+                        grupo
                     </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -98,6 +147,7 @@ watch(() => props.grupos, (newVal) => {
                                     placeholder="Ingrese grupo"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <div v-if="grupoError != ''" class="text-red-500 text-xs">{{ grupoError }}</div>
                         </div>
 
                         <div class="sm:col-span-3">
@@ -111,6 +161,7 @@ watch(() => props.grupos, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="ciclosError != ''" class="text-red-500 text-xs">{{ ciclosError }}</div>
                         </div>
 
                     </div>

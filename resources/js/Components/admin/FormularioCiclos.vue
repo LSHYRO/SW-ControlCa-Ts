@@ -1,9 +1,10 @@
 <script setup>
+// Importaciones necesarias para el funcionamiento del formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
+import { onMounted, watch, ref } from 'vue';
 const emit = defineEmits(['close']);
-import { router } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import axios from 'axios';
 
 
 const props = defineProps({
@@ -46,24 +47,83 @@ const form = useForm({
     descripcionCiclo: props.ciclos.descripcionCiclo
 });
 
+// Variables para los mensajes de validación
+const fecha_inicioError = ref('');
+const fecha_finError = ref('');
+const descripcionCicloError = ref('');
+
+// Validación de cadenas no vacias
+const validateStringNotEmpty = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+}
+
+// Validación del select 
+const validateSelect = (selectedValue) => {
+    if (selectedValue == undefined) {
+        return false;
+    }
+    return true;
+};
+
+//Validación para el date
+const validateDate = (date) => {
+    return date !== null && date !== undefined && date !== '';
+};
+
+
 const save = () => {
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
+    descripcionCicloError.value = validateStringNotEmpty(form.descripcionCiclo) ? '' : 'Ingrese la descripción';
+
+    if (
+        fecha_inicioError.value || fecha_finError.value || descripcionCicloError.value
+    ) {
+
+        return;
+    }
+
     form.post(route('admin.addCiclos'), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            fecha_inicioError.value = '';
+            fecha_finError.value = '';
+            descripcionCicloError.value = '';
+        }
     });
 }
 
 const update = () => {
-    var idGrado = document.getElementById('idGrado2').value;
-    console.log(idGrado);
-    console.log(document.getElementById('grado2').value);
-    form.put(route('admin.actualizarGrados', idGrado), {
-        onSuccess: () => close()
+
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
+    descripcionCicloError.value = validateStringNotEmpty(form.descripcionCiclo) ? '' : 'Ingrese la descripción';
+
+    if (
+        fecha_inicioError.value || fecha_finError.value || descripcionCicloError.value
+    ) {
+
+        return;
+    }
+
+    var idCiclo = document.getElementById('idCiclo2').value;
+    console.log(idCiclo);
+    console.log(document.getElementById('ciclo2').value);
+    form.put(route('admin.actualizarCiclos', idCiclo), {
+        onSuccess: () => {
+            close()
+            fecha_inicioError.value = '';
+            fecha_finError.value = '';
+            descripcionCicloError.value = '';
+        }
     });
 }
-watch(() => props.grados, (newVal) => {
-    form.idGrado = newVal.idGrado;
-    form.grado = newVal.grado;
+
+watch(() => props.ciclos, (newVal) => {
     form.idCiclo = newVal.idCiclo;
+    form.fecha_inicio = newVal.fecha_inicio;
+    form.fecha_fin = newVal.fecha_fin;
+    form.descripcionCiclo = newVal.descripcionCiclo;
 }, { deep: true });
 
 </script>
@@ -98,24 +158,31 @@ watch(() => props.grados, (newVal) => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <span class="text-xs text-gray-500">Seleccione la fecha</span>
                             </div>
+                            <div v-if="fecha_inicioError != ''" class="text-red-500 text-xs">{{ fecha_inicioError }}
+                            </div>
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-2">
-                            <label for="fecha_fin" class="block text-sm font-medium leading-6 text-gray-900">Fecha de terminacion</label>
+                            <label for="fecha_fin" class="block text-sm font-medium leading-6 text-gray-900">Fecha de
+                                terminacion</label>
                             <div class="mt-2">
                                 <input type="date" name="fecha_fin" :id="'fecha_fin' + op" v-model="form.fecha_fin"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <span class="text-xs text-gray-500">Seleccione la fecha</span>
                             </div>
+                            <div v-if="fecha_finError != ''" class="text-red-500 text-xs">{{ fecha_finError }}</div>
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-6">
-                            <label for="descripcionCiclo" class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
+                            <label for="descripcionCiclo"
+                                class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <div class="mt-2">
-                                <input type="text" name="descripcionCiclo" :id="'descripcionCiclo' + op" v-model="form.descripcionCiclo"
-                                    placeholder="Ingrese descripción"
+                                <input type="text" name="descripcionCiclo" :id="'descripcionCiclo' + op"
+                                    v-model="form.descripcionCiclo" placeholder="Ingrese descripción"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <div v-if="descripcionCicloError != ''" class="text-red-500 text-xs mt-1">{{
+                                descripcionCicloError }}</div>
                         </div>
 
                     </div>

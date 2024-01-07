@@ -1,8 +1,9 @@
 <script setup>
+// Importaciones necesarias para el funcionamiento del formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { watch } from 'vue';
-
+import { onMounted, watch, ref } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     show: {
@@ -48,22 +49,71 @@ const form = useForm({
 
 });
 
+// Variables para los mensajes de validación
+const gradoError = ref('');
+const ciclosError = ref('');
+
+// Validación de cadenas no vacias
+const validateStringNotEmpty = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+}
+
+const validateInteger = (value) => {
+    return /^\d+$/.test(value); // Verifica si el valor es una cadena de dígitos
+};
+
+// Validación del select 
+const validateSelect = (selectedValue) => {
+    if (selectedValue == undefined) {
+        return false;
+    }
+    return true;
+};
+
 const save = () => {
+    gradoError.value = validateInteger(form.grado) ? '' : 'Ingrese el grado en número';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        gradoError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+
     form.post(route('admin.addGrados'), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            gradoError.value = '';
+            ciclosError.value = '';
+        }
     });
 }
 
 const update = () => {
+    gradoError.value = validateInteger(form.grado) ? '' : 'Ingrese el grado';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        gradoError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+
     var idGrado = document.getElementById('idGrado2').value;
     console.log(idGrado);
     console.log(document.getElementById('grado2').value);
     form.put(route('admin.actualizarGrados', idGrado), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            gradoError.value = '';
+            ciclosError.value = '';
+        }
     });
 }
 watch(() => props.grados, (newVal) => {
-    form.idGrado= newVal.idGrado;
+    form.idGrado = newVal.idGrado;
     form.grado = newVal.grado;
     form.ciclos = newVal.ciclos;
 }, { deep: true });
@@ -78,7 +128,8 @@ watch(() => props.grados, (newVal) => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un nuevo grado
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un nuevo
+                        grado
                     </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -97,6 +148,7 @@ watch(() => props.grados, (newVal) => {
                                     placeholder="Ingrese grado"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <div v-if="gradoError != ''" class="text-red-500 text-xs">{{ gradoError }}</div>
                         </div>
 
                         <div class="sm:col-span-3">
@@ -110,6 +162,7 @@ watch(() => props.grados, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="ciclosError != ''" class="text-red-500 text-xs">{{ ciclosError }}</div>
                         </div>
 
                     </div>

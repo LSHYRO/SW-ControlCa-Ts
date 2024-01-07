@@ -63,6 +63,9 @@ Route::controller(AdminController::class)->group(function () {
     Route::put('/grados/{idGrado}/edit', 'actualizarGrados')->name('admin.actualizarGrados');
 
     Route::delete('/ciclos/{idCiclo}', 'eliminarCiclos')->name('admin.eliminarCiclos');
+    Route::put('/ciclos/{idCiclo}/edit', 'actualizarCiclo')->name('admin.actualizarCiclos');
+
+    Route::delete('/periodos/{idPeriodo}', 'eliminarPeriodos')->name('admin.eliminarPeriodos');
     Route::put('/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('admin.actualizarPeriodos');
 });
 

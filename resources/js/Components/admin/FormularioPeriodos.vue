@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+// Importaciones necesarias para el funcionamiento del formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { onMounted, watch, ref } from 'vue';
 import axios from 'axios';
-
 
 const props = defineProps({
     show: {
@@ -53,18 +52,78 @@ const form = useForm({
     ciclos: props.periodos.descripcionCiclo//Le agregue la s a ciclo
 });
 
+// Variables para los mensajes de validación
+const periodoError = ref('');
+const fecha_inicioError = ref('');
+const fecha_finError = ref('');
+const ciclosError = ref('');
+
+// Validación de cadenas no vacias
+const validateStringNotEmpty = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+}
+
+// Validación del select 
+const validateSelect = (selectedValue) => {
+    if (selectedValue == undefined) {
+        return false;
+    }
+    return true;
+};
+
+//Validación para el date
+const validateDate = (date) => {
+    return date !== null && date !== undefined && date !== '';
+};
+
 const save = () => {
+    periodoError.value = validateStringNotEmpty(form.periodo) ? '' : 'Ingrese el periodo';
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        periodoError.value || fecha_inicioError.value || fecha_finError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+
     form.post(route('admin.addPeriodos'), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            periodoError.value = '';
+            fecha_inicioError.value = '';
+            fecha_finError.value = '';
+            ciclosError.value = '';
+        }
     });
 }
 
 const update = () => {
+    periodoError.value = validateStringNotEmpty(form.periodo) ? '' : 'Ingrese el periodo';
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        periodoError.value || fecha_inicioError.value || fecha_finError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+
     var idPeriodo = document.getElementById('idPeriodo2').value;
     console.log(idPeriodo);
     console.log(document.getElementById('perido2').value);
     form.put(route('admin.actualizarPeriodos', idPeriodo), {
-        onSuccess: () => close()
+        onSuccess: () => {
+            close()
+            periodoError.value = '';
+            fecha_inicioError.value = '';
+            fecha_finError.value = '';
+            ciclosError.value = '';
+        }
     });
 }
 watch(() => props.periodos, (newVal) => {
@@ -106,6 +165,7 @@ watch(() => props.periodos, (newVal) => {
                                     placeholder="Ingrese el periodo"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <div v-if="periodoError != ''" class="text-red-500 text-xs">{{ periodoError }}</div>
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-2">
@@ -115,6 +175,8 @@ watch(() => props.periodos, (newVal) => {
                                 <input type="date" name="fecha_inicio" :id="'fecha_inicio' + op" v-model="form.fecha_inicio"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <span class="text-xs text-gray-500">Seleccione la fecha</span>
+                            </div>
+                            <div v-if="fecha_inicioError != ''" class="text-red-500 text-xs">{{ fecha_inicioError }}
                             </div>
                         </div>
 
@@ -126,6 +188,7 @@ watch(() => props.periodos, (newVal) => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <span class="text-xs text-gray-500">Seleccione la fecha</span>
                             </div>
+                            <div v-if="fecha_finError != ''" class="text-red-500 text-xs">{{ fecha_finError }}</div>
                         </div>
 
                         <div class="sm:col-span-3">
@@ -139,6 +202,7 @@ watch(() => props.periodos, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="ciclosError != ''" class="text-red-500 text-xs">{{ ciclosError }}</div>
                         </div>
 
                     </div>
