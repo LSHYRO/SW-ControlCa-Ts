@@ -114,7 +114,7 @@ const toggleCicloSelection = (ciclo) => {
         selectedCiclos.value.push(ciclo);
 
     }
-    const botonEliminar = document.getElementById("eliminarMBtn");
+    const botonEliminar = document.getElementById("eliminarCBtn");
 
     if (selectedCiclos.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
@@ -176,7 +176,8 @@ onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('ciclosTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('ciclos-checkbox')) {
+        console.log(checkbox);
+        if (checkbox.classList.contains('ciclo-checkbox')) {
             const cicloId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
             if (props.ciclos) {
@@ -229,12 +230,13 @@ const optionsCiclo = {
         <div class="my-1"></div> <!-- Espacio de separación -->
         <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
         <!-- flash message start -->
-        <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
-        </div>
+        <div v-if="$page.props.flash.message"
+                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                role="alert">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div>
         <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
             <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"

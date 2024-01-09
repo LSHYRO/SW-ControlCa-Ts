@@ -58,15 +58,23 @@ Route::controller(AdminController::class)->group(function () {
 
     Route::delete('/clases/{idClase}', 'eliminarClases')->name('admin.eliminarClases');
     Route::put('/clases/{idClase}/edit', 'actualizarClases')->name('admin.actualizarClases');
+    Route::delete('/clases/delete/{clasesIds}', 'elimClases')->name('admin.elimClases');
 
     Route::delete('/grados/{idGrado}', 'eliminarGrados')->name('admin.eliminarGrados');
     Route::put('/grados/{idGrado}/edit', 'actualizarGrados')->name('admin.actualizarGrados');
+    Route::delete('/grados/delete/{gradosIds}', 'elimGrados')->name('admin.elimGrados');
+
+    Route::delete('/grupos/{idGrupo}', 'eliminarGrupos')->name('admin.eliminarGrupos');
+    Route::put('/grupos/{idGrupo}/edit', 'actualizarGrupos')->name('admin.actualizarGrupos');
+    Route::delete('/grupos/delete/{gruposIds}', 'elimGrupos')->name('admin.elimGrupos');
 
     Route::delete('/ciclos/{idCiclo}', 'eliminarCiclos')->name('admin.eliminarCiclos');
     Route::put('/ciclos/{idCiclo}/edit', 'actualizarCiclo')->name('admin.actualizarCiclos');
+    Route::delete('/ciclos/delete/{ciclosIds}', 'elimCiclos')->name('admin.elimCiclos');
 
     Route::delete('/periodos/{idPeriodo}', 'eliminarPeriodos')->name('admin.eliminarPeriodos');
     Route::put('/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('admin.actualizarPeriodos');
+    Route::delete('/periodos/delete/{periodosIds}', 'elimPeriodos')->name('admin.elimPeriodos');
 });
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales

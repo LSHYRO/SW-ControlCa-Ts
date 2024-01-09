@@ -641,8 +641,8 @@ class AdminController extends Controller
         return response()->json($materias);
     }
 
-    public function addClases(Request $request)
-    {
+    public function addClases(Request $request){
+    try{
         $request->validate([
             'grupos' => 'required',
             'grados' => 'required',
@@ -650,6 +650,7 @@ class AdminController extends Controller
             'materias' => 'required',
             'ciclos' => 'required',
         ]);
+        
 
         $clase = new clases();
         $clase->idGrupo = $request->grupos;
@@ -659,7 +660,12 @@ class AdminController extends Controller
         $clase->idCiclo = $request->ciclos;
 
         $clase->save();
-        return redirect()->route('admin.clases');
+    }
+    catch(Exception $e){
+
+    }
+    return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
+    //return redirect()->route('admin.clases');
     }
 
     public function eliminarClases($idClase)
@@ -732,7 +738,7 @@ class AdminController extends Controller
         $grado->idCiclo = $request->ciclos;
 
         $grado->save();
-        return redirect()->route('admin.gradosgrupos');
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
     }
 
     public function eliminarGrados($idGrado)
@@ -755,10 +761,11 @@ class AdminController extends Controller
             grados::whereIn('idGrado', $gradosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
+
             return redirect()->route('admin.gradosgrupos')->with('message', "Grados eliminados correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
-            dd("Controller error");
+            dd($e);
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
@@ -814,7 +821,7 @@ class AdminController extends Controller
         $grupo->idCiclo = $request->ciclos;
 
         $grupo->save();
-        return redirect()->route('admin.gradosgrupos');
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
     }
 
     public function eliminarGrupos($idGrupo)
@@ -871,7 +878,7 @@ class AdminController extends Controller
         $ciclo->descripcionCiclo = $request->descripcionCiclo;
 
         $ciclo->save();
-        return redirect()->route('admin.ciclosperiodos');
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->ciclo);
     }
 
     public function eliminarCiclos($idCiclo)
@@ -943,7 +950,7 @@ class AdminController extends Controller
         $periodo->idCiclo = $request->ciclos;
 
         $periodo->save();
-        return redirect()->route('admin.ciclosperiodos');
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo agregado correctamente: " . $periodo->periodo);
     }
 
     public function eliminarPeriodos($idPeriodo)
@@ -960,7 +967,7 @@ class AdminController extends Controller
             $periodosIdsArray = explode(',', $periodosIds);
 
             // Limpia los IDs para evitar posibles problemas de seguridad
-            $periodosIdsArray = array_map('intval', $periodossIdsArray);
+            $periodosIdsArray = array_map('intval', $periodosIdsArray);
 
             // Elimina los ciclos
             periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();
@@ -969,7 +976,7 @@ class AdminController extends Controller
             return redirect()->route('admin.ciclosperiodos')->with('message', "Periodos eliminados correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
-            dd("Controller error");
+            dd($e);
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);

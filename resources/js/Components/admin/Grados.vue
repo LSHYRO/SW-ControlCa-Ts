@@ -127,7 +127,7 @@ const toggleGradoSelection = (grado) => {
         selectedGrados.value.push(grado);
 
     }
-    const botonEliminar = document.getElementById("eliminarMBtn");
+    const botonEliminar = document.getElementById("eliminarGBtn");
 
     if (selectedGrados.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
@@ -157,6 +157,7 @@ const eliminarGrado = (idGrado, grado) => {
 };
 
 const eliminarGrados = () => {
+    console.log("Entre en eliminar Grados");
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -169,27 +170,31 @@ const eliminarGrados = () => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
+            console.log("Se confirmó eliminar");
             try {
                 const gradosS = selectedGrados.value.map((grado) => grado.idGrado);
                 const $gradosIds = gradosS.join(',');
                 console.log(gradosS);
+                console.log($gradosIds);
                 await form.delete(route('admin.elimGrados', $gradosIds));
 
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedGrados.value = [];
             } catch (error) {
                 console.log('El error se origina aquí');
-                console.log(error);
+                console.log("El error es: "+error);
             }
         }
     });
 };
 
 onMounted(() => {
+    console.log("Estoy en onMounted");
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('gradosTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('grados-checkbox')) {
+        console.log(checkbox);
+        if (checkbox.classList.contains('grado-checkbox')) {
             const gradoId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
             if (props.grados) {
@@ -242,19 +247,20 @@ const optionsGrado = {
         <div class="my-1"></div> <!-- Espacio de separación -->
         <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
         <!-- flash message start -->
-        <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
-        </div>
+        <div v-if="$page.props.flash.message"
+                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                role="alert">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div>
         <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
             <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                 @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                 <i class="fa fa-plus mr-2"></i>Agregar Grado
             </button>
-            <button id="eliminarMBtn" disabled="true"
+            <button id="eliminarGBtn" disabled="true"
                 class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded" @click="eliminarGrados">
                 <i class="fa fa-trash mr-2"></i>Borrar Grado(s)
             </button>

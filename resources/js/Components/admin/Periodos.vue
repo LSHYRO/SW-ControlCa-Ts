@@ -57,7 +57,7 @@ const columnsPeriodo = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="ciclo-checkbox" data-id="${row.idPeriodo}" ">`;
+            return `<input type="checkbox" class="periodo-checkbox" data-id="${row.idPeriodo}" ">`;
         }
     },
     {
@@ -115,15 +115,15 @@ const botonesPeriodo = [{
 const togglePeriodoSelection = (periodo) => {
     if (selectedPeriodos.value.includes(periodo)) {
         // Si la materia ya está seleccionada, la eliminamos del array
-        console.log("Se quito la materia del la seleccion");
+        console.log("Se quito el periodo de la seleccion");
         selectedPeriodos.value = selectedPeriodos.value.filter((p) => p !== periodo);
     } else {
         // Si la materia no está seleccionada, la agregamos al array
-        console.log("Se agrego una materia a la selección");
+        console.log("Se agrego un periodo a la selección");
         selectedPeriodos.value.push(periodo);
 
     }
-    const botonEliminar = document.getElementById("eliminarMBtn");
+    const botonEliminar = document.getElementById("eliminarPBtn");
 
     if (selectedPeriodos.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
@@ -153,6 +153,9 @@ const eliminarPeriodo = (idPeriodo, periodo) => {
 };
 
 const eliminarPeriodos = () => {
+console.log('Eliminar periodos se ejecuta');
+console.log(selectedPeriodos);
+
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -165,14 +168,14 @@ const eliminarPeriodos = () => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
+            console.log("confirmado")
             try {
                 const periodosS = selectedPeriodos.value.map((periodo) => periodo.idPeriodo);
                 const $periodosIds = periodosS.join(',');
-                console.log(periodosS);
                 await form.delete(route('admin.elimPeriodos', $periodosIds));
 
                 // Limpia los periodos seleccionados después de la eliminación
-                selectedCiclos.value = [];
+                selectedPeriodos.value = [];
             } catch (error) {
                 console.log('El error se origina aquí');
                 console.log(error);
@@ -185,9 +188,11 @@ onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('periodosTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('periodos-checkbox')) {
+        console.log(checkbox)
+        if (checkbox.classList.contains('periodo-checkbox')) {
             const periodoId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
+            console.log(periodoId)
             if (props.periodos) {
                 const periodo = props.periodos.find(periodo => periodo.idPeriodo === periodoId);
                 if (periodo) {
@@ -204,6 +209,7 @@ onMounted(() => {
         const periodoId = $(this).data('id');
         const periodo = props.periodos.find(p => p.idPeriodo === periodoId);
         abrirPeriodos(periodo);
+        console.log()
     });
 
     // Manejar clic en el botón de eliminar
@@ -238,19 +244,20 @@ const optionsPeriodo = {
         <div class="my-1"></div> <!-- Espacio de separación -->
         <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
         <!-- flash message start -->
-        <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
-        </div>
+        <div v-if="$page.props.flash.message"
+                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                role="alert">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div>
         <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
             <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                 @click="mostrarModalPeriodos = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                 <i class="fa fa-plus mr-2"></i>Agregar Periodo
             </button>
-            <button id="eliminarMBtn" disabled="true"
+            <button id="eliminarPBtn" disabled="true"
                 class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded" @click="eliminarPeriodos">
                 <i class="fa fa-trash mr-2"></i>Borrar Periodo(s)
             </button>

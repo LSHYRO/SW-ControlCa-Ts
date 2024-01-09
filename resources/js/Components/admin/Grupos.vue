@@ -27,7 +27,6 @@ DataTable.use(pdfmake);
 DataTable.use(Select);
 
 const props = defineProps({
-    grados: { type: Object },
     grupos: { type: Object },
     ciclos: { type: Object },
 
@@ -62,7 +61,7 @@ const columnsGrupos = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="ciclo-checkbox" data-id="${row.idGrupo}" ">`;
+            return `<input type="checkbox" class="grupo-checkbox" data-id="${row.idGrupo}" ">`;
         }
     },
     {
@@ -126,7 +125,7 @@ const toggleGrupoSelection = (grupo) => {
         selectedGrupos.value.push(grupo);
 
     }
-    const botonEliminar = document.getElementById("eliminarMBtn");
+    const botonEliminar = document.getElementById("eliminarGruBtn");
 
     if (selectedGrupos.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
@@ -156,10 +155,13 @@ const eliminarGrupo = (idGrupo, grupo) => {
 };
 
 const eliminarGrupos = () => {
+    console.log("Estoy en eliminar grupos");
+    console.log(selectedGrupos);
+
     const swal = Swal.mixin({
         buttonsStyling: true
     })
-
+    
     swal.fire({
         title: '¿Estas seguro que deseas eliminar los datos de los grupos seleccionados?',
         icon: 'warning',
@@ -168,10 +170,10 @@ const eliminarGrupos = () => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
+            console.log("Confirmado");
             try {
                 const gruposS = selectedGrupos.value.map((grupo) => grupo.idGrupo);
                 const $gruposIds = gruposS.join(',');
-                console.log(gruposS);
                 await form.delete(route('admin.elimGrupos', $gruposIds));
 
                 // Limpia los periodos seleccionados después de la eliminación
@@ -188,9 +190,11 @@ onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('gruposTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('grupos-checkbox')) {
+        console.log(checkbox)
+        if (checkbox.classList.contains('grupo-checkbox')) {
             const grupoId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
+            console.log(grupoId);
             if (props.grupos) {
                 const grupo = props.grupos.find(grupo => grupo.idGrupo === grupoId);
                 if (grupo) {
@@ -254,7 +258,7 @@ const optionsGrupo = {
                 @click="mostrarModalGrupo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                 <i class="fa fa-plus mr-2"></i>Agregar Grupo
             </button>
-            <button id="eliminarMBtn" disabled="true"
+            <button id="eliminarGruBtn" disabled="true"
                 class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded" @click="eliminarGrupos">
                 <i class="fa fa-trash mr-2"></i>Borrar Grupo(s)
             </button>

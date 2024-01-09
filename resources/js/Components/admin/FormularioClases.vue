@@ -66,18 +66,59 @@ const form = useForm({
     grados: props.clases.grado,
     grupos: props.clases.idGrupo,
     grupos: props.clases.grupo,
-    docentes: props.clases.idPersonal,
-    docentes: props.clases.nombre_completo,
+    personal: props.clases.idPersonal,
+    personal: props.clases.nombre_completo,
     materias: props.clases.idMateria,
     materias: props.clases.materia,
     ciclos: props.clases.idCiclo,//Le agregué la s
     ciclos: props.clases.descripcionCiclo,//Le agregue la s a ciclo
 });
 
+// Variables para los mensajes de validación
+const gradoError = ref('');
+const grupoError = ref('');
+const personalError = ref('');
+const materiaError = ref('');
+const ciclosError = ref('');
+
+// Validación del select 
+const validateSelect = (selectedValue) => {
+    if (selectedValue == undefined) {
+        return false;
+    }
+    return true;
+};
+
 const save = () => {
-    form.post(route('admin.addClases'), {
-        onSuccess: () => close()
+    gradoError.value = validateSelect(form.grados) ? '' : 'Seleccione el grado';
+    grupoError.value = validateSelect(form.grupos) ? '' : 'Seleccione el grupo';
+    personalError.value = validateSelect(form.personal) ? '' : 'Seleccione el docente';
+    materiaError.value = validateSelect(form.materias) ? '' : 'Seleccione la materia';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        gradoError.value || grupoError.value || personalError.value || materiaError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+    console.log("Llame al metodo");
+    try{
+        console.log(form);
+        form.post(route('admin.addClases'), {
+        onSuccess: () => {
+            close()
+            gradoError.value = '';
+            grupoError.value = '';
+            personalError.value = '';
+            materiaError.value = '';
+            ciclosError.value = '';
+        }
     });
+    }catch(error){
+        console.log("wasaa "+ error)
+    }
+    console.log("Llame al metodo2");
 }
 
 const update = () => {
@@ -92,7 +133,7 @@ watch(() => props.clases, (newVal) => {
     form.idClase = newVal.idClase;
     form.grados = newVal.grados;
     form.grupos = newVal.grupos;
-    form.docentes = newVal.docentes;
+    form.personal = newVal.personal;
     form.materias = newVal.materias;
     form.ciclos = newVal.ciclos;
 }, { deep: true });
@@ -131,6 +172,7 @@ watch(() => props.clases, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="gradoError != ''" class="text-red-500 text-xs">{{ gradoError }}</div>
                         </div>
 
                         <div class="sm:col-span-3">
@@ -144,12 +186,13 @@ watch(() => props.clases, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="grupoError != ''" class="text-red-500 text-xs">{{ grupoError }}</div>
                         </div>
 
                         <div class="sm:col-span-6">
                             <label for="docente" class="block text-sm font-medium leading-6 text-gray-900">Docente</label>
                             <div class="mt-2">
-                                <select name="docente" :id="'docente' + op" v-model="form.docentes"
+                                <select name="docente" :id="'docente' + op" v-model="form.personal"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un docente</option>
                                     <option v-for="docente in personal" :key="docente.idPersonal"
@@ -158,6 +201,7 @@ watch(() => props.clases, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="personalError != ''" class="text-red-500 text-xs">{{ personalError }}</div>
                         </div>
 
                         <div class="sm:col-span-3">
@@ -171,6 +215,7 @@ watch(() => props.clases, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="materiaError != ''" class="text-red-500 text-xs">{{ materiaError }}</div>
                         </div>
 
                         <div class="sm:col-span-3">
@@ -184,6 +229,7 @@ watch(() => props.clases, (newVal) => {
                                     </option>
                                 </select>
                             </div>
+                            <div v-if="ciclosError != ''" class="text-red-500 text-xs">{{ ciclosError }}</div>
                         </div>
 
                     </div>
