@@ -1,15 +1,15 @@
 <script setup>
-////////////////////////////////////////////////////////////////
-// Importaciones necesarias para el funcionamiento del 
-// formulario
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Importaciones necesarias para el funcionamiento del formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import { onMounted, watch, ref } from 'vue';
-const emit = defineEmits(['close']);
 import axios from 'axios';
-////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////
+const emit = defineEmits(['close']);
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Variables o propiedades que recibe el formulario
 const props = defineProps({
     show: {
@@ -24,7 +24,11 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    personal: {
+    alumno: {
+        type: Object,
+        default: () => ({}),
+    },
+    generos: {
         type: Object,
         default: () => ({}),
     },
@@ -32,7 +36,11 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
-    generos: {
+    grados: {
+        type: Object,
+        default: () => ({}),
+    },
+    grupos: {
         type: Object,
         default: () => ({}),
     },
@@ -41,16 +49,17 @@ const props = defineProps({
     op: { type: String },
 },
 );
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Constantes para cargar los estados, municipios y asentamientos
 const estados = ref([]);
 const municipios = ref([]);
 const asentamientos = ref([]);
-//////////////////////////////////////////////////////////////////////
+const tutores = ref([]);
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Función para cerrar el formulario
 const close = async () => {
     emit('close');
@@ -65,57 +74,62 @@ const close = async () => {
         form.asentamiento = asentamientos.value[0]?.idAsentamiento;
     } catch (error) {
         console.log("Error generado en onMounted: " + error);
-    }
+    }    
 };
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Función para actualizar los datos del formulario con la variable
-// personal que recibe el formulario
+// tutor que recibe el formulario
 const form = useForm({
-    idPersonal: props.personal.idPersonal,
-    nombre: props.personal.nombre,
-    apellidoP: props.personal.apellidoP,
-    apellidoM: props.personal.apellidoM,
-    correoElectronico: props.personal.correoElectronico,
-    numTelefono: props.personal.numTelefono,
-    fechaNacimiento: props.personal.fechaNacimiento,
-    genero: props.personal.idGenero,
-    curp: props.personal.CURP,
-    rfc: props.personal.rfc,
-    tipoSangre: props.personal.idTipoSangre,
-    alergias: props.personal.alergias,
-    discapacidad: props.personal.discapacidad,
-    tipoSangre: props.personal.idTipoSangre,
-    calle: props.personal.calle,
-    numero: props.personal.numero,
-    codigoPostal: props.personal.codigoPos,
-    estado: props.personal.idEstado,
-    municipio: props.personal.idMunicipio,
-    asentamiento: props.personal.idAsentamiento,
-    idDomicilio: props.personal.idDireccion,
-
+    idTutor: props.alumno.idAlumno,
+    nombre: props.alumno.nombre,
+    apellidoP: props.alumno.apellidoP,
+    apellidoM: props.alumno.apellidoM,
+    correoElectronico: props.alumno.correoElectronico,
+    numTelefono: props.alumno.numTelefono,
+    genero: props.alumno.idGenero,
+    tipoSangre: props.alumno.idTipoSangre,
+    fechaNacimiento: props.alumno.fechaNacimiento,
+    curp: props.alumno.CURP,
+    rfc: props.alumno.RFC,
+    alergias: props.alumno.alergias,
+    discapacidad: props.alumno.discapacidad,
+    grado: props.alumno.idGrado,
+    grupo: props.alumno.idGrupo,
+    calle: props.alumno.calle,
+    numero: props.alumno.numero,
+    codigoPostal: props.alumno.codigoPos,
+    estado: props.alumno.idEstado,
+    municipio: props.alumno.idMunicipio,
+    asentamiento: props.alumno.idAsentamiento,
+    idDomicilio: props.alumno.idDireccion,
+    idUsuario: props.alumno.idUsuario,
+    tutor: props.alumno.idTutor,
 });
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Variables para los mensajes de validación
-const curpError = ref('');
-const rfcError = ref('');
 const nombreError = ref('');
 const apellidoPError = ref('');
 const apellidoMError = ref('');
 const correoEError = ref('');
 const numeroTError = ref('');
-const fechaNError = ref('');
 const codigoPError = ref('');
 const calleError = ref('');
 const numeroCError = ref('');
 const generoError = ref('');
 const tipoSError = ref('');
-//////////////////////////////////////////////////////////////////////
+const gradoError = ref('');
+const grupoError = ref('');
+const fechaNError = ref('');
+const curpError = ref('');
+const rfcError = ref('');
+const tutorError = ref('');
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Validacion de CURP y RFC
 // Función para validar CURP
 const validateCURP = (curp) => {
@@ -174,9 +188,9 @@ const validateSelect = (selectedValue) => {
     }
     return true;
 };
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Función para crear (guardar) un nuevo profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
@@ -190,10 +204,10 @@ const save = () => {
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido materno';
-    // Validacion de correo electronico
-    correoEError.value = validateEmail(form.correoElectronico) ? '' : 'Correo electronico no valido';
     // Validacion de fecha de nacimiento
     fechaNError.value = validateFechaNacimiento(form.fechaNacimiento) ? '' : 'Fecha de nacimiento no valida';
+    // Validacion de correo electronico
+    correoEError.value = validateEmail(form.correoElectronico) ? '' : 'Correo electronico no valido';
     // Validacion de codigo postal 
     codigoPError.value = validateCodigoPostal(form.codigoPostal) ? '' : 'Ingrese el codigo postal';
     // Validacion de numero de telefono
@@ -207,38 +221,48 @@ const save = () => {
     generoError.value = validateSelect(form.genero) ? '' : 'Seleccione el genero';
     //  Tipo de sangre
     tipoSError.value = validateSelect(form.tipoSangre) ? '' : 'Seleccione el tipo de sangre';
+    //  grado
+    gradoError.value = validateSelect(form.grado) ? '' : 'Seleccione el grado';
+    //  grupo
+    grupoError.value = validateSelect(form.grupo) ? '' : 'Seleccione el grupo';
+    // tutor
+    tutorError.value = validateSelect(form.tutor) ? '' : 'Seleccione al tutor del alumno';
 
     if (
-        curpError.value || rfcError.value || nombreError.value || apellidoMError.value || apellidoPError.value ||
-        correoEError.value || fechaNError.value || codigoPError.value || numeroTError.value || calleError.value ||
-        numeroCError.value || generoError.value || tipoSError.value
+        nombreError.value || apellidoMError.value || apellidoPError.value ||
+        correoEError.value || codigoPError.value || numeroTError.value || calleError.value ||
+        numeroCError.value || generoError.value || fechaNError.value || gradoError.value || grupoError.value ||
+        curpError.value || rfcError.value || tipoSError.value || tutorError.value
     ) {
 
         return;
     }
 
-    form.post(route('admin.addProfesores'), {
+    form.post(route('admin.addTutores'), {
         onSuccess: () => {
             close()
-            curpError.value = '';
-            rfcError.value = '';
             nombreError.value = '';
             apellidoMError.value = '';
             apellidoPError.value = '';
             correoEError.value = '';
-            fechaNError.value = '';
             codigoPError.value = '';
             numeroTError.value = '';
             calleError.value = '';
             numeroCError.value = '';
             generoError.value = '';
             tipoSError.value = '';
+            gradoError.value = '';
+            grupoError.value = '';
+            fechaNError.value = '';
+            curpError.value = '';
+            rfcError.value = '';
+            tutorError.value = '';
         }
     });
 }
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Función para modificar (actualizar) un profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
@@ -246,16 +270,16 @@ const update = () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
     rfcError.value = validateRFC(form.rfc) ? '' : 'RFC no válido';
-    //curpError.value = validateStringNotEmpty(form.curp) ? '' : 'Ingrese la CURP';
-    //rfcError.value = validateStringNotEmpty(form.rfc) ? '' : 'Ingrese el RFC';
+    curpError.value = validateStringNotEmpty(form.curp) ? '' : 'Ingrese la CURP';
+    rfcError.value = validateStringNotEmpty(form.rfc) ? '' : 'Ingrese el RFC';
     // Validacion de nombre
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido materno';
-    // Validacion de correo electronico
-    correoEError.value = validateEmail(form.correoElectronico) ? '' : 'Correo electronico no valido';
     // Validacion de fecha de nacimiento
     fechaNError.value = validateFechaNacimiento(form.fechaNacimiento) ? '' : 'Fecha de nacimiento no valida';
+    // Validacion de correo electronico
+    correoEError.value = validateEmail(form.correoElectronico) ? '' : 'Correo electronico no valido';
     // Validacion de codigo postal 
     codigoPError.value = validateCodigoPostal(form.codigoPostal) ? '' : 'Ingrese el codigo postal';
     // Validacion de numero de telefono
@@ -269,55 +293,67 @@ const update = () => {
     generoError.value = validateSelect(form.genero) ? '' : 'Seleccione el genero';
     //  Tipo de sangre
     tipoSError.value = validateSelect(form.tipoSangre) ? '' : 'Seleccione el tipo de sangre';
+    //  grado
+    gradoError.value = validateSelect(form.grado) ? '' : 'Seleccione el grado';
+    //  grupo
+    grupoError.value = validateSelect(form.grupo) ? '' : 'Seleccione el grupo';
+    // tutor
+    tutorError.value = validateSelect(form.tutor) ? '' : 'Seleccione al tutor del alumno';
 
     if (
-        curpError.value || rfcError.value || nombreError.value || apellidoMError.value || apellidoPError.value ||
-        correoEError.value || fechaNError.value || codigoPError.value || numeroTError.value || calleError.value ||
-        numeroCError.value || generoError.value || tipoSError.value
+        nombreError.value || apellidoMError.value || apellidoPError.value ||
+        correoEError.value || codigoPError.value || numeroTError.value || calleError.value ||
+        numeroCError.value || generoError.value || fechaNError.value || gradoError.value || grupoError.value ||
+        curpError.value || rfcError.value || tipoSError.value || tutorError.value
     ) {
 
         return;
     }
 
-    var idPersonal = document.getElementById('idPersonal2').value;
-    form.put(route('admin.actualizarProfesores', idPersonal), {
+    var idTutor = document.getElementById('idTutor2').value;
+    form.put(route('admin.actualizarTutor', idTutor), {
         onSuccess: () => {
             close()
-            curpError.value = '';
-            rfcError.value = '';
             nombreError.value = '';
             apellidoMError.value = '';
             apellidoPError.value = '';
             correoEError.value = '';
-            fechaNError.value = '';
             codigoPError.value = '';
             numeroTError.value = '';
             calleError.value = '';
             numeroCError.value = '';
             generoError.value = '';
             tipoSError.value = '';
+            gradoError.value = '';
+            grupoError.value = '';
+            fechaNError.value = '';
+            curpError.value = '';
+            rfcError.value = '';
+            tutorError.value = '';
         }
     });
 }
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Observa la variable personal que se le pasa al formulario, en dado
 // donde al cambiar los datos se actualiza el formulario
-watch(() => props.personal, (newVal) => {
-    form.idPersonal = newVal.idPersonal;
+watch(() => props.tutor, (newVal) => {
+    form.idTutor = newVal.idAlumno;
     form.nombre = newVal.nombre;
     form.apellidoP = newVal.apellidoP;
     form.apellidoM = newVal.apellidoM;
     form.correoElectronico = newVal.correoElectronico;
     form.numTelefono = newVal.numTelefono;
+    form.genero = newVal.idGenero;
+    form.tipoSangre = newVal.idTipoSangre;
     form.fechaNacimiento = newVal.fechaNacimiento;
     form.curp = newVal.CURP;
     form.rfc = newVal.RFC;
-    form.tipoSangre = newVal.idTipoSangre;
     form.alergias = newVal.alergias;
     form.discapacidad = newVal.discapacidad;
-    form.genero = newVal.idGenero;
+    form.grado = newVal.idGrado;
+    form.grupo = newVal.idGrupo;
     form.calle = newVal.calle;
     form.numero = newVal.numero;
     form.codigoPostal = newVal.codigoPos;
@@ -325,11 +361,13 @@ watch(() => props.personal, (newVal) => {
     form.municipio = newVal.idMunicipio;
     form.asentamiento = newVal.idAsentamiento;
     form.idDomicilio = newVal.idDireccion;
+    form.idUsuario = newVal.idUsuario;
+    form.tutor = newVal.tutor;
 }, { deep: true }
 );
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Constante con función para cargar los municipios dependiendo de
 // la selección del select estado
 const cargarMunicipios = async () => {
@@ -341,9 +379,9 @@ const cargarMunicipios = async () => {
         console.error('Error al obtener municipios:', error);
     }
 };
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Constante con función para cargar los asentamientos dependiendo de
 // la selección del select municipio
 const cargarAsentamientos = async () => {
@@ -355,9 +393,9 @@ const cargarAsentamientos = async () => {
         console.error('Error al obtener asentamientos:', error);
     }
 };
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Constante con función para cargar los datos de estado, municipio
 // y asentamientos dependiendo del codigo postal que se coloque en
 // el formulario
@@ -375,12 +413,12 @@ const buscarDatosXCodigoPostal = async () => {
             if (datos.estado) {
                 form.estado = await datos.estado.idEstado;
                 await cargarMunicipios();
-                
+
             }
             if (datos.municipio) {
                 form.municipio = await datos.municipio.idMunicipio;
                 await cargarAsentamientos();
-                form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+                form.asentamiento = await asentamientos.value[0]?.idAsentamiento;
             }
             codigoPError.value = '';
         } else {
@@ -390,24 +428,37 @@ const buscarDatosXCodigoPostal = async () => {
         console.error('Error al obtener datos por código postal:', error);
     }
 };
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+const obtenerInformacion = (query) => {
+    if(query.lenght < 1){
+        return;
+    }
+    axios.get('/admin/buscar/tutor', {params: {query}}).then(response => {
+        tutores.value = response.data;
+    }).catch(error => {
+        console.error('Error al obtener tutores: ', error);
+    });    
+};
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Funcion onMounted para al rellenar los datos del select estado
 onMounted(async () => {
-    try{
-    const response = await axios.get(route('consEstados'));
-    estados.value = response.data;
-    form.estado = estados.value[19]?.idEstado;
-    await cargarMunicipios();
-    form.municipio = municipios.value[0]?.idMunicipio;
-    await cargarAsentamientos();
-    form.asentamiento = asentamientos.value[0]?.idAsentamiento;
-    }catch(error){
+    try {
+        const response = await axios.get(route('consEstados'));
+        estados.value = response.data;
+        form.estado = estados.value[19]?.idEstado;
+        await cargarMunicipios();
+        form.municipio = municipios.value[0]?.idMunicipio;
+        await cargarAsentamientos();
+        form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+    } catch (error) {
         console.log("Error generado en onMounted: " + error);
     }
 });
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 </script>
 
 <template>
@@ -417,14 +468,14 @@ onMounted(async () => {
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar a un nuevo
-                        profesor o actualizar los datos
+                        alumno o actualizar los datos
                     </p>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idPersonal" class="block text-sm font-medium leading-6 text-gray-900">id</label>
+                            <label for="idAlumno" class="block text-sm font-medium leading-6 text-gray-900">idAlumno</label>
                             <div class="mt-2">
-                                <input type="number" name="idPersonal" v-model="form.idPersonal" placeholder="Ingrese id"
-                                    :id="'idPersonal' + op"
+                                <input type="number" name="idAlumno" v-model="form.idAlumno"
+                                    placeholder="Ingrese id del alumno" :id="'idAlumno' + op"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
@@ -495,6 +546,22 @@ onMounted(async () => {
                             <div v-if="generoError != ''" class="text-red-500 text-xs mt-1">{{ generoError }}</div>
                         </div>
                         <div class="sm:col-span-2">
+                            <label for="tipoSangre" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                                sangre</label>
+                            <div class="mt-2">
+                                <select name="tipoSangre" :id="'tipoSangre' + op" v-model="form.tipoSangre"
+                                    placeholder="Seleccione el tipo de sangre"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un tipo de sangre</option>
+                                    <option v-for="tSangre in tipoSangre" :key="tSangre.idTipoSangre"
+                                        :value="tSangre.idTipoSangre">
+                                        {{ tSangre.tipoSangre }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="tipoSError != ''" class="text-red-500 text-xs mt-1">{{ tipoSError }}</div>
+                        </div>
+                        <div class="sm:col-span-2">
                             <label for="fechaNacimiento" class="block text-sm font-medium leading-6 text-gray-900">Fecha de
                                 nacimiento</label>
                             <div class="mt-2">
@@ -522,22 +589,6 @@ onMounted(async () => {
                             </div>
                             <div v-if="rfcError != ''" class="text-red-500 text-xs mt-1">{{ rfcError }}</div>
                         </div>
-                        <div class="sm:col-span-2">
-                            <label for="tipoSangre" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
-                                sangre</label>
-                            <div class="mt-2">
-                                <select name="tipoSangre" :id="'tipoSangre' + op" v-model="form.tipoSangre"
-                                    placeholder="Seleccione el tipo de sangre"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Selecciona un tipo de sangre</option>
-                                    <option v-for="tSangre in tipoSangre" :key="tSangre.idTipoSangre"
-                                        :value="tSangre.idTipoSangre">
-                                        {{ tSangre.tipoSangre }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div v-if="tipoSError != ''" class="text-red-500 text-xs mt-1">{{ tipoSError }}</div>
-                        </div>
                         <div class="sm:col-span-3">
                             <label for="alergias" class="block text-sm font-medium leading-6 text-gray-900">Alergias</label>
                             <div class="mt-2">
@@ -555,6 +606,47 @@ onMounted(async () => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
+                        <div class="sm:col-span-4">
+                            <label for="tutor" class="block text-sm font-medium leading-6 text-gray-900">Tutor</label>
+                            <div class="mt-2">
+                                <!--
+                                <select type="text" name="tutor" v-model="form.tutor" :id="'tutor' + op"
+                                    class="tutorInputSelect2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></select>
+                                    -->
+                                    <v-select type="text" name="tutor" label="text" placeholder="Ingrese el nombre del tutor" :options="tutores" v-model="form.tutor" :id="'tutor' + op" 
+                                    @search="obtenerInformacion" :minimum-input-length="1" :filterable="false" modelValue="id" modelProp="id"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/> 
+                            </div>
+                            <div v-if="tutorError != ''" class="text-red-500 text-xs mt-1">{{ tutorError }}</div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
+                            <div class="mt-2">
+                                <select name="grado" :id="'grado' + op" v-model="form.grado"
+                                    placeholder="Seleccione el tipo de sangre"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione un grado</option>
+                                    <option v-for="grado in grados" :key="grado.idGenero" :value="grado.idGrado">
+                                        {{ grado.grado }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="gradoError != ''" class="text-red-500 text-xs mt-1">{{ gradoError }}</div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
+                            <div class="mt-2">
+                                <select name="grupo" :id="'grupo' + op" v-model="form.grupo"
+                                    placeholder="Seleccione el tipo de sangre"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione un grupo</option>
+                                    <option v-for="grupo in grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
+                                        {{ grupo.grupo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="grupoError != ''" class="text-red-500 text-xs mt-1">{{ grupoError }}</div>
+                        </div>
                         <div class="sm:col-span-2">
                             <label for="codigoPostal" class="block text-sm font-medium leading-6 text-gray-900">Código
                                 Postal</label>
@@ -569,8 +661,7 @@ onMounted(async () => {
                         <div class="sm:col-span-3">
                             <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
                             <div class="mt-2">
-                                <select name="estado" :id="'estado' + op" v-model="form.estado" 
-                                @change="cargarMunicipios"
+                                <select name="estado" :id="'estado' + op" v-model="form.estado" @change="cargarMunicipios"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un estado</option>
                                     <option v-for="estado in estados" :key="estado.idEstado" :value="estado.idEstado">
@@ -635,6 +726,15 @@ onMounted(async () => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
+                        <div class="sm:col-span-3" hidden>
+                            <label for="idUsuario"
+                                class="block text-sm font-medium leading-6 text-gray-900">idUsuario</label>
+                            <div class="mt-2">
+                                <input type="text" name="idUsuario" :id="'idUsuario' + op" v-model="form.idUsuario"
+                                    placeholder="Ingrese el Usuario"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -647,3 +747,6 @@ onMounted(async () => {
         </div>
     </Modal>
 </template>
+<style>
+@import "vue-select/dist/vue-select.css";
+</style>

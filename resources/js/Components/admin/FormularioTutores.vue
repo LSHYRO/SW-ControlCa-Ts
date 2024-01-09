@@ -47,9 +47,20 @@ const asentamientos = ref([]);
 
 //////////////////////////////////////////////////////////////////////
 // Función para cerrar el formulario
-const close = () => {
+const close = async () => {
     emit('close');
     form.reset();
+    try {
+        const response = await axios.get(route('consEstados'));
+        estados.value = response.data;
+        form.estado = estados.value[19]?.idEstado;
+        await cargarMunicipios();
+        form.municipio = municipios.value[0]?.idMunicipio;
+        await cargarAsentamientos();
+        form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+    } catch (error) {
+        console.log("Error generado en onMounted: " + error);
+    }
 };
 //////////////////////////////////////////////////////////////////////
 
@@ -328,7 +339,6 @@ onMounted(async () => {
     }catch(error){
         console.log("Error generado en onMounted: " + error);
     }
-    console.log(props.tutor);
 });
 //////////////////////////////////////////////////////////////////////
 </script>

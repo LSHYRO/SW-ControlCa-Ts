@@ -109,7 +109,7 @@ class AdminController extends Controller
         $materias = materias::all();
         $ciclos = ciclos::all();
 
-        return Inertia::render('Admin/Clases',[
+        return Inertia::render('Admin/Clases', [
             'clases' => $clases,
             'grupos' => $grupos,
             'grados' => $grados,
@@ -121,6 +121,7 @@ class AdminController extends Controller
 
     public function tutores_alumnos()
     {
+        // Obtención de datos de tutores
         $tutoresPrincipal = tutores::with(['generos', 'direcciones', 'alumnos.apellidoP', 'alumnos.apellidoM', 'alumnos.nombre'])->get();
 
         $tutores = $tutoresPrincipal->map(function ($tutor) {
@@ -140,10 +141,39 @@ class AdminController extends Controller
             $tutor->idAsentamiento = $tutor->direcciones->asentamientos->idAsentamiento;
             return $tutor;
         });
-        //$tutores = tutores::all();
         $generos = generos::all();
-        $alumnos = alumnos::all();
-        return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos]);
+
+        // Obtención de datos de alumnos
+        $alumnosPrincipal = alumnos::with(['generos', 'direcciones', 'tipoSangre', 'grados', 'grupos', 'materias', 'tutores'])->get();
+
+        $alumnos = $alumnosPrincipal->map(function ($alumno) {
+            $genero = $alumno->generos ? $alumno->generos->genero : null;
+            $calle = $alumno->direcciones ? $alumno->direcciones->calle : null;
+            $numero = $alumno->direcciones ? $alumno->direcciones->numero : null;
+
+            $alumno->genero = $genero;
+            $alumno->calle = $calle;
+            $alumno->numero = $numero;
+            $alumno->codigoPos = $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $alumno->domicilio = $alumno->direcciones->calle . " #" . $alumno->direcciones->numero . ", " . $alumno->direcciones->asentamientos->asentamiento
+                . ", " . $alumno->direcciones->asentamientos->municipios->municipio . ", " . $alumno->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $alumno->idEstado = $alumno->direcciones->asentamientos->municipios->estados->idEstado;
+            $alumno->idMunicipio = $alumno->direcciones->asentamientos->municipios->idMunicipio;
+            $alumno->idAsentamiento = $alumno->direcciones->asentamientos->idAsentamiento;
+            $alumno->grado = $alumno->grados->grado;
+            $alumno->grupo = $alumno->grupos->grupo;
+            $alumno->materia = $alumno->materias->materia;
+            $alumno->tutor = $alumno->tutores->tutor;
+            return $alumno;
+        });
+
+        $tipoSangre = tipo_Sangre::all();
+        $grados = grados::all();
+        $grupos = grupos::all();
+        //$materias = materias::where('esTaller', 'true')->get();
+        //$alumnos = alumnos::all();
+        return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos]);
     }
 
     /*
@@ -408,7 +438,7 @@ class AdminController extends Controller
 
             for ($i = 0; $i < count($tutoresIdsArray); $i++) {
                 $tutor = tutores::find($tutoresIdsArray[$i]);
-                $usuario = usuarios::find($tutor->idUsuario);                
+                $usuario = usuarios::find($tutor->idUsuario);
                 $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                     ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
                     ->first();
@@ -429,14 +459,16 @@ class AdminController extends Controller
         }
     }
 
-    public function buscarT(Request $request)
+    public function buscarTutor(Request $request)
     {
         $query = $request->input('query');
 
         // Realiza la búsqueda full-text en la columna "nombre_completo"
-        $tutores = tutores::whereRaw('MATCH(nombre_completo) AGAINST(? IN BOOLEAN MODE)', [$query])
+        $tutores = tutores::where('nombre_completo', 'LIKE', '%' . $query . '%')
             ->get();
-
+        /*$tutores = tutores::whereRaw('MATCH(nombre_completo) AGAINST(? IN BOOLEAN MODE)', [$query])
+            ->get();
+        */
         // Formatea los resultados para enviarlos como respuesta JSON
         $results = [];
         foreach ($tutores as $tutor) {
@@ -692,7 +724,7 @@ class AdminController extends Controller
         }
     }
 
-    public function actualizarClases(Request $request, $idPersonal)
+    public function actualizarClases(Request $request, $idClase)
     {
         $clases = clases::find($idClase);
         $request->validate([
@@ -789,7 +821,7 @@ class AdminController extends Controller
             ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
             ->get();
 
-        return response()->json($grupos);
+        return response()->json($grados);
     }
 
     public function getGrupos($searchTerm)
@@ -960,7 +992,7 @@ class AdminController extends Controller
             $periodosIdsArray = explode(',', $periodosIds);
 
             // Limpia los IDs para evitar posibles problemas de seguridad
-            $periodosIdsArray = array_map('intval', $periodossIdsArray);
+            $periodosIdsArray = array_map('intval', $periodosIdsArray);
 
             // Elimina los ciclos
             periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();

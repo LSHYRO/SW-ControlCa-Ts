@@ -328,5 +328,5 @@ onMounted(() => {
     <formulario-tutores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
         :title="'Añadir tutor'" :op="'1'" :modal="'modalCreate'" :generos="props.generos"></formulario-tutores>
     <formulario-tutores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar materia'" :op="'2'" :modal="'modalEdit'" :tutor="tutorE" :generos="props.generos"></formulario-tutores>
+        :title="'Editar tutor'" :op="'2'" :modal="'modalEdit'" :tutor="tutorE" :generos="props.generos"></formulario-tutores>
 </template>

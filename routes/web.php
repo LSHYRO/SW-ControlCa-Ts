@@ -40,7 +40,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/clases', 'addClases')->name('admin.addClases');
 
 
-    Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');
+    Route::get('/admin/buscar/tutor', 'buscarTutor')->name('ad.busquedaTutor');
     
     Route::delete('/profesores/delete/{personalIds}', 'elimProfesores')->name('admin.elimProfesores');
 
