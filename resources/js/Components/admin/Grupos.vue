@@ -37,17 +37,17 @@ const mostrarModalEGrupo = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var grup = ({});
+var grupoE = ({});
 
 const selectedGrupos = ref([]);
 
 const form = useForm({});
 
 const abrirGrupos = ($gruposs) => {
-    grup = $gruposs;
+    grupoE = $gruposs;
     mostrarModalEGrupo.value = true;
     console.log($gruposs);
-    console.log(grup);
+    console.log(grupoE);
 }
 
 const cerrarModalGrupo = () => {
@@ -300,5 +300,5 @@ const optionsGrupo = {
     <formulario-grupo :show="mostrarModalGrupo" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalGrupo"
         :title="'Añadir grupo'" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"></formulario-grupo>
     <formulario-grupo :show="mostrarModalEGrupo" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalEGrupo"
-        :title="'Editar grupo'" :op="'2'" :modal="'modalEdit'" :grupo="grup" :ciclos="props.ciclos"></formulario-grupo>
+        :title="'Editar grupo'" :op="'2'" :modal="'modalEdit'" :grupos="grupoE" :ciclos="props.ciclos"></formulario-grupo>
 </template>

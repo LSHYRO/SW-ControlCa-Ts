@@ -33,17 +33,17 @@ const mostrarModalEPeriodos = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var per = ({});
+var periodoE = ({});
 
 const selectedPeriodos = ref([]);
 
 const form = useForm({});
 
 const abrirPeriodos = ($periodoss) => {
-    per = $periodoss;
+    periodoE = $periodoss;
     mostrarModalPeriodos.value = true;
     console.log($periodoss);
-    console.log(per);
+    console.log(periodoE);
 }
 
 const cerrarModalPeriodos = () => {
@@ -308,6 +308,6 @@ const optionsPeriodo = {
         @close="cerrarModalPeriodos" :title="'Añadir periodo'" :op="'1'" :modal="'modalCreate'"
         :ciclos="props.ciclos"></formulario-periodos>
     <formulario-periodos :show="mostrarModalEPeriodos" :max-width="maxWidth" :closeable="closeable"
-        @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'" :periodo="per"
+        @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'" :periodos="periodoE"
         :ciclos="props.ciclos"></formulario-periodos>
 </template>

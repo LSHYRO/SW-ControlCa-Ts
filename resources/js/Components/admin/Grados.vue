@@ -38,17 +38,17 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var grad = ({});
+var gradoE = ({});
 
 const selectedGrados = ref([]);
 
 const form = useForm({});
 
 const abrirGrados = ($gradoss) => {
-    grad = $gradoss;
+    gradoE = $gradoss;
     mostrarModalE.value = true;
     console.log($gradoss);
-    console.log(grad);
+    console.log(gradoE);
 }
 
 const cerrarModal = () => {
@@ -210,6 +210,7 @@ onMounted(() => {
 
     // Manejar clic en el botón de editar
     $('#gradosTablaId').on('click', '.editar-button', function () {
+        console.log("Entró en editar");
         const gradoId = $(this).data('id');
         const grado = props.grados.find(g => g.idGrado === gradoId);
         abrirGrados(grado);
@@ -302,5 +303,5 @@ const optionsGrado = {
     <formulario-grado :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
         :title="'Añadir grado'" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"></formulario-grado>
     <formulario-grado :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar grado'" :op="'2'" :modal="'modalEdit'" :grado="grad" :ciclos="props.ciclos"></formulario-grado>
+        :title="'Editar grado'" :op="'2'" :modal="'modalEdit'" :grados="gradoE" :ciclos="props.ciclos"></formulario-grado>
 </template>

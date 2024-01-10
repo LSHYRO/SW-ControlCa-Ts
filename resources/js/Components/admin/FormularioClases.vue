@@ -18,7 +18,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    clases: {
+    clase: {
         type: Object,
         default: () => ({}),
     },
@@ -61,17 +61,17 @@ const close = () => {
 };
 
 const form = useForm({
-    idClase: props.clases.idClase,
-    grados: props.clases.idGrado,
-    grados: props.clases.grado,
-    grupos: props.clases.idGrupo,
-    grupos: props.clases.grupo,
-    personal: props.clases.idPersonal,
-    personal: props.clases.nombre_completo,
-    materias: props.clases.idMateria,
-    materias: props.clases.materia,
-    ciclos: props.clases.idCiclo,//Le agregué la s
-    ciclos: props.clases.descripcionCiclo,//Le agregue la s a ciclo
+    idClase: props.clase.idClase,
+    grados: props.clase.idGrado,
+    //grados: props.clases.grado,
+    grupos: props.clase.idGrupo,
+    //grupos: props.clases.grupo,
+    personal: props.clase.idPersonal,
+    //personal: props.clases.nombre_completo,
+    materias: props.clase.idMateria,
+    //materias: props.clases.materia,
+    ciclos: props.clase.idCiclo,//Le agregué la s
+    //ciclos: props.clases.descripcionCiclo,//Le agregue la s a ciclo
 });
 
 // Variables para los mensajes de validación
@@ -129,13 +129,15 @@ const update = () => {
         onSuccess: () => close()
     });
 }
-watch(() => props.clases, (newVal) => {
+watch(() => props.clase, (newVal) => {
+    console.log("Entré en watch");
+    console.log(newVal); // Verifica que props.clases tenga valores
     form.idClase = newVal.idClase;
-    form.grados = newVal.grados;
-    form.grupos = newVal.grupos;
-    form.personal = newVal.personal;
-    form.materias = newVal.materias;
-    form.ciclos = newVal.ciclos;
+    form.grados = newVal.idGrado;
+    form.grupos = newVal.idGrupo;
+    form.personal = newVal.idPersonal;
+    form.materias = newVal.idMateria;
+    form.ciclos = newVal.idCiclo;
 }, { deep: true });
 
 </script>

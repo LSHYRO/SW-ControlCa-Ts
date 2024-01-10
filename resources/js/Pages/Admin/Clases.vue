@@ -136,7 +136,7 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var clas = ({});
+var claseE = ({});
 
 const selectedClases = ref([]);
 
@@ -165,10 +165,10 @@ const toggleClaseSelection = (clase) => {
 const form = useForm({});
 
 const abrirE = ($clasee) => {
-    clas = $clasee;
+    claseE = $clasee;
     mostrarModalE.value = true;
     console.log($clasee);
-    console.log(clas);
+    console.log(claseE);
 }
 
 const cerrarModal = () => {
@@ -255,6 +255,7 @@ onMounted(() => {
 
     // Manejar clic en el botón de editar
     $('#clasesTablaId').on('click', '.editar-button', function () {
+        console.log("Entró en editar");
         const claseId = $(this).data('id');
         const clase = props.clases.find(c => c.idClase === claseId);
         abrirE(clase);
@@ -355,7 +356,7 @@ onMounted(() => {
             :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'" :grados="props.grados" :grupos="props.grupos"
             :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
         <formulario-clases :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :grados="props.grados" :grupos="props.grupos"
+            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :clase="claseE" :grados="props.grados" :grupos="props.grupos"
             :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
 
     </AdminLayout>
