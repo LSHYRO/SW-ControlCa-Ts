@@ -47,9 +47,20 @@ const asentamientos = ref([]);
 
 //////////////////////////////////////////////////////////////////////
 // Función para cerrar el formulario
-const close = () => {
+const close = async () => {
     emit('close');
     form.reset();
+    try {
+        const response = await axios.get(route('consEstados'));
+        estados.value = response.data;
+        form.estado = estados.value[19]?.idEstado;
+        await cargarMunicipios();
+        form.municipio = municipios.value[0]?.idMunicipio;
+        await cargarAsentamientos();
+        form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+    } catch (error) {
+        console.log("Error generado en onMounted: " + error);
+    }
 };
 //////////////////////////////////////////////////////////////////////
 
@@ -127,13 +138,20 @@ const validateSelect = (selectedValue) => {
     }
     return true;
 };
+
+// Validacion de codigo postal coincida con el asentamiento
+const validatePostal = async (asentamiento) => {
+    const infoAsentamiento = await axios.get(route('infoAsentamiento', asentamiento));
+    const codPosAsentamiento = infoAsentamiento.data.codPos;
+    return codPosAsentamiento != form.codigoPostal ? false : true;
+}
 //////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////
 // Función para crear (guardar) un nuevo profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
-const save = () => {
+const save = async () => {
     // Validacion de nombre
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
@@ -151,11 +169,13 @@ const save = () => {
     // Validacion de los select
     //  Genero
     generoError.value = validateSelect(form.genero) ? '' : 'Seleccione el genero';
+    // Verificar que el codigo postal sea al correspondiente
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
 
     if (
         nombreError.value || apellidoMError.value || apellidoPError.value ||
         correoEError.value || codigoPError.value || numeroTError.value || calleError.value ||
-        numeroCError.value || generoError.value 
+        numeroCError.value || generoError.value
     ) {
 
         return;
@@ -182,7 +202,7 @@ const save = () => {
 // Función para modificar (actualizar) un profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
-const update = () => {
+const update = async () => {
     // Validacion de nombre
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
@@ -200,10 +220,12 @@ const update = () => {
     // Validacion de los select
     //  Genero
     generoError.value = validateSelect(form.genero) ? '' : 'Seleccione el genero';
+    // Verificar que el codigo postal sea al correspondiente
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
 
     if (
-        nombreError.value || apellidoMError.value || apellidoPError.value || correoEError.value || 
-        codigoPError.value || numeroTError.value || calleError.value || numeroCError.value || 
+        nombreError.value || apellidoMError.value || apellidoPError.value || correoEError.value ||
+        codigoPError.value || numeroTError.value || calleError.value || numeroCError.value ||
         generoError.value
     ) {
 
@@ -222,7 +244,7 @@ const update = () => {
             numeroTError.value = '';
             calleError.value = '';
             numeroCError.value = '';
-            generoError.value = '';            
+            generoError.value = '';
         }
     });
 }
@@ -231,7 +253,7 @@ const update = () => {
 //////////////////////////////////////////////////////////////////////
 // Observa la variable personal que se le pasa al formulario, en dado
 // donde al cambiar los datos se actualiza el formulario
-watch(() => props.tutor, (newVal) => {
+watch(() => props.tutor, async (newVal) => {
     form.idTutor = newVal.idTutor;
     form.nombre = newVal.nombre;
     form.apellidoP = newVal.apellidoP;
@@ -241,10 +263,13 @@ watch(() => props.tutor, (newVal) => {
     form.genero = newVal.idGenero;
     form.calle = newVal.calle;
     form.numero = newVal.numero;
-    form.codigoPostal = newVal.codigoPos;
-    form.estado = newVal.idEstado;
-    form.municipio = newVal.idMunicipio;
-    form.asentamiento = newVal.idAsentamiento;
+    form.codigoPostal = await newVal.codigoPos;
+    await buscarDatosXCodigoPostal();
+    form.estado = await newVal.idEstado;
+    await cargarMunicipios();
+    form.municipio = await newVal.idMunicipio;
+    await cargarAsentamientos(); 
+    form.asentamiento = await newVal.idAsentamiento;
     form.idDomicilio = newVal.idDireccion;
     form.idUsuario = newVal.idUsuario;
 }, { deep: true }
@@ -297,7 +322,7 @@ const buscarDatosXCodigoPostal = async () => {
             if (datos.estado) {
                 form.estado = await datos.estado.idEstado;
                 await cargarMunicipios();
-                
+
             }
             if (datos.municipio) {
                 form.municipio = await datos.municipio.idMunicipio;
@@ -317,18 +342,17 @@ const buscarDatosXCodigoPostal = async () => {
 //////////////////////////////////////////////////////////////////////
 // Funcion onMounted para al rellenar los datos del select estado
 onMounted(async () => {
-    try{
-    const response = await axios.get(route('consEstados'));
-    estados.value = response.data;
-    form.estado = estados.value[19]?.idEstado;
-    await cargarMunicipios();
-    form.municipio = municipios.value[0]?.idMunicipio;
-    await cargarAsentamientos();
-    form.asentamiento = asentamientos.value[0]?.idAsentamiento;
-    }catch(error){
+    try {
+        const response = await axios.get(route('consEstados'));
+        estados.value = response.data;
+        form.estado = estados.value[19]?.idEstado;
+        await cargarMunicipios();
+        form.municipio = municipios.value[0]?.idMunicipio;
+        await cargarAsentamientos();
+        form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+    } catch (error) {
         console.log("Error generado en onMounted: " + error);
     }
-    console.log(props.tutor);
 });
 //////////////////////////////////////////////////////////////////////
 </script>
@@ -346,8 +370,8 @@ onMounted(async () => {
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="idTutor" class="block text-sm font-medium leading-6 text-gray-900">idTutor</label>
                             <div class="mt-2">
-                                <input type="number" name="idTutor" v-model="form.idTutor" placeholder="Ingrese id del tutor"
-                                    :id="'idTutor' + op"
+                                <input type="number" name="idTutor" v-model="form.idTutor"
+                                    placeholder="Ingrese id del tutor" :id="'idTutor' + op"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
@@ -416,7 +440,7 @@ onMounted(async () => {
                                 </select>
                             </div>
                             <div v-if="generoError != ''" class="text-red-500 text-xs mt-1">{{ generoError }}</div>
-                        </div>                                                                        
+                        </div>
                         <div class="sm:col-span-2">
                             <label for="codigoPostal" class="block text-sm font-medium leading-6 text-gray-900">Código
                                 Postal</label>
@@ -431,8 +455,7 @@ onMounted(async () => {
                         <div class="sm:col-span-3">
                             <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
                             <div class="mt-2">
-                                <select name="estado" :id="'estado' + op" v-model="form.estado" 
-                                @change="cargarMunicipios"
+                                <select name="estado" :id="'estado' + op" v-model="form.estado" @change="cargarMunicipios"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un estado</option>
                                     <option v-for="estado in estados" :key="estado.idEstado" :value="estado.idEstado">

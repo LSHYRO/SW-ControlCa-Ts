@@ -38,6 +38,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
     Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
     Route::post('/tutores', 'addTutores')->name('admin.addTutores');
+    Route::post('/alumnos', 'agregarAlumno')->name('admin.addAlumnos');
     Route::post('/grados', 'addGrados')->name('admin.addGrados');
     Route::post('/grupos', 'addGrupos')->name('admin.addGrupos');
     Route::post('/ciclos', 'addCiclos')->name('admin.addCiclos');
@@ -45,7 +46,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/clases', 'addClases')->name('admin.addClases');
 
 
-    Route::get('/admin/search', 'buscarT')->name('ad.busquedaTutor');
+    Route::get('/admin/buscar/tutor', 'buscarTutor')->name('ad.busquedaTutor');
     
     Route::delete('/profesores/delete/{personalIds}', 'elimProfesores')->name('admin.elimProfesores');
 
@@ -80,6 +81,9 @@ Route::controller(AdminController::class)->group(function () {
     Route::delete('/periodos/{idPeriodo}', 'eliminarPeriodos')->name('admin.eliminarPeriodos');
     Route::put('/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('admin.actualizarPeriodos');
     Route::delete('/periodos/delete/{periodosIds}', 'elimPeriodos')->name('admin.elimPeriodos');
+
+    //
+    Route::get('obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('ad.gradosXgrupos');
 });
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales
@@ -100,7 +104,13 @@ Route::controller(DireccionesApiController::class)->group(function () {
     
     //Ruta para datos con codigo postal
     Route::get('obtener/datos/estado/municipio/asentamientos/{codigoPostal}', 'consDatosPorCodigoPostal')->name('consDatosXCodigoPostal');
+    
+    //
+    Route::get('obtener/datos/asentamiento/{idAsentamiento}', 'informacionAsentamiento')->name('infoAsentamiento');
+    
+    
     /*
+
     //Se obtienen datos a partir del codigo postal 
     Route::get('/obtener/codPostal/{codigo}', 'consultarCodPostal')->name('consultaCodPostal');
     Route::get('/obtener/asentamiento/codPostal/{codigo}', 'consultarAsentamCodP')->name('consultaCodPos');
