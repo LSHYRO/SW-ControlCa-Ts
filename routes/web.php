@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DireccionesApiController;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,10 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::controller(LoginController::class)->group(function (){
+    Route::get('/', 'Login')->name('admin.InicioSesion');
+});
+
 Route::controller(AdminController::class)->group(function () {
     Route::get('/a', 'index')->name('admin.principal');
     Route::get('/', 'inicio')->name('admin.inicio');
