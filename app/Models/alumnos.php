@@ -89,7 +89,7 @@ class alumnos extends Model
         return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
     }
 
-    public function genero(): HasOne
+    public function generos(): HasOne
     {
         return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }

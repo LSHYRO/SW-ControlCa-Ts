@@ -23,13 +23,13 @@ return new class extends Migration
             $table->string(column:'correoElectronico')->nullable(false);
             $table->string(column:'numTelefono')->nullable(false);
             $table->foreignId(column:'idTipoSangre')->references('idTipoSangre')->on('tipo_Sangre');
-            $table->string(column:'alergias')->nullable(false);
-            $table->string(column:'discapacidad')->nullable(false);
+            $table->string(column:'alergias')->nullable(true);
+            $table->string(column:'discapacidad')->nullable(true);
             $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
             $table->boolean(column:'esForaneo');
             $table->foreignId(column: 'idGrado')->references('idGrado')->on('grados');
             $table->foreignId(column: 'idGrupo')->references('idGrupo')->on('grupos');
-            $table->foreignId(column: 'idMateria')->references('idMateria')->on('materias')->nullable(true);
+            $table->foreignId(column: 'idMateria')->references('idMateria')->on('materias')->nullable();
             $table->foreignId(column: 'idTutor')->references('idTutor')->on('tutores');
             $table->foreignId(column: 'idUsuario')->references('idUsuario')->on('usuarios');
             $table->text('nombre_completo')->nullable()->fulltext();

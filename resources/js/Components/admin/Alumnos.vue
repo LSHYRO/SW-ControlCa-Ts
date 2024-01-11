@@ -36,6 +36,7 @@ const props = defineProps({
     grados: { type: Object },
     grupos: { type: Object },
     tipoSangre: { type: Object },
+    talleres: { type: Object },
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +93,9 @@ const columns = [
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'domicilio' },
-    { data: 'esForaneo' },
+    { data: 'esForaneo', render: function (data, type, row) {
+            return data ? 'Si' : 'No';
+        }},
     { data: 'grado' },
     { data: 'grupo' },
     { data: 'materia' },
@@ -240,6 +243,7 @@ onMounted(() => {
     $('#alumnosTablaId').on('click', '.editar-button', function () {
         const alumnoId = $(this).data('id');
         const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
+        console.log(alumno);
         abrirE(alumno);
     });
 
@@ -377,8 +381,8 @@ onMounted(() => {
         </div>
     </div>    
     <formulario-alumnos :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-        :title="'Añadir alumno'" :op="'1'" :modal="'modalCreate'" :generos="props.generos" :tipoSangre="props.tipoSangre" :grados="props.grados" :grupos="props.grupos"></formulario-alumnos>
-    <!-- <formulario-tutores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :tutor="alumnoE" :generos="props.generos"></formulario-tutores>
-    -->
+        :title="'Añadir alumno'" :op="'1'" :modal="'modalCreate'" :generos="props.generos" :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
+    <formulario-alumnos :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+        :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :alumno="alumnoE" :generos="props.generos" :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados" ></formulario-alumnos>
+    
 </template>

@@ -40,7 +40,7 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
-    grupos: {
+    talleres: {
         type: Object,
         default: () => ({}),
     },
@@ -57,6 +57,7 @@ const estados = ref([]);
 const municipios = ref([]);
 const asentamientos = ref([]);
 const tutores = ref([]);
+const grupos = ref([]);
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,9 +73,11 @@ const close = async () => {
         form.municipio = municipios.value[0]?.idMunicipio;
         await cargarAsentamientos();
         form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+        const grupoS = document.getElementById('grupo' + props.op);
+        grupoS.setAttribute("disabled", "");
     } catch (error) {
         console.log("Error generado en onMounted: " + error);
-    }    
+    }
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,7 +85,7 @@ const close = async () => {
 // Función para actualizar los datos del formulario con la variable
 // tutor que recibe el formulario
 const form = useForm({
-    idTutor: props.alumno.idAlumno,
+    idAlumno: props.alumno.idAlumno,
     nombre: props.alumno.nombre,
     apellidoP: props.alumno.apellidoP,
     apellidoM: props.alumno.apellidoM,
@@ -91,11 +94,10 @@ const form = useForm({
     genero: props.alumno.idGenero,
     tipoSangre: props.alumno.idTipoSangre,
     fechaNacimiento: props.alumno.fechaNacimiento,
-    curp: props.alumno.CURP,
-    rfc: props.alumno.RFC,
+    curp: props.alumno.CURP,    
     alergias: props.alumno.alergias,
     discapacidad: props.alumno.discapacidad,
-    grado: props.alumno.idGrado,
+    grado: props.alumno.gradoC,
     grupo: props.alumno.idGrupo,
     calle: props.alumno.calle,
     numero: props.alumno.numero,
@@ -105,8 +107,46 @@ const form = useForm({
     asentamiento: props.alumno.idAsentamiento,
     idDomicilio: props.alumno.idDireccion,
     idUsuario: props.alumno.idUsuario,
-    tutor: props.alumno.idTutor,
+    tutor: props.alumno.tutorC,
+    foraneo: props.alumno.esForaneo,
+    taller: props.alumno.idMateria,
 });
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Observa la variable personal que se le pasa al formulario, en dado
+// donde al cambiar los datos se actualiza el formulario
+watch(() => props.alumno, async (newVal) => {
+    form.idAlumno = newVal.idAlumno;
+    form.nombre = newVal.nombre;
+    form.apellidoP = newVal.apellidoP;
+    form.apellidoM = newVal.apellidoM;
+    form.correoElectronico = newVal.correoElectronico;
+    form.numTelefono = newVal.numTelefono;
+    form.genero = newVal.idGenero;
+    form.tipoSangre = newVal.idTipoSangre;
+    form.fechaNacimiento = newVal.fechaNacimiento;
+    form.curp = newVal.CURP;
+    form.alergias = newVal.alergias;
+    form.discapacidad = newVal.discapacidad;
+    form.grado = await newVal.gradoC;    
+    form.grupo = newVal.idGrupo;
+    form.calle = newVal.calle;
+    form.numero = newVal.numero;
+    form.codigoPostal = await newVal.codigoPos;
+    await buscarDatosXCodigoPostal();
+    form.estado = await newVal.idEstado;
+    await cargarMunicipios();
+    form.municipio = await newVal.idMunicipio;
+    await cargarAsentamientos(); 
+    form.asentamiento = await newVal.idAsentamiento;
+    form.idDomicilio = newVal.idDireccion;
+    form.idUsuario = newVal.idUsuario;
+    form.tutor = newVal.tutorC;
+    form.foraneo = newVal.esForaneo;
+    form.taller = newVal.idMateria;
+}, { deep: true }
+);
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,8 +165,8 @@ const gradoError = ref('');
 const grupoError = ref('');
 const fechaNError = ref('');
 const curpError = ref('');
-const rfcError = ref('');
 const tutorError = ref('');
+const tallerError = ref('');
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,13 +176,6 @@ const validateCURP = (curp) => {
     // Validación con expresión regular
     // Devuelve true si la CURP es válida, de lo contrario, devuelve false
     return /^[A-Z]{4}\d{6}[HM]{1}[A-Z]{5}[A-Z0-9]{1}\d{1}$/.test(curp);
-}
-
-// Función para validar RFC
-const validateRFC = (rfc) => {
-    // Validación con expresión regular
-    // Devuelve true si el RFC es válido, de lo contrario, devuelve false
-    return /^[A-Z&Ñ]{4}\d{6}[A-Z0-9]{3}$/.test(rfc);
 }
 
 // Validación del correo a través de una expresion regular 
@@ -188,18 +221,22 @@ const validateSelect = (selectedValue) => {
     }
     return true;
 };
+// Validacion de codigo postal coincida con el asentamiento
+const validatePostal = async (asentamiento) => {
+    const infoAsentamiento = await axios.get(route('infoAsentamiento', asentamiento));
+    const codPosAsentamiento = infoAsentamiento.data.codPos;
+    return codPosAsentamiento != form.codigoPostal ? false : true;
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Función para crear (guardar) un nuevo profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
-const save = () => {
+const save = async () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
-    rfcError.value = validateRFC(form.rfc) ? '' : 'RFC no válido';
     curpError.value = validateStringNotEmpty(form.curp) ? '' : 'Ingrese la CURP';
-    rfcError.value = validateStringNotEmpty(form.rfc) ? '' : 'Ingrese el RFC';
     // Validacion de nombre
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
@@ -227,18 +264,26 @@ const save = () => {
     grupoError.value = validateSelect(form.grupo) ? '' : 'Seleccione el grupo';
     // tutor
     tutorError.value = validateSelect(form.tutor) ? '' : 'Seleccione al tutor del alumno';
+    // Verificar que el codigo postal sea al correspondiente
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
+    //  taller
+    //tallerError.value = validateSelect(form.taller) ? '' : 'Seleccione el taller';
 
     if (
         nombreError.value || apellidoMError.value || apellidoPError.value ||
         correoEError.value || codigoPError.value || numeroTError.value || calleError.value ||
         numeroCError.value || generoError.value || fechaNError.value || gradoError.value || grupoError.value ||
-        curpError.value || rfcError.value || tipoSError.value || tutorError.value
+        curpError.value || tipoSError.value || tutorError.value //|| tallerError.value
     ) {
 
         return;
     }
+    if(form.foraneo == null){
+        form.foraneo = false;
+    }
 
-    form.post(route('admin.addTutores'), {
+    console.log(form);
+    await form.post(route('admin.addAlumnos'), {
         onSuccess: () => {
             close()
             nombreError.value = '';
@@ -255,8 +300,8 @@ const save = () => {
             grupoError.value = '';
             fechaNError.value = '';
             curpError.value = '';
-            rfcError.value = '';
             tutorError.value = '';
+            tallerError.value = '';
         }
     });
 }
@@ -266,12 +311,10 @@ const save = () => {
 // Función para modificar (actualizar) un profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
-const update = () => {
+const update = async () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
-    rfcError.value = validateRFC(form.rfc) ? '' : 'RFC no válido';
     curpError.value = validateStringNotEmpty(form.curp) ? '' : 'Ingrese la CURP';
-    rfcError.value = validateStringNotEmpty(form.rfc) ? '' : 'Ingrese el RFC';
     // Validacion de nombre
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
@@ -299,17 +342,23 @@ const update = () => {
     grupoError.value = validateSelect(form.grupo) ? '' : 'Seleccione el grupo';
     // tutor
     tutorError.value = validateSelect(form.tutor) ? '' : 'Seleccione al tutor del alumno';
+    // Verificar que el codigo postal sea al correspondiente
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
+    //  taller
+    //tallerError.value = validateSelect(form.taller) ? '' : 'Seleccione el taller';
 
     if (
         nombreError.value || apellidoMError.value || apellidoPError.value ||
         correoEError.value || codigoPError.value || numeroTError.value || calleError.value ||
         numeroCError.value || generoError.value || fechaNError.value || gradoError.value || grupoError.value ||
-        curpError.value || rfcError.value || tipoSError.value || tutorError.value
+        curpError.value || tipoSError.value || tutorError.value //|| tallerError.value
     ) {
 
         return;
     }
-
+    if(form.foraneo == null){
+        form.foraneo = false;
+    }
     var idTutor = document.getElementById('idTutor2').value;
     form.put(route('admin.actualizarTutor', idTutor), {
         onSuccess: () => {
@@ -328,43 +377,11 @@ const update = () => {
             grupoError.value = '';
             fechaNError.value = '';
             curpError.value = '';
-            rfcError.value = '';
             tutorError.value = '';
+            tallerError.value = '';
         }
     });
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-// Observa la variable personal que se le pasa al formulario, en dado
-// donde al cambiar los datos se actualiza el formulario
-watch(() => props.tutor, (newVal) => {
-    form.idTutor = newVal.idAlumno;
-    form.nombre = newVal.nombre;
-    form.apellidoP = newVal.apellidoP;
-    form.apellidoM = newVal.apellidoM;
-    form.correoElectronico = newVal.correoElectronico;
-    form.numTelefono = newVal.numTelefono;
-    form.genero = newVal.idGenero;
-    form.tipoSangre = newVal.idTipoSangre;
-    form.fechaNacimiento = newVal.fechaNacimiento;
-    form.curp = newVal.CURP;
-    form.rfc = newVal.RFC;
-    form.alergias = newVal.alergias;
-    form.discapacidad = newVal.discapacidad;
-    form.grado = newVal.idGrado;
-    form.grupo = newVal.idGrupo;
-    form.calle = newVal.calle;
-    form.numero = newVal.numero;
-    form.codigoPostal = newVal.codigoPos;
-    form.estado = newVal.idEstado;
-    form.municipio = newVal.idMunicipio;
-    form.asentamiento = newVal.idAsentamiento;
-    form.idDomicilio = newVal.idDireccion;
-    form.idUsuario = newVal.idUsuario;
-    form.tutor = newVal.tutor;
-}, { deep: true }
-);
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,6 +408,20 @@ const cargarAsentamientos = async () => {
         asentamientos.value = await response.data;
     } catch (error) {
         console.error('Error al obtener asentamientos:', error);
+    }
+};
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+const obtenerGruposXGrado = async () => {
+    const grupoS = document.getElementById('grupo' + props.op);
+    grupoS.removeAttribute("disabled");
+    try {
+        const idGrado = form.grado;
+        const response = await axios.get(route('ad.gradosXgrupos', idGrado));
+        grupos.value = await response.data;
+    } catch (error) {
+        console.log('Error al obtener grupos: ', error);
     }
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -431,16 +462,24 @@ const buscarDatosXCodigoPostal = async () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// Para obtener los tutores para el vue-select 
 const obtenerInformacion = (query) => {
-    if(query.lenght < 1){
+    if (query.lenght < 1) {
         return;
     }
-    axios.get('/admin/buscar/tutor', {params: {query}}).then(response => {
+    axios.get('/admin/buscar/tutor', { params: { query } }).then(response => {
         tutores.value = response.data;
     }).catch(error => {
         console.error('Error al obtener tutores: ', error);
-    });    
+    });
 };
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Un watch para observar el formulario para el form.grado
+watch(() => form.grado, async () => {
+    await obtenerGruposXGrado();
+})
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -453,7 +492,7 @@ onMounted(async () => {
         await cargarMunicipios();
         form.municipio = municipios.value[0]?.idMunicipio;
         await cargarAsentamientos();
-        form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+        form.asentamiento = asentamientos.value[0]?.idAsentamiento;        
     } catch (error) {
         console.log("Error generado en onMounted: " + error);
     }
@@ -579,16 +618,7 @@ onMounted(async () => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <div v-if="curpError != ''" class="text-red-500 text-xs mt-1">{{ curpError }}</div>
-                        </div>
-                        <div class="sm:col-span-3">
-                            <label for="rfc" class="block text-sm font-medium leading-6 text-gray-900">RFC</label>
-                            <div class="mt-2">
-                                <input type="text" name="rfc" :id="'rfc' + op" v-model="form.rfc"
-                                    placeholder="Ingrese la RFC"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                            <div v-if="rfcError != ''" class="text-red-500 text-xs mt-1">{{ rfcError }}</div>
-                        </div>
+                        </div>                        
                         <div class="sm:col-span-3">
                             <label for="alergias" class="block text-sm font-medium leading-6 text-gray-900">Alergias</label>
                             <div class="mt-2">
@@ -609,27 +639,22 @@ onMounted(async () => {
                         <div class="sm:col-span-4">
                             <label for="tutor" class="block text-sm font-medium leading-6 text-gray-900">Tutor</label>
                             <div class="mt-2">
-                                <!--
-                                <select type="text" name="tutor" v-model="form.tutor" :id="'tutor' + op"
-                                    class="tutorInputSelect2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></select>
-                                    -->
-                                    <v-select type="text" name="tutor" label="text" placeholder="Ingrese el nombre del tutor" :options="tutores" v-model="form.tutor" :id="'tutor' + op" 
-                                    @search="obtenerInformacion" :minimum-input-length="1" :filterable="false" modelValue="id" modelProp="id"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/> 
+                                <v-select type="text" name="tutor" label="nombre_completo" placeholder="Ingrese el nombre del tutor"
+                                    :options="tutores" v-model="form.tutor" :id="'tutor' + op" @search="obtenerInformacion"
+                                    :minimum-input-length="1" :filterable="false" modelValue="idTutor" modelProp="idTutor"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                             </div>
                             <div v-if="tutorError != ''" class="text-red-500 text-xs mt-1">{{ tutorError }}</div>
                         </div>
                         <div class="sm:col-span-2">
                             <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
-                                <select name="grado" :id="'grado' + op" v-model="form.grado"
+                                <v-select name="grado" :id="'grado' + op" v-model="form.grado"
                                     placeholder="Seleccione el tipo de sangre"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Seleccione un grado</option>
-                                    <option v-for="grado in grados" :key="grado.idGenero" :value="grado.idGrado">
-                                        {{ grado.grado }}
-                                    </option>
-                                </select>
+                                    class="grado-class-func block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    :options="grados" :filterable="true" label="descripcion" modelValue="idGrado"
+                                    modelProp="idGrado" :on-change="obtenerGruposXGrado">
+                                </v-select>
                             </div>
                             <div v-if="gradoError != ''" class="text-red-500 text-xs mt-1">{{ gradoError }}</div>
                         </div>
@@ -638,14 +663,26 @@ onMounted(async () => {
                             <div class="mt-2">
                                 <select name="grupo" :id="'grupo' + op" v-model="form.grupo"
                                     placeholder="Seleccione el tipo de sangre"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    disabled>
                                     <option value="" disabled selected>Seleccione un grupo</option>
                                     <option v-for="grupo in grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
-                                        {{ grupo.grupo }}
+                                        {{ grupo.grupoC }}
                                     </option>
                                 </select>
                             </div>
                             <div v-if="grupoError != ''" class="text-red-500 text-xs mt-1">{{ grupoError }}</div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="taller" class="block text-sm font-medium leading-6 text-gray-900">Taller</label>
+                            <div class="mt-2">
+                                <v-select name="taller" :id="'taller' + op" v-model="form.taller"
+                                    placeholder="Seleccione el taller"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    :options="talleres" :filterable="true" label="materia" modelValue="idMateria"
+                                    modelProp="idMateria">
+                                </v-select>
+                            </div>                            
                         </div>
                         <div class="sm:col-span-2">
                             <label for="codigoPostal" class="block text-sm font-medium leading-6 text-gray-900">Código
@@ -716,6 +753,12 @@ onMounted(async () => {
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <div v-if="numeroCError != ''" class="text-red-500 text-xs mt-1">{{ numeroCError }}</div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="foraneo" class="block text-sm font-medium leading-6 text-gray-900">Foraneo</label>
+                            <div class="mt-2">
+                                <input type="checkbox" name="foraneo" :id="'foraneo' + op" :checked="form.foraneo">
+                            </div>
                         </div>
                         <div class="sm:col-span-3" hidden>
                             <label for="idDomicilio"

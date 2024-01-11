@@ -129,6 +129,12 @@ class DireccionesApiController extends Controller
         return response()->json($datos);
     }
 
+    // ----------------------------------------------------------------
+    public function informacionAsentamiento($idAsentamiento){
+        $asentamiento = asentamientos::find($idAsentamiento);
+        $asentamiento->codPos = $asentamiento->codigoPostal->codigoPostal;
+        return response()->json($asentamiento);
+    }
 
 
 

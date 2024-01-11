@@ -174,13 +174,20 @@ const validateSelect = (selectedValue) => {
     }
     return true;
 };
+
+// Validacion de codigo postal coincida con el asentamiento
+const validatePostal = async (asentamiento) => {
+    const infoAsentamiento = await axios.get(route('infoAsentamiento', asentamiento));
+    const codPosAsentamiento = infoAsentamiento.data.codPos;       
+    return codPosAsentamiento != form.codigoPostal ? false : true;
+}
 //////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////
 // Función para crear (guardar) un nuevo profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
-const save = () => {
+const save = async () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
     rfcError.value = validateRFC(form.rfc) ? '' : 'RFC no válido';
@@ -207,6 +214,8 @@ const save = () => {
     generoError.value = validateSelect(form.genero) ? '' : 'Seleccione el genero';
     //  Tipo de sangre
     tipoSError.value = validateSelect(form.tipoSangre) ? '' : 'Seleccione el tipo de sangre';
+    // Verificar que el codigo postal sea al correspondiente
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';    
 
     if (
         curpError.value || rfcError.value || nombreError.value || apellidoMError.value || apellidoPError.value ||
@@ -242,7 +251,7 @@ const save = () => {
 // Función para modificar (actualizar) un profesor, donde primero se
 // se realizan las validaciones y dependiendo del resultado se 
 // guarda o se muestran los mensajes de error
-const update = () => {
+const update = async () => {
     // Validacion de CURP y RFC, que cumpla la sintaxis y que no sean vacios
     curpError.value = validateCURP(form.curp) ? '' : 'CURP no válida';
     rfcError.value = validateRFC(form.rfc) ? '' : 'RFC no válido';
@@ -269,6 +278,8 @@ const update = () => {
     generoError.value = validateSelect(form.genero) ? '' : 'Seleccione el genero';
     //  Tipo de sangre
     tipoSError.value = validateSelect(form.tipoSangre) ? '' : 'Seleccione el tipo de sangre';
+    // Verificar que el codigo postal sea al correspondiente
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';    
 
     if (
         curpError.value || rfcError.value || nombreError.value || apellidoMError.value || apellidoPError.value ||
@@ -304,7 +315,7 @@ const update = () => {
 //////////////////////////////////////////////////////////////////////
 // Observa la variable personal que se le pasa al formulario, en dado
 // donde al cambiar los datos se actualiza el formulario
-watch(() => props.personal, (newVal) => {
+watch(() => props.personal, async (newVal) => {
     form.idPersonal = newVal.idPersonal;
     form.nombre = newVal.nombre;
     form.apellidoP = newVal.apellidoP;
@@ -320,10 +331,13 @@ watch(() => props.personal, (newVal) => {
     form.genero = newVal.idGenero;
     form.calle = newVal.calle;
     form.numero = newVal.numero;
-    form.codigoPostal = newVal.codigoPos;
-    form.estado = newVal.idEstado;
-    form.municipio = newVal.idMunicipio;
-    form.asentamiento = newVal.idAsentamiento;
+    form.codigoPostal = await newVal.codigoPos;
+    await buscarDatosXCodigoPostal();
+    form.estado = await newVal.idEstado;
+    await cargarMunicipios();
+    form.municipio = await newVal.idMunicipio;
+    await cargarAsentamientos(); 
+    form.asentamiento = await newVal.idAsentamiento;
     form.idDomicilio = newVal.idDireccion;
 }, { deep: true }
 );

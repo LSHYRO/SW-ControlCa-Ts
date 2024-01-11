@@ -35,6 +35,8 @@ use Mockery\Undefined;
 
 class AdminController extends Controller
 {
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Funciones para acceder a la página de Inicio    
     public function index()
     {
         return Inertia::render('Principal');
@@ -44,7 +46,11 @@ class AdminController extends Controller
     {
         return Inertia::render('Admin/Inicio');
     }
+////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Funciones para acceder y funciones de profesor
+ //  Renderizado de la página de docentes
     public function profesores()
     {
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
@@ -78,137 +84,7 @@ class AdminController extends Controller
         ]);
     }
 
-    public function alumnos()
-    {
-        $alumnos = alumnos::all();
-
-        return view('/administrador/alumnos', compact('alumnos'));
-    }
-
-    public function directivos()
-    {
-        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'personal_escolar')
-            ->get();
-
-        return view('/administrador/directivos', compact('personal'));
-    }
-
-    public function materias()
-    {
-        $materias = materias::all();
-        return Inertia::render('Admin/Materias', ['materias' => $materias]);
-    }
-
-    public function clases()
-    {
-        $clases = clases::all();
-        $grupos = grupos::all();
-        $grados = grados::all();
-        $personal = personal::all();
-        $materias = materias::all();
-        $ciclos = ciclos::all();
-
-        return Inertia::render('Admin/Clases', [
-            'clases' => $clases,
-            'grupos' => $grupos,
-            'grados' => $grados,
-            'personal' => $personal,
-            'materias' => $materias,
-            'ciclos' => $ciclos,
-        ]);
-    }
-
-    public function tutores_alumnos()
-    {
-        // Obtención de datos de tutores
-        $tutoresPrincipal = tutores::with(['generos', 'direcciones', 'alumnos.apellidoP', 'alumnos.apellidoM', 'alumnos.nombre'])->get();
-
-        $tutores = $tutoresPrincipal->map(function ($tutor) {
-            $genero = $tutor->generos ? $tutor->generos->genero : null;
-            $calle = $tutor->direcciones ? $tutor->direcciones->calle : null;
-            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;
-
-            $tutor->genero = $genero;
-            $tutor->calle = $calle;
-            $tutor->numero = $numero;
-            $tutor->codigoPos = $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
-            $tutor->domicilio = $tutor->direcciones->calle . " #" . $tutor->direcciones->numero . ", " . $tutor->direcciones->asentamientos->asentamiento
-                . ", " . $tutor->direcciones->asentamientos->municipios->municipio . ", " . $tutor->direcciones->asentamientos->municipios->estados->estado
-                . ", " . $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
-            $tutor->idEstado = $tutor->direcciones->asentamientos->municipios->estados->idEstado;
-            $tutor->idMunicipio = $tutor->direcciones->asentamientos->municipios->idMunicipio;
-            $tutor->idAsentamiento = $tutor->direcciones->asentamientos->idAsentamiento;
-            return $tutor;
-        });
-        $generos = generos::all();
-
-        // Obtención de datos de alumnos
-        $alumnosPrincipal = alumnos::with(['generos', 'direcciones', 'tipoSangre', 'grados', 'grupos', 'materias', 'tutores'])->get();
-
-        $alumnos = $alumnosPrincipal->map(function ($alumno) {
-            $genero = $alumno->generos ? $alumno->generos->genero : null;
-            $calle = $alumno->direcciones ? $alumno->direcciones->calle : null;
-            $numero = $alumno->direcciones ? $alumno->direcciones->numero : null;
-
-            $alumno->genero = $genero;
-            $alumno->calle = $calle;
-            $alumno->numero = $numero;
-            $alumno->codigoPos = $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
-            $alumno->domicilio = $alumno->direcciones->calle . " #" . $alumno->direcciones->numero . ", " . $alumno->direcciones->asentamientos->asentamiento
-                . ", " . $alumno->direcciones->asentamientos->municipios->municipio . ", " . $alumno->direcciones->asentamientos->municipios->estados->estado
-                . ", " . $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
-            $alumno->idEstado = $alumno->direcciones->asentamientos->municipios->estados->idEstado;
-            $alumno->idMunicipio = $alumno->direcciones->asentamientos->municipios->idMunicipio;
-            $alumno->idAsentamiento = $alumno->direcciones->asentamientos->idAsentamiento;
-            $alumno->grado = $alumno->grados->grado;
-            $alumno->grupo = $alumno->grupos->grupo;
-            $alumno->materia = $alumno->materias->materia;
-            $alumno->tutor = $alumno->tutores->tutor;
-            return $alumno;
-        });
-
-        $tipoSangre = tipo_Sangre::all();
-        $grados = grados::all();
-        $grupos = grupos::all();
-        //$materias = materias::where('esTaller', 'true')->get();
-        //$alumnos = alumnos::all();
-        return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos]);
-    }
-
-    /*
-    public function tutores()
-    {
-        $tutores = tutores::all();
-        $estados = estados::all();
-
-        return view('/administrador/tutores', compact('tutores', 'estados'));
-    }
-*/
-    public function gradosgrupos()
-    {
-        $ciclos = ciclos::all();
-        $grados = grados::all();
-        $grupos = grupos::all();
-
-        return Inertia::render('Admin/GradosGrupos', [
-            'ciclos' => $ciclos,
-            'grados' => $grados,
-            'grupos' => $grupos,
-        ]);
-    }
-
-    public function ciclosperiodos()
-    {
-        $ciclos = ciclos::all();
-        $periodos = periodos::all();
-
-        return Inertia::render('Admin/CiclosPeriodos', [
-            'ciclos' => $ciclos,
-            'periodos' => $periodos,
-        ]);
-    }
-
+ //  Función para agregar profesores y redireccionar a la página de profesores
     public function addProfesores(Request $request)
     {
         try {
@@ -297,6 +173,279 @@ class AdminController extends Controller
         } catch (Exception $e) {
             dd($e);
         }
+    }
+
+ //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
+    public function eliminarProfesores($idPersonal)
+    {
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+        $personal = personal::find($idPersonal);
+        $usuario = usuarios::find($personal->idUsuario);
+        $direccion = direcciones::find($personal->idDireccion);
+        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+            ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+            ->first();
+        $personal->delete();
+        $usuarioTipoUsuario->delete();
+        $usuario->delete();
+        $direccion->delete();
+        return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
+    }
+
+ //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
+    public function elimprofesores($personalIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $personalIdsArray = explode(',', $personalIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $personalIdsArray = array_map('intval', $personalIdsArray);
+
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+            for ($i = 0; $i < count($personalIdsArray); $i++) {
+                $personal = personal::find($personalIdsArray[$i]);
+                $usuario = usuarios::find($personal->idUsuario);
+                $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                    ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                    ->first();
+                $personal->delete();
+                $usuarioTipoUsuario->delete();
+                $usuario->delete();
+            }
+            return redirect()->route('admin.profesores')->With("message", "Profesores eliminados correctamente");
+            /*
+            // Elimina las materias
+            materias::whereIn('idMateria', $personalIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente"); */
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
+    }
+
+ //  Función para actualizar los datos de los profesores y redireccionar a la página de profesores o docentes
+    public function actualizarProfesor(Request $request, $idPersonal)
+    {
+        try {
+            $personal = personal::find($idPersonal);
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'rfc' => 'required',
+                'tipoSangre' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
+
+            //$personal->fill($request->input())->saveOrFail();
+            //Se guarda el domicilio del profesor
+            $domicilio = direcciones::findOrFail($request->idDomicilio);
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+
+            //Se busca el tipo de personal en la BD
+            $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+
+            //$personal = new personal($request->input());
+            $personal = personal::findOrFail($request->idPersonal);
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->nombre = $request->nombre;
+            $personal->correoElectronico = $request->correoElectronico;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->idGenero = $request->genero;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->CURP = $request->curp;
+            $personal->RFC = $request->rfc;
+            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->alergias = $request->alergias;
+            $personal->discapacidad = $request->discapacidad;
+            $personal->idDireccion = $domicilio->idDireccion;
+            $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
+
+            //columna nombre completo
+            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+            $personal->nombre_completo = $nombreCompleto;
+
+            if ($personal->alergias == null) {
+                $personal->alergias = "Ninguna";
+            }
+
+            if ($personal->discapacidad == null) {
+                $personal->discapacidad = "Ninguna";
+            }
+
+            //Guardado
+            $personal->save();
+            return redirect()->route('admin.profesores')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+    public function directivos()
+    {
+        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->where('tipo_personal.tipo_personal', 'personal_escolar')
+            ->get();
+
+        return view('/administrador/directivos', compact('personal'));
+    }
+
+    public function materias()
+    {
+        $materias = materias::all();
+        return Inertia::render('Admin/Materias', ['materias' => $materias]);
+    }
+
+    public function clases()
+    {
+        $clases = clases::all();
+        $grupos = grupos::all();
+        $grados = grados::all();
+        $personal = personal::all();
+        $materias = materias::all();
+        $ciclos = ciclos::all();
+
+        return Inertia::render('Admin/Clases', [
+            'clases' => $clases,
+            'grupos' => $grupos,
+            'grados' => $grados,
+            'personal' => $personal,
+            'materias' => $materias,
+            'ciclos' => $ciclos,
+        ]);
+    }
+
+    public function tutores_alumnos()
+    {
+        // Obtención de datos de tutores
+        $tutoresPrincipal = tutores::with(['generos', 'direcciones', 'alumnos'])->get();
+
+        $tutores = $tutoresPrincipal->map(function ($tutor) {
+            $genero = $tutor->generos ? $tutor->generos->genero : null;
+            $calle = $tutor->direcciones ? $tutor->direcciones->calle : null;
+            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;
+
+            $tutor->genero = $genero;
+            $tutor->calle = $calle;
+            $tutor->numero = $numero;
+            $tutor->codigoPos = $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $tutor->domicilio = $tutor->direcciones->calle . " #" . $tutor->direcciones->numero . ", " . $tutor->direcciones->asentamientos->asentamiento
+                . ", " . $tutor->direcciones->asentamientos->municipios->municipio . ", " . $tutor->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $tutor->idEstado = $tutor->direcciones->asentamientos->municipios->estados->idEstado;
+            $tutor->idMunicipio = $tutor->direcciones->asentamientos->municipios->idMunicipio;
+            $tutor->idAsentamiento = $tutor->direcciones->asentamientos->idAsentamiento;
+            return $tutor;
+        });
+        $generos = generos::all();
+
+        // Obtención de datos de alumnos
+        $alumnosPrincipal = alumnos::with(['generos', 'direcciones', 'tipoSangre', 'grados', 'grupos', 'materias', 'tutores'])->get();
+
+        $alumnos = $alumnosPrincipal->map(function ($alumno) {
+            $genero = $alumno->generos ? $alumno->generos->genero : null;
+            $calle = $alumno->direcciones ? $alumno->direcciones->calle : null;
+            $numero = $alumno->direcciones ? $alumno->direcciones->numero : null;
+
+            $alumno->genero = $genero;
+            $alumno->calle = $calle;
+            $alumno->numero = $numero;
+            $alumno->codigoPos = $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $alumno->domicilio = $alumno->direcciones->calle . " #" . $alumno->direcciones->numero . ", " . $alumno->direcciones->asentamientos->asentamiento
+                . ", " . $alumno->direcciones->asentamientos->municipios->municipio . ", " . $alumno->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $alumno->idEstado = $alumno->direcciones->asentamientos->municipios->estados->idEstado;
+            $alumno->idMunicipio = $alumno->direcciones->asentamientos->municipios->idMunicipio;
+            $alumno->idAsentamiento = $alumno->direcciones->asentamientos->idAsentamiento;
+            $alumno->grado = $alumno->grados->grado;
+            $alumno->grupo = $alumno->grupos->grupo;
+            if($alumno->materias != null){
+            $alumno->materia = $alumno->materias->materia;
+            }else{
+                $alumno->materia = "Ninguno";
+            }
+            $alumno->tutor = $alumno->tutores->nombre_completo;
+            $alumno->tipoSangre = $alumno->tipoSangre->tipoSangre;
+            $alumno->tutorC = $alumno->tutores;
+            $alumno->gradoC = $alumno->grados;
+            $alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
+            return $alumno;
+        });
+
+        $tipoSangre = tipo_Sangre::all();
+
+        $gradosPrincipal = grados::with('ciclos')->get();
+        $grados = $gradosPrincipal->map(function ($grado) {
+            $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
+
+            return $grado;
+        });
+
+        $grupos = grupos::all();
+        $materiasT = materias::where('esTaller', '1')->get();
+        //$materias = materias::where('esTaller', 'true')->get();
+        //$alumnos = alumnos::all();
+        return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos, 'talleres' => $materiasT]);
+    }
+
+    public function obtenerGruposXGrado($idGrado){
+        $grado = grados::find($idGrado);
+        $fecha = $grado->idCiclo;
+        $gruposPr = grupos::where('idCiclo', $fecha)->get();
+        $grupos = $gruposPr->map(function ($grupo) {
+            $grupo->grupoC = $grupo->grupo . " - " . $grupo->ciclos->descripcionCiclo;
+
+            return $grupo;
+        }); 
+        
+        return response()->json($grupos);
+
+    }
+
+    public function gradosgrupos()
+    {
+        $ciclos = ciclos::all();
+        $grados = grados::all();
+        $grupos = grupos::all();
+
+        return Inertia::render('Admin/GradosGrupos', [
+            'ciclos' => $ciclos,
+            'grados' => $grados,
+            'grupos' => $grupos,
+        ]);
+    }
+
+    public function ciclosperiodos()
+    {
+        $ciclos = ciclos::all();
+        $periodos = periodos::all();
+
+        return Inertia::render('Admin/CiclosPeriodos', [
+            'ciclos' => $ciclos,
+            'periodos' => $periodos,
+        ]);
     }
 
     public function addTutores(Request $request)
@@ -473,73 +622,16 @@ class AdminController extends Controller
         $results = [];
         foreach ($tutores as $tutor) {
             $results[] = [
-                'id' => $tutor->idTutor, // Corrige esto para usar el campo idTutor
-                'text' => $tutor->nombre_completo // El nombre completo del tutor
+                'idTutor' => $tutor->idTutor, // Corrige esto para usar el campo idTutor
+                'nombre_completo' => $tutor->nombre_completo // El nombre completo del tutor
             ];
         }
 
         return response()->json($results);
     }
 
-    public function eliminarProfesores($idPersonal)
-    {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
-
-        $personal = personal::find($idPersonal);
-        $usuario = usuarios::find($personal->idUsuario);
-        $direccion = direcciones::find($personal->idDireccion);
-        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
-            ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
-            ->first();
-        $personal->delete();
-        $usuarioTipoUsuario->delete();
-        $usuario->delete();
-        $direccion->delete();
-        return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
-    }
-
-    public function elimprofesores($personalIds)
-    {
+    public function agregarAlumno(Request $request){
         try {
-            // Convierte la cadena de IDs en un array
-            $personalIdsArray = explode(',', $personalIds);
-
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $personalIdsArray = array_map('intval', $personalIdsArray);
-
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
-
-            for ($i = 0; $i < count($personalIdsArray); $i++) {
-                $personal = personal::find($personalIdsArray[$i]);
-                $usuario = usuarios::find($personal->idUsuario);
-                $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
-                    ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
-                    ->first();
-                $personal->delete();
-                $usuarioTipoUsuario->delete();
-                $usuario->delete();
-            }
-            return redirect()->route('admin.profesores')->With("message", "Profesores eliminados correctamente");
-            /*
-            // Elimina las materias
-            materias::whereIn('idMateria', $personalIdsArray)->delete();
-
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente"); */
-        } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
-        }
-    }
-
-
-    public function actualizarProfesor(Request $request, $idPersonal)
-    {
-        try {
-            $personal = personal::find($idPersonal);
             $request->validate([
                 'nombre' => 'required',
                 'apellidoP' => 'required',
@@ -550,58 +642,76 @@ class AdminController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'rfc' => 'required',
                 'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Contraseña generada
+            $contrasenia = Str::random(8);
+            //Creacion de usuario
+            $usuario = new usuarios();
+            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            //$usuario->activo = 1;
+            //echo "Tu contraseña generada es: $contrasenia";
+            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+            $usuario->save();
 
-            //$personal->fill($request->input())->saveOrFail();
+            //Se busca el tipo de usuario en la BD
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
+
+            $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+            $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
+            $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            $usuarioTipoUsuario->save();
+
             //Se guarda el domicilio del profesor
-            $domicilio = direcciones::findOrFail($request->idDomicilio);
+            $domicilio = new direcciones();
             $domicilio->calle = $request->calle;
             $domicilio->numero = $request->numero;
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
 
-            //Se busca el tipo de personal en la BD
-            $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+            $alumno = new alumnos();
+            $alumno -> nombre = $request->nombre;
+            $alumno -> apellidoP = $request->apellidoP;
+            $alumno -> apellidoM = $request->apellidoM;
+            $alumno -> fechaNacimiento = $request->fechaNacimiento;
+            $alumno -> CURP = $request->curp;
+            $alumno -> idGenero = $request->genero;
+            $alumno -> correoElectronico = $request->correoElectronico;
+            $alumno -> numTelefono = $request->numTelefono;
+            $alumno -> idTipoSangre = $request->tipoSangre;
+            $alumno -> alergias = $request->alergias;
+            $alumno -> discapacidad = $request->discapacidad;
+            $alumno -> idDireccion = $domicilio->idDireccion;
+            $alumno -> esForaneo = $request->foraneo;
+            $alumno -> idGrado = $request->grado["idGrado"];
+            $alumno -> idGrupo = $request->grupo;
+            $alumno -> idMateria = $request->taller;
+            $alumno -> idTutor = $request->tutor["idTutor"];
+            $alumno -> idUsuario = $usuario->idUsuario;
 
-            //$personal = new personal($request->input());
-            $personal = personal::findOrFail($request->idPersonal);
-            $personal->apellidoP = $request->apellidoP;
-            $personal->apellidoM = $request->apellidoM;
-            $personal->nombre = $request->nombre;
-            $personal->correoElectronico = $request->correoElectronico;
-            $personal->numTelefono = $request->numTelefono;
-            $personal->idGenero = $request->genero;
-            $personal->fechaNacimiento = $request->fechaNacimiento;
-            $personal->CURP = $request->curp;
-            $personal->RFC = $request->rfc;
-            $personal->idTipoSangre = $request->tipoSangre;
-            $personal->alergias = $request->alergias;
-            $personal->discapacidad = $request->discapacidad;
-            $personal->idDireccion = $domicilio->idDireccion;
-            $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
+            $nombreCompleto = $alumno->nombre . ' ' . $alumno->apellidoP . ' ' . $alumno->apellidoM;
+            $alumno->nombre_completo = $nombreCompleto;
 
-            //columna nombre completo
-            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
-            $personal->nombre_completo = $nombreCompleto;
-
-            if ($personal->alergias == null) {
-                $personal->alergias = "Ninguna";
+            if ($alumno->alergias == null) {
+                $alumno->alergias = "Ninguna";
             }
 
-            if ($personal->discapacidad == null) {
-                $personal->discapacidad = "Ninguna";
+            if ($alumno->discapacidad == null) {
+                $alumno->discapacidad = "Ninguna";
             }
 
-            //Guardado
-            $personal->save();
-            return redirect()->route('admin.profesores')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
-        } catch (Exception $e) {
+            $alumno->save();
+
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
+        }catch(Exception $e){
             dd($e);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno " . $e, "color" => "red"]);            
         }
     }
 
