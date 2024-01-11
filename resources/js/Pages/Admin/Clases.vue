@@ -27,8 +27,8 @@ DataTable.use(Select);
 
 const props = defineProps({
     clases: { type: Object },
-    grupos: { type: Object },
     grados: { type: Object },
+    grupos: { type: Object },
     personal: { type: Object },
     materias: { type: Object },
     ciclos: { type: Object },

@@ -113,7 +113,7 @@ const update = () => {
 watch(() => props.grupos, (newVal) => {
     form.idGrupo = newVal.idGrupo;
     form.grupo = newVal.grupo;
-    form.ciclos = newVal.ciclos;
+    form.ciclos = newVal.idCiclo;
 }, { deep: true });
 
 </script>

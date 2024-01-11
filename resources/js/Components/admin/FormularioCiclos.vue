@@ -44,7 +44,7 @@ const form = useForm({
     idCiclo: props.ciclos.idCiclo,
     fecha_inicio: props.ciclos.fecha_inicio,
     fecha_fin: props.ciclos.fecha_fin,
-    descripcionCiclo: props.ciclos.descripcionCiclo
+    descripcionCiclo: props.ciclos.descripcionCiclo,
 });
 
 // Variables para los mensajes de validación
@@ -107,8 +107,6 @@ const update = () => {
     }
 
     var idCiclo = document.getElementById('idCiclo2').value;
-    console.log(idCiclo);
-    console.log(document.getElementById('ciclo2').value);
     form.put(route('admin.actualizarCiclos', idCiclo), {
         onSuccess: () => {
             close()
@@ -120,6 +118,7 @@ const update = () => {
 }
 
 watch(() => props.ciclos, (newVal) => {
+    console.log(newVal);
     form.idCiclo = newVal.idCiclo;
     form.fecha_inicio = newVal.fecha_inicio;
     form.fecha_fin = newVal.fecha_fin;

@@ -18,7 +18,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    periodos: {
+    period: {
         type: Object,
         default: () => ({}),
     },
@@ -32,7 +32,6 @@ const props = defineProps({
     periodo: String,
     fecha_inicio: Date,
     fecha_fin: Date,
-    idCiclo: String,
 },
 );
 
@@ -44,12 +43,12 @@ const close = () => {
 };
 
 const form = useForm({
-    idPeriodo: props.periodos.idPeriodo,
-    periodo: props.periodos.periodo,
-    fecha_inicio: props.periodos.fecha_inicio,
-    fecha_fin: props.periodos.fecha_fin,
-    ciclos: props.periodos.idCiclo,//Le agregué la s
-    ciclos: props.periodos.descripcionCiclo//Le agregue la s a ciclo
+    idPeriodo: props.period.idPeriodo,
+    periodo: props.period.periodo,
+    fecha_inicio: props.period.fecha_inicio,
+    fecha_fin: props.period.fecha_fin,
+    ciclos: props.period.idCiclo,//Le agregué la s
+    ciclos: props.period.descripcionCiclo//Le agregue la s a ciclo
 });
 
 // Variables para los mensajes de validación
@@ -114,8 +113,6 @@ const update = () => {
     }
 
     var idPeriodo = document.getElementById('idPeriodo2').value;
-    console.log(idPeriodo);
-    console.log(document.getElementById('perido2').value);
     form.put(route('admin.actualizarPeriodos', idPeriodo), {
         onSuccess: () => {
             close()
@@ -126,12 +123,15 @@ const update = () => {
         }
     });
 }
-watch(() => props.periodos, (newVal) => {
+watch(() => props.period, (newVal) => {
+    console.log("Entró en watch");
+    console.log(newVal);
     form.idPeriodo = newVal.idPeriodo;
     form.periodo = newVal.periodo;
     form.fecha_inicio = newVal.fecha_inicio;
     form.fecha_fin = newVal.fecha_fin;
-    form.ciclos = newVal.ciclos;
+    form.ciclos = newVal.idCiclo;
+    console.log("Pasó todos los datos en watch");
 }, { deep: true });
 
 </script>

@@ -39,11 +39,12 @@ const selectedPeriodos = ref([]);
 
 const form = useForm({});
 
-const abrirPeriodos = ($periodoss) => {
-    periodoE = $periodoss;
-    mostrarModalPeriodos.value = true;
-    console.log($periodoss);
-    console.log(periodoE);
+const abrirPeriodos = ($periodossE) => {
+    console.log("Entró en abrirPeriodos")
+    periodoE = $periodossE;
+    //periodoE = Object.assign({}, $periodossE); // Asegura que no se modifique el objeto original
+    mostrarModalEPeriodos.value = true;
+    console.log("Despues de mostrarModalPeriodos");
 }
 
 const cerrarModalPeriodos = () => {
@@ -153,8 +154,8 @@ const eliminarPeriodo = (idPeriodo, periodo) => {
 };
 
 const eliminarPeriodos = () => {
-console.log('Eliminar periodos se ejecuta');
-console.log(selectedPeriodos);
+    console.log('Eliminar periodos se ejecuta');
+    console.log(selectedPeriodos);
 
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -185,6 +186,7 @@ console.log(selectedPeriodos);
 };
 
 onMounted(() => {
+    console.log("Entré en onMounted");
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('periodosTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
@@ -206,10 +208,11 @@ onMounted(() => {
 
     // Manejar clic en el botón de editar
     $('#periodosTablaId').on('click', '.editar-button', function () {
+        console.log("Estoy en editar");
         const periodoId = $(this).data('id');
+        console.log("pasé de periodoId");
         const periodo = props.periodos.find(p => p.idPeriodo === periodoId);
         abrirPeriodos(periodo);
-        console.log()
     });
 
     // Manejar clic en el botón de eliminar
@@ -245,12 +248,12 @@ const optionsPeriodo = {
         <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
         <!-- flash message start -->
         <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-                role="alert">
-                <span class="font-medium">
-                    {{ $page.props.flash.message }}
-                </span>
-            </div>
+            class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+            role="alert">
+            <span class="font-medium">
+                {{ $page.props.flash.message }}
+            </span>
+        </div>
         <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
             <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
             <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
@@ -308,6 +311,6 @@ const optionsPeriodo = {
         @close="cerrarModalPeriodos" :title="'Añadir periodo'" :op="'1'" :modal="'modalCreate'"
         :ciclos="props.ciclos"></formulario-periodos>
     <formulario-periodos :show="mostrarModalEPeriodos" :max-width="maxWidth" :closeable="closeable"
-        @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'" :periodos="periodoE"
+        @close="cerrarModalEPeriodos" :title="'Editar periodo'" :op="'2'" :modal="'modalEdit'" :period="periodoE"
         :ciclos="props.ciclos"></formulario-periodos>
 </template>

@@ -57,8 +57,8 @@ Route::controller(AdminController::class)->group(function () {
     Route::put('/tutores/{idTutor}/edit', 'actualizarTutor')->name('admin.actualizarTutor');
 
     Route::delete('/clases/{idClase}', 'eliminarClases')->name('admin.eliminarClases');
-    Route::put('/clases/{idClase}/edit', 'actualizarClases')->name('admin.actualizarClases');
     Route::delete('/clases/delete/{clasesIds}', 'elimClases')->name('admin.elimClases');
+    Route::put('/clases/{idClase}/edit', 'actualizarClases')->name('admin.actualizarClases');
 
     Route::delete('/grados/{idGrado}', 'eliminarGrados')->name('admin.eliminarGrados');
     Route::put('/grados/{idGrado}/edit', 'actualizarGrados')->name('admin.actualizarGrados');
@@ -69,7 +69,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::delete('/grupos/delete/{gruposIds}', 'elimGrupos')->name('admin.elimGrupos');
 
     Route::delete('/ciclos/{idCiclo}', 'eliminarCiclos')->name('admin.eliminarCiclos');
-    Route::put('/ciclos/{idCiclo}/edit', 'actualizarCiclo')->name('admin.actualizarCiclos');
+    Route::put('/ciclos/{idCiclo}/edit', 'actualizarCiclos')->name('admin.actualizarCiclos');
     Route::delete('/ciclos/delete/{ciclosIds}', 'elimCiclos')->name('admin.elimCiclos');
 
     Route::delete('/periodos/{idPeriodo}', 'eliminarPeriodos')->name('admin.eliminarPeriodos');

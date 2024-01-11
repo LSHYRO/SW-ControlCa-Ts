@@ -115,7 +115,7 @@ const update = () => {
 watch(() => props.grados, (newVal) => {
     form.idGrado = newVal.idGrado;
     form.grado = newVal.grado;
-    form.ciclos = newVal.ciclos;
+    form.ciclos = newVal.idCiclo;
 }, { deep: true });
 
 </script>

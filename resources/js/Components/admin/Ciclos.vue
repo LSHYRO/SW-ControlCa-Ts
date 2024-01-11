@@ -35,14 +35,14 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var cic = ({});
+var cicloE = ({});
 
 const selectedCiclos = ref([]);
 
 const form = useForm({});
 
 const abrirCiclos = ($cicloss) => {
-    cic = $cicloss;
+    cicloE = $cicloss;
     mostrarModalE.value = true;
 }
 
@@ -289,5 +289,5 @@ const optionsCiclo = {
     <formulario-ciclos :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
         :title="'Añadir ciclo'" :op="'1'" :modal="'modalCreate'"></formulario-ciclos>
     <formulario-ciclos :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar ciclo'" :op="'2'" :modal="'modalEdit'" :ciclo="cic"></formulario-ciclos>
+        :title="'Editar ciclo'" :op="'2'" :modal="'modalEdit'" :ciclos="cicloE"></formulario-ciclos>
 </template>

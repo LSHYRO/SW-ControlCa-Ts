@@ -110,6 +110,7 @@ const update = () => {
     var idMateria = document.getElementById('idMateria2').value;
     console.log(idMateria);
     console.log(document.getElementById('materia2').value);
+    console.log(materia2);
     form.put(route('admin.actualizarMaterias', idMateria), {
         onSuccess: () => {
             close()

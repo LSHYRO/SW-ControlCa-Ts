@@ -45,11 +45,11 @@ const props = defineProps({
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    idGrado: String,
-    idGrupo: String,
-    idPersonal: String,
-    idMateria: String,
-    idCiclo: String,
+    //idGrado: String,
+    //idGrupo: String,
+    //idPersonal: String,
+    //idMateria: String,
+    //idCiclo: String,
 },
 );
 
@@ -63,9 +63,9 @@ const close = () => {
 const form = useForm({
     idClase: props.clase.idClase,
     grados: props.clase.idGrado,
-    //grados: props.clases.grado,
+    //grados: props.clase.grado,
     grupos: props.clase.idGrupo,
-    //grupos: props.clases.grupo,
+    //grupos: props.clase.grupo,
     personal: props.clase.idPersonal,
     //personal: props.clases.nombre_completo,
     materias: props.clase.idMateria,
@@ -103,9 +103,40 @@ const save = () => {
         return;
     }
     console.log("Llame al metodo");
-    try{
+    try {
         console.log(form);
         form.post(route('admin.addClases'), {
+            onSuccess: () => {
+                close()
+                gradoError.value = '';
+                grupoError.value = '';
+                personalError.value = '';
+                materiaError.value = '';
+                ciclosError.value = '';
+            }
+        });
+    } catch (error) {
+        console.log("wasaa " + error)
+    }
+    console.log("Llame al metodo2");
+}
+
+const update = () => {
+    console.log("Entró en update");
+    gradoError.value = validateSelect(form.grados) ? '' : 'Seleccione el grado';
+    grupoError.value = validateSelect(form.grupos) ? '' : 'Seleccione el grupo';
+    personalError.value = validateSelect(form.personal) ? '' : 'Seleccione el docente';
+    materiaError.value = validateSelect(form.materias) ? '' : 'Seleccione la materia';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+
+    if (
+        gradoError.value || grupoError.value || personalError.value || materiaError.value || ciclosError.value
+    ) {
+
+        return;
+    }
+    var idClase = document.getElementById('idClase2').value;
+    form.put(route('admin.actualizarClases', idClase), { //Está mal la ruta
         onSuccess: () => {
             close()
             gradoError.value = '';
@@ -115,20 +146,8 @@ const save = () => {
             ciclosError.value = '';
         }
     });
-    }catch(error){
-        console.log("wasaa "+ error)
-    }
-    console.log("Llame al metodo2");
 }
 
-const update = () => {
-    var idClase = document.getElementById('idClase2').value;
-    console.log(idClase);
-    console.log(document.getElementById('clase2').value);
-    form.put(route('admin.actualizarClases', idClase), {
-        onSuccess: () => close()
-    });
-}
 watch(() => props.clase, (newVal) => {
     console.log("Entré en watch");
     console.log(newVal); // Verifica que props.clases tenga valores
@@ -146,8 +165,8 @@ watch(() => props.clase, (newVal) => {
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-
-            <form @submit.prevent="(op === '1' ? save() : update())">
+            <form @submit.prevent="(op === '1' ? save() : update())"
+                @keydown.enter.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
