@@ -3,7 +3,7 @@
 // formulario
 import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, watch, ref, computed} from 'vue';
 const emit = defineEmits(['close']);
 import axios from 'axios';
 
@@ -173,7 +173,7 @@ const validateSelect = (selectedValue) => {
 // Validacion de codigo postal coincida con el asentamiento
 const validatePostal = async (asentamiento) => {
     const infoAsentamiento = await axios.get(route('infoAsentamiento', asentamiento));
-    const codPosAsentamiento = infoAsentamiento.data.codPos;       
+    const codPosAsentamiento = infoAsentamiento.data.codPos;
     return codPosAsentamiento != form.codigoPostal ? false : true;
 }
 //////////////////////////////////////////////////////////////////////
@@ -209,7 +209,7 @@ const save = async () => {
     //  Tipo de sangre
     tipoSError.value = validateSelect(form.tipoSangre) ? '' : 'Seleccione el tipo de sangre';
     // Verificar que el codigo postal sea al correspondiente
-    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';    
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
 
     tipoPError.value = validateSelect(form.tipoPersonal) ? '' : 'Seleccione el tipo de personal';
 
@@ -222,7 +222,7 @@ const save = async () => {
         return;
     }
 
-    form.post(route('admin.addProfesores'), {
+    form.post(route('admin.addDirectivos'), {
         onSuccess: () => {
             close()
             curpError.value = '';
@@ -275,8 +275,8 @@ const update = async () => {
     //  Tipo de sangre
     tipoSError.value = validateSelect(form.tipoSangre) ? '' : 'Seleccione el tipo de sangre';
     // Verificar que el codigo postal sea al correspondiente
-    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';   
-    
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
+
     tipoPError.value = validateSelect(form.tipoPersonal) ? '' : 'Seleccione el tipo de personal';
 
     if (
@@ -289,7 +289,7 @@ const update = async () => {
     }
 
     var idPersonal = document.getElementById('idPersonal2').value;
-    form.put(route('admin.actualizarDirectivos', idPersonal), {
+    form.put(route('admin.actualizarDirectivo', idPersonal), {
         onSuccess: () => {
             close()
             curpError.value = '';
@@ -334,7 +334,7 @@ watch(() => props.personal, async (newVal) => {
     form.estado = await newVal.idEstado;
     await cargarMunicipios();
     form.municipio = await newVal.idMunicipio;
-    await cargarAsentamientos(); 
+    await cargarAsentamientos();
     form.asentamiento = await newVal.idAsentamiento;
     form.idDomicilio = newVal.idDireccion;
     form.tipoPersonal = newVal.id_tipo_personal;
@@ -387,7 +387,7 @@ const buscarDatosXCodigoPostal = async () => {
             if (datos.estado) {
                 form.estado = await datos.estado.idEstado;
                 await cargarMunicipios();
-                
+
             }
             if (datos.municipio) {
                 form.municipio = await datos.municipio.idMunicipio;
@@ -407,19 +407,24 @@ const buscarDatosXCodigoPostal = async () => {
 //////////////////////////////////////////////////////////////////////
 // Funcion onMounted para al rellenar los datos del select estado
 onMounted(async () => {
-    try{
-    const response = await axios.get(route('consEstados'));
-    estados.value = response.data;
-    form.estado = estados.value[19]?.idEstado;
-    await cargarMunicipios();
-    form.municipio = municipios.value[0]?.idMunicipio;
-    await cargarAsentamientos();
-    form.asentamiento = asentamientos.value[0]?.idAsentamiento;
-    }catch(error){
+    try {
+        const response = await axios.get(route('consEstados'));
+        estados.value = response.data;
+        form.estado = estados.value[19]?.idEstado;
+        await cargarMunicipios();
+        form.municipio = municipios.value[0]?.idMunicipio;
+        await cargarAsentamientos();
+        form.asentamiento = asentamientos.value[0]?.idAsentamiento;
+    } catch (error) {
         console.log("Error generado en onMounted: " + error);
     }
 });
 //////////////////////////////////////////////////////////////////////
+
+// Función computed para filtrar tipo_personal
+const filteredTipoPersonal = computed(() => {
+    return props.tipo_personal.filter(tPersonal => tPersonal.tipo_personal === 'Director' || tPersonal.tipo_personal === 'Personal escolar');
+});
 
 </script>
 
@@ -582,8 +587,7 @@ onMounted(async () => {
                         <div class="sm:col-span-3">
                             <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
                             <div class="mt-2">
-                                <select name="estado" :id="'estado' + op" v-model="form.estado" 
-                                @change="cargarMunicipios"
+                                <select name="estado" :id="'estado' + op" v-model="form.estado" @change="cargarMunicipios"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un estado</option>
                                     <option v-for="estado in estados" :key="estado.idEstado" :value="estado.idEstado">
@@ -649,13 +653,14 @@ onMounted(async () => {
                             </div>
                         </div>
                         <div class="sm:col-span-3">
-                            <label for="tipoPersonal" class="block text-sm font-medium leading-6 text-gray-900">Tipo de personal</label>
+                            <label for="tipoPersonal" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                                personal</label>
                             <div class="mt-2">
                                 <select name="tipoPersonal" :id="'tipoPersonal' + op" v-model="form.tipoPersonal"
                                     placeholder="Seleccione el tipo de personal"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un tipo de personal</option>
-                                    <option v-for="tPersonal in tipo_personal" :key="tPersonal.id_tipo_personal"
+                                    <option v-for="tPersonal in filteredTipoPersonal" :key="tPersonal.id_tipo_personal"
                                         :value="tPersonal.id_tipo_personal">
                                         {{ tPersonal.tipo_personal }}
                                     </option>

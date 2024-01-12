@@ -72,6 +72,7 @@ const form = useForm({
     //materias: props.clases.materia,
     ciclos: props.clase.idCiclo,//Le agregué la s
     //ciclos: props.clases.descripcionCiclo,//Le agregue la s a ciclo
+    tipoPersonal: props.personal.id_tipo_personal,
 });
 
 // Variables para los mensajes de validación
