@@ -309,7 +309,8 @@ class AdminController extends Controller
             ->where('tipo_personal.tipo_personal', 'personal_escolar')
             ->get();
 
-        return view('/administrador/directivos', compact('personal'));
+        //return view('Admin/Directivos', compact('personal'));
+        return Inertia::render('Admin/Directivos');
     }
 
     public function materias()
