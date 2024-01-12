@@ -73,6 +73,12 @@ const columns = [
     {
         data: null,
         render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
             return `<input type="checkbox" class="tutores-checkbox" data-id="${row.idTutor}" ">`;
         }
     },
@@ -82,7 +88,9 @@ const columns = [
     { data: 'apellidoP' },
     { data: 'apellidoM' },
     { data: 'nombre' },
-    { data: 'numTelefono' },
+    { data: null, render: function(data, type, row, meta){
+        return row.numTelefono + " " +`<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+    }},
     { data: 'correoElectronico' },
     { data: 'genero' },
     { data: 'domicilio' },
@@ -265,8 +273,8 @@ onMounted(() => {
                 <i class="fa fa-trash mr-2"></i>Borrar Tutor(es)
             </button>
         </div>
-        <div class="overflow-x-auto">
-            <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column" id="tutoresTablaId"
+        <div>
+            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column" id="tutoresTablaId" name="tutoresTablaId"
                 :columns="columns" :data="tutores" :options="{
                     responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                         search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
@@ -279,6 +287,9 @@ onMounted(() => {
                 }">
                 <thead>
                     <tr class="text-sm leading-normal">
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         </th>

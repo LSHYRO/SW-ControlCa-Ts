@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class alumnos extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     protected $table = "alumnos";
     protected $primaryKey = 'idAlumno';

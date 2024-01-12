@@ -17,7 +17,7 @@ use Inertia\Inertia;
 |
 */
 Route::controller(LoginController::class)->group(function (){
-    Route::get('/', 'Login')->name('admin.InicioSesion');
+    Route::get('/is', 'Login')->name('inicioSesion');
 });
 
 Route::controller(AdminController::class)->group(function () {
@@ -48,6 +48,10 @@ Route::controller(AdminController::class)->group(function () {
 
 
     Route::get('/admin/buscar/tutor', 'buscarTutor')->name('ad.busquedaTutor');
+
+    Route::delete('/alumnos/delete/{alumnosIds}', 'eliminarAlumnos')->name('admin.elimAlumnos');
+    Route::delete('/alumnos/{idAlumno}', 'eliminarAlumno')->name('admin.eliminarAlumno');
+    Route::put('/alumnos/{idAlumno}/edit', 'actualizarAlumno')->name('admin.actualizarAlumno');
     
     Route::delete('/profesores/delete/{personalIds}', 'elimProfesores')->name('admin.elimProfesores');
 

@@ -34,7 +34,6 @@ return new class extends Migration
             $table->foreignId(column: 'idUsuario')->references('idUsuario')->on('usuarios');
             $table->text('nombre_completo')->nullable()->fulltext();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

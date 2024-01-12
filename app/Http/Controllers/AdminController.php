@@ -35,8 +35,8 @@ use Mockery\Undefined;
 
 class AdminController extends Controller
 {
-////////////////////////////////////////////////////////////////////////////////////////////////
- // Funciones para acceder a la página de Inicio    
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Funciones para acceder a la página de Inicio    
     public function index()
     {
         return Inertia::render('Principal');
@@ -46,11 +46,11 @@ class AdminController extends Controller
     {
         return Inertia::render('Admin/Inicio');
     }
-////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////////////////
- // Funciones para acceder y funciones de profesor
- //  Renderizado de la página de docentes
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Funciones para acceder y funciones de profesor
+    //  Renderizado de la página de docentes
     public function profesores()
     {
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
@@ -84,7 +84,7 @@ class AdminController extends Controller
         ]);
     }
 
- //  Función para agregar profesores y redireccionar a la página de profesores
+    //  Función para agregar profesores y redireccionar a la página de profesores
     public function addProfesores(Request $request)
     {
         try {
@@ -175,7 +175,7 @@ class AdminController extends Controller
         }
     }
 
- //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
+    //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
         $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
@@ -193,7 +193,7 @@ class AdminController extends Controller
         return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
     }
 
- //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
+    //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
     public function elimprofesores($personalIds)
     {
         try {
@@ -231,7 +231,7 @@ class AdminController extends Controller
         }
     }
 
- //  Función para actualizar los datos de los profesores y redireccionar a la página de profesores o docentes
+    //  Función para actualizar los datos de los profesores y redireccionar a la página de profesores o docentes
     public function actualizarProfesor(Request $request, $idPersonal)
     {
         try {
@@ -300,9 +300,9 @@ class AdminController extends Controller
             dd($e);
         }
     }
-////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     public function directivos()
     {
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
@@ -652,9 +652,9 @@ class AdminController extends Controller
             $alumno->idAsentamiento = $alumno->direcciones->asentamientos->idAsentamiento;
             $alumno->grado = $alumno->grados->grado;
             $alumno->grupo = $alumno->grupos->grupo;
-            if($alumno->materias != null){
-            $alumno->materia = $alumno->materias->materia;
-            }else{
+            if ($alumno->materias != null) {
+                $alumno->materia = $alumno->materias->materia;
+            } else {
                 $alumno->materia = "Ninguno";
             }
             $alumno->tutor = $alumno->tutores->nombre_completo;
@@ -681,7 +681,8 @@ class AdminController extends Controller
         return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos, 'talleres' => $materiasT]);
     }
 
-    public function obtenerGruposXGrado($idGrado){
+    public function obtenerGruposXGrado($idGrado)
+    {
         $grado = grados::find($idGrado);
         $fecha = $grado->idCiclo;
         $gruposPr = grupos::where('idCiclo', $fecha)->get();
@@ -689,10 +690,9 @@ class AdminController extends Controller
             $grupo->grupoC = $grupo->grupo . " - " . $grupo->ciclos->descripcionCiclo;
 
             return $grupo;
-        }); 
-        
-        return response()->json($grupos);
+        });
 
+        return response()->json($grupos);
     }
 
     public function gradosgrupos()
@@ -901,7 +901,8 @@ class AdminController extends Controller
         return response()->json($results);
     }
 
-    public function agregarAlumno(Request $request){
+    public function agregarAlumno(Request $request)
+    {
         try {
             $request->validate([
                 'nombre' => 'required',
@@ -947,24 +948,24 @@ class AdminController extends Controller
             $domicilio->save();
 
             $alumno = new alumnos();
-            $alumno -> nombre = $request->nombre;
-            $alumno -> apellidoP = $request->apellidoP;
-            $alumno -> apellidoM = $request->apellidoM;
-            $alumno -> fechaNacimiento = $request->fechaNacimiento;
-            $alumno -> CURP = $request->curp;
-            $alumno -> idGenero = $request->genero;
-            $alumno -> correoElectronico = $request->correoElectronico;
-            $alumno -> numTelefono = $request->numTelefono;
-            $alumno -> idTipoSangre = $request->tipoSangre;
-            $alumno -> alergias = $request->alergias;
-            $alumno -> discapacidad = $request->discapacidad;
-            $alumno -> idDireccion = $domicilio->idDireccion;
-            $alumno -> esForaneo = $request->foraneo;
-            $alumno -> idGrado = $request->grado["idGrado"];
-            $alumno -> idGrupo = $request->grupo;
-            $alumno -> idMateria = $request->taller;
-            $alumno -> idTutor = $request->tutor["idTutor"];
-            $alumno -> idUsuario = $usuario->idUsuario;
+            $alumno->nombre = $request->nombre;
+            $alumno->apellidoP = $request->apellidoP;
+            $alumno->apellidoM = $request->apellidoM;
+            $alumno->fechaNacimiento = $request->fechaNacimiento;
+            $alumno->CURP = $request->curp;
+            $alumno->idGenero = $request->genero;
+            $alumno->correoElectronico = $request->correoElectronico;
+            $alumno->numTelefono = $request->numTelefono;
+            $alumno->idTipoSangre = $request->tipoSangre;
+            $alumno->alergias = $request->alergias;
+            $alumno->discapacidad = $request->discapacidad;
+            $alumno->idDireccion = $domicilio->idDireccion;
+            $alumno->esForaneo = $request->foraneo;
+            $alumno->idGrado = $request->grado["idGrado"];
+            $alumno->idGrupo = $request->grupo;
+            $alumno->idMateria = $request->taller;
+            $alumno->idTutor = $request->tutor["idTutor"];
+            $alumno->idUsuario = $usuario->idUsuario;
 
             $nombreCompleto = $alumno->nombre . ' ' . $alumno->apellidoP . ' ' . $alumno->apellidoM;
             $alumno->nombre_completo = $nombreCompleto;
@@ -980,9 +981,124 @@ class AdminController extends Controller
             $alumno->save();
 
             return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             dd($e);
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno " . $e, "color" => "red"]);            
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno " . $e, "color" => "red"]);
+        }
+    }
+
+    public function actualizarAlumno(Request $request)
+    {
+        try {
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'tipoSangre' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
+            $alumno = alumnos::find($request->idAlumno);
+            $domicilio = direcciones::find($alumno->idDireccion);
+
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+
+            $alumno->nombre = $request->nombre;
+            $alumno->apellidoP = $request->apellidoP;
+            $alumno->apellidoM = $request->apellidoM;
+            $alumno->fechaNacimiento = $request->fechaNacimiento;
+            $alumno->CURP = $request->curp;
+            $alumno->idGenero = $request->genero;
+            $alumno->correoElectronico = $request->correoElectronico;
+            $alumno->numTelefono = $request->numTelefono;
+            $alumno->idTipoSangre = $request->tipoSangre;
+            $alumno->alergias = $request->alergias;
+            $alumno->discapacidad = $request->discapacidad;
+            $alumno->idDireccion = $domicilio->idDireccion;
+            $alumno->esForaneo = $request->foraneo;
+            $alumno->idGrado = $request->grado["idGrado"];
+            $alumno->idGrupo = $request->grupo;
+            $alumno->idMateria = $request->taller;
+            $alumno->idTutor = $request->tutor["idTutor"];
+
+            $nombreCompleto = $alumno->nombre . ' ' . $alumno->apellidoP . ' ' . $alumno->apellidoM;
+            $alumno->nombre_completo = $nombreCompleto;
+
+            if ($alumno->alergias == null) {
+                $alumno->alergias = "Ninguna";
+            }
+
+            if ($alumno->discapacidad == null) {
+                $alumno->discapacidad = "Ninguna";
+            }
+
+            $alumno->save();
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno " . $e, "color" => "red"]);
+        }
+    }
+
+    public function eliminarAlumno($idAlumno)
+    {
+        try {
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
+
+            $alumno = alumnos::find($idAlumno);
+            $usuario = usuarios::find($alumno->idUsuario);
+            $direccion = direcciones::find($alumno->idDireccion);
+            $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                ->first();
+            $alumno->delete();
+            $usuarioTipoUsuario->delete();
+            $usuario->delete();
+            $direccion->delete();
+
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno eliminado correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar al alumno " . $e, "color" => "red"]);
+        }
+    }
+
+    public function eliminarAlumnos($alumnosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $alumnosIdsArray = explode(',', $alumnosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $alumnosIdsArray = array_map('intval', $alumnosIdsArray);
+
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
+
+            for ($i = 0; $i < count($alumnosIdsArray); $i++) {
+                $alumno = alumnos::find($alumnosIdsArray[$i]);
+                $usuario = usuarios::find($alumno->idUsuario);
+                $direccion = direcciones::find($alumno->idDireccion);
+                $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                    ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                    ->first();
+                $alumno->delete();
+                $usuarioTipoUsuario->delete();
+                $usuario->delete();
+                $direccion->delete();
+            }
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumnos eliminados correctamente", "color" => "green"]);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar a los alumnos " . $e, "color" => "red"]);
         }
     }
 
@@ -1054,31 +1170,30 @@ class AdminController extends Controller
         return response()->json($materias);
     }
 
-    public function addClases(Request $request){
-    try{
-        $request->validate([
-            'grupos' => 'required',
-            'grados' => 'required',
-            'personal' => 'required',
-            'materias' => 'required',
-            'ciclos' => 'required',
-        ]);
-        
+    public function addClases(Request $request)
+    {
+        try {
+            $request->validate([
+                'grupos' => 'required',
+                'grados' => 'required',
+                'personal' => 'required',
+                'materias' => 'required',
+                'ciclos' => 'required',
+            ]);
 
-        $clase = new clases();
-        $clase->idGrupo = $request->grupos;
-        $clase->idGrado = $request->grados;
-        $clase->idPersonal = $request->personal;
-        $clase->idMateria = $request->materias;
-        $clase->idCiclo = $request->ciclos;
 
-        $clase->save();
-    }
-    catch(Exception $e){
+            $clase = new clases();
+            $clase->idGrupo = $request->grupos;
+            $clase->idGrado = $request->grados;
+            $clase->idPersonal = $request->personal;
+            $clase->idMateria = $request->materias;
+            $clase->idCiclo = $request->ciclos;
 
-    }
-    return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
-    //return redirect()->route('admin.clases');
+            $clase->save();
+        } catch (Exception $e) {
+        }
+        return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
+        //return redirect()->route('admin.clases');
     }
 
     public function eliminarClases($idClase)
@@ -1111,33 +1226,33 @@ class AdminController extends Controller
         }
     }
 
-    public function actualizarClases(Request $request, $idClase){
-        try{
+    public function actualizarClases(Request $request, $idClase)
+    {
+        try {
             $clases = clases::find($idClase);
-             $request->validate([
+            $request->validate([
                 'grados' => 'required',
                 'grupos' => 'required',
                 'personal' => 'required',
                 'materias' => 'required',
                 'ciclos' => 'required',
-        ]);
+            ]);
 
-        $clases->idGrupo = $request->grupos;
-        $clases->idGrado = $request->grados;
-        $clases->idPersonal = $request->personal;
-        $clases->idMateria = $request->materias;
-        $clases->idCiclo = $request->ciclos;
+            $clases->idGrupo = $request->grupos;
+            $clases->idGrado = $request->grados;
+            $clases->idPersonal = $request->personal;
+            $clases->idMateria = $request->materias;
+            $clases->idCiclo = $request->ciclos;
 
-        $clases->fill($request->input())->saveOrFail();
-        //return redirect()->route('admin.clases')->with('message',"Clase actualizada correctamente");
+            $clases->fill($request->input())->saveOrFail();
+            //return redirect()->route('admin.clases')->with('message',"Clase actualizada correctamente");
 
-        }catch(Exception $e){
+        } catch (Exception $e) {
             dd($e);
-            
         }
 
         //$clases->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.clases')->with('message',"Clase actualizada correctamente");
+        return redirect()->route('admin.clases')->with('message', "Clase actualizada correctamente");
     }
 
     public function getClases($searchTerm)
@@ -1201,19 +1316,18 @@ class AdminController extends Controller
 
     public function actualizarGrados(Request $request, $idGrado)
     {
-        try{
+        try {
             $grados = grados::find($idGrado);
             $request->validate([
-            'grado' => 'required',
-            'ciclos' => 'required',
-        ]);
+                'grado' => 'required',
+                'ciclos' => 'required',
+            ]);
 
-        $grados->grado = $request->grado;
-        $grados->idCiclo = $request->ciclos;
+            $grados->grado = $request->grado;
+            $grados->idCiclo = $request->ciclos;
 
-        $grados->fill($request->input())->saveOrFail();
-
-        }catch(Exceptino $e){
+            $grados->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
             dd($e);
         }
 
@@ -1289,19 +1403,17 @@ class AdminController extends Controller
 
     public function actualizarGrupos(Request $request, $idGrupo)
     {
-        try{
+        try {
             $grupos = grupos::find($idGrupo);
             $request->validate([
-            'grupo' => 'required',
-            'ciclos' => 'required',
-        ]);
-        $grupos->grupo = $request->grupo;
-        $grupos->idCiclo = $request->ciclos;
+                'grupo' => 'required',
+                'ciclos' => 'required',
+            ]);
+            $grupos->grupo = $request->grupo;
+            $grupos->idCiclo = $request->ciclos;
 
-        $grupos->fill($request->input())->saveOrFail();
-
-        }catch(Exception $e){
-
+            $grupos->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
         }
         return redirect()->route('admin.gradosgrupos')->with('message', "Grupo actualizado correctamente: " . $grupos->grupo);;
     }
@@ -1349,19 +1461,19 @@ class AdminController extends Controller
 
     public function actualizarCiclos(Request $request, $idCiclo)
     {
-        try{
+        try {
             $ciclos = ciclos::find($idCiclo);
             $request->validate([
-            'fecha_inicio' => 'required',
-            'fecha_fin' => 'required',
-            'descripcionCiclo' => 'required',
-        ]);
-        $ciclos->fecha_inicio = $request->fecha_inicio;
-        $ciclos->fecha_fin = $request->fecha_fin;
-        $ciclos->descripcionCiclo = $request->descripcionCiclo;
+                'fecha_inicio' => 'required',
+                'fecha_fin' => 'required',
+                'descripcionCiclo' => 'required',
+            ]);
+            $ciclos->fecha_inicio = $request->fecha_inicio;
+            $ciclos->fecha_fin = $request->fecha_fin;
+            $ciclos->descripcionCiclo = $request->descripcionCiclo;
 
-        $ciclos->fill($request->input())->saveOrFail();
-        }catch(Exception $e){
+            $ciclos->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
             dd($e);
         }
         return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo);;
@@ -1427,21 +1539,21 @@ class AdminController extends Controller
 
     public function actualizarPeriodos(Request $request, $idPeriodo)
     {
-        try{
+        try {
             $periodos = periodos::find($idPeriodo);
             $request->validate([
-            'periodo' => 'required',
-            'fecha_inicio' => 'required',
-            'fecha_fin' => 'required',
-            'ciclos' => 'required',
-        ]);
-        $periodos->periodo = $request->periodo;
-        $periodos->fecha_inicio = $request->fecha_inicio;
-        $periodos->fecha_fin = $request->fecha_fin;
-        $periodos->idCiclo = $request->ciclos;
+                'periodo' => 'required',
+                'fecha_inicio' => 'required',
+                'fecha_fin' => 'required',
+                'ciclos' => 'required',
+            ]);
+            $periodos->periodo = $request->periodo;
+            $periodos->fecha_inicio = $request->fecha_inicio;
+            $periodos->fecha_fin = $request->fecha_fin;
+            $periodos->idCiclo = $request->ciclos;
 
-        $periodos->fill($request->input())->saveOrFail();
-        }catch(Exception $e){
+            $periodos->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
             dd($e);
         }
         return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo actualizado correctamente: " . $periodos->periodo);;
