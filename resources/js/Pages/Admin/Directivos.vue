@@ -65,7 +65,13 @@ const columns = [
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'direccion' },
-    { data: 'tipoPersonal' },
+    { data: 'id_tipo_personal',
+    render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const directivo = props.tipo_personal.find(directivo => directivo.id_tipo_personal === data);
+            return directivo ? directivo.tipo_personal : '';
+        }
+     },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idPersonal}"><i class="fa fa-pencil"></i></button>`;
