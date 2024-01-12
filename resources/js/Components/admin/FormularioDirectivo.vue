@@ -33,6 +33,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    tipo_personal: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -87,6 +91,7 @@ const form = useForm({
     municipio: props.personal.idMunicipio,
     asentamiento: props.personal.idAsentamiento,
     idDomicilio: props.personal.idDireccion,
+    tipoPersonal: props.personal.id_tipo_personal,
 
 });
 
@@ -104,6 +109,7 @@ const calleError = ref('');
 const numeroCError = ref('');
 const generoError = ref('');
 const tipoSError = ref('');
+const tipoPError = ref('');
 
 // Validacion de CURP y RFC
 // Función para validar CURP
@@ -205,10 +211,12 @@ const save = async () => {
     // Verificar que el codigo postal sea al correspondiente
     codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';    
 
+    tipoPError.value = validateSelect(form.tipoPersonal) ? '' : 'Seleccione el tipo de personal';
+
     if (
         curpError.value || rfcError.value || nombreError.value || apellidoMError.value || apellidoPError.value ||
         correoEError.value || fechaNError.value || codigoPError.value || numeroTError.value || calleError.value ||
-        numeroCError.value || generoError.value || tipoSError.value
+        numeroCError.value || generoError.value || tipoSError.value || tipoPError.value
     ) {
 
         return;
@@ -230,6 +238,7 @@ const save = async () => {
             numeroCError.value = '';
             generoError.value = '';
             tipoSError.value = '';
+            tipoPError.value = '';
         }
     });
 }
@@ -266,19 +275,21 @@ const update = async () => {
     //  Tipo de sangre
     tipoSError.value = validateSelect(form.tipoSangre) ? '' : 'Seleccione el tipo de sangre';
     // Verificar que el codigo postal sea al correspondiente
-    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';    
+    codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';   
+    
+    tipoPError.value = validateSelect(form.tipoPersonal) ? '' : 'Seleccione el tipo de personal';
 
     if (
         curpError.value || rfcError.value || nombreError.value || apellidoMError.value || apellidoPError.value ||
         correoEError.value || fechaNError.value || codigoPError.value || numeroTError.value || calleError.value ||
-        numeroCError.value || generoError.value || tipoSError.value
+        numeroCError.value || generoError.value || tipoSError.value || tipoPError.value
     ) {
 
         return;
     }
 
     var idPersonal = document.getElementById('idPersonal2').value;
-    form.put(route('admin.actualizarProfesores', idPersonal), {
+    form.put(route('admin.actualizarDirectivos', idPersonal), {
         onSuccess: () => {
             close()
             curpError.value = '';
@@ -294,6 +305,7 @@ const update = async () => {
             numeroCError.value = '';
             generoError.value = '';
             tipoSError.value = '';
+            tipoPError.value = '';
         }
     });
 }
@@ -325,6 +337,7 @@ watch(() => props.personal, async (newVal) => {
     await cargarAsentamientos(); 
     form.asentamiento = await newVal.idAsentamiento;
     form.idDomicilio = newVal.idDireccion;
+    form.tipoPersonal = newVal.id_tipo_personal;
 }, { deep: true }
 );
 //////////////////////////////////////////////////////////////////////
@@ -634,6 +647,21 @@ onMounted(async () => {
                                     placeholder="Ingrese el Domicilio"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="tipoPersonal" class="block text-sm font-medium leading-6 text-gray-900">Tipo de personal</label>
+                            <div class="mt-2">
+                                <select name="tipoPersonal" :id="'tipoPersonal' + op" v-model="form.tipoPersonal"
+                                    placeholder="Seleccione el tipo de personal"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un tipo de personal</option>
+                                    <option v-for="tPersonal in tipo_personal" :key="tPersonal.id_tipo_personal"
+                                        :value="tPersonal.id_tipo_personal">
+                                        {{ tPersonal.tipo_personal }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="tipoSError != ''" class="text-red-500 text-xs mt-1">{{ tipoSError }}</div>
                         </div>
                     </div>
                 </div>

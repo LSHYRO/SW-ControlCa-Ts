@@ -305,12 +305,131 @@ class AdminController extends Controller
 ////////////////////////////////////////////////////////////////////////////////////////////////
     public function directivos()
     {
-        $personal = personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'personal_escolar')
+        $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
+            ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
+            ->where('tipo_personal.tipo_personal', 'profesor')
             ->get();
 
-        //return view('Admin/Directivos', compact('personal'));
-        return Inertia::render('Admin/Directivos');
+        $tipoSangre = tipo_Sangre::all();
+        $generos = generos::all();
+        $direcciones = direcciones::all();
+        $tipo_personal = tipo_personal::all();
+
+
+            $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
+            $genero = $generos->where('idGenero', $persona->idGenero)->first();
+            $tipoSangre = $tipoSangre->where('idTipoSangre', $persona->idTipoSangre)->first();
+            $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
+            $persona->genero = $genero ? $genero->genero : null;
+            $persona->tipoSangre = $tipoSangre ? $tipoSangre->tipoSangre : null;
+            $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
+            $persona->calle = $direccion ? $direccion->calle : null;
+            $persona->numero = $direccion ? $direccion->numero : null;
+            $persona->codigoPos = $direccion ? $direccion->asentamientos->codigoPostal->codigoPostal : null;
+            $persona->idAsentamiento = $direccion ? $direccion->asentamientos->idAsentamiento : null;
+            $persona->idMunicipio = $direccion ? $direccion->asentamientos->municipios->idMunicipio : null;
+            $persona->idEstado = $direccion ? $direccion->asentamientos->municipios->estados->idEstado : null;
+            return $persona;
+        });
+
+        return Inertia::render('Admin/Directivos', [
+            'personal' => $personalConNombres, 
+            'tipoSangre' => $tipoSangre, 
+            'generos' => $generos,
+            'tipo_personal' => $tipo_personal
+        ]);
+    }
+
+    public function addDirectivos(Request $request)
+    {
+        try {
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'rfc' => 'required',
+                'tipoSangre' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+                'tipoPersonal' => 'required',
+            ]);
+
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Contraseña generada
+            $contrasenia = Str::random(8);
+            //Creacion de usuario
+            $usuario = new usuarios();
+            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            //$usuario->activo = 1;
+            //echo "Tu contraseña generada es: $contrasenia";
+            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+            $usuario->save();
+
+            //Se busca el tipo de usuario en la BD
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+            $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+            $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
+            $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            $usuarioTipoUsuario->save();
+
+            //Se guarda el domicilio del profesor
+            $domicilio = new direcciones();
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+
+            //Se busca el tipo de personal en la BD
+            $tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
+
+            //$personal = new personal($request->input());
+            $personal = new personal();
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->nombre = $request->nombre;
+            $personal->correoElectronico = $request->correoElectronico;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->idGenero = $request->genero;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->CURP = $request->curp;
+            $personal->rfc = $request->rfc;
+            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->alergias = $request->alergias;
+            $personal->discapacidad = $request->discapacidad;
+            $personal->idDireccion = $domicilio->idDireccion;
+            $personal->idUsuario = $usuario->idUsuario;
+            $personal->id_tipo_personal = $request->tipoPersonal;
+            //$personal->activo = 1;
+
+            //columna nombre completo
+            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+            $personal->nombre_completo = $nombreCompleto;
+
+            if ($personal->alergias == null) {
+                $personal->alergias = "Ninguna";
+            }
+
+            if ($personal->discapacidad == null) {
+                $personal->discapacidad = "Ninguna";
+            }
+
+            //Guardado
+            $personal->save();
+            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 
     public function materias()

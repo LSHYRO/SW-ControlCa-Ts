@@ -29,6 +29,7 @@ DataTable.use(Select);
     personal: { type: Object },
     tipoSangre: { type: Object },
     generos: { type: Object },
+    tipo_personal: { type: Object },
 });
 
  // Constantes para el funcionamientos del modal y su configuración
@@ -64,6 +65,7 @@ const columns = [
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'direccion' },
+    { data: 'tipoPersonal' },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idPersonal}"><i class="fa fa-pencil"></i></button>`;
@@ -104,8 +106,8 @@ const botones = [{
 ];
 
  // Funciones para el funcionamiento del modal
- const abrirE = ($profe) => {
-    person = $profe;
+ const abrirE = ($directivo) => {
+    person = $directivo;
     mostrarModalE.value = true;
 }
 const cerrarModal = () => {
@@ -114,6 +116,110 @@ const cerrarModal = () => {
 const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
+
+// Función para elimnar profesores a través del botón del datatable
+const eliminarDirctivo = (idPersonal, nombre) => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('admin.eliminarProfesores', idPersonal));
+        }
+
+    })
+};
+
+// Función para el llenado de selectedPersonal a través de los checkboxes
+const togglePersonalSelection = (personal) => {
+    if (selectedPersonal.value.includes(personal)) {
+        // Si la personal ya está seleccionada, la eliminamos del array
+        selectedPersonal.value = selectedPersonal.value.filter((m) => m !== personal);
+    } else {
+        // Si la personal no está seleccionada, la agregamos al array
+        selectedPersonal.value.push(personal);
+    }
+    const botonEliminar = document.getElementById("eliminarPBtn");
+
+    if (selectedPersonal.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");        
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+    }
+};
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+ // Función para eliminar varios profesores con el botón eliminar
+ const eliminarDirectivos = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar los datos de los dirctivos seleccionados?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const personalS = selectedPersonal.value.map((personal) => personal.idPersonal);
+                const $personalIds = personalS.join(',');
+                await form.delete(route('admin.elimDirectivos', $personalIds));
+                const botonEliminar = document.getElementById("eliminarPBtn");
+                // Limpia las materias seleccionadas después de la eliminación
+                selectedPersonal.value = [];
+                botonEliminar.setAttribute("disabled", "");                
+            } catch (error) {
+                console.log("Error al eliminar varias materias: " + error);
+            }
+        }
+    });
+};
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Función onMounted que se ejecuta al iniciar la página 
+onMounted(() => {
+    // Agrega un escuchador de eventos fuera de la lógica de Vue
+    document.getElementById('directivosTablaId').addEventListener('click', (event) => {
+        const checkbox = event.target;
+        if (checkbox.classList.contains('profesor-checkbox')) {
+            const personalId = parseInt(checkbox.getAttribute('data-id'));
+            // Asegúrate de que props.materias.data esté definido antes de usar find
+            console.log(props.personal);
+            if (props.personal) {
+                const personal = props.personal.find(personal => personal.idPersonal === personalId);
+                if (personal) {
+                    togglePersonalSelection(personal);
+                } else {
+                    console.log("No se tiene materia");
+                }
+            }
+        }
+    });
+
+    // Manejar clic en el botón de editar
+    $('#directivosTablaId').on('click', '.editar-button', function () {
+        const personalId = $(this).data('id');
+        const personal = props.personal.find(m => m.idPersonal === personalId);
+        abrirE(personal);
+    });
+
+    // Manejar clic en el botón de eliminar
+    $('#directivosTablaId').on('click', '.eliminar-button', function () {
+        const personalId = $(this).data('id');
+        const personal = props.personal.find(m => m.idPersonal === personalId);
+        eliminarDirectivo(personalId, personal.nombre + " " + personal.apellidoP + " " + personal.apellidoM);
+    });
+});
 
 </script>
 
@@ -143,7 +249,7 @@ const cerrarModalE = () => {
                 </button>
                 <button id="eliminarPBtn" disabled="true"
                     class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarProfesores">
+                    @click="eliminarDirectivos">
                     <i class="fa fa-trash mr-2"></i>Borrar Directivo(s)
                 </button>
                 <!-- </div> -->
@@ -151,7 +257,7 @@ const cerrarModalE = () => {
 
             <div class="overflow-x-auto ">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="profesoresTablaId" :columns="columns" :data="personal" :options="{
+                    id="directivosTablaId" :columns="columns" :data="personal" :options="{
                         autoWidth: false, dom: 'Bfrtip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -224,6 +330,10 @@ const cerrarModalE = () => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Tipo Personal
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -234,10 +344,10 @@ const cerrarModalE = () => {
             </div>
         </div>
         <formulario-directivo :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir profesor'" :op="'1'" :modal="'modalCreate'" :tipoSangre="props.tipoSangre"
-            :generos="props.generos"></formulario-directivo>
+            :title="'Añadir directivo'" :op="'1'" :modal="'modalCreate'" :tipoSangre="props.tipoSangre"
+            :generos="props.generos" :tipo_personal="props.tipo_personal"></formulario-directivo>
         <formulario-directivo :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person" :tipoSangre="props.tipoSangre"
-            :generos="props.generos"></formulario-directivo>
+            :title="'Editar directivo'" :op="'2'" :modal="'modalEdit'" :personal="person" :tipoSangre="props.tipoSangre"
+            :generos="props.generos" :tipo_personal="props.tipo_personal"></formulario-directivo>
     </AdminLayout>
 </template>

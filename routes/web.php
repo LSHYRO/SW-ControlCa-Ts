@@ -36,6 +36,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/obtenerciclos', 'obtenerciclos')->name('admin.obtenerciclos');
 
     Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
+    Route::post('/directivos', 'addDirectivos')->name('admin.addDirectivos');
     Route::post('/materias', 'addMaterias')->name('admin.addMaterias');
     Route::post('/tutores', 'addTutores')->name('admin.addTutores');
     Route::post('/alumnos', 'agregarAlumno')->name('admin.addAlumnos');
@@ -52,6 +53,9 @@ Route::controller(AdminController::class)->group(function () {
 
     Route::delete('/profesores/{idPersonal}', 'eliminarProfesores')->name('admin.eliminarProfesores');
     Route::put('/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('admin.actualizarProfesores');
+
+    Route::delete('/directivos/{idPersonal}', 'eliminarDirectivos')->name('admin.eliminarDirectivos');
+    Route::put('/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('admin.actualizarDirectivos');
 
     Route::delete('/materias/delete/{materiasIds}', 'elimMaterias')->name('admin.elimMaterias');
 
