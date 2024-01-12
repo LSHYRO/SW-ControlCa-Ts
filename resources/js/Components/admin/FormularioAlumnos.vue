@@ -359,8 +359,8 @@ const update = async () => {
     if(form.foraneo == null){
         form.foraneo = false;
     }
-    var idTutor = document.getElementById('idTutor2').value;
-    form.put(route('admin.actualizarTutor', idTutor), {
+    var idAlumno = document.getElementById('idAlumno2').value;
+    form.put(route('admin.actualizarAlumno', idAlumno), {
         onSuccess: () => {
             close()
             nombreError.value = '';
@@ -378,7 +378,7 @@ const update = async () => {
             fechaNError.value = '';
             curpError.value = '';
             tutorError.value = '';
-            tallerError.value = '';
+            //tallerError.value = '';
         }
     });
 }
@@ -757,7 +757,8 @@ onMounted(async () => {
                         <div class="sm:col-span-2">
                             <label for="foraneo" class="block text-sm font-medium leading-6 text-gray-900">Foraneo</label>
                             <div class="mt-2">
-                                <input type="checkbox" name="foraneo" :id="'foraneo' + op" :checked="form.foraneo">
+                                <input type="checkbox" name="foraneo" :id="'foraneo' + op" :checked="form.foraneo"
+                                @change="form.foraneo = !form.foraneo">
                             </div>
                         </div>
                         <div class="sm:col-span-3" hidden>

@@ -68,11 +68,11 @@ onMounted(() => {
                     </button>
                 </div>
             </div>
-            <div v-show="tutoresB">
+            <div v-if="tutoresB">
                 <Tutores :tutores="props.tutores" :generos="props.generos"></Tutores>
             </div>
-            <div v-show="alumnosB">
-                <Alumnos :alumnos="props.alumnos" :talleres="props.talleres" :generos="props.generos" :grados="props.grados" :grupos="props.grupos" :tipoSangre="props.tipoSangre"> </Alumnos>                
+            <div v-if="alumnosB">
+                <Alumnos :alumnos="props.alumnos" :talleres="props.talleres" :generos="props.generos" :grados="props.grados"  :tipoSangre="props.tipoSangre"> </Alumnos>                
             </div>
         </div>
     </AdminLayout>

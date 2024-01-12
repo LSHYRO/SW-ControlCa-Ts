@@ -268,8 +268,8 @@ onMounted(() => {
                 </button>
                 <!--</div>-->
             </div>
-            <div class="overflow-x-auto ">
-                <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
+            <div>
+                <DataTable class="w-full table-auto text-sm nowrap display stripe compact cell-border order-column"
                     id="materiasTablaId" :columns="columns" :data="materias" :options="{
                         responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',

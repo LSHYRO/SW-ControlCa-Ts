@@ -9,6 +9,7 @@ use App\Models\estados;
 use App\Models\municipios;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class DireccionesApiController extends Controller
@@ -78,28 +79,32 @@ class DireccionesApiController extends Controller
     // Obtener Estados, municipios y asentamientos por id de forma individual
     public function obtenerMunicipiosPorEstado($idEstado)
     {
-        $estado = estados::with('municipios')->find($idEstado);
-
-        if (!$estado) {
-            return response()->json(['message' => 'Estado no encontrado'], 404);
-        }
-
-        $municipios = $estado->municipios->sortBy('municipio')->values()->all();
-
-        return response()->json($municipios);
+        return Cache::remember('municipios_estado_' . $idEstado, now()->addHours(24), function () use ($idEstado) {
+            $estado = estados::with('municipios')->find($idEstado);
+    
+            if (!$estado) {
+                return response()->json(['message' => 'Estado no encontrado'], 404);
+            }
+    
+            $municipios = $estado->municipios->sortBy('municipio')->values()->all();
+    
+            return response()->json($municipios);
+        });
     }
 
     public function obtenerAsentamientosPorMunicipio($idMunicipio)
     {
-        $municipio = municipios::with('asentamientos')->find($idMunicipio);
-
-        if (!$municipio) {
-            return response()->json(['message' => 'Municipio no encontrado'], 404);
-        }
-
-        $asentamientos = $municipio->asentamientos->sortBy('asentamiento')->values()->all();
-
-        return response()->json($asentamientos);
+        return Cache::remember('asentamientos_municipio_' . $idMunicipio, now()->addHours(24), function () use ($idMunicipio) {
+            $municipio = municipios::with('asentamientos')->find($idMunicipio);
+    
+            if (!$municipio) {
+                return response()->json(['message' => 'Municipio no encontrado'], 404);
+            }
+    
+            $asentamientos = $municipio->asentamientos->sortBy('asentamiento')->values()->all();
+    
+            return response()->json($asentamientos);
+        });
     }
 
     // ----------------------------------------------------------------

@@ -34,7 +34,6 @@ const props = defineProps({
     alumnos: { type: Object },
     generos: { type: Object },
     grados: { type: Object },
-    grupos: { type: Object },
     tipoSangre: { type: Object },
     talleres: { type: Object },
 });
@@ -71,11 +70,17 @@ const cerrarModalE = () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Configuración de las columnas con los valores correspondientes de las materias, ademas de
 // la creacion de las checkboxes y los botones de editar y modificar
-const columns = [
+const columns2 = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="alumnos-checkboxes" data-id="${row.idTutor}" ">`;
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return `<input type="checkbox" class="alumnos-checkboxes" data-id="${row.idAlumno}" ">`;
         }
     },
     {
@@ -87,7 +92,9 @@ const columns = [
     { data: 'fechaNacimiento'},
     { data: 'CURP' },
     { data: 'genero' },
-    { data: 'numTelefono' },
+    { data: null, render: function(data, type, row, meta){
+        return row.numTelefono + " " +`<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+    }},
     { data: 'correoElectronico' },
     { data: 'tipoSangre' },
     { data: 'alergias' },
@@ -111,16 +118,13 @@ const columns = [
         }
 
     }
-    //{ data: 'esTaller', render: function(data, type, row) {
-    //    return data ? 'Si' : 'No';
-    //}},    
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Creación de los botones para al generación de documentos, ademas de la configuración de los
 // titulos de los documentos
-const botones = [{
+const botones2 = [{
     title: 'Alumnos registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
@@ -150,7 +154,7 @@ const botones = [{
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Metodo para la seleccion y llenado del arreglo de tutores (selectedTutores) por medio del 
 // checkbox
-const toggleTutorSelection = (alumno) => {
+const toggleAlumnoSelection = (alumno) => {
     if (alumnosSeleccionados.value.includes(alumno)) {
         // Si el alumno ya está seleccionado, la eliminamos del array
         alumnosSeleccionados.value = alumnosSeleccionados.value.filter((a) => a !== alumno);
@@ -159,7 +163,7 @@ const toggleTutorSelection = (alumno) => {
         alumnosSeleccionados.value.push(alumno);
     }
     // Llamado del botón de eliminar para cambiar su estado deshabilitado
-    const botonEliminar = document.getElementById("eliminarMBtn");
+    const botonEliminar = document.getElementById("eliminarABtn");
     // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
     if (alumnosSeleccionados.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
@@ -206,7 +210,7 @@ const eliminarAlumno = (idAlumno, alumno) => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                const alumnosE = alumnosSeleccionados.value.map((alumno) =alumno.idAlumno);
+                const alumnosE = alumnosSeleccionados.value.map((alumno) => alumno.idAlumno);
                 const $alumnosIds = alumnosE.join(',');
                 await form.delete(route('admin.elimAlumnos', $alumnosIds));
                 // Limpia las materias seleccionadas después de la eliminación
@@ -229,9 +233,9 @@ onMounted(() => {
             const alumnoId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
             if (props.alumnos) {
-                const alumno = props.alumnos.find(alumno => alumno.idTutor === alumnoId);
+                const alumno = props.alumnos.find(alumno => alumno.idAlumno === alumnoId);
                 if (alumno) {
-                    toggleTutorSelection(alumno);
+                    toggleAlumnoSelection(alumno);
                 } else {
                     console.log("No se tiene alumno");
                 }
@@ -275,14 +279,14 @@ onMounted(() => {
                 @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                 <i class="fa fa-plus mr-2"></i>Agregar Alumno
             </button>
-            <button id="eliminarMBtn" disabled="true"
+            <button id="eliminarABtn" disabled
                 class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded" @click="eliminarAlumnos">
                 <i class="fa fa-trash mr-2"></i>Borrar Alumno(s)
             </button>
         </div>
-        <div class="overflow-x-auto">
-            <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column" id="alumnosTablaId"
-                :columns="columns" :data="alumnos" :options="{
+        <div>
+            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column" id="alumnosTablaId" name="alumnosTablaId"
+                :columns="columns2" :data="alumnos" :options="{
                     responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                         search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                         info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -290,10 +294,13 @@ onMounted(() => {
                         infoFiltered: '(filtrado de un total de _MAX_ registros)',
                         lengthMenu: 'Mostrar _MENU_ registros',
                         paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                    }, buttons: botones
+                    }, buttons: botones2
                 }">
                 <thead>
                     <tr class="text-sm leading-normal">
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         </th>
