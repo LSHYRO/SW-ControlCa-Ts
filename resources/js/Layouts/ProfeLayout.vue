@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
-import TopContent from '@/Components/admin/TopContent.vue'
-import OpcionesNavAdmin from '@/Components/admin/OpcionesNavAdmin.vue';
+import TopContentProfe from '@/Components/profe/TopContentProfe.vue'
+import OpcionesNavProfe from '@/Components/profe/OpcionesNavProfe.vue';
 
 defineProps({
     title: String,
@@ -29,7 +29,7 @@ const logout = () => {
 
         <Head :title="title" />
 
-        <TopContent />
+        <TopContentProfe />
 
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
@@ -41,7 +41,7 @@ const logout = () => {
                             <img class="w-12 h-12 left-0 top-0 absolute" src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
                         </div>
                         <div class="flex-col justify-start items-center inline-flex ">
-                            <div class="text-center text-black text-lg font-normal font-['DM Sans']">Rigoberto López
+                            <div class="text-center text-black text-lg font-normal font-['DM Sans']">Rogelio Limón
                             </div>
                             <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">SALOR850201
                             </div>
@@ -50,7 +50,7 @@ const logout = () => {
                     <!-- Señalador de ubicación -->
                     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
 
-                    <OpcionesNavAdmin />
+                    <OpcionesNavProfe />
 
                 </nav>
                 <!-- Señalador de ubicación -->
