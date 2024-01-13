@@ -38,7 +38,7 @@ watchEffect(async () => {
         <!-- Botón de Perfil -->
         <div>
             <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
-            <i class="text-white font-['DM Sans']"> Secretario </i>
+            <i class="text-white font-['DM Sans']"> Tutor </i>
         </div>
     </div>
 </div>
