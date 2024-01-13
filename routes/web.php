@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\AlumnoController;
+use App\Http\Controllers\DirectorController;
+use App\Http\Controllers\ProfeController;
+use App\Http\Controllers\SecreController;
+use App\Http\Controllers\TutorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DireccionesApiController;
 use Illuminate\Foundation\Application;
@@ -18,6 +23,26 @@ use Inertia\Inertia;
 */
 Route::controller(LoginController::class)->group(function (){
     Route::get('/is', 'Login')->name('inicioSesion');
+});
+
+Route::controller(AlumnoController::class)->group(function (){
+    Route::get('/', 'inicio')->name('alumno.inicio');
+});
+
+Route::controller(DirectorController::class)->group(function (){
+    Route::get('/', 'inicio')->name('director.inicio');
+});
+
+Route::controller(ProfeController::class)->group(function (){
+    Route::get('/', 'inicio')->name('profe.inicio');
+});
+
+Route::controller(SecreController::class)->group(function (){
+    Route::get('/', 'inicio')->name('secre.inicio');
+});
+
+Route::controller(TutorController::class)->group(function (){
+    Route::get('/', 'inicio')->name('tutor.inicio');
 });
 
 Route::controller(AdminController::class)->group(function () {
