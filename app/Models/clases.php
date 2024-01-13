@@ -12,10 +12,9 @@ class clases extends Model
     use HasFactory;
 
     protected $table = "clases";
+    protected $primaryKey = 'idClase';
 
     protected $fillable = [
-        'hora',
-        'dias',
         'idGrupo',
         'idGrado',
         'idProfesor',
@@ -56,5 +55,10 @@ class clases extends Model
     public function actividades(): BelongsToMany
     {
         return $this->belongsToMany(actividades::class, 'idClase', 'idClase');
+    }
+
+    public function asistencias(): BelongsToMany
+    {
+        return $this->belongsToMany(asistencias::class, 'idClase', 'idClase');
     }
 }

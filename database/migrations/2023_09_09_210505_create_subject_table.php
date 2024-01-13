@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id(column:'idMateria');
             $table->string(column:'materia')->unique()->nullable(false);
             $table->string(column:'descripcion')->nullable(false);
-            $table->boolean(column:'extracurricular')->nullable(false);
-            $table->softDeletes(column:'activo');
+            $table->boolean(column:'esTaller')->nullable(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('materia');
+        Schema::dropIfExists('materias');
     }
 };

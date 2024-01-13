@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tipoUsuarios', function (Blueprint $table) {
             $table->id(column:'idTipoUsuario');
             $table->String(column:'tipoUsuario')->nullable(false)->unique();
+            $table->timestamps();
         });
     }
 

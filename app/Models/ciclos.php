@@ -14,6 +14,7 @@ class ciclos extends Model
     use SoftDeletes;
 
     protected $table = "ciclos";
+    protected $primaryKey = 'idCiclo';
 
     protected $fillable = [
         'fecha_inicio',
@@ -27,14 +28,14 @@ class ciclos extends Model
         return $this->belongsTo(periodos::class, 'idCiclo', 'idCiclo');
     }
 
-    public function grupos(): BelongsTo
+    public function grupos(): BelongsToMany
     {
-        return $this->belongsTo(grupos::class, 'idCiclo', 'idCiclo');
+        return $this->belongsToMany(grupos::class, 'idCiclo', 'idCiclo');
     }
 
-    public function grados(): BelongsTo
+    public function grados(): BelongsToMany
     {
-        return $this->belongsTo(grados::class, 'idCiclo', 'idCiclo');
+        return $this->belongsToMany(grados::class, 'idCiclo', 'idCiclo');
     }
 
     public function clases(): BelongsToMany

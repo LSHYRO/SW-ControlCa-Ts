@@ -13,6 +13,7 @@ class usuarios_tiposUsuarios extends Model
     use SoftDeletes;
 
     protected $table = 'usuarios_tiposUsuarios';
+    protected $primaryKey = 'idusuarios_Tipos';
 
     protected $fillable = [
         'idUsuario',

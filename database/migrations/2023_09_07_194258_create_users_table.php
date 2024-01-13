@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id(column:'idUsuario');
             $table->string('usuario')->unique()->nullable(false);
-            $table->string('contrasenia')->nullable(false);           
+            $table->string('contrasenia')->nullable(false);
             $table->rememberToken();
-            $table->softDeletes(column:'activo');
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

@@ -15,6 +15,7 @@ class usuarios extends Model
     use SoftDeletes;
 
     protected $table = "usuarios";
+    protected $primaryKey = 'idUsuario';
 
     protected $fillable = [
         'usuario',
@@ -26,12 +27,32 @@ class usuarios extends Model
         'contrasenia'
     ];
 
-    public function personas(): BelongsTo
+    public function alumnos(): BelongsTo
     {
-        return $this->belongsTo(personas::class, 'idUsuario', 'idUsuario');
+        return $this->belongsTo(alumnos::class, 'idUsuario', 'idUsuario');
+    }
+
+    public function tutores(): BelongsTo
+    {
+        return $this->belongsTo(tutores::class, 'idUsuario', 'idUsuario');
+    }
+
+    public function personal(): BelongsTo
+    {
+        return $this->belongsTo(personal::class, 'idUsuario', 'idUsuario');
     }
 
     public function usuarios_tiposUsuarios(): BelongsToMany{
         return $this->belongsToMany(tipoUsuarios::class,'idUsuario', 'idUsuario');
+    }
+
+    public function avisos(): BelongsToMany
+    {
+        return $this->belongsToMany(avisos::class, 'idUsuario', 'idUsuario');
+    }
+
+    public function accesos(): BelongsToMany
+    {
+        return $this->belongsToMany(accesos::class, 'idUsuario', 'idUsuario');
     }
 }

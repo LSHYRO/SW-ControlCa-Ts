@@ -4,23 +4,38 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class alumnos extends Model
 {
     use HasFactory;
 
     protected $table = "alumnos";
+    protected $primaryKey = 'idAlumno';
 
     protected $fillable = [
+        'apellidoP',
+        'apellidoM',
+        'nombre',
+        'fechaNacimiento',
         'CURP',
-        'estatus',
+        'idGenero',
+        'correoElectronico',
+        'numTelefono',
+        'idTipoSangre',
+        'alergias',
+        'discapacidad',
+        'idDireccion',
+        'esForaneo',
         'idGrado',
         'idGrupo',
-        'idPersona',
         'idMateria',
         'idTutor',
+        'idUsuario',
+        'nombre_completo',
     ];
 
     public function grados(): HasOne
@@ -33,9 +48,9 @@ class alumnos extends Model
         return $this->hasOne(grupos::class, 'idGrupo', 'idGrupo');
     }
 
-    public function personas(): HasOne
+    public function usuarios(): HasOne
     {
-        return $this->hasOne(personas::class, 'idPersona', 'idPersona');
+        return $this->hasOne(alumnos::class, 'idUsuario', 'idUsuario');
     }
 
     public function materias(): HasOne
@@ -43,9 +58,9 @@ class alumnos extends Model
         return $this->hasOne(materias::class, 'idMateria', 'idMateria');
     }
 
-    public function tutores(): HasOne
+    public function tutores(): BelongsTo
     {
-        return $this->hasOne(tutores::class, 'idTutor', 'idTutor');
+        return $this->belongsTo(tutores::class, 'idTutor', 'idTutor');
     }
 
     public function clases_alumnos(): BelongsToMany
@@ -56,5 +71,25 @@ class alumnos extends Model
     public function calificaciones(): BelongsToMany
     {
         return $this->belongsToMany(calificaciones::class, 'idAlumno', 'idAlumno');
+    }
+
+    public function direcciones(): HasOne
+    {
+        return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
+    }
+
+    public function asistencias(): BelongsToMany
+    {
+        return $this->belongsToMany(asistencias::class, 'idAlumno', 'idAlumno');
+    }
+
+    public function tipoSangre(): HasOne 
+    {
+        return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
+    }
+
+    public function generos(): HasOne
+    {
+        return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }
 }

@@ -3,6 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\materias;
+use App\Models\personal;
+use App\Models\usuarios;
+use App\Models\usuarios_tiposUsuarios;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +17,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        //$this->call(EstadosSeeder::class);
+        //$this->call(MunicipiosSeeder::class);
+        $this->call(TiposUsuariosSeeder::class);
+        $this->call(Tipo_personalSeeder::class);
+        $this->call(TipoSangreSeeder::class);
+        $this->call(GeneroSeeder::class);
+        //$this->call(AsentamientosSeeder::class);
+        
+        //usuarios::factory(50)->create();
+        //usuarios_tiposUsuarios::factory(50)->create();
+        materias::factory(30)->create();
+        //personal::factory(50)->create();
     }
 }

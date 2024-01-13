@@ -6,21 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class grados extends Model
 {
     use HasFactory;
 
     protected $table = "grados";
+    protected $primaryKey = 'idGrado';
 
     protected $fillable = [
         'grado',
         'idCiclo',
     ];
 
-    public function ciclos(): HasMany
+    public function ciclos(): HasOne
     {
-        return $this->hasMany(ciclos::class, 'idCiclo', 'idCiclo');
+        return $this->hasOne(ciclos::class, 'idCiclo', 'idCiclo');
     }
 
     public function alumnos(): BelongsToMany
