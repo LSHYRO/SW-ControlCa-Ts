@@ -15,7 +15,7 @@ export default defineConfig({
                 restartOnThemeUpdate: true,
               },
               devServerUrls: {
-                local: "http://192.168.1.72:8000/",
+                local: "http://192.168.0.141:8000/",
 
               }
             //... 
@@ -34,7 +34,7 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: '192.168.1.72',
+        host: '192.168.0.141',
         port: 5173,
     }
 });
