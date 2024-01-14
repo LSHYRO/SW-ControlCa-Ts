@@ -37,4 +37,8 @@ defineProps({
         :href="route('admin.ciclosperiodos')">
         <i class="fas fa-calendar mr-2"></i>Ciclos y periodos
     </a>
+    <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+        :href="route('admin.usuarios')">
+        <i class="fa fa-user" aria-hidden="true"></i> Usuarios
+    </a>
 </template>

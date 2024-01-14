@@ -40,6 +40,7 @@ Route::controller(DirectorController::class)->group(function (){
     Route::get('/director/directivos', 'directivos')->name('director.directivos');    
     Route::get('/director/materias', 'materias')->name('director.materias');
     Route::get('/director/clases', 'clases')->name('director.clases');
+    Route::get('/director/calificaciones', 'calificaciones')->name('director.calificaciones');
     Route::get('/director/gradosgrupos', 'gradosgrupos')->name('director.gradosgrupos');
     Route::get('/director/ciclosperiodos', 'ciclosperiodos')->name('director.ciclosperiodos');
     Route::get('/director/obtenerciclos', 'obtenerciclos')->name('director.obtenerciclos');
@@ -128,6 +129,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/gradosgrupos', 'gradosgrupos')->name('admin.gradosgrupos');
     Route::get('/ciclosperiodos', 'ciclosperiodos')->name('admin.ciclosperiodos');
     Route::get('/obtenerciclos', 'obtenerciclos')->name('admin.obtenerciclos');
+    Route::get('/usuarios', 'usuarios')->name('admin.usuarios');
 
     Route::post('/profesores', 'addProfesores')->name('admin.addProfesores');
     Route::post('/directivos', 'addDirectivos')->name('admin.addDirectivos');
@@ -139,6 +141,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/ciclos', 'addCiclos')->name('admin.addCiclos');
     Route::post('/periodos', 'addPeriodos')->name('admin.addPeriodos');
     Route::post('/clases', 'addClases')->name('admin.addClases');
+    Route::post('/usuarios', 'addUsuarios')->name('admin.addUsuarios');
 
 
     Route::get('/admin/buscar/tutor', 'buscarTutor')->name('ad.busquedaTutor');
@@ -183,6 +186,10 @@ Route::controller(AdminController::class)->group(function () {
     Route::delete('/periodos/{idPeriodo}', 'eliminarPeriodos')->name('admin.eliminarPeriodos');
     Route::put('/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('admin.actualizarPeriodos');
     Route::delete('/periodos/delete/{periodosIds}', 'elimPeriodos')->name('admin.elimPeriodos');
+
+    Route::delete('/usuarios/{idUsuario}', 'eliminarUsuarios')->name('admin.eliminarUsuarios');
+    Route::put('/usuarios/{idUsuario}/edit', 'actualizarUsuarios')->name('admin.actualizarUsuarios');
+    Route::delete('/usuarios/delete/{usuariosIds}', 'elimUsuarios')->name('admin.elimUsuarios');
 
     Route::get('obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('ad.gradosXgrupos');
 });

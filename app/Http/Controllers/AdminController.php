@@ -1571,4 +1571,71 @@ class AdminController extends Controller
 
         return response()->json($periodos);
     }
+
+    public function usuarios()
+    {
+        $usuarios = usuarios::all();
+
+        return Inertia::render('Admin/Usuarios', [
+            'usuarios' => $usuarios,
+        ]);
+    }
+
+    public function addUsuarios(Request $request)
+    {
+        $usuario = new usuarios();
+        $usuario->usuario = $request->usuario;
+        $usuario->contrasenia = $request->contrasenia;
+
+        $usuario->save();
+        return redirect()->route('admin.usuarios')->with('message', "Usuario agregado correctamente: " . $usuario->usuario);
+    }
+
+    public function elimUsuarios($usuariosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $usuariosIdsArray = explode(',', $usuariosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
+
+            // Elimina los ciclos
+            usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.usuarios')->with('message', "Usuarios eliminados correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
+    }
+
+    public function eliminarUsuarios($idUsuario)
+    {
+        $usuario = usuarios::find($idUsuario);
+        $usuario->delete();
+        return redirect()->route('admin.usuarios')->with('message', "Usuario eliminado correctamente");
+    }
+
+    public function actualizarUsuarios(Request $request, $idUsuario)
+    {
+        try {
+            $usuarios = usuarios::find($idUsuario);
+            $request->validate([
+                'usuario' => 'required',
+                'contrasenia' => 'required',
+            ]);
+            $usuarios->usuario = $request->usuario;
+            $usuarios->contrasenia = $request->contrasenia;
+
+            $usuarios->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
+            dd($e);
+        }
+        return redirect()->route('admin.usuarios')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
+    }
 }

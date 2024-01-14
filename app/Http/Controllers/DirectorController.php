@@ -1258,6 +1258,30 @@ class DirectorController extends Controller{
         return response()->json($clases);
     }
 
+    public function calificaciones()
+    {
+
+        $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
+            ->get();
+
+        $clases = clases::all();
+        $grupos = grupos::all();
+        $grados = grados::all();
+        //$personal = personal::all();
+        $materias = materias::all();
+        $ciclos = ciclos::all();
+
+        return Inertia::render('Director/Calificaciones', [
+            'clases' => $clases,
+            'grupos' => $grupos,
+            'grados' => $grados,
+            'personal' => $personal,
+            'materias' => $materias,
+            'ciclos' => $ciclos,
+        ]);
+    }
+
     public function addGrados(Request $request)
     {
         $request->validate([
