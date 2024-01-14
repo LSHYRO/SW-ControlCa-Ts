@@ -1,7 +1,7 @@
 <script setup>
 // Importaciones necesarias para la funcionalidad de la vista en general
 import { ref, onMounted } from 'vue';
-import FormularioGrupo from '@/Components/admin/FormularioGrupo.vue';
+import FormularioGrupo from '@/Components/director/FormularioGrupo.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -148,7 +148,7 @@ const eliminarGrupo = (idGrupo, grupo) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarGrupos', idGrupo));
+            form.delete(route('director.eliminarGrupos', idGrupo));
         }
 
     })
@@ -174,7 +174,7 @@ const eliminarGrupos = () => {
             try {
                 const gruposS = selectedGrupos.value.map((grupo) => grupo.idGrupo);
                 const $gruposIds = gruposS.join(',');
-                await form.delete(route('admin.elimGrupos', $gruposIds));
+                await form.delete(route('director.elimGrupos', $gruposIds));
 
                 // Limpia los periodos seleccionados después de la eliminación
                 selectedGrupos.value = [];

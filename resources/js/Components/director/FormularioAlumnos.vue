@@ -283,7 +283,7 @@ const save = async () => {
     }
 
     console.log(form);
-    await form.post(route('admin.addAlumnos'), {
+    await form.post(route('director.addAlumnos'), {
         onSuccess: () => {
             close()
             nombreError.value = '';
@@ -360,7 +360,7 @@ const update = async () => {
         form.foraneo = false;
     }
     var idAlumno = document.getElementById('idAlumno2').value;
-    form.put(route('admin.actualizarAlumno', idAlumno), {
+    form.put(route('director.actualizarAlumno', idAlumno), {
         onSuccess: () => {
             close()
             nombreError.value = '';

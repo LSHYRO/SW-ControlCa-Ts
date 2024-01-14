@@ -2,7 +2,7 @@
 // Importaciones necesarias para la funcionalidad de la vista en general
 import { ref, onMounted } from 'vue';
 import FormularioTutores from './FormularioTutores.vue';
-import FormularioCiclos from '@/Components/admin/FormularioCiclos.vue';
+import FormularioCiclos from '@/Components/director/FormularioCiclos.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -137,7 +137,7 @@ const eliminarCiclo = (idCiclo, ciclo) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarCiclos', idCiclo));
+            form.delete(route('director.eliminarCiclos', idCiclo));
         }
 
     })
@@ -160,7 +160,7 @@ const eliminarCiclos = () => {
                 const ciclosS = selectedCiclos.value.map((ciclo) => ciclo.idCiclo);
                 const $ciclosIds = ciclosS.join(',');
                 console.log(ciclosS);
-                await form.delete(route('admin.elimCiclos', $ciclosIds));
+                await form.delete(route('director.elimCiclos', $ciclosIds));
 
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedCiclos.value = [];

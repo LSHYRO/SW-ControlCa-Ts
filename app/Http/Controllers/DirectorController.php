@@ -68,7 +68,7 @@ class DirectorController extends Controller{
             return $persona;
         });
 
-        return Inertia::render('Admin/Profesores', [
+        return Inertia::render('Director/Profesores', [
             'personal' => $personalConNombres, 'tipoSangre' => $tipoSangre, 'generos' => $generos
         ]);
     }
@@ -158,7 +158,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
         } catch (Exception $e) {
             dd($e);
         }
@@ -179,7 +179,7 @@ class DirectorController extends Controller{
         $usuarioTipoUsuario->delete();
         $usuario->delete();
         $direccion->delete();
-        return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
+        return redirect()->route('director.profesores')->With("message", "Profesor eliminado correctamente");
     }
 
     //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
@@ -204,7 +204,7 @@ class DirectorController extends Controller{
                 $usuarioTipoUsuario->delete();
                 $usuario->delete();
             }
-            return redirect()->route('admin.profesores')->With("message", "Profesores eliminados correctamente");
+            return redirect()->route('director.profesores')->With("message", "Profesores eliminados correctamente");
             /*
             // Elimina las materias
             materias::whereIn('idMateria', $personalIdsArray)->delete();
@@ -284,7 +284,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.profesores')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.profesores')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
         } catch (Exception $e) {
             dd($e);
         }
@@ -326,7 +326,7 @@ class DirectorController extends Controller{
             return $persona;
         });
 
-        return Inertia::render('Admin/Directivos', [
+        return Inertia::render('Director/Directivos', [
             'personal' => $personalConNombres, 
             'tipoSangre' => $tipoSangre, 
             'generos' => $generos,
@@ -429,7 +429,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
         } catch (Exception $e) {
             dd($e);
         }
@@ -453,7 +453,7 @@ class DirectorController extends Controller{
         $usuarioTipoUsuario->delete();
         $usuario->delete();
         $direccion->delete();
-        return redirect()->route('admin.directivos')->With("message", "Personal eliminado correctamente");
+        return redirect()->route('director.directivos')->With("message", "Personal eliminado correctamente");
     }
 
     public function elimDirectivos($personalIds)
@@ -480,7 +480,7 @@ class DirectorController extends Controller{
                 $usuarioTipoUsuario->delete();
                 $usuario->delete();
             }
-            return redirect()->route('admin.directivos')->With("message", "Profesores eliminados correctamente");
+            return redirect()->route('director.directivos')->With("message", "Profesores eliminados correctamente");
             /*
             // Elimina las materias
             materias::whereIn('idMateria', $personalIdsArray)->delete();
@@ -561,7 +561,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.directivos')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
         } catch (Exception $e) {
             dd($e);
         }
@@ -570,7 +570,7 @@ class DirectorController extends Controller{
     public function materias()
     {
         $materias = materias::all();
-        return Inertia::render('Admin/Materias', ['materias' => $materias]);
+        return Inertia::render('Director/Materias', ['materias' => $materias]);
     }
 
     public function clases()
@@ -587,7 +587,7 @@ class DirectorController extends Controller{
         $materias = materias::all();
         $ciclos = ciclos::all();
 
-        return Inertia::render('Admin/Clases', [
+        return Inertia::render('Director/Clases', [
             'clases' => $clases,
             'grupos' => $grupos,
             'grados' => $grados,
@@ -667,7 +667,7 @@ class DirectorController extends Controller{
         $materiasT = materias::where('esTaller', '1')->get();
         //$materias = materias::where('esTaller', 'true')->get();
         //$alumnos = alumnos::all();
-        return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos, 'talleres' => $materiasT]);
+        return Inertia::render('Director/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos, 'talleres' => $materiasT]);
     }
 
     public function obtenerGruposXGrado($idGrado)
@@ -690,7 +690,7 @@ class DirectorController extends Controller{
         $grados = grados::all();
         $grupos = grupos::all();
 
-        return Inertia::render('Admin/GradosGrupos', [
+        return Inertia::render('Director/GradosGrupos', [
             'ciclos' => $ciclos,
             'grados' => $grados,
             'grupos' => $grupos,
@@ -702,7 +702,7 @@ class DirectorController extends Controller{
         $ciclos = ciclos::all();
         $periodos = periodos::all();
 
-        return Inertia::render('Admin/CiclosPeriodos', [
+        return Inertia::render('Director/CiclosPeriodos', [
             'ciclos' => $ciclos,
             'periodos' => $periodos,
         ]);
@@ -761,9 +761,9 @@ class DirectorController extends Controller{
 
             //Guardado
             $tutor->save();
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "El tutor no se agrego correctamente", "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "El tutor no se agrego correctamente", "color" => "red"]);
             dd($e);
         }
     }
@@ -803,9 +803,9 @@ class DirectorController extends Controller{
 
             //Guardado
             $tutor->save();
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor actualizado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Tutor actualizado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "El tutor no se actualizo correctamente", "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "El tutor no se actualizo correctamente", "color" => "red"]);
             dd($e);
         }
     }
@@ -827,9 +827,9 @@ class DirectorController extends Controller{
             $usuario->delete();
             $direccion->delete();
 
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Tutor eliminado correctamente", "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->with(['message' => "Tutor eliminado correctamente", "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar al tutor: Primero debe eliminar a los tutorados" . $e, "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Error al eliminar al tutor: Primero debe eliminar a los tutorados" . $e, "color" => "red"]);
         }
     }
 
@@ -857,9 +857,9 @@ class DirectorController extends Controller{
                 $usuario->delete();
                 $direccion->delete();
             }
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Tutores eliminados correctamente", "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->with(['message' => "Tutores eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar a los tutor: Primero debe eliminar a los tutorados " . $e, "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Error al eliminar a los tutor: Primero debe eliminar a los tutorados " . $e, "color" => "red"]);
             // Manejo de errores            
             dd("Controller error");
             return response()->json([
@@ -969,10 +969,10 @@ class DirectorController extends Controller{
 
             $alumno->save();
 
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno " . $e, "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Error al agregar al alumno " . $e, "color" => "red"]);
         }
     }
 
@@ -1032,9 +1032,9 @@ class DirectorController extends Controller{
             }
 
             $alumno->save();
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->with(['message' => "Alumno actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno " . $e, "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno " . $e, "color" => "red"]);
         }
     }
 
@@ -1054,9 +1054,9 @@ class DirectorController extends Controller{
             $usuario->delete();
             $direccion->delete();
 
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno eliminado correctamente", "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->with(['message' => "Alumno eliminado correctamente", "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar al alumno " . $e, "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Error al eliminar al alumno " . $e, "color" => "red"]);
         }
     }
 
@@ -1085,9 +1085,9 @@ class DirectorController extends Controller{
             }
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumnos eliminados correctamente", "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->with(['message' => "Alumnos eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar a los alumnos " . $e, "color" => "red"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Error al eliminar a los alumnos " . $e, "color" => "red"]);
         }
     }
 
@@ -1101,14 +1101,14 @@ class DirectorController extends Controller{
         $materia->esTaller = $request->esTaller;
 
         $materia->save();
-        return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
+        return redirect()->route('director.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
     }
 
     public function eliminarMaterias($idMateria)
     {
         $materia = materias::find($idMateria);
         $materia->delete();
-        return redirect()->route('admin.materias')->with('message', "Materia eliminada correctamente");
+        return redirect()->route('director.materias')->with('message', "Materia eliminada correctamente");
     }
 
     public function elimMaterias($materiasIds)
@@ -1124,7 +1124,7 @@ class DirectorController extends Controller{
             materias::whereIn('idMateria', $materiasIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente");
+            return redirect()->route('director.materias')->with('message', "Materias eliminadas correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -1146,7 +1146,7 @@ class DirectorController extends Controller{
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.materias')->with('message', "Materia actualizada correctamente: " . $materias->materia);;
+        return redirect()->route('director.materias')->with('message', "Materia actualizada correctamente: " . $materias->materia);;
     }
 
     public function getMaterias($searchTerm)
@@ -1181,7 +1181,7 @@ class DirectorController extends Controller{
             $clase->save();
         } catch (Exception $e) {
         }
-        return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
+        return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
         //return redirect()->route('admin.clases');
     }
 
@@ -1189,7 +1189,7 @@ class DirectorController extends Controller{
     {
         $clase = clases::find($idClase);
         $clase->delete();
-        return redirect()->route('admin.clases')->with('message', "Clase eliminada correctamente");
+        return redirect()->route('director.clases')->with('message', "Clase eliminada correctamente");
     }
 
     public function elimClases($clasesIds)
@@ -1205,7 +1205,7 @@ class DirectorController extends Controller{
             clases::whereIn('idClase', $clasesIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.clases')->with('message', "Clases eliminadas correctamente");
+            return redirect()->route('director.clases')->with('message', "Clases eliminadas correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -1241,7 +1241,7 @@ class DirectorController extends Controller{
         }
 
         //$clases->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.clases')->with('message', "Clase actualizada correctamente");
+        return redirect()->route('director.clases')->with('message', "Clase actualizada correctamente");
     }
 
     public function getClases($searchTerm)
@@ -1269,14 +1269,14 @@ class DirectorController extends Controller{
         $grado->idCiclo = $request->ciclos;
 
         $grado->save();
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
+        return redirect()->route('director.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
     }
 
     public function eliminarGrados($idGrado)
     {
         $grado = grados::find($idGrado);
         $grado->delete();
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grado eliminado correctamente");
+        return redirect()->route('director.gradosgrupos')->with('message', "Grado eliminado correctamente");
     }
 
     public function elimGrados($gradosIds)
@@ -1293,7 +1293,7 @@ class DirectorController extends Controller{
 
             // Redirige a la página deseada después de la eliminación
 
-            return redirect()->route('admin.gradosgrupos')->with('message', "Grados eliminados correctamente");
+            return redirect()->route('director.gradosgrupos')->with('message', "Grados eliminados correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
             dd($e);
@@ -1321,7 +1321,7 @@ class DirectorController extends Controller{
         }
 
         //$grados->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grado actualizado correctamente: " . $grados->grado);;
+        return redirect()->route('director.gradosgrupos')->with('message', "Grado actualizado correctamente: " . $grados->grado);;
     }
 
     public function getGrados($searchTerm)
@@ -1357,14 +1357,14 @@ class DirectorController extends Controller{
         $grupo->idCiclo = $request->ciclos;
 
         $grupo->save();
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
+        return redirect()->route('director.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
     }
 
     public function eliminarGrupos($idGrupo)
     {
         $grupo = grupos::find($idGrupo);
         $grupo->delete();
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grupo eliminada correctamente");
+        return redirect()->route('director.gradosgrupos')->with('message', "Grupo eliminada correctamente");
     }
 
     public function elimGrupos($gruposIds)
@@ -1380,7 +1380,7 @@ class DirectorController extends Controller{
             grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.gradosgrupos')->with('message', "Grupos eliminadas correctamente");
+            return redirect()->route('director.gradosgrupos')->with('message', "Grupos eliminadas correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -1404,7 +1404,7 @@ class DirectorController extends Controller{
             $grupos->fill($request->input())->saveOrFail();
         } catch (Exception $e) {
         }
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grupo actualizado correctamente: " . $grupos->grupo);;
+        return redirect()->route('director.gradosgrupos')->with('message', "Grupo actualizado correctamente: " . $grupos->grupo);;
     }
 
     public function addCiclos(Request $request)
@@ -1415,14 +1415,14 @@ class DirectorController extends Controller{
         $ciclo->descripcionCiclo = $request->descripcionCiclo;
 
         $ciclo->save();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->ciclo);
+        return redirect()->route('director.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->ciclo);
     }
 
     public function eliminarCiclos($idCiclo)
     {
         $ciclo = ciclos::find($idCiclo);
         $ciclo->delete();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Materia eliminada correctamente");
+        return redirect()->route('director.ciclosperiodos')->with('message', "Materia eliminada correctamente");
     }
 
     public function elimCiclos($ciclosIds)
@@ -1438,7 +1438,7 @@ class DirectorController extends Controller{
             ciclos::whereIn('idCiclo', $ciclosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclos eliminadas correctamente");
+            return redirect()->route('director.ciclosperiodos')->with('message', "Ciclos eliminadas correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -1465,7 +1465,7 @@ class DirectorController extends Controller{
         } catch (Exception $e) {
             dd($e);
         }
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo);;
+        return redirect()->route('director.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo);;
     }
 
     public function getCiclos($searchTerm)
@@ -1493,14 +1493,14 @@ class DirectorController extends Controller{
         $periodo->idCiclo = $request->ciclos;
 
         $periodo->save();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo agregado correctamente: " . $periodo->periodo);
+        return redirect()->route('director.ciclosperiodos')->with('message', "Periodo agregado correctamente: " . $periodo->periodo);
     }
 
     public function eliminarPeriodos($idPeriodo)
     {
         $periodo = periodos::find($idPeriodo);
         $periodo->delete();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo eliminado correctamente");
+        return redirect()->route('director.ciclosperiodos')->with('message', "Periodo eliminado correctamente");
     }
 
     public function elimPeriodos($periodosIds)
@@ -1516,7 +1516,7 @@ class DirectorController extends Controller{
             periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.ciclosperiodos')->with('message', "Periodos eliminados correctamente");
+            return redirect()->route('director.ciclosperiodos')->with('message', "Periodos eliminados correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
             dd($e);
@@ -1545,7 +1545,7 @@ class DirectorController extends Controller{
         } catch (Exception $e) {
             dd($e);
         }
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo actualizado correctamente: " . $periodos->periodo);;
+        return redirect()->route('director.ciclosperiodos')->with('message', "Periodo actualizado correctamente: " . $periodos->periodo);;
     }
 
     public function getPeriodos($searchTerm)

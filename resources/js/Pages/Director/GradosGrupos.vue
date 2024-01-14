@@ -1,9 +1,9 @@
 <script setup>
  // Importaciones necesarias para la funcionalidad de la vista en general
  import { onMounted, ref } from 'vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import Grados from '@/Components/admin/Grados.vue';
-import Grupos from '@/Components/admin/Grupos.vue';
+import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import Grados from '@/Components/director/Grados.vue';
+import Grupos from '@/Components/director/Grupos.vue';
 
 const props = defineProps({
     grados: { type: Object },
@@ -45,7 +45,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Grados y Grupos">
+    <DirectorLayout title="Grados y Grupos">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <div class="flex items-center justify-center w-full">
                 <div class="rounded-3xl border bg-slate-200 flex justify-between w-1/6">
@@ -66,5 +66,5 @@ onMounted(() => {
                 <Grupos :grupos="props.grupos" :ciclos="props.ciclos"></Grupos>
             </div>
         </div>
-    </AdminLayout>
+    </DirectorLayout>
 </template>

@@ -2,8 +2,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Importaciones necesarias para la funcionalidad de la vista en general
 import { ref, onMounted } from 'vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioMateria from '@/Components/admin/FormularioMateria.vue';
+import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import FormularioMateria from '@/Components/director/FormularioMateria.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -167,7 +167,7 @@ const eliminarMateria = (idMateria, materia) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarMaterias', idMateria));
+            form.delete(route('director.eliminarMaterias', idMateria));
         }
 
     })
@@ -191,7 +191,7 @@ const eliminarMaterias = () => {
             try {
                 const materiasS = selectedMaterias.value.map((materia) => materia.idMateria);
                 const $materiasIds = materiasS.join(',');
-                await form.delete(route('admin.elimMaterias', $materiasIds));
+                await form.delete(route('director.elimMaterias', $materiasIds));
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedMaterias.value = [];
             } catch (error) {
@@ -240,7 +240,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="materias">
+    <DirectorLayout title="materias">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Materias</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
@@ -317,7 +317,7 @@ onMounted(() => {
             :title="'Añadir materia'" :op="'1'" :modal="'modalCreate'"></formulario-materia>
         <formulario-materia :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar materia'" :op="'2'" :modal="'modalEdit'" :materias="mater"></formulario-materia>
-    </AdminLayout>
+    </DirectorLayout>
 </template>
 <style>
 .paginacion-sm {

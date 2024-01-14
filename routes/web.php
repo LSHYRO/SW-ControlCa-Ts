@@ -31,6 +31,7 @@ Route::controller(AlumnoController::class)->group(function (){
 
 Route::controller(DirectorController::class)->group(function (){
     Route::get('/director', 'inicio')->name('director.inicio');
+    
     Route::get('/director/profesores', 'profesores')->name('director.profesores');
 
     Route::get('/director/tutores_alumnos', 'tutores_alumnos')->name('director.tutoresAlum');
@@ -98,7 +99,7 @@ Route::controller(DirectorController::class)->group(function (){
     Route::delete('/director/periodos/delete/{periodosIds}', 'elimPeriodos')->name('director.elimPeriodos');
 
     Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
-    
+   
 });
 
 Route::controller(ProfeController::class)->group(function (){

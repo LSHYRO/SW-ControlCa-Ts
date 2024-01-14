@@ -187,7 +187,7 @@ const eliminarAlumno = (idAlumno, alumno) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarAlumno', idAlumno));
+            form.delete(route('director.eliminarAlumno', idAlumno));
         }
 
     })
@@ -212,7 +212,7 @@ const eliminarAlumno = (idAlumno, alumno) => {
             try {
                 const alumnosE = alumnosSeleccionados.value.map((alumno) => alumno.idAlumno);
                 const $alumnosIds = alumnosE.join(',');
-                await form.delete(route('admin.elimAlumnos', $alumnosIds));
+                await form.delete(route('director.elimAlumnos', $alumnosIds));
                 // Limpia las materias seleccionadas después de la eliminación
                 alumnosSeleccionados.value = [];
             } catch (error) {

@@ -226,7 +226,7 @@ const save = async () => {
         return;
     }
 
-    form.post(route('admin.addProfesores'), {
+    form.post(route('director.addProfesores'), {
         onSuccess: () => {
             close()
             curpError.value = '';
@@ -291,7 +291,7 @@ const update = async () => {
     }
 
     var idPersonal = document.getElementById('idPersonal2').value;
-    form.put(route('admin.actualizarProfesores', idPersonal), {
+    form.put(route('director.actualizarProfesores', idPersonal), {
         onSuccess: () => {
             close()
             curpError.value = '';

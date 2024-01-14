@@ -88,7 +88,7 @@ const save = () => {
         return;
     }
 
-    form.post(route('admin.addPeriodos'), {
+    form.post(route('director.addPeriodos'), {
         onSuccess: () => {
             close()
             periodoError.value = '';
@@ -113,7 +113,7 @@ const update = () => {
     }
 
     var idPeriodo = document.getElementById('idPeriodo2').value;
-    form.put(route('admin.actualizarPeriodos', idPeriodo), {
+    form.put(route('director.actualizarPeriodos', idPeriodo), {
         onSuccess: () => {
             close()
             periodoError.value = '';

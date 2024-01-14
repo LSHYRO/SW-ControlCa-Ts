@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import Ciclos from '@/Components/admin/Ciclos.vue';
-import Periodos from '@/Components/admin/Periodos.vue';
+import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import Ciclos from '@/Components/director/Ciclos.vue';
+import Periodos from '@/Components/director/Periodos.vue';
 
 const props = defineProps({
     ciclos: { type: Object },
@@ -40,7 +40,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Ciclos y Periodos">
+    <DirectorLayout title="Ciclos y Periodos">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <div class="flex items-center justify-center w-full">
                 <div class="rounded-3xl border bg-slate-200 flex justify-between w-1/6">
@@ -61,5 +61,5 @@ onMounted(() => {
                 <Periodos :periodos="props.periodos" :ciclos="props.ciclos"></Periodos>
             </div>
         </div>
-    </AdminLayout>
+    </DirectorLayout>
 </template>

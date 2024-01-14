@@ -85,7 +85,7 @@ const save = () => {
         form.esTaller = false;
     }
 
-    form.post(route('admin.addMaterias'), {
+    form.post(route('director.addMaterias'), {
         onSuccess: () => {
             close()
             nombreMateriaError.value = '';
@@ -111,7 +111,7 @@ const update = () => {
     console.log(idMateria);
     console.log(document.getElementById('materia2').value);
     console.log(materia2);
-    form.put(route('admin.actualizarMaterias', idMateria), {
+    form.put(route('director.actualizarMaterias', idMateria), {
         onSuccess: () => {
             close()
             nombreMateriaError.value = '';

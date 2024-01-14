@@ -177,7 +177,7 @@ const eliminarTutor = (idTutor, tutor) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarTutor', idTutor));
+            form.delete(route('director.eliminarTutor', idTutor));
         }
 
     })
@@ -202,7 +202,7 @@ const eliminarTutor = (idTutor, tutor) => {
             try {
                 const tutoresE = tutoresSeleccionados.value.map((tutor) => tutor.idTutor);
                 const $tutoresIds = tutoresE.join(',');
-                await form.delete(route('admin.elimTutores', $tutoresIds));
+                await form.delete(route('director.elimTutores', $tutoresIds));
                 // Limpia las materias seleccionadas después de la eliminación
                 tutoresSeleccionados.value = [];
             } catch (error) {

@@ -2,7 +2,7 @@
 // Importaciones necesarias para la funcionalidad de la vista en general
 import { ref, onMounted } from 'vue';
 import FormularioTutores from './FormularioTutores.vue';
-import FormularioPeriodos from '@/Components/admin/FormularioPeriodos.vue';
+import FormularioPeriodos from '@/Components/director/FormularioPeriodos.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -147,7 +147,7 @@ const eliminarPeriodo = (idPeriodo, periodo) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarPeriodos', idPeriodo));
+            form.delete(route('director.eliminarPeriodos', idPeriodo));
         }
 
     })
@@ -173,7 +173,7 @@ const eliminarPeriodos = () => {
             try {
                 const periodosS = selectedPeriodos.value.map((periodo) => periodo.idPeriodo);
                 const $periodosIds = periodosS.join(',');
-                await form.delete(route('admin.elimPeriodos', $periodosIds));
+                await form.delete(route('director.elimPeriodos', $periodosIds));
 
                 // Limpia los periodos seleccionados después de la eliminación
                 selectedPeriodos.value = [];

@@ -222,7 +222,7 @@ const save = async () => {
         return;
     }
 
-    form.post(route('admin.addDirectivos'), {
+    form.post(route('director.addDirectivos'), {
         onSuccess: () => {
             close()
             curpError.value = '';
@@ -289,7 +289,7 @@ const update = async () => {
     }
 
     var idPersonal = document.getElementById('idPersonal2').value;
-    form.put(route('admin.actualizarDirectivo', idPersonal), {
+    form.put(route('director.actualizarDirectivo', idPersonal), {
         onSuccess: () => {
             close()
             curpError.value = '';

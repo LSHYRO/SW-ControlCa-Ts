@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, getCurrentInstance, onMounted } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioClases from '@/Components/admin/FormularioClases.vue';
-import MenuOpciones from '@/Components/admin/MenuOpciones.vue';
+import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import FormularioClases from '@/Components/director/FormularioClases.vue';
+import MenuOpcionesDirec from '@/Components/director/MenuOpcionesDirec.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -191,7 +191,7 @@ const eliminarClase = (idClase, clase) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarClases', idClase));
+            form.delete(route('director.eliminarClases', idClase));
         }
 
     })
@@ -214,7 +214,7 @@ const eliminarClases = () => {
                 const clasesS = selectedClases.value.map((clase) => clase.idClase);
                 const $clasesIds = clasesS.join(',');
                 console.log(clasesS);
-                await form.delete(route('admin.elimClases', $clasesIds));
+                await form.delete(route('director.elimClases', $clasesIds));
 
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedClases.value = [];
@@ -272,7 +272,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="clases">
+    <DirectorLayout title="clases">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
@@ -359,5 +359,5 @@ onMounted(() => {
             :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :clase="claseE" :grados="props.grados" :grupos="props.grupos"
             :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
 
-    </AdminLayout>
+    </DirectorLayout>
 </template>

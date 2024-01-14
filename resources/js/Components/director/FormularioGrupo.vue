@@ -78,7 +78,7 @@ const save = () => {
         return;
     }
 
-    form.post(route('admin.addGrupos'), {
+    form.post(route('director.addGrupos'), {
         onSuccess: () => {
             close()
             grupoError.value = '';
@@ -101,7 +101,7 @@ const update = () => {
     var idGrupo = document.getElementById('idGrupo2').value;
     console.log(idGrupo);
     console.log(document.getElementById('grupo2').value);
-    form.put(route('admin.actualizarGrupos', idGrupo), {
+    form.put(route('director.actualizarGrupos', idGrupo), {
         onSuccess: () => {
             close()
             grupoError.value = '';

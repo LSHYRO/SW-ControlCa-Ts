@@ -81,7 +81,7 @@ const save = () => {
         return;
     }
 
-    form.post(route('admin.addGrados'), {
+    form.post(route('director.addGrados'), {
         onSuccess: () => {
             close()
             gradoError.value = '';
@@ -104,7 +104,7 @@ const update = () => {
     var idGrado = document.getElementById('idGrado2').value;
     console.log(idGrado);
     console.log(document.getElementById('grado2').value);
-    form.put(route('admin.actualizarGrados', idGrado), {
+    form.put(route('director.actualizarGrados', idGrado), {
         onSuccess: () => {
             close()
             gradoError.value = '';

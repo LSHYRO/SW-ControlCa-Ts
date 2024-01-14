@@ -83,7 +83,7 @@ const save = () => {
         return;
     }
 
-    form.post(route('admin.addCiclos'), {
+    form.post(route('director.addCiclos'), {
         onSuccess: () => {
             close()
             fecha_inicioError.value = '';
@@ -107,7 +107,7 @@ const update = () => {
     }
 
     var idCiclo = document.getElementById('idCiclo2').value;
-    form.put(route('admin.actualizarCiclos', idCiclo), {
+    form.put(route('director.actualizarCiclos', idCiclo), {
         onSuccess: () => {
             close()
             fecha_inicioError.value = '';

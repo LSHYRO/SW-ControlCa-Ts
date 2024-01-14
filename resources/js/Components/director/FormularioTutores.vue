@@ -181,7 +181,7 @@ const save = async () => {
         return;
     }
 
-    form.post(route('admin.addTutores'), {
+    form.post(route('director.addTutores'), {
         onSuccess: () => {
             close()
             nombreError.value = '';
@@ -233,7 +233,7 @@ const update = async () => {
     }
 
     var idTutor = document.getElementById('idTutor2').value;
-    form.put(route('admin.actualizarTutor', idTutor), {
+    form.put(route('director.actualizarTutor', idTutor), {
         onSuccess: () => {
             close()
             nombreError.value = '';

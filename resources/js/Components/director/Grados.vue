@@ -1,7 +1,7 @@
 <script setup>
 // Importaciones necesarias para la funcionalidad de la vista en general
 import { ref, onMounted } from 'vue';
-import FormularioGrado from '@/Components/admin/FormularioGrado.vue';
+import FormularioGrado from '@/Components/director/FormularioGrado.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -150,7 +150,7 @@ const eliminarGrado = (idGrado, grado) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarGrados', idGrado));
+            form.delete(route('director.eliminarGrados', idGrado));
         }
 
     })
@@ -176,7 +176,7 @@ const eliminarGrados = () => {
                 const $gradosIds = gradosS.join(',');
                 console.log(gradosS);
                 console.log($gradosIds);
-                await form.delete(route('admin.elimGrados', $gradosIds));
+                await form.delete(route('director.elimGrados', $gradosIds));
 
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedGrados.value = [];

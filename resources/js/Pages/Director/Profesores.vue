@@ -2,8 +2,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Importaciones necesarias para la vista 
 import { ref, onMounted } from 'vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import FormularioProf from '@/Components/admin/FormularioProf.vue';
+import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import FormularioProf from '@/Components/director/FormularioProf.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -152,7 +152,7 @@ const eliminarProfesor = (idPersonal, nombre) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarProfesores', idPersonal));
+            form.delete(route('director.eliminarProfesores', idPersonal));
         }
 
     })
@@ -197,7 +197,7 @@ const eliminarProfesores = () => {
             try {
                 const personalS = selectedPersonal.value.map((personal) => personal.idPersonal);
                 const $personalIds = personalS.join(',');
-                await form.delete(route('admin.elimProfesores', $personalIds));
+                await form.delete(route('director.elimProfesores', $personalIds));
                 const botonEliminar = document.getElementById("eliminarPBtn");
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedPersonal.value = [];
@@ -249,7 +249,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="profesores">
+    <DirectorLayout title="profesores">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Docentes</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
@@ -373,5 +373,5 @@ onMounted(() => {
         <formulario-prof :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person" :tipoSangre="props.tipoSangre"
             :generos="props.generos"></formulario-prof>
-    </AdminLayout>
+    </DirectorLayout>
 </template>

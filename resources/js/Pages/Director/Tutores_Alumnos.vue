@@ -2,9 +2,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
  // Importaciones necesarias para la funcionalidad de la vista en general
 import { onMounted, ref } from 'vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import Tutores from '@/Components/admin/Tutores.vue';
-import Alumnos from '@/Components/admin/Alumnos.vue';
+import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import Tutores from '@/Components/director/Tutores.vue';
+import Alumnos from '@/Components/director/Alumnos.vue';
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Tutores y alumnos">
+    <DirectorLayout title="Tutores y alumnos">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <div class="flex items-center justify-center w-full">
                 <div class="rounded-3xl border bg-slate-200 flex justify-between w-1/6">
@@ -75,5 +75,5 @@ onMounted(() => {
                 <Alumnos :alumnos="props.alumnos" :talleres="props.talleres" :generos="props.generos" :grados="props.grados"  :tipoSangre="props.tipoSangre"> </Alumnos>                
             </div>
         </div>
-    </AdminLayout>
+    </DirectorLayout>
 </template>

@@ -106,7 +106,7 @@ const save = () => {
     console.log("Llame al metodo");
     try {
         console.log(form);
-        form.post(route('admin.addClases'), {
+        form.post(route('director.addClases'), {
             onSuccess: () => {
                 close()
                 gradoError.value = '';
@@ -137,7 +137,7 @@ const update = () => {
         return;
     }
     var idClase = document.getElementById('idClase2').value;
-    form.put(route('admin.actualizarClases', idClase), { //Está mal la ruta
+    form.put(route('director.actualizarClases', idClase), { //Está mal la ruta
         onSuccess: () => {
             close()
             gradoError.value = '';
