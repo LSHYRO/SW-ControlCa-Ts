@@ -22,11 +22,11 @@ class usuarios extends Model
         'contrasenia',
         'idTipoUsuario',
     ];
-    
+    /*
     protected $hidden = [
         'contrasenia'
     ];
-
+*/
     public function alumnos(): BelongsTo
     {
         return $this->belongsTo(alumnos::class, 'idUsuario', 'idUsuario');

@@ -1,7 +1,7 @@
 <script setup>
 // Importaciones necesarias para la vista 
-import { ref, onMounted } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { ref, onMounted } from 'vue';
 import FormularioUsuarios from '@/Components/admin/FormularioUsuarios.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
@@ -44,6 +44,7 @@ const form = useForm({});
 
 const abrirUsuarios = ($usuarioss) => {
     usuariosE = $usuarioss;
+    console.log(usuariosE);
     mostrarModalE.value = true;
 }
 
@@ -59,7 +60,7 @@ const columnsUsuario = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="ciclo-checkbox" data-id="${row.idUsuario}" ">`;
+            return `<input type="checkbox" class="usuario-checkbox" data-id="${row.idUsuario}" ">`;
         }
     },
     {
@@ -177,7 +178,7 @@ onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('usuariosTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        console.log(checkbox);
+        //console.log(checkbox);
         if (checkbox.classList.contains('usuario-checkbox')) {
             const usuarioId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
@@ -226,61 +227,68 @@ const optionsUsuario = {
 </script>
 
 <template>
-    <div class="mt-8 bg-white p-4 shadow rounded-lg">
-        <h2 class="text-black text-2xl text-center font-semibold p-5">Usuarios</h2>
-        <div class="my-1"></div> <!-- Espacio de separación -->
-        <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
-        <!-- flash message start -->
-        <div v-if="$page.props.flash.message"
-            class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-            role="alert">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
+    <AdminLayout title="clases">
+        <div class="mt-8 bg-white p-4 shadow rounded-lg">
+            <h2 class="text-black text-2xl text-center font-semibold p-5">Usuarios</h2>
+            <div class="my-1"></div> <!-- Espacio de separación -->
+            <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+            <!-- flash message start -->
+            <div v-if="$page.props.flash.message"
+                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+                role="alert">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div>
+            <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+                <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
+                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-plus mr-2"></i>Agregar Usuario
+                </button>
+                <button id="eliminarUBtn" disabled="true"
+                    class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    @click="eliminarUsuarios">
+                    <i class="fa fa-trash mr-2"></i>Borrar Usuario(s)
+                </button>
+                <!--</div>-->
+            </div>
+            <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
+            <!-- Línea con gradiente -->
+            <div class="overflow-x-auto">
+                <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
+                    id="usuariosTablaId" :columns="columnsUsuario" :data="usuarios" :options="optionsUsuario">
+                    <thead>
+                        <tr class="text-sm leading-normal">
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                #
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Usuario
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Contrasenia
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                        </tr>
+                    </thead>
+                </DataTable>
+            </div>
         </div>
-        <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-            <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
-            <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                <i class="fa fa-plus mr-2"></i>Agregar Usuario
-            </button>
-            <button id="eliminarUBtn" disabled="true"
-                class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded" @click="eliminarUsuarios">
-                <i class="fa fa-trash mr-2"></i>Borrar Usuario(s)
-            </button>
-            <!--</div>-->
-        </div>
-        <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
-        <!-- Línea con gradiente -->
-        <div class="overflow-x-auto">
-            <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column" id="usuariosTablaId"
-                :columns="columnsUsuario" :data="usuarios" :options="optionsUsuario">
-                <thead>
-                    <tr class="text-sm leading-normal">
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            #
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Usuario
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Contrasenia
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                        </th>
-                    </tr>
-                </thead>
-            </DataTable>
-        </div>
-    </div>
+        <formulario-usuarios :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'"></formulario-usuarios>
+        <formulario-usuarios :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+            :title="'Editar usuario'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE"></formulario-usuarios>
+    </AdminLayout>
 </template>
