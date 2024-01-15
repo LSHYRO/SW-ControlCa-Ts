@@ -952,7 +952,7 @@ class DirectorController extends Controller{
             $alumno->esForaneo = $request->foraneo;
             $alumno->idGrado = $request->grado["idGrado"];
             $alumno->idGrupo = $request->grupo;
-            $alumno->idMateria = $request->taller;
+            $alumno->idMateria = $request->taller["idMateria"];
             $alumno->idTutor = $request->tutor["idTutor"];
             $alumno->idUsuario = $usuario->idUsuario;
 
@@ -1017,7 +1017,7 @@ class DirectorController extends Controller{
             $alumno->esForaneo = $request->foraneo;
             $alumno->idGrado = $request->grado["idGrado"];
             $alumno->idGrupo = $request->grupo;
-            $alumno->idMateria = $request->taller;
+            $alumno->idMateria = $request->taller["idMateria"];
             $alumno->idTutor = $request->tutor["idTutor"];
 
             $nombreCompleto = $alumno->nombre . ' ' . $alumno->apellidoP . ' ' . $alumno->apellidoM;

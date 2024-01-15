@@ -963,7 +963,7 @@ class AdminController extends Controller
             $alumno->esForaneo = $request->foraneo;
             $alumno->idGrado = $request->grado["idGrado"];
             $alumno->idGrupo = $request->grupo;
-            $alumno->idMateria = $request->taller;
+            $alumno->idMateria = $request->taller["idMateria"];
             $alumno->idTutor = $request->tutor["idTutor"];
             $alumno->idUsuario = $usuario->idUsuario;
 
@@ -979,7 +979,6 @@ class AdminController extends Controller
             }
 
             $alumno->save();
-
             return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
@@ -1028,7 +1027,7 @@ class AdminController extends Controller
             $alumno->esForaneo = $request->foraneo;
             $alumno->idGrado = $request->grado["idGrado"];
             $alumno->idGrupo = $request->grupo;
-            $alumno->idMateria = $request->taller;
+            $alumno->idMateria = $request->taller["idMateria"];
             $alumno->idTutor = $request->tutor["idTutor"];
 
             $nombreCompleto = $alumno->nombre . ' ' . $alumno->apellidoP . ' ' . $alumno->apellidoM;
