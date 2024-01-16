@@ -100,11 +100,17 @@ Route::controller(DirectorController::class)->group(function (){
     Route::delete('/director/periodos/delete/{periodosIds}', 'elimPeriodos')->name('director.elimPeriodos');
 
     Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
+    Route::get('/director/obtener/datos/clases/materiasxguposxgrados/{idClase}', 'obtenerClasesXMateriaGradoGrupo')->name('director.clasesXmateriasXgradosXgrupos');
    
 });
 
 Route::controller(ProfeController::class)->group(function (){
-    Route::get('/pofesor', 'inicio')->name('profe.inicio');
+    Route::get('/profesor', 'inicio')->name('profe.inicio');
+    Route::get('/profesor', 'actividades')->name('profe.actividades');
+
+    Route::delete('/profesor/actividades/{idActividad}', 'eliminarActividades')->name('profe.eliminarActividades');
+    Route::put('/profesor/actividades/{idActividad}/edit', 'actualizarActividades')->name('profe.actualizarActividades');
+    Route::delete('/profesor/actividades/delete/{actividadesIds}', 'elimPeriodos')->name('profe.elimActividades');
 });
 
 Route::controller(SecreController::class)->group(function (){

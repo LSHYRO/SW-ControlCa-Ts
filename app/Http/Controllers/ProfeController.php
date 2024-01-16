@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\personas;
+use App\Models\actividades;
+use App\Models\tiposActividades;
 use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
@@ -38,6 +40,15 @@ class ProfeController extends Controller{
     public function inicio()
     {
         return Inertia::render('Profe/Inicio');
+    }
+
+    public function actividades()
+    {
+        $actividades = actividades::all();
+        $clases = clases::all();
+        $periodos = periodos::all();
+        $tiposActividades = tiposActividades();
+        return Inertia::render('Admin/Actividades', ['actividades' => $actividades]);
     }
     
 }

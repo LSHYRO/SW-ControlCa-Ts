@@ -112,7 +112,7 @@ const botones = [{
 ];
 
  // Funciones para el funcionamiento del modal
- const abrirE = ($directivo) => {
+const abrirE = ($directivo) => {
     person = $directivo;
     mostrarModalE.value = true;
 }

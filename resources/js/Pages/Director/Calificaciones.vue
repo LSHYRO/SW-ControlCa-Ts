@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, getCurrentInstance, onMounted } from 'vue';
+import { ref, computed, getCurrentInstance, onMounted, watch } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import DirectorLayout from '@/Layouts/DirectorLayout.vue';
 import Swal from 'sweetalert2';
@@ -25,7 +25,36 @@ DataTable.use(Select);
 
 // Variables que recibe la vista 
 const props = defineProps({
-    materias: { type: Object },
+    grados: {
+        type: Object,
+        default: () => ({}),
+    },
+    grupos: {
+        type: Object,
+        default: () => ({}),
+    },
+    materias: {
+        type: Object,
+        default: () => ({}),
+    },
+    clases: {
+        type: Object,
+        default: () => ({}),
+    },
+});
+
+const form = useForm({
+    idClase: props.clases.idClase,
+    grados: props.clases.idGrado,
+    grupos: props.clases.idGrupo,
+    personal: props.clases.idPersonal,
+    materias: props.clases.idMateria,
+    ciclos: props.clases.idCiclo,//Le agregué la s
+
+    idMateria: props.materias.idMateria,
+    materia: props.materias.materia,
+
+
 });
 
 const botones = [{
@@ -54,6 +83,21 @@ const botones = [{
 },
 ];
 
+const getMateria = (idMateria) => {
+    const materia = props.materias.find(m => m.idMateria === idMateria);
+    return materia ? materia.materia : 'N/A';
+};
+
+const getGrado = (idGrado) => {
+    const grado = props.grados.find(g => g.idGrado === idGrado);
+    return grado ? grado.grado : 'N/A';
+};
+
+const getGrupo = (idGrupo) => {
+    const grupo = props.grupos.find(g => g.idGrupo === idGrupo);
+    return grupo ? grupo.grupo : 'N/A';
+};
+
 </script>
 
 <template>
@@ -74,16 +118,20 @@ const botones = [{
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
-                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-plus mr-2"></i>Agregar Materia
-                </button>
-                <button id="eliminarMBtn" disabled="true"
-                    class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarMaterias">
-                    <i class="fa fa-trash mr-2"></i>Borrar Materia(s)
-                </button>
-                <!--</div>-->
+                <div class="sm:col-span-3">
+                    <label for="clase" class="block text-sm font-medium leading-6 text-gray-900">Clase</label>
+                    <div class="mt-2">
+                        <select name="clase" :id="'clase' + op" v-model="form.idClase"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option value="" disabled selected>Selecciona una materia</option>
+                            <option v-for="clase in clases" :key="clase.idClase" :value="clase.idClase">
+                                {{ console.log(clase) }}
+                                {{ `${getMateria(clase.idMateria)} - Grado: ${getGrado(clase.idGrado)} - Grupo: ${getGrupo(clase.idGrupo)}` }}
+                            </option>
+                        </select>
+                    </div>
+                    <div v-if="materiaError != ''" class="text-red-500 text-xs">{{ materiaError }}</div>
+                </div>
             </div>
             <div>
                 <DataTable class="w-full table-auto text-sm nowrap display stripe compact cell-border order-column"
@@ -108,7 +156,7 @@ const botones = [{
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Materia
+                                Alumno
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
