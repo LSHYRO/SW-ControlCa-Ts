@@ -24,17 +24,19 @@ class LoginController extends Controller
                     return redirect()->route('admin.inicio');
                     break;
                 case "director":
-                    return "Aqui va el route director.inicio";
+                    return redirect()->route('director.inicio');
                     break;
                 case "directivo":
+                    return redirect()->route('secre.inicio');
                     break;
                 case "profesor":
-                    break;
-                case "profesor":
+                    return redirect()->route('profe.inicio');
                     break;
                 case "estudiante":
+                    return redirect()->route('alumno.inicio');
                     break;
                 case "tutor":
+                    return redirect()->route('tutor.inicio');
                     break;
             }
         }
@@ -62,19 +64,21 @@ class LoginController extends Controller
                     case "administrador":
                         return redirect()->intended(route('admin.inicio'));
                         break;
-                    case "director":
-                        return "Aqui va el route director.inicio";
-                        break;
-                    case "directivo":
-                        break;
-                    case "profesor":
-                        break;
-                    case "profesor":
-                        break;
-                    case "estudiante":
-                        break;
-                    case "tutor":
-                        break;
+                        case "director":
+                            return redirect()->intended(route('director.inicio'));
+                            break;
+                        case "directivo":
+                            return redirect()->intended(route('secre.inicio'));
+                            break;
+                        case "profesor":
+                            return redirect()->intended(route('profe.inicio'));
+                            break;
+                        case "estudiante":
+                            return redirect()->intended(route('alumno.inicio'));
+                            break;
+                        case "tutor":
+                            return redirect()->intended(route('tutor.inicio'));
+                            break;
                 }
             }
 
