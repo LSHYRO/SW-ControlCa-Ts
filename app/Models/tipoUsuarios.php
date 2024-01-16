@@ -18,9 +18,9 @@ class tipoUsuarios extends Model
         'tipoUsuario',
     ];
 
-    public function usuarios_tiposUsuarios(): BelongsToMany
+    public function usuarios(): BelongsToMany
     {
-        return $this->belongsToMany(usuarios_tiposUsuarios::class, 'idTipoUsuario', 'idTipoUsuario');
+        return $this->belongsToMany(usuarios::class, 'idTipoUsuario', 'idTipoUsuario');
     }
 
     

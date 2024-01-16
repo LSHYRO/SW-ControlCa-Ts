@@ -106,7 +106,9 @@ const columns2 = [
     { data: 'grado' },
     { data: 'grupo' },
     { data: 'materia' },
-    { data: 'tutor' },
+    { data: null, render: function(data, type, row, meta){
+        return row.tutor + " " +`<a href="tel:${row.tutorTel} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+    }},
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idAlumno}"><i class="fa fa-pencil"></i></button>`;
@@ -268,7 +270,7 @@ onMounted(() => {
         <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
         <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente un alumno              -->
         <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100">
             <span class="font-medium">
                 {{ $page.props.flash.message }}
             </span>

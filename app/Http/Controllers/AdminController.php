@@ -44,7 +44,9 @@ class AdminController extends Controller
 
     public function inicio()
     {
+        Log::info("Identificacion del usuario: ".auth()->user());
         return Inertia::render('Admin/Inicio');
+        
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -111,15 +113,19 @@ class AdminController extends Controller
             $contrasenia = Str::random(8);
             //Creacion de usuario
             $usuario = new usuarios();
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
-            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->contrasenia = $contrasenia;
+            $usuario->password = bcrypt($contrasenia);
+             //Hash::make($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();
 
             //Se busca el tipo de usuario en la BD
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();//Le puse P mayuscula
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
@@ -178,7 +184,7 @@ class AdminController extends Controller
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();//Le puse P mayuscula
 
         $personal = personal::find($idPersonal);
         $usuario = usuarios::find($personal->idUsuario);
@@ -203,7 +209,7 @@ class AdminController extends Controller
             // Limpia los IDs para evitar posibles problemas de seguridad
             $personalIdsArray = array_map('intval', $personalIdsArray);
 
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();//Le puse P mayuscula
 
             for ($i = 0; $i < count($personalIdsArray); $i++) {
                 $personal = personal::find($personalIdsArray[$i]);
@@ -371,9 +377,18 @@ class AdminController extends Controller
             //Contraseña generada
             $contrasenia = Str::random(8);
             //Creacion de usuario
+            $tipo_personalF = tipo_personal::find($request->tipoPersonal);
+            if($tipo_personalF->tipo_personal != "Director"){
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'directivo')->first();
+            }elseif($tipo_personalF->tipo_personal === "Director"){
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
+            }            
             $usuario = new usuarios();
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
-            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->contrasenia = $contrasenia; 
+            $usuario->password = bcrypt($contrasenia);
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            //Hash::make($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
@@ -611,13 +626,14 @@ class AdminController extends Controller
     public function tutores_alumnos()
     {
         // Obtención de datos de tutores
-        $tutoresPrincipal = tutores::with(['generos', 'direcciones', 'alumnos'])->get();
+        $tutoresPrincipal = tutores::with(['generos', 'direcciones'])->get();
+        //dd($tutoresPrincipal);
 
         $tutores = $tutoresPrincipal->map(function ($tutor) {
             $genero = $tutor->generos ? $tutor->generos->genero : null;
             $calle = $tutor->direcciones ? $tutor->direcciones->calle : null;
-            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;
-
+            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;           
+            
             $tutor->genero = $genero;
             $tutor->calle = $calle;
             $tutor->numero = $numero;
@@ -628,6 +644,7 @@ class AdminController extends Controller
             $tutor->idEstado = $tutor->direcciones->asentamientos->municipios->estados->idEstado;
             $tutor->idMunicipio = $tutor->direcciones->asentamientos->municipios->idMunicipio;
             $tutor->idAsentamiento = $tutor->direcciones->asentamientos->idAsentamiento;
+            
             return $tutor;
         });
         $generos = generos::all();
@@ -658,6 +675,7 @@ class AdminController extends Controller
                 $alumno->materia = "Ninguno";
             }
             $alumno->tutor = $alumno->tutores->nombre_completo;
+            $alumno->tutorTel = $alumno->tutores->numTelefono;
             $alumno->tipoSangre = $alumno->tipoSangre->tipoSangre;
             $alumno->tutorC = $alumno->tutores;
             $alumno->gradoC = $alumno->grados;
@@ -738,7 +756,11 @@ class AdminController extends Controller
             //Creacion de usuario
             $usuario = new usuarios();
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . substr($request->correoElectronico, 0, 2) . Str::random(3));
-            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->contrasenia = $contrasenia;
+            $usuario->password = bcrypt($contrasenia);
+            $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor');
+            $usuario->idTipoUsuario = $tipoUsuarioT->idTipoUsuario;
+            //Hash::make($contrasenia);
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();
@@ -927,6 +949,9 @@ class AdminController extends Controller
             $usuario = new usuarios();
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->password =  bcrypt($contrasenia);
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
@@ -963,7 +988,7 @@ class AdminController extends Controller
             $alumno->esForaneo = $request->foraneo;
             $alumno->idGrado = $request->grado["idGrado"];
             $alumno->idGrupo = $request->grupo;
-            $alumno->idMateria = $request->taller;
+            $alumno->idMateria = $request->taller["idMateria"];
             $alumno->idTutor = $request->tutor["idTutor"];
             $alumno->idUsuario = $usuario->idUsuario;
 
@@ -983,7 +1008,7 @@ class AdminController extends Controller
             return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno " . $e, "color" => "red"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno ", "color" => "red"]);
         }
     }
 

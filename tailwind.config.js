@@ -20,6 +20,5 @@ export default {
         },
     },
 
-    plugins: [forms, typography,
-    require('@pinegrow/tailwindcss-plugin').default,],
+    plugins: [forms, typography],
 };

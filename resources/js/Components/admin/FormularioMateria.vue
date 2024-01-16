@@ -189,7 +189,7 @@ watch(() => props.materias, (newVal) => {
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op" class="text-sm font-semibold leading-6 text-gray-900"
                         data-bs.dismiss="modal" @click="close">Cancelar</button>
-                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded" :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"> <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar</button>
                 </div>
             </form>
