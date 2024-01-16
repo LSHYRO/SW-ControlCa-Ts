@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id(column:'idUsuario');
             $table->string('usuario')->unique()->nullable(false);
+            $table->string('password')->nullable(false);
             $table->string('contrasenia')->nullable(false);
+            $table->foreignId(column:'idTipoUsuario')->references('idTipoUsuario')->on('tipoUsuarios');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

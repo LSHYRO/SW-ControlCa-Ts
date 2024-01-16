@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -20,13 +21,13 @@ class usuarios_tiposUsuarios extends Model
         'idTipoUsuario',
     ];
 
-    public function tipoUsuarios(): HasOne
+    public function tipoUsuarios(): HasMany
     {
-        return $this->hasOne(tipoUsuarios::class, "idTipoUsuario", "idTipoUsuario");
+        return $this->hasMany(tipoUsuarios::class, "idTipoUsuario", "idTipoUsuario");
     }
 
-    public function usuario(): HasOne
+    public function usuario(): HasMany
     {
-        return $this->hasOne(usuarios::class, 'idUsuario', 'idUsuario');
+        return $this->hasMany(usuarios::class, 'idUsuario', 'idUsuario');
     }
 }

@@ -248,7 +248,7 @@ onMounted(() => {
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente una materia            -->
             <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm rounded-lg text-green-700 bg-green-100 dark:bg-green-200 dark:text-green-800"
+                class="p-4 mb-4 text-sm rounded-lg text-green-700 bg-green-100"
                 role="alert">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
