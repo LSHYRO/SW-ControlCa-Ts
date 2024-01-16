@@ -42,6 +42,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/administrador/gradosgrupos', 'gradosgrupos')->name('admin.gradosgrupos');
     Route::get('/administrador/ciclosperiodos', 'ciclosperiodos')->name('admin.ciclosperiodos');
     Route::get('/administrador/obtenerciclos', 'obtenerciclos')->name('admin.obtenerciclos');
+    Route::get('/administrador/usuarios', 'usuarios')->name('admin.usuarios');
 
     Route::post('/administrador/profesores', 'addProfesores')->name('admin.addProfesores');
     Route::post('/administrador/directivos', 'addDirectivos')->name('admin.addDirectivos');
@@ -53,6 +54,7 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/administrador/ciclos', 'addCiclos')->name('admin.addCiclos');
     Route::post('/administrador/periodos', 'addPeriodos')->name('admin.addPeriodos');
     Route::post('/administrador/clases', 'addClases')->name('admin.addClases');
+    Route::post('/administrador/usuarios', 'addUsuarios')->name('admin.addUsuarios');
 
 
     Route::get('/administrador/admin/buscar/tutor', 'buscarTutor')->name('ad.busquedaTutor');
@@ -98,13 +100,16 @@ Route::controller(AdminController::class)->group(function () {
     Route::put('/administrador/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('admin.actualizarPeriodos');
     Route::delete('/administrador/periodos/delete/{periodosIds}', 'elimPeriodos')->name('admin.elimPeriodos');
 
-    //
+    Route::delete('/administrador/usuarios/{idUsuario}', 'eliminarUsuarios')->name('admin.eliminarUsuarios');
+    Route::put('/administrador/usuarios/{idUsuario}/edit', 'actualizarUsuarios')->name('admin.actualizarUsuarios');
+    Route::delete('/administrador/usuarios/delete/{usuariosIds}', 'elimUsuarios')->name('admin.elimUsuarios');
+
     Route::get('obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('ad.gradosXgrupos');
 });
 });
 
 Route::controller(AlumnoController::class)->group(function (){
-    Route::get('/', 'inicio')->name('alumno.inicio');
+    Route::get('/alumno', 'inicio')->name('alumno.inicio');
 });
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales
@@ -126,19 +131,99 @@ Route::controller(DireccionesApiController::class)->group(function () {
     //Ruta para datos con codigo postal
     Route::get('obtener/datos/estado/municipio/asentamientos/{codigoPostal}', 'consDatosPorCodigoPostal')->name('consDatosXCodigoPostal');
 
-    //
     Route::get('obtener/datos/asentamiento/{idAsentamiento}', 'informacionAsentamiento')->name('infoAsentamiento');
+});
 
+Route::controller(DirectorController::class)->group(function (){
+    Route::get('/director', 'inicio')->name('director.inicio');
+    
+    Route::get('/director/profesores', 'profesores')->name('director.profesores');
 
-    /*
+    Route::get('/director/tutores_alumnos', 'tutores_alumnos')->name('director.tutoresAlum');
 
-    //Se obtienen datos a partir del codigo postal 
-    Route::get('/obtener/codPostal/{codigo}', 'consultarCodPostal')->name('consultaCodPostal');
-    Route::get('/obtener/asentamiento/codPostal/{codigo}', 'consultarAsentamCodP')->name('consultaCodPos');
-    Route::get('/obtener/estados', 'consultarEstados')->name('consultarEstados');
-    Route::get('/obtener/estados/codPostal/{codigo}', 'consultarEstadosCodP')->name('consultarEstadosCodP');
-    Route::get('/obtener/municipios/{estado}', 'consultarMunicipios')->name('consultarMunicipios');
-    */
+    Route::get('/director/alumnos', 'alumnos')->name('director.alumnos');
+    Route::get('/director/directivos', 'directivos')->name('director.directivos');    
+    Route::get('/director/materias', 'materias')->name('director.materias');
+    Route::get('/director/clases', 'clases')->name('director.clases');
+    Route::get('/director/calificaciones', 'calificaciones')->name('director.calificaciones');
+    Route::get('/director/gradosgrupos', 'gradosgrupos')->name('director.gradosgrupos');
+    Route::get('/director/ciclosperiodos', 'ciclosperiodos')->name('director.ciclosperiodos');
+    Route::get('/director/obtenerciclos', 'obtenerciclos')->name('director.obtenerciclos');
+
+    Route::post('/director/profesores', 'addProfesores')->name('director.addProfesores');
+    Route::post('/director/directivos', 'addDirectivos')->name('director.addDirectivos');
+    Route::post('/director/materias', 'addMaterias')->name('director.addMaterias');
+    Route::post('/director/tutores', 'addTutores')->name('director.addTutores');
+    Route::post('/director/alumnos', 'agregarAlumno')->name('director.addAlumnos');
+    Route::post('/director/grados', 'addGrados')->name('director.addGrados');
+    Route::post('/director/grupos', 'addGrupos')->name('director.addGrupos');
+    Route::post('/director/ciclos', 'addCiclos')->name('director.addCiclos');
+    Route::post('/director/periodos', 'addPeriodos')->name('director.addPeriodos');
+    Route::post('/director/clases', 'addClases')->name('director.addClases');
+
+    Route::get('/director/buscar/tutor', 'buscarTutor')->name('director.busquedaTutor');
+
+    Route::delete('/director/alumnos/delete/{alumnosIds}', 'eliminarAlumnos')->name('director.elimAlumnos');
+    Route::delete('/director/alumnos/{idAlumno}', 'eliminarAlumno')->name('director.eliminarAlumno');
+    Route::put('/director/alumnos/{idAlumno}/edit', 'actualizarAlumno')->name('director.actualizarAlumno');
+    
+    Route::delete('/director/profesores/delete/{personalIds}', 'elimProfesores')->name('director.elimProfesores');
+
+    Route::delete('/director/profesores/{idPersonal}', 'eliminarProfesores')->name('director.eliminarProfesores');
+    Route::put('/director/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('director.actualizarProfesores');
+
+    Route::delete('/director/directivos/{idPersonal}', 'eliminarDirectivos')->name('director.eliminarDirectivos');
+    Route::put('/director/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('director.actualizarDirectivos');
+
+    Route::delete('/director/materias/delete/{materiasIds}', 'elimMaterias')->name('director.elimMaterias');
+
+    Route::delete('/director/materias/{idMateria}', 'eliminarMaterias')->name('director.eliminarMaterias');
+    Route::put('/director/materias/{idMateria}/edit', 'actualizarMateria')->name('director.actualizarMaterias');
+    
+    Route::delete('/director/tutores/delete/{tutoresIds}', 'elimTutores')->name('director.elimTutores');
+    Route::delete('/director/tutores/{idTutor}', 'eliminarTutor')->name('director.eliminarTutor');
+    Route::put('/director/tutores/{idTutor}/edit', 'actualizarTutor')->name('director.actualizarTutor');
+
+    Route::delete('/director/clases/{idClase}', 'eliminarClases')->name('director.eliminarClases');
+    Route::delete('/director/clases/delete/{clasesIds}', 'elimClases')->name('director.elimClases');
+    Route::put('/director/clases/{idClase}/edit', 'actualizarClases')->name('director.actualizarClases');
+
+    Route::delete('/director/grados/{idGrado}', 'eliminarGrados')->name('director.eliminarGrados');
+    Route::put('/director/grados/{idGrado}/edit', 'actualizarGrados')->name('director.actualizarGrados');
+    Route::delete('/director/grados/delete/{gradosIds}', 'elimGrados')->name('director.elimGrados');
+
+    Route::delete('/director/grupos/{idGrupo}', 'eliminarGrupos')->name('director.eliminarGrupos');
+    Route::put('/director/grupos/{idGrupo}/edit', 'actualizarGrupos')->name('director.actualizarGrupos');
+    Route::delete('/director/grupos/delete/{gruposIds}', 'elimGrupos')->name('director.elimGrupos');
+
+    Route::delete('/director/ciclos/{idCiclo}', 'eliminarCiclos')->name('director.eliminarCiclos');
+    Route::put('/director/ciclos/{idCiclo}/edit', 'actualizarCiclos')->name('director.actualizarCiclos');
+    Route::delete('/director/ciclos/delete/{ciclosIds}', 'elimCiclos')->name('director.elimCiclos');
+
+    Route::delete('/director/periodos/{idPeriodo}', 'eliminarPeriodos')->name('director.eliminarPeriodos');
+    Route::put('/director/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('director.actualizarPeriodos');
+    Route::delete('/director/periodos/delete/{periodosIds}', 'elimPeriodos')->name('director.elimPeriodos');
+
+    Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
+    Route::get('/director/obtener/datos/clases/materiasxguposxgrados/{idClase}', 'obtenerClasesXMateriaGradoGrupo')->name('director.clasesXmateriasXgradosXgrupos');
+   
+});
+
+Route::controller(ProfeController::class)->group(function (){
+    Route::get('/profesor', 'inicio')->name('profe.inicio');
+    Route::get('/profesor', 'actividades')->name('profe.actividades');
+
+    Route::delete('/profesor/actividades/{idActividad}', 'eliminarActividades')->name('profe.eliminarActividades');
+    Route::put('/profesor/actividades/{idActividad}/edit', 'actualizarActividades')->name('profe.actualizarActividades');
+    Route::delete('/profesor/actividades/delete/{actividadesIds}', 'elimPeriodos')->name('profe.elimActividades');
+});
+
+Route::controller(SecreController::class)->group(function (){
+    Route::get('/directivo', 'inicio')->name('secre.inicio');
+});
+
+Route::controller(TutorController::class)->group(function (){
+    Route::get('/tutor', 'inicio')->name('tutor.inicio');
 });
 /*
 Route::get('/', function () {
