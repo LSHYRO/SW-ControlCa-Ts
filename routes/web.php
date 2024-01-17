@@ -228,7 +228,8 @@ Route::middleware(['profesorS'])->group(function () {
         //Route::get('/profesor/materias', 'materias')->name('profe.materias');
         Route::get('/profesor/clases', 'clases')->name('profe.clases');
         Route::get('/profesor/usuario', 'usuario')->name('profe.usuario');
-
+        
+        Route::get('/profesor/clases/clase/{idClase}', 'mostrarClase')->name('profe.mostrarClase');
         Route::get('/profesor/personal/obtener', 'obtenerPersonal')->name('obtenerPersonal');
         Route::get('/profesor/clases/obtener/datos/{idPersonal}', 'obtenerDatosClase')->name('obtenerDatosClase');
         Route::get('/profesor/materias/obtener/datos/{idClase}', 'obtenerDatosMateria')->name('obtenerDatosMateria');
