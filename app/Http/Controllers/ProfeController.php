@@ -47,7 +47,7 @@ class ProfeController extends Controller{
         $actividades = actividades::all();
         $clases = clases::all();
         $periodos = periodos::all();
-        $tiposActividades = tiposActividades();
+        $tiposActividades = tiposActividades::all();
         return Inertia::render('Admin/Actividades', ['actividades' => $actividades]);
     }
     

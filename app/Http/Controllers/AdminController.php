@@ -175,7 +175,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
         } catch (Exception $e) {
             dd($e);
         }
@@ -455,7 +455,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('admin.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
         } catch (Exception $e) {
             dd($e);
         }
@@ -758,7 +758,7 @@ class AdminController extends Controller
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . substr($request->correoElectronico, 0, 2) . Str::random(3));
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
-            $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor');
+            $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
             $usuario->idTipoUsuario = $tipoUsuarioT->idTipoUsuario;
             //Hash::make($contrasenia);
             //echo "Tu contraseña generada es: $contrasenia";
@@ -794,10 +794,10 @@ class AdminController extends Controller
 
             //Guardado
             $tutor->save();
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "El tutor no se agrego correctamente", "color" => "red"]);
             dd($e);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "El tutor no se agrego correctamente", "color" => "red"]);
         }
     }
 
@@ -965,7 +965,7 @@ class AdminController extends Controller
             $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
             $usuarioTipoUsuario->save();
 
-            //Se guarda el domicilio del profesor
+            //Se guarda el domicilio
             $domicilio = new direcciones();
             $domicilio->calle = $request->calle;
             $domicilio->numero = $request->numero;
@@ -1004,7 +1004,7 @@ class AdminController extends Controller
             }
 
             $alumno->save();
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
             return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno ", "color" => "red"]);
@@ -1607,12 +1607,15 @@ class AdminController extends Controller
 
     public function addUsuarios(Request $request)
     {
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario','administrador')->first();
         $usuario = new usuarios();
         $usuario->usuario = $request->usuario;
         $usuario->contrasenia = $request->contrasenia;
+        $usuario->password = $request->contrasenia;
+        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
 
         $usuario->save();
-        return redirect()->route('admin.usuarios')->with('message', "Usuario agregado correctamente: " . $usuario->usuario);
+        return redirect()->route('admin.usuarios')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
     }
 
     public function elimUsuarios($usuariosIds)
