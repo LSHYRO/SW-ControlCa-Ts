@@ -727,7 +727,11 @@ class DirectorController extends Controller{
             //Creacion de usuario
             $usuario = new usuarios();
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . substr($request->correoElectronico, 0, 2) . Str::random(3));
-            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->contrasenia = $contrasenia;
+            $usuario->password = bcrypt($contrasenia);
+            $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
+            $usuario->idTipoUsuario = $tipoUsuarioT->idTipoUsuario;
+            //Hash::make($contrasenia);
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();

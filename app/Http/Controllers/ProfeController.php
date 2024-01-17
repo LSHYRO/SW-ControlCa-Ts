@@ -47,8 +47,32 @@ class ProfeController extends Controller{
         $actividades = actividades::all();
         $clases = clases::all();
         $periodos = periodos::all();
-        $tiposActividades = tiposActividades();
-        return Inertia::render('Admin/Actividades', ['actividades' => $actividades]);
+        $tiposActividades = tiposActividades::all();
+        return Inertia::render('Profe/Actividades', ['actividades' => $actividades]);
+    }
+
+    public function clases()
+    {
+
+        $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
+            ->get();
+
+        $clases = clases::all();
+        $grupos = grupos::all();
+        $grados = grados::all();
+        //$personal = personal::all();
+        $materias = materias::all();
+        $ciclos = ciclos::all();
+
+        return Inertia::render('Profe/Clases', [
+            'clases' => $clases,
+            'grupos' => $grupos,
+            'grados' => $grados,
+            'personal' => $personal,
+            'materias' => $materias,
+            'ciclos' => $ciclos,
+        ]);
     }
     
 }

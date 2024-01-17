@@ -211,7 +211,10 @@ Route::controller(DirectorController::class)->group(function (){
 
 Route::controller(ProfeController::class)->group(function (){
     Route::get('/profesor', 'inicio')->name('profe.inicio');
-    Route::get('/profesor', 'actividades')->name('profe.actividades');
+    Route::get('/profesor/actividades', 'actividades')->name('profe.actividades');
+    Route::get('/profesor/tutores_alumnos', 'tutores_alumnos')->name('profe.tutoresAlum');
+    Route::get('/profesor/materias', 'materias')->name('profe.materias');
+    Route::get('/profesor/clases', 'clases')->name('profe.clases');
 
     Route::delete('/profesor/actividades/{idActividad}', 'eliminarActividades')->name('profe.eliminarActividades');
     Route::put('/profesor/actividades/{idActividad}/edit', 'actualizarActividades')->name('profe.actualizarActividades');

@@ -758,7 +758,7 @@ class AdminController extends Controller
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . substr($request->correoElectronico, 0, 2) . Str::random(3));
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
-            $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor');
+            $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
             $usuario->idTipoUsuario = $tipoUsuarioT->idTipoUsuario;
             //Hash::make($contrasenia);
             //echo "Tu contraseña generada es: $contrasenia";
