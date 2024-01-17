@@ -1611,7 +1611,7 @@ class AdminController extends Controller
         $usuario = new usuarios();
         $usuario->usuario = $request->usuario;
         $usuario->contrasenia = $request->contrasenia;
-        $usuario->password = $request->contrasenia;
+        $usuario->password = bcrypt($request->contrasenia);
         $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
 
         $usuario->save();

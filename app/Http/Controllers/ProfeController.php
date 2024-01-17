@@ -35,7 +35,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Mockery\Undefined;
 
-class ProfeController extends Controller{
+class ProfeController extends Controller
+{
 
     public function inicio()
     {
@@ -55,7 +56,7 @@ class ProfeController extends Controller{
     {
 
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
+            ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
 
         $clases = clases::all();
@@ -74,5 +75,15 @@ class ProfeController extends Controller{
             'ciclos' => $ciclos,
         ]);
     }
-    
+
+    public function usuario()
+    {
+        try {
+            $usuario = auth()->user();
+
+            return Inertia::render('Profe/Usuario', ['usuario' => $usuario]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
 }
