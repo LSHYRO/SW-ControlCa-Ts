@@ -37,6 +37,11 @@ class personal extends Model
         'idUsuario',
     ];
 
+    public function clases()
+    {
+    return $this->hasMany(clases::class, 'idPersonal');
+    }
+
     public function usuarios(): HasOne
     {
         return $this->hasOne(usuarios::class, 'idUsuario', 'idUsuario');

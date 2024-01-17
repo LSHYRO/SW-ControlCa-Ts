@@ -29,9 +29,9 @@ class usuarios extends Authenticatable
         'contrasenia',
         'idTipoUsuario'
     ];
-
+    
     protected $hidden = [
-        'contrasenia',
+        'password',
         'remember_token',
     ];
 

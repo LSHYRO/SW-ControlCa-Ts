@@ -53,26 +53,80 @@ class ProfeController extends Controller{
 
     public function clases()
     {
-
-        $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
-            ->get();
-
-        $clases = clases::all();
         $grupos = grupos::all();
         $grados = grados::all();
-        //$personal = personal::all();
         $materias = materias::all();
         $ciclos = ciclos::all();
-
+        $clases = clases::all();
+        //$personal = personal::all();
+    
+        // Obtener el personal autenticado
+        $personalAutenticado = auth()->user()->personal;
+    
+        // Verificar si el personal tiene clases asociadas
+        if ($personalAutenticado) {
+            $clases = $personalAutenticado->clases;
+        } else {
+            $clases = []; // Otra lógica si el personal no tiene clases
+        }
+    
         return Inertia::render('Profe/Clases', [
             'clases' => $clases,
             'grupos' => $grupos,
             'grados' => $grados,
-            'personal' => $personal,
+            'personal' => $personalAutenticado,
             'materias' => $materias,
             'ciclos' => $ciclos,
         ]);
     }
     
+public function obtenerPersonal($idUsuario)
+{
+    // Modifica esto según la relación en tu base de datos
+    $personal = personal::where('idUsuario', $idUsuario)->get();
+    dd($personal);
+    return response()->json($personal);
+}
+
+public function obtenerDatosClase($idPersonal)
+    {
+        try {
+            $personal = personal::where('idPersonal', $idPersonal)->with(['clases'])->first();
+            return $personal->clases;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['clases'=>'Sin asignar'];
+        }
+    }
+    public function obtenerDatosMateria($idClase)
+    {
+        try {
+            $clases = clases::where('idClase', $idClase)->with(['materias'])->first();
+            return $clases->materias;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['materias'=>'Sin asignar'];
+        }
+    }
+    public function obtenerDatosGrado($idClase)
+    {
+        try {
+            $clases = clases::where('idClase', $idClase)->with(['grados'])->first();
+            return $clases->grados;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['grados'=>'Sin asignar'];
+        }
+    }
+    public function obtenerDatosGrupo($idClase)
+    {
+        try {
+            $clases = clases::where('idClase', $idClase)->with(['grupos'])->first();
+            return $clases->grupos;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['grupos'=>'Sin asignar'];
+        }
+    }
+
 }
