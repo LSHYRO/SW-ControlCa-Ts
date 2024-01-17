@@ -33,12 +33,17 @@ const submit = () => {
     <Head title="Iniciar sesión" />
 
     <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
+        
 
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
+        </div>
+        <div>
+            <h2 class="text-black text-2xl text-center font-semibold p-5">Iniciar Sesion</h2>
+            <div class="p-4 mb-4 text-sm text-justify rounded-lg">
+                <span class="">Bienvenido al sistema de control de calificaciones de la escuela telesecundaria con la clave
+                    20DTV1474D. Para acceder a la información es necesario que inicies sesión.</span>
+            </div>
         </div>
         <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
             :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
@@ -47,42 +52,29 @@ const submit = () => {
             </span>
         </div>
         <form @submit.prevent="submit">
-            <div>
+            <div class="">
                 <InputLabel for="usuario" value="Usuario" />
-                <TextInput
-                    id="usuario"
-                    v-model="form.usuario"
-                    type="username"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
+                <TextInput id="usuario" v-model="form.usuario" type="text" class="mt-1 block w-full" required autofocus
+                    autocomplete="username" />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div class="mt-4">
                 <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                />
+                <TextInput id="password" v-model="form.password" type="password" class="mt-1 block w-full" required
+                    autocomplete="current-password" />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div class="block mt-4">
                 <label class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                    <span class="ml-2 text-sm text-gray-600">Recuerdame</span>
                 </label>
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                
+
 
                 <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Iniciar sesion

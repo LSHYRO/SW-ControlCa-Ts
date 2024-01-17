@@ -22,7 +22,7 @@ defineProps({
         <i class="fa fa-pencil" aria-hidden="true"></i> Actividades
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        :href="route('profe.clases')">
-        <i class="fas fa-desktop mr-2"></i>Clases
+    :href="route('profe.usuario')">
+        <i class="fas fa-user mr-2"></i>Usuario
     </a>
 </template>

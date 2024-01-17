@@ -35,7 +35,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Mockery\Undefined;
 
-class ProfeController extends Controller{
+class ProfeController extends Controller
+{
 
     public function inicio()
     {
@@ -129,4 +130,14 @@ public function obtenerDatosClase($idPersonal)
         }
     }
 
+    public function usuario()
+    {
+        try {
+            $usuario = auth()->user();
+
+            return Inertia::render('Profe/Usuario', ['usuario' => $usuario]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
 }
