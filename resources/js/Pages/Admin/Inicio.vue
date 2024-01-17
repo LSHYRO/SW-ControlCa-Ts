@@ -1,8 +1,7 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
-defineProps(
-    
+defineProps(    
 );
 </script>
 

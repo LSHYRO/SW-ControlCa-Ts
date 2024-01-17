@@ -270,7 +270,7 @@ onMounted(() => {
         <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
         <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente un alumno              -->
         <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100`">
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
             <span class="font-medium">
                 {{ $page.props.flash.message }}
             </span>

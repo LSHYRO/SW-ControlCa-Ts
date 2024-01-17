@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 import TopContent from '@/Components/admin/TopContent.vue'
@@ -8,6 +8,9 @@ import OpcionesNavAdmin from '@/Components/admin/OpcionesNavAdmin.vue';
 defineProps({
     title: String,
 });
+
+const tipo_usuario = ref('');
+const nombre_usuario = ref('');
 
 const showingNavigationDropdown = ref(false);
 
@@ -18,19 +21,26 @@ const switchToTeam = (team) => {
         preserveState: false,
     });
 };
+onMounted(async () => {
+    try {
+        const usuario = await axios.get(route('obtenerUsuario'));
+        const idTipoUsuario = usuario.data.idTipoUsuario;
 
-const logout = () => {
-    router.post(route('logout'));
-};
+        const tipoUsuario = await axios.get(route('obtenerTipoUsuario', idTipoUsuario));
+        const datosTipoUsuario = tipoUsuario.data.tipoUsuario;
+        tipo_usuario.value = datosTipoUsuario;
+        nombre_usuario.value = usuario.data.usuario;
+    } catch (e) {
+        tipo_usuario.value = "Sin asignar";
+        console.log("Error: " + e);
+    }
+});
 </script>
 
 <template>
     <div class="flex flex-col h-screen bg-gray-100">
-
         <Head :title="title" />
-
         <TopContent />
-
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
             <div class="p-2 bg-white w-full md:w-60 flex flex-col md:flex" id="sideNav">
@@ -41,17 +51,15 @@ const logout = () => {
                             <img class="w-12 h-12 left-0 top-0 absolute" src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
                         </div>
                         <div class="flex-col justify-start items-center inline-flex ">
-                            <div class="text-center text-black text-lg font-normal font-['DM Sans']">Rigoberto López
+                            <div class="text-center text-black text-lg font-normal font-['DM Sans']">{{ nombre_usuario }}
                             </div>
-                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">SALOR850201
+                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']"> {{  tipo_usuario }}
                             </div>
                         </div>
                     </div>
                     <!-- Señalador de ubicación -->
                     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
-
                     <OpcionesNavAdmin />
-
                 </nav>
                 <!-- Señalador de ubicación -->
                 <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
