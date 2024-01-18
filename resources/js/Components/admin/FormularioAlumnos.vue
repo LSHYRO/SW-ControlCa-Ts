@@ -650,7 +650,7 @@ onMounted(async () => {
                             <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
                                 <v-select name="grado" :id="'grado' + op" v-model="form.grado"
-                                    placeholder="Seleccione el tipo de sangre"
+                                    placeholder="Seleccione el grado"
                                     class="grado-class-func block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     :options="grados" :filterable="true" label="descripcion" modelValue="idGrado"
                                     modelProp="idGrado" :on-change="obtenerGruposXGrado">
@@ -662,7 +662,7 @@ onMounted(async () => {
                             <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
                             <div class="mt-2">
                                 <select name="grupo" :id="'grupo' + op" v-model="form.grupo"
-                                    placeholder="Seleccione el tipo de sangre"
+                                    placeholder="Seleccione el grupo"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     disabled>
                                     <option value="" disabled selected>Seleccione un grupo</option>

@@ -608,7 +608,12 @@ class AdminController extends Controller
 
         $clases = clases::all();
         $grupos = grupos::all();
-        $grados = grados::all();
+        $gradosPrincipal = grados::with('ciclos')->get();
+        $grados = $gradosPrincipal->map(function ($grado) {
+            $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
+
+            return $grado;
+        });        
         //$personal = personal::all();
         $materias = materias::all();
         $ciclos = ciclos::all();
@@ -700,6 +705,20 @@ class AdminController extends Controller
     }
 
     public function obtenerGruposXGrado($idGrado)
+    {
+        $grado = grados::find($idGrado);
+        $fecha = $grado->idCiclo;
+        $gruposPr = grupos::where('idCiclo', $fecha)->get();
+        $grupos = $gruposPr->map(function ($grupo) {
+            $grupo->grupoC = $grupo->grupo . " - " . $grupo->ciclos->descripcionCiclo;
+
+            return $grupo;
+        });
+
+        return response()->json($grupos);
+    }
+
+    public function obtenerCicloXGrado($idGrado)
     {
         $grado = grados::find($idGrado);
         $fecha = $grado->idCiclo;

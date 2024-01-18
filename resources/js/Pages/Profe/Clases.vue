@@ -51,8 +51,8 @@ onMounted(async () => {
 </script>
 
 <template>
-    <ProfeLayout title="clases">
-        <div class="mt-8 bg-white p-4 shadow rounded-lg alturaM">
+    <ProfeLayout title="Clases">
+        <div class=" bg-white p-4 shadow rounded-lg alturaM">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
@@ -64,8 +64,8 @@ onMounted(async () => {
                             <div class="flex flex-col justify-between p-2 leading-normal">
                                 <h4 class="mb-2 text-lg font-bold tracking-tight">{{ clase["materias"].materia }}</h4>
                                 <p class="mb-3 font-normal text-sm">{{ nombre_persona }}</p>
-                                <p class="mb-3 font-normal text-sm">Grado: {{ clase.idGrado }}</p>
-                                <p class="mb-3 font-normal text-sm">Grupo: {{ clase.idGrupo }}</p>
+                                <p class="mb-3 font-normal text-sm">Grado: {{ clase["grados"].grado }}</p>
+                                <p class="mb-3 font-normal text-sm">Grupo: {{ clase["grupos"].grupo }}</p>
                             </div>
                         </div>
                     </div>

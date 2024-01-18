@@ -1586,5 +1586,40 @@ class DirectorController extends Controller{
             'ciclos' => $ciclos,
         ]);
     }
-    
+
+    public function perfil()
+    {
+        try {
+            $usuario = auth()->user();
+            $personal = personal::where('idUsuario', $usuario->idUsuario)->with(['generos', 'tipo_sangre', 'direcciones'])->first();
+
+            $personal->domicilio = $personal->direcciones->calle . " #" . $personal->direcciones->numero . ", " . $personal->direcciones->asentamientos->asentamiento
+                . ", " . $personal->direcciones->asentamientos->municipios->municipio . ", " . $personal->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $personal->direcciones->asentamientos->codigoPostal->codigoPostal;
+
+
+            return Inertia::render('Director/Perfil', ['usuario' => $usuario, 'director' => $personal]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function actualizarContrasenia(Request $request)
+    {
+        try {
+            $usuario = usuarios::find($request->idUsuario);
+            $user = Auth::user();
+            if (Hash::check($request->password_actual, $user->password)) {
+                $usuario->contrasenia = $request->password_nueva;
+                $usuario->password = bcrypt($request->password_nueva);
+                $usuario->save();
+
+                return redirect()->route('director.perfil')->With(["message" => "Contraseña actualizada correctamente, recuerde su contraseña: " . $usuario->contrasenia, "color" => "green"]);
+            }
+            return redirect()->route('director.perfil')->With(["message" => "Contraseña actual incorrecta", "color" => "red"]);
+        } catch (Exception $e) {
+            return redirect()->route('director.perfil')->With(["message" => "Error al actualizar contraseña", "color" => "red"]);
+            dd($e);
+        }
+    }
 }
