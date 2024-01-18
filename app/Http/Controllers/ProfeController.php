@@ -48,8 +48,52 @@ class ProfeController extends Controller
         $actividades = actividades::all();
         $clases = clases::all();
         $periodos = periodos::all();
-        $tiposActividades = tiposActividades::all();
-        return Inertia::render('Profe/Actividades', ['actividades' => $actividades]);
+        $tipoActividad = tiposActividades::all();
+
+        return Inertia::render('Profe/Clases', [
+        'actividades' => $actividades,
+        'periodos'=>$periodos,
+        'tipoActividad'=>$tipoActividad,
+        ]);
+    }
+
+    public function actividadesClase()
+    {
+        $actividades = actividades::all();
+        $clases = clases::all();
+        $periodos = periodos::all();
+        $tipoActividad = tiposActividades::all();
+
+        return Inertia::render('Profe/Clase', [
+        'actividades' => $actividades,
+        'periodos'=>$periodos,
+        'tipoActividad'=>$tipoActividad,
+    ]);
+    }
+
+    public function addActividades(Request $request)
+    {
+        try {
+            $request->validate([
+                'descripcion' => 'required',
+                'clases' => 'required',
+                'periodos' => 'required',
+                'tipoActividad' => 'required',
+            ]);
+            //$actividad -> idClase = $request->idClase;
+
+            $periodos = new periodos();
+
+            $actividad = new actividades();
+            $actividad->descripcion = $request->descripcion;
+            $actividad->idClase = $request->clases;
+            $actividad->idPeriodo = $request->periodos;
+            $actividad->idTipoActividad = $request->tipoActividad;
+
+            $actividad->save();
+        } catch (Exception $e) {
+        }
+        return redirect()->route('profe.mostrarClase')->with('message', "Actividad agregada correctamente: " . $actividad->descripcion);
     }
 
     public function clases()
@@ -98,7 +142,7 @@ class ProfeController extends Controller
             $clasesM = [];
             for ($i = 0; $i < count($clases); $i++) {
                 Log::info($clases[$i]);
-                $clase = clases::where('idClase', $clases[$i]->idClase)->with(['materias'])->first();
+                $clase = clases::where('idClase', $clases[$i]->idClase)->with(['materias','grados','grupos'])->first();
                 array_push($clasesM,$clase);
             }
             

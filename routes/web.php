@@ -224,6 +224,7 @@ Route::middleware(['profesorS'])->group(function () {
     Route::controller(ProfeController::class)->group(function () {
         Route::get('/profesor', 'inicio')->name('profe.inicio');
         Route::get('/profesor/actividades', 'actividades')->name('profe.actividades');
+        Route::get('/profesor/actividades/clase', 'actividadesClase')->name('profe.actividadesClase');
         Route::get('/profesor/tutores_alumnos', 'tutores_alumnos')->name('profe.tutoresAlum');
         //Route::get('/profesor/materias', 'materias')->name('profe.materias');
         Route::get('/profesor/clases', 'clases')->name('profe.clases');
@@ -235,6 +236,9 @@ Route::middleware(['profesorS'])->group(function () {
         Route::get('/profesor/materias/obtener/datos/{idClase}', 'obtenerDatosMateria')->name('obtenerDatosMateria');
         Route::get('/profesor/grados/obtener/datos/{idClase}', 'obtenerDatosGrado')->name('obtenerDatosGrado');
         Route::get('/profesor/grupos/obtener/datos/{idClase}', 'obtenerDatosGrupo')->name('obtenerDatosGrupo');
+
+        Route::post('/profesor/actividades', 'addActividades')->name('profe.addActividades');
+
         Route::delete('/profesor/actividades/{idActividad}', 'eliminarActividades')->name('profe.eliminarActividades');
         Route::put('/profesor/actividades/{idActividad}/edit', 'actualizarActividades')->name('profe.actualizarActividades');
         Route::delete('/profesor/actividades/delete/{actividadesIds}', 'elimPeriodos')->name('profe.elimActividades');

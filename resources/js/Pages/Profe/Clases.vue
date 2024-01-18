@@ -29,6 +29,17 @@ const materias = (datos) => {
     }
 }
 
+const grupos = (datos) => {
+    try {
+        const clases = datos.map((clase) => clase.idGrupo);
+        const idGrupo = grupos.join(',');
+        return idGrupo;
+    } catch (error) {
+        console.log("Error al eliminar varios grados: " + error);
+        return [];
+    }
+}
+
 onMounted(async () => {
     try {
         const usuario = await axios.get(route('obtenerUsuario'));
@@ -64,8 +75,8 @@ onMounted(async () => {
                             <div class="flex flex-col justify-between p-2 leading-normal">
                                 <h4 class="mb-2 text-lg font-bold tracking-tight">{{ clase["materias"].materia }}</h4>
                                 <p class="mb-3 font-normal text-sm">{{ nombre_persona }}</p>
-                                <p class="mb-3 font-normal text-sm">Grado: {{ clase.idGrado }}</p>
-                                <p class="mb-3 font-normal text-sm">Grupo: {{ clase.idGrupo }}</p>
+                                <p class="mb-3 font-normal text-sm">Grado: {{ clase["grados"].grado }}</p>
+                                <p class="mb-3 font-normal text-sm">Grupo: {{ clase["grupos"].grupo }}</p>
                             </div>
                         </div>
                     </div>
