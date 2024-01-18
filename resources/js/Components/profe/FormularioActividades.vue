@@ -52,6 +52,8 @@ const close = () => {
     form.reset(); // Llamar a la función reset para restablecer el formulario
 };
 
+console.log('props.actividades:', props.actividades);
+
 const form = useForm({
     idActividad: props.actividades.idActividad,
     nombreActividad: props.actividades.descripcion,
@@ -61,6 +63,10 @@ const form = useForm({
     tipoActividad: props.actividades.idTipoActividad,//Le agregue la s a ciclo
 
 });
+
+console.log('props.actividades.periodos:', props.actividades.periodos);
+console.log('props.actividades.tipoActividad:', props.actividades.tipoActividad);
+
 
 // Variables para los mensajes de validación
 const descripcionError = ref('');
@@ -182,9 +188,9 @@ watch(() => props.actividades, (newVal) => {
                         </div>
 
                         <div class="sm:col-span-3">
-                            <label for="periodo" class="block text-sm font-medium leading-6 text-gray-900">Periodo</label>
+                            <label for="periodos" class="block text-sm font-medium leading-6 text-gray-900">Periodo</label>
                             <div class="mt-2">
-                                <select name="periodo" :id="'periodo' + op" v-model="form.periodos"
+                                <select name="periodos" :id="'periodos' + op" v-model="form.periodos"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un periodo</option>
                                     <option v-for="periodo in periodos" :key="periodo.idPeriodo" :value="periodo.idPeriodo">

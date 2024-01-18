@@ -82,12 +82,13 @@ const cerrarModalE = () => {
 
 
         </div>
-        
+
 
     </ProfeLayout>
 
     <formulario-actividades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-        :title="'Añadir actividad'" :op="'1'" :modal="'modalCreate'" :clases="props.clase" :periodos="props.periodos" :tipoActividad="props.tipoActividad"></formulario-actividades>
+        :title="'Añadir actividad'" :op="'1'" :modal="'modalCreate'" :clases="props.clase" :periodos="props.periodos"
+        :tipoActividad="props.tipoActividad"></formulario-actividades>
     <formulario-actividades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
         :title="'Editar actividad'" :op="'2'" :modal="'modalEdit'" :clases="props.clase"></formulario-actividades>
 </template>
@@ -95,4 +96,5 @@ const cerrarModalE = () => {
 <style>
 .alturaM {
     min-height: 80vh;
-}</style>
+}
+</style>

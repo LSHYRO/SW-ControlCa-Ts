@@ -63,6 +63,7 @@ class ProfeController extends Controller
         $clases = clases::all();
         $periodos = periodos::all();
         $tipoActividad = tiposActividades::all();
+        $actividades->periodos = $periodos ? $periodos->periodos : null;
 
         return Inertia::render('Profe/Clase', [
         'actividades' => $actividades,
@@ -93,7 +94,7 @@ class ProfeController extends Controller
             $actividad->save();
         } catch (Exception $e) {
         }
-        return redirect()->route('profe.mostrarClase')->with('message', "Actividad agregada correctamente: " . $actividad->descripcion);
+        return redirect()->route('profe.actividadesClase')->with('message', "Actividad agregada correctamente: " . $actividad->descripcion);
     }
 
     public function clases()
