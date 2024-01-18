@@ -75,12 +75,12 @@ class personal extends Model
         );
     }
     */
-    public function tipoSangre(): HasOne 
+    public function tipo_Sangre(): HasOne 
     {
         return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
     }
     
-    public function genero(): HasOne
+    public function generos(): HasOne
     {
         return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }

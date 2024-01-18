@@ -62,8 +62,8 @@ onMounted(async () => {
 </script>
 
 <template>
-    <ProfeLayout title="clases">
-        <div class="mt-8 bg-white p-4 shadow rounded-lg alturaM">
+    <ProfeLayout title="Clases">
+        <div class=" bg-white p-4 shadow rounded-lg alturaM">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>

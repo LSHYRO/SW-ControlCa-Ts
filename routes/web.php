@@ -215,6 +215,9 @@ Route::middleware(['directorS'])->group(function () {
         Route::put('/director/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('director.actualizarPeriodos');
         Route::delete('/director/periodos/delete/{periodosIds}', 'elimPeriodos')->name('director.elimPeriodos');
 
+        Route::get('/director/perfil', 'perfil')->name('director.perfil');
+        Route::put('/director/perfil/actualizar/contraseña','actualizarContrasenia')->name('director.actualizarContraseña');
+
         Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
         Route::get('/director/obtener/datos/clases/materiasxguposxgrados/{idClase}', 'obtenerClasesXMateriaGradoGrupo')->name('director.clasesXmateriasXgradosXgrupos');
     });
@@ -228,7 +231,8 @@ Route::middleware(['profesorS'])->group(function () {
         Route::get('/profesor/tutores_alumnos', 'tutores_alumnos')->name('profe.tutoresAlum');
         //Route::get('/profesor/materias', 'materias')->name('profe.materias');
         Route::get('/profesor/clases', 'clases')->name('profe.clases');
-        Route::get('/profesor/usuario', 'usuario')->name('profe.usuario');
+        Route::get('/profesor/perfil', 'perfil')->name('profe.usuario');
+        Route::put('/profesor/perfil/actualizar/contraseña','actualizarContrasenia')->name('profe.actualizarContraseña');
         
         Route::get('/profesor/clases/clase/{idClase}', 'mostrarClase')->name('profe.mostrarClase');
         Route::get('/profesor/personal/obtener', 'obtenerPersonal')->name('obtenerPersonal');

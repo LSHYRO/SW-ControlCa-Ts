@@ -143,16 +143,17 @@ class ProfeController extends Controller
             $clasesM = [];
             for ($i = 0; $i < count($clases); $i++) {
                 Log::info($clases[$i]);
-                $clase = clases::where('idClase', $clases[$i]->idClase)->with(['materias','grados','grupos'])->first();
-                array_push($clasesM,$clase);
+                $clase = clases::where('idClase', $clases[$i]->idClase)->with(['materias', 'grados', 'grupos'])->first();
+                array_push($clasesM, $clase);
             }
-            
+
             return  $clasesM;
         } catch (Exception $e) {
             Log::info($e);
             return ['clases' => 'Sin asignar'];
         }
     }
+
     public function obtenerDatosMateria($idClase)
     {
         try {
@@ -163,6 +164,7 @@ class ProfeController extends Controller
             return ['materias' => 'Sin asignar'];
         }
     }
+
     public function obtenerDatosGrado($idClase)
     {
         try {
@@ -184,25 +186,50 @@ class ProfeController extends Controller
         }
     }
 
-    public function usuario()
+    public function perfil()
     {
         try {
             $usuario = auth()->user();
+            $personal = personal::where('idUsuario', $usuario->idUsuario)->with(['generos', 'tipo_sangre', 'direcciones'])->first();
 
-            return Inertia::render('Profe/Usuario', ['usuario' => $usuario]);
+            $personal->domicilio = $personal->direcciones->calle . " #" . $personal->direcciones->numero . ", " . $personal->direcciones->asentamientos->asentamiento
+                . ", " . $personal->direcciones->asentamientos->municipios->municipio . ", " . $personal->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $personal->direcciones->asentamientos->codigoPostal->codigoPostal;
+
+
+            return Inertia::render('Profe/Perfil', ['usuario' => $usuario, 'profesor' => $personal]);
         } catch (Exception $e) {
             dd($e);
         }
     }
 
-    public function mostrarClase($idClase){
-        try{
-        $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
-        
-        return Inertia::render('Profe/Clase', ['clase' => $clase]);
-        }catch (Exception $e) {
+    public function mostrarClase($idClase)
+    {
+        try {
+            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+
+            return Inertia::render('Profe/Clase', ['clase' => $clase]);
+        } catch (Exception $e) {
             dd($e);
         }
+    }
 
+    public function actualizarContrasenia(Request $request)
+    {
+        try {
+            $usuario = usuarios::find($request->idUsuario);
+            $user = Auth::user();
+            if (Hash::check($request->password_actual, $user->password)) {
+                $usuario->contrasenia = $request->password_nueva;
+                $usuario->password = bcrypt($request->password_nueva);
+                $usuario->save();
+
+                return redirect()->route('profe.usuario')->With(["message" => "Contraseña actualizada correctamente, recuerde su contraseña: " . $usuario->contrasenia, "color" => "green"]);
+            }
+            return redirect()->route('profe.usuario')->With(["message" => "Contraseña actual incorrecta", "color" => "red"]);
+        } catch (Exception $e) {
+            return redirect()->route('profe.usuario')->With(["message" => "Error al actualizar contraseña", "color" => "red"]);
+            dd($e);
+        }
     }
 }

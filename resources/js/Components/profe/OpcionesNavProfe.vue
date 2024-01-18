@@ -23,6 +23,6 @@ defineProps({
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
     :href="route('profe.usuario')">
-        <i class="fas fa-user mr-2"></i>Usuario
+        <i class="fas fa-user mr-2"></i>Perfil
     </a>
 </template>
