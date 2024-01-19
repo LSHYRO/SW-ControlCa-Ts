@@ -417,10 +417,10 @@ const obtenerGruposXGrado = async () => {
     const grupoS = document.getElementById('grupo' + props.op);
     grupoS.removeAttribute("disabled");
     try {
-        const idGrado = form.grado;
+        const idGrado = form.grado.idGrado;        
         const response = await axios.get(route('ad.gradosXgrupos', idGrado));
         grupos.value = await response.data;
-    } catch (error) {
+    } catch (error) {        
         console.log('Error al obtener grupos: ', error);
     }
 };
