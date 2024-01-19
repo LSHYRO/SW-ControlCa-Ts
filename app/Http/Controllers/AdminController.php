@@ -44,9 +44,8 @@ class AdminController extends Controller
 
     public function inicio()
     {
-        Log::info("Identificacion del usuario: ".auth()->user());
+        Log::info("Identificacion del usuario: " . auth()->user());
         return Inertia::render('Admin/Inicio');
-        
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,7 +57,7 @@ class AdminController extends Controller
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
-            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
+            ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
 
         $tipoSangre = tipo_Sangre::all();
@@ -118,14 +117,14 @@ class AdminController extends Controller
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
-             //Hash::make($contrasenia);
+            //Hash::make($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();
 
             //Se busca el tipo de usuario en la BD
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();//Le puse P mayuscula
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
@@ -140,7 +139,7 @@ class AdminController extends Controller
             $domicilio->save();
 
             //Se busca el tipo de personal en la BD
-            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first();//Le puse P mayuscula
+            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first(); //Le puse P mayuscula
 
             //$personal = new personal($request->input());
             $personal = new personal();
@@ -175,7 +174,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
+            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
         } catch (Exception $e) {
             dd($e);
         }
@@ -184,7 +183,7 @@ class AdminController extends Controller
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();//Le puse P mayuscula
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
 
         $personal = personal::find($idPersonal);
         $usuario = usuarios::find($personal->idUsuario);
@@ -209,7 +208,7 @@ class AdminController extends Controller
             // Limpia los IDs para evitar posibles problemas de seguridad
             $personalIdsArray = array_map('intval', $personalIdsArray);
 
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();//Le puse P mayuscula
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
 
             for ($i = 0; $i < count($personalIdsArray); $i++) {
                 $personal = personal::find($personalIdsArray[$i]);
@@ -268,7 +267,7 @@ class AdminController extends Controller
             $domicilio->save();
 
             //Se busca el tipo de personal en la BD
-            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first();//Le puse P mayuscula
+            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first(); //Le puse P mayuscula
 
             //$personal = new personal($request->input());
             $personal = personal::findOrFail($request->idPersonal);
@@ -315,7 +314,7 @@ class AdminController extends Controller
             ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
             //->where('tipo_personal.tipo_personal', 'profesor')
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('tipo_personal.tipo_personal', 'Director')
                     ->orWhere('tipo_personal.tipo_personal', 'Personal escolar');
             })
@@ -327,7 +326,7 @@ class AdminController extends Controller
         $tipo_personal = tipo_personal::all();
 
 
-            $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
+        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
             $genero = $generos->where('idGenero', $persona->idGenero)->first();
             $tipoSangre = $tipoSangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
@@ -344,8 +343,8 @@ class AdminController extends Controller
         });
 
         return Inertia::render('Admin/Directivos', [
-            'personal' => $personalConNombres, 
-            'tipoSangre' => $tipoSangre, 
+            'personal' => $personalConNombres,
+            'tipoSangre' => $tipoSangre,
             'generos' => $generos,
             'tipo_personal' => $tipo_personal
         ]);
@@ -378,14 +377,14 @@ class AdminController extends Controller
             $contrasenia = Str::random(8);
             //Creacion de usuario
             $tipo_personalF = tipo_personal::find($request->tipoPersonal);
-            if($tipo_personalF->tipo_personal != "Director"){
+            if ($tipo_personalF->tipo_personal != "Director") {
                 $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'directivo')->first();
-            }elseif($tipo_personalF->tipo_personal === "Director"){
+            } elseif ($tipo_personalF->tipo_personal === "Director") {
                 $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
-            }            
+            }
             $usuario = new usuarios();
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
-            $usuario->contrasenia = $contrasenia; 
+            $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
             //Hash::make($contrasenia);
@@ -397,10 +396,10 @@ class AdminController extends Controller
             //Se busca el tipo de usuario en la BD
             //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
 
-            $tipoUsuario = tipoUsuarios::where(function($query) {
+            $tipoUsuario = tipoUsuarios::where(function ($query) {
                 $query->where('tipoUsuario', 'Director')
-                      ->orWhere('tipoUsuario', 'Personal escolar');
-            })->first();//cambie get()
+                    ->orWhere('tipoUsuario', 'Personal escolar');
+            })->first(); //cambie get()
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
@@ -416,11 +415,11 @@ class AdminController extends Controller
 
             //Se busca el tipo de personal en la BD
             //$tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
-            $tipo_personal = tipo_personal::where(function($query) {
+            $tipo_personal = tipo_personal::where(function ($query) {
                 $query->where('tipo_personal', 'Director')
-                      ->orWhere('tipo_personal', 'Personal escolar');
+                    ->orWhere('tipo_personal', 'Personal escolar');
             })->first();
-            
+
 
             //$personal = new personal($request->input());
             $personal = new personal();
@@ -455,7 +454,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
+            return redirect()->route('admin.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
         } catch (Exception $e) {
             dd($e);
         }
@@ -464,10 +463,10 @@ class AdminController extends Controller
     public function eliminarDirectivos($idPersonal)
     {
 
-        $tipoUsuario = tipoUsuarios::where(function($query) {
+        $tipoUsuario = tipoUsuarios::where(function ($query) {
             $query->where('tipoUsuario', 'Director')
-                  ->orWhere('tipoUsuario', 'Personal escolar');
-        })->first();//cambie get()
+                ->orWhere('tipoUsuario', 'Personal escolar');
+        })->first(); //cambie get()
 
         $personal = personal::find($idPersonal);
         $usuario = usuarios::find($personal->idUsuario);
@@ -491,10 +490,10 @@ class AdminController extends Controller
             // Limpia los IDs para evitar posibles problemas de seguridad
             $personalIdsArray = array_map('intval', $personalIdsArray);
 
-            $tipoUsuario = tipoUsuarios::where(function($query) {
+            $tipoUsuario = tipoUsuarios::where(function ($query) {
                 $query->where('tipoUsuario', 'Director')
-                      ->orWhere('tipoUsuario', 'Personal escolar');
-            })->first();//cambie get()
+                    ->orWhere('tipoUsuario', 'Personal escolar');
+            })->first(); //cambie get()
 
             for ($i = 0; $i < count($personalIdsArray); $i++) {
                 $personal = personal::find($personalIdsArray[$i]);
@@ -551,9 +550,9 @@ class AdminController extends Controller
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
 
-            $tipo_personal = tipo_personal::where(function($query) {
+            $tipo_personal = tipo_personal::where(function ($query) {
                 $query->where('tipo_personal', 'Director')
-                      ->orWhere('tipo_personal', 'Personal escolar');
+                    ->orWhere('tipo_personal', 'Personal escolar');
             })->first();
 
             //$personal = new personal($request->input());
@@ -603,7 +602,7 @@ class AdminController extends Controller
     {
 
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
+            ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
 
         $clases = clases::all();
@@ -613,7 +612,7 @@ class AdminController extends Controller
             $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
 
             return $grado;
-        });        
+        });
         //$personal = personal::all();
         $materias = materias::all();
         $ciclos = ciclos::all();
@@ -637,8 +636,8 @@ class AdminController extends Controller
         $tutores = $tutoresPrincipal->map(function ($tutor) {
             $genero = $tutor->generos ? $tutor->generos->genero : null;
             $calle = $tutor->direcciones ? $tutor->direcciones->calle : null;
-            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;           
-            
+            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;
+
             $tutor->genero = $genero;
             $tutor->calle = $calle;
             $tutor->numero = $numero;
@@ -649,7 +648,7 @@ class AdminController extends Controller
             $tutor->idEstado = $tutor->direcciones->asentamientos->municipios->estados->idEstado;
             $tutor->idMunicipio = $tutor->direcciones->asentamientos->municipios->idMunicipio;
             $tutor->idAsentamiento = $tutor->direcciones->asentamientos->idAsentamiento;
-            
+
             return $tutor;
         });
         $generos = generos::all();
@@ -720,13 +719,13 @@ class AdminController extends Controller
 
     public function obtenerCicloXGrado($idGrado)
     {
-        try{
-        $grado = grados::find($idGrado);
-        $fecha = $grado->idCiclo;
-        $ciclo = ciclos::where('idCiclo',$fecha)->get();
-        
-        return response()->json($ciclo);
-        }catch(Exception $e){
+        try {
+            $grado = grados::find($idGrado);
+            $fecha = $grado->idCiclo;
+            $ciclo = ciclos::where('idCiclo', $fecha)->get();
+
+            return response()->json($ciclo);
+        } catch (Exception $e) {
             dd($grado);
         }
     }
@@ -812,7 +811,7 @@ class AdminController extends Controller
 
             //Guardado
             $tutor->save();
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
             return redirect()->route('admin.tutoresAlum')->With(["message" => "El tutor no se agrego correctamente", "color" => "red"]);
@@ -1022,7 +1021,7 @@ class AdminController extends Controller
             }
 
             $alumno->save();
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto ." || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
             return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno ", "color" => "red"]);
@@ -1224,7 +1223,7 @@ class AdminController extends Controller
             ]);
 
 
-            $clase = new clases();            
+            $clase = new clases();
             $clase->idGrado = $request->grados['idGrado'];
             $clase->idGrupo = $request->grupos;
             $clase->idPersonal = $request->personal;
@@ -1232,12 +1231,10 @@ class AdminController extends Controller
             $clase->idCiclo = $request->ciclos;
 
             $clase->save();
-            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
+            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo );
         } catch (Exception $e) {
-            dd($e);
+            Log::info('Error en guardar la clase: ' . $e);
         }
-        
-        //return redirect()->route('admin.clases');
     }
 
     public function eliminarClases($idClase)
@@ -1627,7 +1624,7 @@ class AdminController extends Controller
 
     public function addUsuarios(Request $request)
     {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario','administrador')->first();
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
         $usuario = new usuarios();
         $usuario->usuario = $request->usuario;
         $usuario->contrasenia = $request->contrasenia;

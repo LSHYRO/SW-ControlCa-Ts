@@ -27,7 +27,8 @@ class usuarios extends Authenticatable
     protected $fillable = [
         'usuario',
         'contrasenia',
-        'idTipoUsuario'
+        'idTipoUsuario',
+        'intentos'
     ];
     
     protected $hidden = [
