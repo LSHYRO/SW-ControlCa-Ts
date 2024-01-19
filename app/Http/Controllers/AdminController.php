@@ -1224,17 +1224,19 @@ class AdminController extends Controller
             ]);
 
 
-            $clase = new clases();
+            $clase = new clases();            
+            $clase->idGrado = $request->grados['idGrado'];
             $clase->idGrupo = $request->grupos;
-            $clase->idGrado = $request->grados;
             $clase->idPersonal = $request->personal;
             $clase->idMateria = $request->materias;
             $clase->idCiclo = $request->ciclos;
 
             $clase->save();
+            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
         } catch (Exception $e) {
+            dd($e);
         }
-        return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
+        
         //return redirect()->route('admin.clases');
     }
 
