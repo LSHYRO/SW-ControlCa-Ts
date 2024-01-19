@@ -720,16 +720,15 @@ class AdminController extends Controller
 
     public function obtenerCicloXGrado($idGrado)
     {
+        try{
         $grado = grados::find($idGrado);
         $fecha = $grado->idCiclo;
-        $gruposPr = grupos::where('idCiclo', $fecha)->get();
-        $grupos = $gruposPr->map(function ($grupo) {
-            $grupo->grupoC = $grupo->grupo . " - " . $grupo->ciclos->descripcionCiclo;
-
-            return $grupo;
-        });
-
-        return response()->json($grupos);
+        $ciclo = ciclos::where('idCiclo',$fecha)->get();
+        
+        return response()->json($ciclo);
+        }catch(Exception $e){
+            dd($grado);
+        }
     }
 
     public function gradosgrupos()

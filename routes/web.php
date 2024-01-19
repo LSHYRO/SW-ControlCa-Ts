@@ -106,7 +106,9 @@ Route::middleware(['adminS'])->group(function () {
         Route::put('/administrador/usuarios/{idUsuario}/edit', 'actualizarUsuarios')->name('admin.actualizarUsuarios');
         Route::delete('/administrador/usuarios/delete/{usuariosIds}', 'elimUsuarios')->name('admin.elimUsuarios');
 
+        Route::get('obtener/datos/ciclo/xgrados/{idGrado}', 'obtenerCicloXGrado')->name('ad.cicloXgrupos');
         Route::get('obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('ad.gradosXgrupos');
+        
     });
 });
 

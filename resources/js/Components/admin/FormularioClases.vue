@@ -57,14 +57,17 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const grupos = ref([]);
+const ciclos = ref([]);
 
 const close = () => {
     emit('close');
     form.reset();
-    try{
-    const grupoS = document.getElementById('grupo' + props.op);
+    try {
+        const grupoS = document.getElementById('grupo' + props.op);
         grupoS.setAttribute("disabled", "");
-    }catch(e) {
+        const cicloS = document.getElementById('ciclo' + props.op);
+        cicloS.setAttribute("disabled", "");
+    } catch (e) {
         console.log(e);
     }
 };
@@ -171,19 +174,36 @@ watch(() => props.clase, (newVal) => {
 
 watch(() => form.grados, async () => {
     await obtenerGruposXGrado();
+    await obtenerCicloXGrado();
 })
 
 const obtenerGruposXGrado = async () => {
     const grupoS = document.getElementById('grupo' + props.op);
     grupoS.removeAttribute("disabled");
     try {
-        const idGrado = form.grados;
-        const response = await axios.get(route('ad.gradosXgrupos', idGrado));
+        const idGrado = form.grados.idGrado;
+        const response = await axios.get(route('ad.gradosXgrupos', idGrado));        
         grupos.value = await response.data;
     } catch (error) {
         console.log('Error al obtener grupos: ', error);
     }
 };
+
+const obtenerCicloXGrado = async () => {
+    const cicloS = document.getElementById('ciclo' + props.op);
+    cicloS.removeAttribute("disabled");
+    try {
+        const idGrado = form.grados.idGrado;
+        const response2 = await axios.get(route('ad.cicloXgrupos', idGrado));
+        console.log(response2.data);
+        ciclos.value = await response2.data;
+    } catch (error) {
+        console.log(response2);
+        console.log('Error al obtener ciclos: ', error);
+    }
+}
+
+
 </script>
 
 
@@ -214,7 +234,7 @@ const obtenerGruposXGrado = async () => {
                                     placeholder="Seleccione el grado"
                                     class="grado-class-func block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     :options="grados" :filterable="true" label="descripcion" modelValue="idGrado"
-                                    modelProp="idGrado" :on-change="obtenerGruposXGrado">
+                                    modelProp="idGrado" :on-change="obtenerGruposXGrado && obtenerCicloXGrado" >
                                 </v-select>
                             </div>
                             <div v-if="gradoError != ''" class="text-red-500 text-xs mt-1">{{ gradoError }}</div>
@@ -268,7 +288,7 @@ const obtenerGruposXGrado = async () => {
                         <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos"
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos" disabled
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un ciclo</option>
                                     <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
