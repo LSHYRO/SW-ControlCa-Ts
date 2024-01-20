@@ -100,13 +100,17 @@ class DirectorController extends Controller{
             $contrasenia = Str::random(8);
             //Creacion de usuario
             $usuario = new usuarios();
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;//Se agregó lo siguietne
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->password =  bcrypt($contrasenia);//Le agregé esto
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-            $usuario->save();
 
+            $usuario->save();
+            //dd($usuario);
             //Se busca el tipo de usuario en la BD
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
 
@@ -158,7 +162,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM. " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
         } catch (Exception $e) {
             dd($e);
         }
@@ -363,18 +367,21 @@ class DirectorController extends Controller{
             $usuario = new usuarios();
             $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->password =  bcrypt($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-            $usuario->save();
-
-            //Se busca el tipo de usuario en la BD
-            //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
-
             $tipoUsuario = tipoUsuarios::where(function($query) {
                 $query->where('tipoUsuario', 'Director')
                       ->orWhere('tipoUsuario', 'Personal escolar');
             })->first();//cambie get()
+
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+
+            $usuario->save();
+
+            //Se busca el tipo de usuario en la BD
+            //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
@@ -429,7 +436,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM. " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
         } catch (Exception $e) {
             dd($e);
         }

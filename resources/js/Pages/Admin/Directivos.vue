@@ -124,7 +124,7 @@ const cerrarModalE = () => {
 };
 
 // Función para elimnar profesores a través del botón del datatable
-const eliminarDirctivo = (idPersonal, nombre) => {
+const eliminarDirectivo = (idPersonal, nombre) => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })

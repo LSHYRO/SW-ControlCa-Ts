@@ -387,6 +387,13 @@ class AdminController extends Controller
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+
+            $tipoUsuario = tipoUsuarios::where(function ($query) {
+                $query->where('tipoUsuario', 'Director')
+                    ->orWhere('tipoUsuario', 'Personal escolar');
+            })->first(); //cambie get()
+
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
             //Hash::make($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
@@ -395,11 +402,6 @@ class AdminController extends Controller
 
             //Se busca el tipo de usuario en la BD
             //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
-
-            $tipoUsuario = tipoUsuarios::where(function ($query) {
-                $query->where('tipoUsuario', 'Director')
-                    ->orWhere('tipoUsuario', 'Personal escolar');
-            })->first(); //cambie get()
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
