@@ -1629,4 +1629,96 @@ class DirectorController extends Controller{
             dd($e);
         }
     }
+
+    public function cuentas()
+    {
+        //Para poder mostrar los nombres de los usuarios segun su idUsuario
+        $usuarios = DB::table('usuarios')
+        ->leftJoin('alumnos', 'usuarios.idUsuario', '=', 'alumnos.idUsuario')
+        ->leftJoin('personal', 'usuarios.idUsuario', '=', 'personal.idUsuario')
+        ->leftJoin('tutores', 'usuarios.idUsuario', '=', 'tutores.idUsuario')
+        ->where(function ($query) {
+            $query->whereRaw('alumnos.idUsuario IS NOT NULL')
+                ->orWhereRaw('personal.idUsuario IS NOT NULL')
+                ->orWhereRaw('tutores.idUsuario IS NOT NULL')
+                ->orWhereNull('usuarios.idTipoUsuario');
+        })
+        ->select('usuarios.*', DB::raw('COALESCE(alumnos.nombre_completo, personal.nombre_completo, tutores.nombre_completo) as nombre_completo'))
+        ->get();
+
+    return Inertia::render('Director/Cuentas', [
+        'usuarios' => $usuarios,
+    ]);
+    }
+
+    public function addCuentas(Request $request)
+    {
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
+        $usuario = new usuarios();
+        $usuario->usuario = $request->usuario;
+        $usuario->contrasenia = $request->contrasenia;
+        $usuario->password = bcrypt($request->contrasenia);
+        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+
+        $usuario->save();
+        return redirect()->route('director.cuentas')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
+    }
+
+    public function elimCuentas($usuariosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $usuariosIdsArray = explode(',', $usuariosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
+
+            // Elimina los ciclos
+            usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('admin.usuarios')->with('message', "Usuarios eliminados correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
+    }
+
+    public function eliminarCuentas($idUsuario)
+    {
+        $usuario = usuarios::find($idUsuario);
+        $usuario->delete();
+        return redirect()->route('director.cuentas')->with('message', "Usuario eliminado correctamente");
+    }
+
+    public function actualizarCuentas(Request $request, $idUsuario)
+    {
+        try {
+            $usuarios = usuarios::find($idUsuario);
+            $request->validate([
+                'usuario' => 'required',
+                'contrasenia' => 'required',
+            ]);
+            $usuarios->usuario = $request->usuario;
+            $usuarios->contrasenia = $request->contrasenia;
+
+            $usuarios->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
+            dd($e);
+        }
+        return redirect()->route('director.cuentas')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
+    }
+
+    public function obtenerNombresDeUsuarios($idUsuario)
+    {
+        $usuarios = usuarios::find($idUsuario);
+        $alumnos = alumnos::where();
+        $personal = personal::all();
+        $tutores = tutores::all();
+
+    }
+
 }

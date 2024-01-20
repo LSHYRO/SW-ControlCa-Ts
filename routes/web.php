@@ -162,6 +162,7 @@ Route::middleware(['directorS'])->group(function () {
         Route::get('/director/gradosgrupos', 'gradosgrupos')->name('director.gradosgrupos');
         Route::get('/director/ciclosperiodos', 'ciclosperiodos')->name('director.ciclosperiodos');
         Route::get('/director/obtenerciclos', 'obtenerciclos')->name('director.obtenerciclos');
+        Route::get('/director/cuentas', 'cuentas')->name('director.cuentas');
 
         Route::post('/director/profesores', 'addProfesores')->name('director.addProfesores');
         Route::post('/director/directivos', 'addDirectivos')->name('director.addDirectivos');
@@ -173,6 +174,7 @@ Route::middleware(['directorS'])->group(function () {
         Route::post('/director/ciclos', 'addCiclos')->name('director.addCiclos');
         Route::post('/director/periodos', 'addPeriodos')->name('director.addPeriodos');
         Route::post('/director/clases', 'addClases')->name('director.addClases');
+        Route::post('/director/cuentas', 'addCuentas')->name('director.addCuentas');
 
         Route::get('/director/buscar/tutor', 'buscarTutor')->name('director.busquedaTutor');
 
@@ -222,6 +224,10 @@ Route::middleware(['directorS'])->group(function () {
 
         Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
         Route::get('/director/obtener/datos/clases/materiasxguposxgrados/{idClase}', 'obtenerClasesXMateriaGradoGrupo')->name('director.clasesXmateriasXgradosXgrupos');
+
+        Route::delete('/director/cuentas/{idUsuario}', 'eliminarCuentas')->name('director.eliminarCuentas');
+        Route::put('/director/cuentas/{idUsuario}/edit', 'actualizarCuentas')->name('director.actualizarCuentas');
+        Route::delete('/director/cuentas/delete/{usuariosIds}', 'elimUsuarios')->name('director.elimCuentas');
     });
 });
 

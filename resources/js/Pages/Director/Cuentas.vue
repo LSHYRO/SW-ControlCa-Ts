@@ -1,8 +1,7 @@
 <script setup>
-// Importaciones necesarias para la vista 
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import FormularioCuentas from '@/Components/director/FormularioCuentas.vue';
 import { ref, onMounted } from 'vue';
-import FormularioUsuarios from '@/Components/admin/FormularioUsuarios.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -15,10 +14,7 @@ import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
 import jsZip from 'jszip';
-////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////////////////
-// Variables e inicializaciones para el datatable
 window.JSZip = jsZip;
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 DataTable.use(DataTablesLib);
@@ -26,7 +22,6 @@ DataTable.use(ButtonsHtml5);
 DataTable.use(pdfmake);
 DataTable.use(Select);
 
-// Variables que recibe la vista para la funcionalidad
 const props = defineProps({
     usuarios: { type: Object },
 });
@@ -38,11 +33,11 @@ const closeable = true;
 
 var usuariosE = ({});
 
-const selectedUsuarios = ref([]);
+const selectedCuentas = ref([]);
 
 const form = useForm({});
 
-const abrirUsuarios = ($usuarioss) => {
+const abrirCuenta = ($usuarioss) => {
     usuariosE = $usuarioss;
     console.log(usuariosE);
     mostrarModalE.value = true;
@@ -56,11 +51,11 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
-const columnsUsuario = [
+const columnsCuentas = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="usuario-checkbox" data-id="${row.idUsuario}" ">`;
+            return `<input type="checkbox" class="cuenta-checkbox" data-id="${row.idUsuario}" ">`;
         }
     },
     {
@@ -68,6 +63,12 @@ const columnsUsuario = [
     },
     { data: 'usuario' },
     { data: 'contrasenia' },
+    { data: 'nombre_completo' },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idUsuario}"><i class="fa fa-refresh" aria-hidden="true"></i></button>`;
+        }
+    },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idUsuario}"><i class="fa fa-pencil"></i></button>`;
@@ -81,44 +82,44 @@ const columnsUsuario = [
     }
 ];
 
-const botonesUsuario = [{
-    title: 'Usuarios registrados',
+const botonesCuentas = [{
+    title: 'Cuentas registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Usuarios registrados',
+    title: 'Cuentas registrados',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Usuarios registrados',
+    title: 'Cuentas registrados',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Usuarios registrados',
+    title: 'Cuentas registrados',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 ];
 
-const toggleUsuarioSelection = (usuario) => {
-    if (selectedUsuarios.value.includes(usuario)) {
+const toggleCuentaSelection = (usuario) => {
+    if (selectedCuentas.value.includes(usuario)) {
         // Si la materia ya está seleccionada, la eliminamos del array
         console.log("Se quito la materia del la seleccion");
-        selectedUsuarios.value = selectedUsuarios.value.filter((u) => u !== usuario);
+        selectedCuentas.value = selectedCuentas.value.filter((u) => u !== usuario);
     } else {
-        selectedUsuarios.value.push(usuario);
+        selectedCuentas.value.push(usuario);
 
     }
     const botonEliminar = document.getElementById("eliminarUBtn");
 
-    if (selectedUsuarios.value.length > 0) {
+    if (selectedCuentas.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
         console.log("Se ha habilitado el botón");
     } else {
@@ -127,7 +128,7 @@ const toggleUsuarioSelection = (usuario) => {
     }
 };
 
-const eliminarUsuario = (idUsuario, usuario) => {
+const eliminarCuenta = (idUsuario, usuario) => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -139,13 +140,13 @@ const eliminarUsuario = (idUsuario, usuario) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarUsuarios', idUsuario));
+            form.delete(route('director.eliminarCuentas', idUsuario));
         }
 
     })
 };
 
-const eliminarUsuarios = () => {
+const eliminarCuentas = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -162,7 +163,7 @@ const eliminarUsuarios = () => {
                 const usuariosS = selectedUsuarios.value.map((usuario) => usuario.idUsuario);
                 const $usuariosIds = usuariosS.join(',');
                 console.log(usuariosS);
-                await form.delete(route('admin.elimUsuarios', $usuariosIds));
+                await form.delete(route('director.elimCuentas', $usuariosIds));
 
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedUsuarios.value = [];
@@ -176,16 +177,16 @@ const eliminarUsuarios = () => {
 
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
-    document.getElementById('usuariosTablaId').addEventListener('click', (event) => {
+    document.getElementById('cuentasTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
         //console.log(checkbox);
-        if (checkbox.classList.contains('usuario-checkbox')) {
+        if (checkbox.classList.contains('cuenta-checkbox')) {
             const usuarioId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
             if (props.usuarios) {
                 const usuario = props.usuarios.find(usuario => usuario.idUsuario === usuarioId);
                 if (usuario) {
-                    toggleUsuarioSelection(usuario);
+                    toggleCuentaSelection(usuario);
                 } else {
                     console.log("No se tiene tutor");
                 }
@@ -194,21 +195,21 @@ onMounted(() => {
     });
 
     // Manejar clic en el botón de editar
-    $('#usuariosTablaId').on('click', '.editar-button', function () {
+    $('#cuentasTablaId').on('click', '.editar-button', function () {
         const usuarioId = $(this).data('id');
         const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
-        abrirUsuarios(usuario);
+        abrirCuenta(usuario);
     });
 
     // Manejar clic en el botón de eliminar
-    $('#usuariosTablaId').on('click', '.eliminar-button', function () {
+    $('#cuentasTablaId').on('click', '.eliminar-button', function () {
         const usuarioId = $(this).data('id');
         const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
-        eliminarUsuario(usuarioId, usuario.usuario);
+        eliminarCuenta(usuarioId, usuario.usuario);
     });
 });
 
-const optionsUsuario = {
+const optionsCuenta = {
     responsive: true,
     autoWidth: false,
     dom: 'Bfrtip',
@@ -221,15 +222,15 @@ const optionsUsuario = {
         lengthMenu: 'Mostrar _MENU_ registros',
         paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
     },
-    buttons: botonesUsuario,
+    buttons: botonesCuentas,
 };
 
 </script>
 
 <template>
-    <AdminLayout title="usuarios">
+    <DirectorLayout title="Cuentas">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
-            <h2 class="text-black text-2xl text-center font-semibold p-5">Usuarios</h2>
+            <h2 class="text-black text-2xl text-center font-semibold p-5">Cuentas de usuarios</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- flash message start -->
@@ -244,12 +245,12 @@ const optionsUsuario = {
                 <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
                 <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-plus mr-2"></i>Agregar Usuario
+                    <i class="fa fa-plus mr-2"></i>Agregar Cuentas
                 </button>
                 <button id="eliminarUBtn" disabled="true"
                     class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarUsuarios">
-                    <i class="fa fa-trash mr-2"></i>Borrar Usuario(s)
+                    @click="eliminarCuentas">
+                    <i class="fa fa-trash mr-2"></i>Borrar Cuenta(s)
                 </button>
                 <!--</div>-->
             </div>
@@ -257,7 +258,7 @@ const optionsUsuario = {
             <!-- Línea con gradiente -->
             <div class="overflow-x-auto">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="usuariosTablaId" :columns="columnsUsuario" :data="usuarios" :options="optionsUsuario">
+                    id="cuentasTablaId" :columns="columnsCuentas" :data="usuarios" :options="optionsCuenta">
                     <thead>
                         <tr class="text-sm leading-normal">
                             <th
@@ -273,7 +274,14 @@ const optionsUsuario = {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Contrasenia
+                                Contraseña
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Nombre
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -286,9 +294,9 @@ const optionsUsuario = {
                 </DataTable>
             </div>
         </div>
-        <formulario-usuarios :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'"></formulario-usuarios>
-        <formulario-usuarios :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar usuario'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE"></formulario-usuarios>
-    </AdminLayout>
+        <formulario-cuentas :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+            :title="'Añadir cuenta'" :op="'1'" :modal="'modalCreate'"></formulario-cuentas>
+        <formulario-cuentas :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+            :title="'Editar cuenta'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE"></formulario-cuentas>
+    </DirectorLayout>
 </template>
