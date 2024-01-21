@@ -35,6 +35,30 @@ use Mockery\Undefined;
 
 class AdminController extends Controller
 {
+    public function generarContraseña()
+    {
+        // Generar una parte de la contraseña sin dígitos
+        $parteAlfanumerica = Str::random(5, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+
+        // Generar exactamente 3 dígitos
+        $parteNumerica = '';
+        for ($i = 0; $i < 3; $i++) {
+            $parteNumerica .= mt_rand(0, 9);
+        }
+
+        // Mezclar las partes de la contraseña para asegurar aleatoriedad
+        $password = str_shuffle($parteAlfanumerica . $parteNumerica);
+        return $password;
+    }
+
+    public function quitarAcentos($palabra)
+    {
+        $textoConAcentos = $palabra;
+        // Remplazar caracteres con tilde
+        $textoSinAcentos = strtr($textoConAcentos, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U']);
+        return $textoSinAcentos;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Funciones para acceder a la página de Inicio    
     public function index()
@@ -109,18 +133,14 @@ class AdminController extends Controller
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
-            //Hash::make($contrasenia);
-            //$usuario->activo = 1;
-            //echo "Tu contraseña generada es: $contrasenia";
-            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();
 
             //Se busca el tipo de usuario en la BD
@@ -221,15 +241,7 @@ class AdminController extends Controller
                 $usuario->delete();
             }
             return redirect()->route('admin.profesores')->With("message", "Profesores eliminados correctamente");
-            /*
-            // Elimina las materias
-            materias::whereIn('idMateria', $personalIdsArray)->delete();
-
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente"); */
         } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
@@ -374,7 +386,7 @@ class AdminController extends Controller
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $tipo_personalF = tipo_personal::find($request->tipoPersonal);
             if ($tipo_personalF->tipo_personal != "Director") {
@@ -383,7 +395,7 @@ class AdminController extends Controller
                 $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
             }
             $usuario = new usuarios();
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
@@ -394,14 +406,7 @@ class AdminController extends Controller
             })->first(); //cambie get()
 
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-            //Hash::make($contrasenia);
-            //$usuario->activo = 1;
-            //echo "Tu contraseña generada es: $contrasenia";
-            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();
-
-            //Se busca el tipo de usuario en la BD
-            //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
@@ -415,8 +420,6 @@ class AdminController extends Controller
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
 
-            //Se busca el tipo de personal en la BD
-            //$tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
             $tipo_personal = tipo_personal::where(function ($query) {
                 $query->where('tipo_personal', 'Director')
                     ->orWhere('tipo_personal', 'Personal escolar');
@@ -508,15 +511,7 @@ class AdminController extends Controller
                 $usuario->delete();
             }
             return redirect()->route('admin.directivos')->With("message", "Profesores eliminados correctamente");
-            /*
-            // Elimina las materias
-            materias::whereIn('idMateria', $personalIdsArray)->delete();
-
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente"); */
         } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
@@ -771,17 +766,14 @@ class AdminController extends Controller
                 'asentamiento' => 'required',
             ]);
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . substr($request->correoElectronico, 0, 2) . Str::random(3));
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . substr($this->quitarAcentos($request->correoElectronico), 0, 2) . Str::random(3));
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
             $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
             $usuario->idTipoUsuario = $tipoUsuarioT->idTipoUsuario;
-            //Hash::make($contrasenia);
-            //echo "Tu contraseña generada es: $contrasenia";
-            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();
 
             //Se busca el tipo de usuario en la BD
@@ -963,17 +955,14 @@ class AdminController extends Controller
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
             $usuario->password =  bcrypt($contrasenia);
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-            //$usuario->activo = 1;
-            //echo "Tu contraseña generada es: $contrasenia";
-            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
             $usuario->save();
 
             //Se busca el tipo de usuario en la BD
@@ -1233,7 +1222,7 @@ class AdminController extends Controller
             $clase->idCiclo = $request->ciclos;
 
             $clase->save();
-            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo );
+            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
         } catch (Exception $e) {
             Log::info('Error en guardar la clase: ' . $e);
         }
@@ -1436,8 +1425,6 @@ class AdminController extends Controller
             // Redirige a la página deseada después de la eliminación
             return redirect()->route('admin.gradosgrupos')->with('message', "Grupos eliminadas correctamente");
         } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
@@ -1494,8 +1481,6 @@ class AdminController extends Controller
             // Redirige a la página deseada después de la eliminación
             return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclos eliminadas correctamente");
         } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
@@ -1652,8 +1637,6 @@ class AdminController extends Controller
             // Redirige a la página deseada después de la eliminación
             return redirect()->route('admin.usuarios')->with('message', "Usuarios eliminados correctamente");
         } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
