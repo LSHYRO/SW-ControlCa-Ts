@@ -48,8 +48,6 @@ class AdminController extends Controller
 
         // Mezclar las partes de la contraseña para asegurar aleatoriedad
         $password = str_shuffle($parteAlfanumerica . $parteNumerica);
-
-        dd($password);
         return $password;
     }
 
