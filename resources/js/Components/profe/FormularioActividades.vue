@@ -100,7 +100,7 @@ const save = () => {
         return;
     }
 
-    form.post(route('admin.addActividades'), {
+    form.post(route('profe.addActividades'), {
         onSuccess: () => {
             close()
             descripcionError.value = '';

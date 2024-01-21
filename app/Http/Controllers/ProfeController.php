@@ -58,15 +58,15 @@ class ProfeController extends Controller
     }
 
     public function actividadesClase()
-    {
+    {                                       //Esto es para agregar actividades
         $actividades = actividades::all();
         $clases = clases::all();
         $periodos = periodos::all();
         $tipoActividad = tiposActividades::all();
-        $actividades->periodos = $periodos ? $periodos->periodos : null;
 
         return Inertia::render('Profe/Clase', [
         'actividades' => $actividades,
+        'clases' => $clases,
         'periodos'=>$periodos,
         'tipoActividad'=>$tipoActividad,
     ]);
