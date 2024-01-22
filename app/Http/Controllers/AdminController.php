@@ -62,14 +62,15 @@ class AdminController extends Controller
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Funciones para acceder a la página de Inicio    
     public function index()
-    {
+    {        
         return Inertia::render('Principal');
     }
 
     public function inicio()
     {
-        Log::info("Identificacion del usuario: " . auth()->user());
-        return Inertia::render('Admin/Inicio');
+        $usuario = $this->obtenerInfoUsuario();
+        
+        return Inertia::render('Admin/Inicio',['usuario' => $usuario]);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,8 +105,9 @@ class AdminController extends Controller
             return $persona;
         });
 
+        $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Admin/Profesores', [
-            'personal' => $personalConNombres, 'tipoSangre' => $tipoSangre, 'generos' => $generos
+            'personal' => $personalConNombres, 'tipoSangre' => $tipoSangre, 'generos' => $generos, 'usuario' => $usuario
         ]);
     }
 
@@ -354,11 +356,14 @@ class AdminController extends Controller
             return $persona;
         });
 
+        $usuario = $this->obtenerInfoUsuario();
+
         return Inertia::render('Admin/Directivos', [
             'personal' => $personalConNombres,
             'tipoSangre' => $tipoSangre,
             'generos' => $generos,
-            'tipo_personal' => $tipo_personal
+            'tipo_personal' => $tipo_personal,
+            'usuario' => $usuario
         ]);
     }
 
@@ -592,7 +597,9 @@ class AdminController extends Controller
     public function materias()
     {
         $materias = materias::all();
-        return Inertia::render('Admin/Materias', ['materias' => $materias]);
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Admin/Materias', ['materias' => $materias, 'usuario' => $usuario]);
     }
 
     public function clases()
@@ -614,6 +621,8 @@ class AdminController extends Controller
         $materias = materias::all();
         $ciclos = ciclos::all();
 
+        $usuario = $this->obtenerInfoUsuario();
+
         return Inertia::render('Admin/Clases', [
             'clases' => $clases,
             'grupos' => $grupos,
@@ -621,6 +630,7 @@ class AdminController extends Controller
             'personal' => $personal,
             'materias' => $materias,
             'ciclos' => $ciclos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -693,11 +703,21 @@ class AdminController extends Controller
             return $grado;
         });
 
+        $usuario = $this->obtenerInfoUsuario();
         $grupos = grupos::all();
         $materiasT = materias::where('esTaller', '1')->get();
         //$materias = materias::where('esTaller', 'true')->get();
         //$alumnos = alumnos::all();
-        return Inertia::render('Admin/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos, 'talleres' => $materiasT]);
+        return Inertia::render('Admin/Tutores_Alumnos', [
+            'tutores' => $tutores, 
+            'alumnos' => $alumnos, 
+            'generos' => $generos, 
+            'tipoSangre' => $tipoSangre, 
+            'grados' => $grados, 
+            'grupos' => $grupos, 
+            'talleres' => $materiasT,
+            'usuario' => $usuario
+        ]);
     }
 
     public function obtenerGruposXGrado($idGrado)
@@ -732,11 +752,13 @@ class AdminController extends Controller
         $ciclos = ciclos::all();
         $grados = grados::all();
         $grupos = grupos::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Admin/GradosGrupos', [
             'ciclos' => $ciclos,
             'grados' => $grados,
             'grupos' => $grupos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -744,10 +766,12 @@ class AdminController extends Controller
     {
         $ciclos = ciclos::all();
         $periodos = periodos::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Admin/CiclosPeriodos', [
             'ciclos' => $ciclos,
             'periodos' => $periodos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -1603,9 +1627,11 @@ class AdminController extends Controller
     public function usuarios()
     {
         $usuarios = usuarios::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Admin/Usuarios', [
             'usuarios' => $usuarios,
+            'usuario' => $usuario
         ]);
     }
 
@@ -1666,5 +1692,33 @@ class AdminController extends Controller
             dd($e);
         }
         return redirect()->route('admin.usuarios')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
+    }
+
+    public function obtenerUsuario()
+    {
+        return auth()->user();
+    }
+
+    public function obtenerTipoUsuario($idTipoUsuario)
+    {
+        return tipoUsuarios::find($idTipoUsuario);
+    }
+
+    public function obtenerDatosPersonal($idUsuario)
+    {
+        try {
+            $usuario = usuarios::where('idUsuario', $idUsuario)->with(['personal'])->first();
+            return $usuario->personal;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['personal'=>'Sin asignar'];
+        }
+    }
+
+    public function obtenerInfoUsuario(){
+        $idUsuario = auth()->user()->idUsuario;
+        $usuario = usuarios::find($idUsuario);
+        $usuario->tipoUsuario1=$usuario->tipoUsuarios->tipoUsuario;
+        return $usuario;
     }
 }

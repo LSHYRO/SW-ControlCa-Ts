@@ -7,6 +7,7 @@ import Periodos from '@/Components/admin/Periodos.vue';
 const props = defineProps({
     ciclos: { type: Object },
     periodos: { type: Object },
+    usuario: { type: Object }
 });
 
 // Variables y constantes para los datos
@@ -40,7 +41,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Ciclos y Periodos">
+    <AdminLayout title="Ciclos y Periodos" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <div class="flex items-center justify-center w-full">
                 <div class="rounded-3xl border bg-slate-200 flex justify-between w-1/6">

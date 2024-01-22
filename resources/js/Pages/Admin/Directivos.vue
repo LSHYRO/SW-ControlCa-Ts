@@ -30,6 +30,7 @@ DataTable.use(Select);
     tipoSangre: { type: Object },
     generos: { type: Object },
     tipo_personal: { type: Object },
+    usuario: {type: Object}
 });
 
  // Constantes para el funcionamientos del modal y su configuración
@@ -230,7 +231,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Directivos">
+    <AdminLayout title="Directivos" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Directivos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->

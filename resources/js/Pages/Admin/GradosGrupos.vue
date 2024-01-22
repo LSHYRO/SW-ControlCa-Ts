@@ -9,7 +9,7 @@ const props = defineProps({
     grados: { type: Object },
     grupos: { type: Object },
     ciclos: { type: Object },
-
+    usuario: { type: Object }
 });
 
 const gradosB = ref(true);
@@ -45,7 +45,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Grados y Grupos">
+    <AdminLayout title="Grados y Grupos" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <div class="flex items-center justify-center w-full">
                 <div class="rounded-3xl border bg-slate-200 flex justify-between w-1/6">

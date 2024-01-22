@@ -3,6 +3,10 @@ import { ref, watchEffect } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 
+const props = defineProps({
+    usuario: {type: Object}
+});
+
 const page = usePage();
 const show = ref(true);
 const style = ref('success');
@@ -57,7 +61,7 @@ onMounted(async () => {
             <!-- Botón de Perfil -->
             <div>
                 <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
-                <i class="text-white font-['DM Sans']">  {{ " " + tipo_usuario}} </i>
+                <i class="text-white font-['DM Sans']">  {{ " " + props.usuario.tipoUsuario1}} </i>
             </div>
         </div>
     </div>

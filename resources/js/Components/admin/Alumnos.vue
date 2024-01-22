@@ -23,9 +23,9 @@ import jsZip from 'jszip';
 window.JSZip = jsZip;
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 DataTable.use(DataTablesLib);
-DataTable.use(ButtonsHtml5);
-DataTable.use(pdfmake);
 DataTable.use(Select);
+DataTable.use(pdfmake);
+DataTable.use(ButtonsHtml5);
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,26 +89,32 @@ const columns2 = [
     { data: 'apellidoP' },
     { data: 'apellidoM' },
     { data: 'nombre' },
-    { data: 'fechaNacimiento'},
+    { data: 'fechaNacimiento' },
     { data: 'CURP' },
     { data: 'genero' },
-    { data: null, render: function(data, type, row, meta){
-        return row.numTelefono + " " +`<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
-    }},
+    {
+        data: null, render: function (data, type, row, meta) {
+            return row.numTelefono + " " + `<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+        }
+    },
     { data: 'correoElectronico' },
     { data: 'tipoSangre' },
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'domicilio' },
-    { data: 'esForaneo', render: function (data, type, row) {
+    {
+        data: 'esForaneo', render: function (data, type, row) {
             return data ? 'Si' : 'No';
-        }},
+        }
+    },
     { data: 'grado' },
     { data: 'grupo' },
     { data: 'materia' },
-    { data: null, render: function(data, type, row, meta){
-        return row.tutor + " " +`<a href="tel:${row.tutorTel} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
-    }},
+    {
+        data: null, render: function (data, type, row, meta) {
+            return row.tutor + " " + `<a href="tel:${row.tutorTel} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+        }
+    },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idAlumno}"><i class="fa fa-pencil"></i></button>`;
@@ -126,30 +132,46 @@ const columns2 = [
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Creación de los botones para al generación de documentos, ademas de la configuración de los
 // titulos de los documentos
-const botones2 = [{
-    title: 'Alumnos registrados',
-    extend: 'excelHtml5',
-    text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
-{
-    title: 'Alumnos registrados',
-    extend: 'pdfHtml5',
-    text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
-{
-    title: 'Alumnos registrados',
-    extend: 'print',
-    text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
-{
-    title: 'Alumnos registrados',
-    extend: 'copy',
-    text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
+const botones2 = [
+    {
+        title: 'Alumnos registrados',
+        extend: 'excelHtml5',
+        text: '<i class="fa-solid fa-file-excel"></i> Excel',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        },
+    },
+    {
+        title: 'Alumnos registrados',
+        extend: 'pdfHtml5',
+        text: '<i class="fa-solid fa-file-pdf"></i> PDF',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        },
+        orientation: 'landscape',
+        pageSize: 'TABLOID'
+    },
+    {
+        title: 'Alumnos registrados',
+        extend: 'print',
+        text: '<i class="fa-solid fa-print"></i> Imprimir',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        },
+        orientation: 'landscape',
+    },
+    {
+        title: 'Alumnos registrados',
+        extend: 'copy',
+        text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        }
+    },
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -198,8 +220,8 @@ const eliminarAlumno = (idAlumno, alumno) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Función para eliminar varios alumnos a la vez (a tráves del bóton eliminar)
- const eliminarAlumnos = () => {
+// Función para eliminar varios alumnos a la vez (a tráves del bóton eliminar)
+const eliminarAlumnos = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -287,16 +309,16 @@ onMounted(() => {
             </button>
         </div>
         <div>
-            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column" id="alumnosTablaId" name="alumnosTablaId"
-                :columns="columns2" :data="alumnos" :options="{
-                    responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
+            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
+                id="alumnosTablaId" name="alumnosTablaId" :columns="columns2" :data="alumnos" :options="{
+                    responsive: true, autoWidth: false, dom: 'Bftrip', language: {
                         search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                         info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
                         infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
                         infoFiltered: '(filtrado de un total de _MAX_ registros)',
                         lengthMenu: 'Mostrar _MENU_ registros',
                         paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                    }, buttons: botones2
+                    }, buttons: [botones2], 
                 }">
                 <thead>
                     <tr class="text-sm leading-normal">
@@ -388,10 +410,11 @@ onMounted(() => {
                 </thead>
             </DataTable>
         </div>
-    </div>    
+    </div>
     <formulario-alumnos :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-        :title="'Añadir alumno'" :op="'1'" :modal="'modalCreate'" :generos="props.generos" :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
+        :title="'Añadir alumno'" :op="'1'" :modal="'modalCreate'" :generos="props.generos" :talleres="props.talleres"
+        :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
     <formulario-alumnos :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :alumno="alumnoE" :generos="props.generos" :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados" ></formulario-alumnos>
-    
+        :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :alumno="alumnoE" :generos="props.generos"
+        :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
 </template>
