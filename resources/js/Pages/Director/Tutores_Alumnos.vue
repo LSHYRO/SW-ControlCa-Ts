@@ -17,6 +17,7 @@ const props = defineProps({
     grupos: { type: Object },
     tipoSangre: { type: Object },
     talleres: { type: Object },
+    usuario: { type: Object }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +55,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <DirectorLayout title="Tutores y alumnos">
+    <DirectorLayout title="Tutores y alumnos" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <div class="flex items-center justify-center w-full">
                 <div class="rounded-3xl border bg-slate-200 flex justify-between w-1/6">

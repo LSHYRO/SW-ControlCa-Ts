@@ -32,6 +32,7 @@ const props = defineProps({
     personal: { type: Object },
     materias: { type: Object },
     ciclos: { type: Object },
+    usuario: { type: Object }
 });
 
 const columns = [
@@ -272,7 +273,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <DirectorLayout title="clases">
+    <DirectorLayout title="clases" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->

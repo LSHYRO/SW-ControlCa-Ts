@@ -33,11 +33,50 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Mockery\Undefined;
 
-class DirectorController extends Controller{
+class DirectorController extends Controller
+{
+
+    public function generarContraseña()
+    {
+        // Generar una parte de la contraseña sin dígitos
+        $parteAlfanumerica = Str::random(5, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+
+        // Generar exactamente 3 dígitos
+        $parteNumerica = '';
+        for ($i = 0; $i < 3; $i++) {
+            $parteNumerica .= mt_rand(0, 9);
+        }
+
+        // Mezclar las partes de la contraseña para asegurar aleatoriedad
+        $password = str_shuffle($parteAlfanumerica . $parteNumerica);
+        return $password;
+    }
+
+    public function quitarAcentos($palabra)
+    {
+        $textoConAcentos = $palabra;
+        // Remplazar caracteres con tilde
+        $textoSinAcentos = strtr($textoConAcentos, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U']);
+        return $textoSinAcentos;
+    }
+
+    public function obtenerInfoUsuario()
+    {
+        $idUsuario = auth()->user()->idUsuario;
+        $usuario = usuarios::where('idUsuario', $idUsuario)->with(['personal'])->first();
+        $usuario->tipoUsuario1 = $usuario->tipoUsuarios->tipoUsuario;
+        $usuario->personalNombre = $usuario->personal->nombre_completo;
+
+        return $usuario;
+    }
 
     public function inicio()
     {
-        return Inertia::render('Director/Inicio');
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Director/Inicio', [
+            'usuario' => $usuario
+        ]);
     }
 
     public function profesores()
@@ -45,7 +84,7 @@ class DirectorController extends Controller{
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
-            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
+            ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
 
         $tipoSangre = tipo_Sangre::all();
@@ -68,8 +107,13 @@ class DirectorController extends Controller{
             return $persona;
         });
 
+        $usuario = $this->obtenerInfoUsuario();
+
         return Inertia::render('Director/Profesores', [
-            'personal' => $personalConNombres, 'tipoSangre' => $tipoSangre, 'generos' => $generos
+            'personal' => $personalConNombres,
+            'tipoSangre' => $tipoSangre,
+            'generos' => $generos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -97,14 +141,14 @@ class DirectorController extends Controller{
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
-            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;//Se agregó lo siguietne
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario; //Se agregó lo siguietne
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
-            $usuario->password =  bcrypt($contrasenia);//Le agregé esto
+            $usuario->password =  bcrypt($contrasenia); //Le agregé esto
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
@@ -112,7 +156,7 @@ class DirectorController extends Controller{
             $usuario->save();
             //dd($usuario);
             //Se busca el tipo de usuario en la BD
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first(); //Le puse P mayuscula
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
@@ -127,7 +171,7 @@ class DirectorController extends Controller{
             $domicilio->save();
 
             //Se busca el tipo de personal en la BD
-            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first();//Le puse P mayuscula
+            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first(); //Le puse P mayuscula
 
             //$personal = new personal($request->input());
             $personal = new personal();
@@ -162,7 +206,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM. " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
+            return redirect()->route('director.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
         } catch (Exception $e) {
             dd($e);
         }
@@ -171,7 +215,7 @@ class DirectorController extends Controller{
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first(); //Le puse P mayuscula
 
         $personal = personal::find($idPersonal);
         $usuario = usuarios::find($personal->idUsuario);
@@ -196,7 +240,7 @@ class DirectorController extends Controller{
             // Limpia los IDs para evitar posibles problemas de seguridad
             $personalIdsArray = array_map('intval', $personalIdsArray);
 
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first();//Le puse P mayuscula
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first(); //Le puse P mayuscula
 
             for ($i = 0; $i < count($personalIdsArray); $i++) {
                 $personal = personal::find($personalIdsArray[$i]);
@@ -255,7 +299,7 @@ class DirectorController extends Controller{
             $domicilio->save();
 
             //Se busca el tipo de personal en la BD
-            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first();//Le puse P mayuscula
+            $tipo_personal = tipo_personal::where('tipo_personal', 'Profesor')->first(); //Le puse P mayuscula
 
             //$personal = new personal($request->input());
             $personal = personal::findOrFail($request->idPersonal);
@@ -302,7 +346,7 @@ class DirectorController extends Controller{
             ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
             //->where('tipo_personal.tipo_personal', 'profesor')
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('tipo_personal.tipo_personal', 'Director')
                     ->orWhere('tipo_personal.tipo_personal', 'Personal escolar');
             })
@@ -314,7 +358,7 @@ class DirectorController extends Controller{
         $tipo_personal = tipo_personal::all();
 
 
-            $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
+        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
             $genero = $generos->where('idGenero', $persona->idGenero)->first();
             $tipoSangre = $tipoSangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
@@ -330,11 +374,14 @@ class DirectorController extends Controller{
             return $persona;
         });
 
+        $usuario = $this->obtenerInfoUsuario();
+
         return Inertia::render('Director/Directivos', [
-            'personal' => $personalConNombres, 
-            'tipoSangre' => $tipoSangre, 
+            'personal' => $personalConNombres,
+            'tipoSangre' => $tipoSangre,
             'generos' => $generos,
-            'tipo_personal' => $tipo_personal
+            'tipo_personal' => $tipo_personal,
+            'usuario' => $usuario
         ]);
     }
 
@@ -362,19 +409,19 @@ class DirectorController extends Controller{
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
             $usuario->password =  bcrypt($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
-            $tipoUsuario = tipoUsuarios::where(function($query) {
+            $tipoUsuario = tipoUsuarios::where(function ($query) {
                 $query->where('tipoUsuario', 'Director')
-                      ->orWhere('tipoUsuario', 'Personal escolar');
-            })->first();//cambie get()
+                    ->orWhere('tipoUsuario', 'Personal escolar');
+            })->first(); //cambie get()
 
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
 
@@ -397,11 +444,11 @@ class DirectorController extends Controller{
 
             //Se busca el tipo de personal en la BD
             //$tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
-            $tipo_personal = tipo_personal::where(function($query) {
+            $tipo_personal = tipo_personal::where(function ($query) {
                 $query->where('tipo_personal', 'Director')
-                      ->orWhere('tipo_personal', 'Personal escolar');
+                    ->orWhere('tipo_personal', 'Personal escolar');
             })->first();
-            
+
 
             //$personal = new personal($request->input());
             $personal = new personal();
@@ -436,7 +483,7 @@ class DirectorController extends Controller{
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM. " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
+            return redirect()->route('director.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
         } catch (Exception $e) {
             dd($e);
         }
@@ -445,10 +492,10 @@ class DirectorController extends Controller{
     public function eliminarDirectivos($idPersonal)
     {
 
-        $tipoUsuario = tipoUsuarios::where(function($query) {
+        $tipoUsuario = tipoUsuarios::where(function ($query) {
             $query->where('tipoUsuario', 'Director')
-                  ->orWhere('tipoUsuario', 'Personal escolar');
-        })->first();//cambie get()
+                ->orWhere('tipoUsuario', 'Personal escolar');
+        })->first(); //cambie get()
 
         $personal = personal::find($idPersonal);
         $usuario = usuarios::find($personal->idUsuario);
@@ -472,10 +519,10 @@ class DirectorController extends Controller{
             // Limpia los IDs para evitar posibles problemas de seguridad
             $personalIdsArray = array_map('intval', $personalIdsArray);
 
-            $tipoUsuario = tipoUsuarios::where(function($query) {
+            $tipoUsuario = tipoUsuarios::where(function ($query) {
                 $query->where('tipoUsuario', 'Director')
-                      ->orWhere('tipoUsuario', 'Personal escolar');
-            })->first();//cambie get()
+                    ->orWhere('tipoUsuario', 'Personal escolar');
+            })->first(); //cambie get()
 
             for ($i = 0; $i < count($personalIdsArray); $i++) {
                 $personal = personal::find($personalIdsArray[$i]);
@@ -532,9 +579,9 @@ class DirectorController extends Controller{
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
 
-            $tipo_personal = tipo_personal::where(function($query) {
+            $tipo_personal = tipo_personal::where(function ($query) {
                 $query->where('tipo_personal', 'Director')
-                      ->orWhere('tipo_personal', 'Personal escolar');
+                    ->orWhere('tipo_personal', 'Personal escolar');
             })->first();
 
             //$personal = new personal($request->input());
@@ -577,14 +624,19 @@ class DirectorController extends Controller{
     public function materias()
     {
         $materias = materias::all();
-        return Inertia::render('Director/Materias', ['materias' => $materias]);
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Director/Materias', [
+            'materias' => $materias,
+            'usuario' => $usuario
+        ]);
     }
 
     public function clases()
     {
 
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->where('tipo_personal.tipo_personal', 'Profesor')//Le puse con mayuscula la P
+            ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
 
         $clases = clases::all();
@@ -593,6 +645,7 @@ class DirectorController extends Controller{
         //$personal = personal::all();
         $materias = materias::all();
         $ciclos = ciclos::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Director/Clases', [
             'clases' => $clases,
@@ -601,6 +654,7 @@ class DirectorController extends Controller{
             'personal' => $personal,
             'materias' => $materias,
             'ciclos' => $ciclos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -672,9 +726,18 @@ class DirectorController extends Controller{
 
         $grupos = grupos::all();
         $materiasT = materias::where('esTaller', '1')->get();
-        //$materias = materias::where('esTaller', 'true')->get();
-        //$alumnos = alumnos::all();
-        return Inertia::render('Director/Tutores_Alumnos', ['tutores' => $tutores, 'alumnos' => $alumnos, 'generos' => $generos, 'tipoSangre' => $tipoSangre, 'grados' => $grados, 'grupos' => $grupos, 'talleres' => $materiasT]);
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Director/Tutores_Alumnos', [
+            'tutores' => $tutores,
+            'alumnos' => $alumnos,
+            'generos' => $generos,
+            'tipoSangre' => $tipoSangre,
+            'grados' => $grados,
+            'grupos' => $grupos,
+            'talleres' => $materiasT,
+            'usuario' =>  $usuario
+        ]);
     }
 
     public function obtenerGruposXGrado($idGrado)
@@ -696,11 +759,13 @@ class DirectorController extends Controller{
         $ciclos = ciclos::all();
         $grados = grados::all();
         $grupos = grupos::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Director/GradosGrupos', [
             'ciclos' => $ciclos,
             'grados' => $grados,
             'grupos' => $grupos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -708,10 +773,12 @@ class DirectorController extends Controller{
     {
         $ciclos = ciclos::all();
         $periodos = periodos::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Director/CiclosPeriodos', [
             'ciclos' => $ciclos,
             'periodos' => $periodos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -730,10 +797,10 @@ class DirectorController extends Controller{
                 'asentamiento' => 'required',
             ]);
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . substr($request->correoElectronico, 0, 2) . Str::random(3));
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . substr($this->quitarAcentos($request->correoElectronico), 0, 2) . Str::random(3));
             $usuario->contrasenia = $contrasenia;
             $usuario->password = bcrypt($contrasenia);
             $tipoUsuarioT = tipoUsuarios::where('tipoUsuario', 'tutor')->first();
@@ -922,10 +989,10 @@ class DirectorController extends Controller{
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
-            $contrasenia = Str::random(8);
+            $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
-            $usuario->usuario = strtolower(substr($request->apellidoP, 0, 2) . substr($request->apellidoM, 0, 1) . substr($request->nombre, 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
@@ -1579,10 +1646,9 @@ class DirectorController extends Controller{
         $grados = grados::all();
         $personal = personal::all();
         $materias = materias::all();
-
         $clases = clases::all();
-        
         $ciclos = ciclos::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Director/Calificaciones', [
             'clases' => $clases,
@@ -1591,21 +1657,24 @@ class DirectorController extends Controller{
             'personal' => $personal,
             'materias' => $materias,
             'ciclos' => $ciclos,
+            'usuario' => $usuario
         ]);
     }
 
     public function perfil()
     {
         try {
-            $usuario = auth()->user();
+            $usuario = $this->obtenerInfoUsuario();
             $personal = personal::where('idUsuario', $usuario->idUsuario)->with(['generos', 'tipo_sangre', 'direcciones'])->first();
 
             $personal->domicilio = $personal->direcciones->calle . " #" . $personal->direcciones->numero . ", " . $personal->direcciones->asentamientos->asentamiento
                 . ", " . $personal->direcciones->asentamientos->municipios->municipio . ", " . $personal->direcciones->asentamientos->municipios->estados->estado
                 . ", " . $personal->direcciones->asentamientos->codigoPostal->codigoPostal;
-
-
-            return Inertia::render('Director/Perfil', ['usuario' => $usuario, 'director' => $personal]);
+         
+            return Inertia::render('Director/Perfil', [
+                'usuario' => $usuario, 
+                'director' => $personal,
+            ]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -1634,21 +1703,24 @@ class DirectorController extends Controller{
     {
         //Para poder mostrar los nombres de los usuarios segun su idUsuario
         $usuarios = DB::table('usuarios')
-        ->leftJoin('alumnos', 'usuarios.idUsuario', '=', 'alumnos.idUsuario')
-        ->leftJoin('personal', 'usuarios.idUsuario', '=', 'personal.idUsuario')
-        ->leftJoin('tutores', 'usuarios.idUsuario', '=', 'tutores.idUsuario')
-        ->where(function ($query) {
-            $query->whereRaw('alumnos.idUsuario IS NOT NULL')
-                ->orWhereRaw('personal.idUsuario IS NOT NULL')
-                ->orWhereRaw('tutores.idUsuario IS NOT NULL')
-                ->orWhereNull('usuarios.idTipoUsuario');
-        })
-        ->select('usuarios.*', DB::raw('COALESCE(alumnos.nombre_completo, personal.nombre_completo, tutores.nombre_completo) as nombre_completo'))
-        ->get();
+            ->leftJoin('alumnos', 'usuarios.idUsuario', '=', 'alumnos.idUsuario')
+            ->leftJoin('personal', 'usuarios.idUsuario', '=', 'personal.idUsuario')
+            ->leftJoin('tutores', 'usuarios.idUsuario', '=', 'tutores.idUsuario')
+            ->where(function ($query) {
+                $query->whereRaw('alumnos.idUsuario IS NOT NULL')
+                    ->orWhereRaw('personal.idUsuario IS NOT NULL')
+                    ->orWhereRaw('tutores.idUsuario IS NOT NULL')
+                    ->orWhereNull('usuarios.idTipoUsuario');
+            })
+            ->select('usuarios.*', DB::raw('COALESCE(alumnos.nombre_completo, personal.nombre_completo, tutores.nombre_completo) as nombre_completo'))
+            ->get();
+        
+            $usuario = $this->obtenerInfoUsuario();
 
-    return Inertia::render('Director/Cuentas', [
-        'usuarios' => $usuarios,
-    ]);
+        return Inertia::render('Director/Cuentas', [
+            'usuarios' => $usuarios,
+            'usuario' => $usuario
+        ]);
     }
 
     public function addCuentas(Request $request)
@@ -1718,7 +1790,5 @@ class DirectorController extends Controller{
         $alumnos = alumnos::where();
         $personal = personal::all();
         $tutores = tutores::all();
-
     }
-
 }

@@ -24,6 +24,7 @@ DataTable.use(Select);
 
 const props = defineProps({
     usuarios: { type: Object },
+    usuario: { type: Object }
 });
 
 const mostrarModal = ref(false);
@@ -228,7 +229,7 @@ const optionsCuenta = {
 </script>
 
 <template>
-    <DirectorLayout title="Cuentas">
+    <DirectorLayout title="Cuentas" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Cuentas de usuarios</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->

@@ -41,6 +41,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    usuario: {
+        type: Object, 
+        default: () => ({})
+    }
 });
 
 const form = useForm({
@@ -101,7 +105,7 @@ const getGrupo = (idGrupo) => {
 </script>
 
 <template>
-    <DirectorLayout title="materias">
+    <DirectorLayout title="materias" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Calificaciones</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->

@@ -7,6 +7,10 @@ const show = ref(true);
 const style = ref('success');
 const message = ref('');
 
+const props = defineProps({
+    usuario: { type: Object }
+});
+
 const toggleSidebar = () => {
             sideNav.classList.toggle('hidden'); // Agrega o quita la clase 'hidden' para mostrar u ocultar la navegación lateral
         }
@@ -38,7 +42,7 @@ watchEffect(async () => {
         <!-- Botón de Perfil -->
         <div>
             <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
-            <i class="text-white font-['DM Sans']"> Director </i>
+            <i class="text-white font-['DM Sans'] m-3"> {{props.usuario.tipoUsuario1}} </i>
         </div>
     </div>
 </div>

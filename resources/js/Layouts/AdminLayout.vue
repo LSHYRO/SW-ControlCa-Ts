@@ -10,9 +10,6 @@ const props = defineProps({
     usuario: {type: Object}
 });
 
-const tipo_usuario = ref('');
-const nombre_usuario = ref('');
-
 const showingNavigationDropdown = ref(false);
 
 const switchToTeam = (team) => {
@@ -22,22 +19,6 @@ const switchToTeam = (team) => {
         preserveState: false,
     });
 };
-/*
-onMounted(async () => {
-    try {
-        const usuario = await axios.get(route('obtenerUsuario'));
-        const idTipoUsuario = usuario.data.idTipoUsuario;
-
-        const tipoUsuario = await axios.get(route('obtenerTipoUsuario', idTipoUsuario));
-        const datosTipoUsuario = tipoUsuario.data.tipoUsuario;
-        tipo_usuario.value = datosTipoUsuario;
-        nombre_usuario.value = usuario.data.usuario;
-    } catch (e) {
-        tipo_usuario.value = "Sin asignar";
-        console.log("Error: " + e);
-    }
-});
-*/
 </script>
 
 <template>
