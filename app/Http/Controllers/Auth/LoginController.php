@@ -7,6 +7,7 @@ use App\Models\usuarios;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -56,6 +57,11 @@ class LoginController extends Controller
 
             $user = usuarios::where('usuario', $request->usuario)->first();
             if ($user) {
+                if($user->cambioContrasenia === 0){
+                    if(Carbon::parse($user->fecha_Creacion)->addHours(48) <= Carbon::now()){
+                        return back()->with(['message' => 'Excedio el tiempo limite para el cambio de contraseña, para solucionarlo es necesario que acuda a la dirección', 'color' => 'red']);
+                    }
+                }
                 if ($user->intentos > 0) {
                     if ($user && Hash::check($request->password, $user->password)) {
                         $user->intentos = 10;
@@ -86,11 +92,11 @@ class LoginController extends Controller
                                 break;
                         }
                     }
-                    
+
                     $user->intentos = $user->intentos - 1;
                     $user->save();
-                    if($user->intentos != 0){
-                    return back()->with(['message' => 'Credenciales incorrectas, tiene solo ' . $user->intentos . ' intentos para poder acceder a su cuenta.', 'color' => 'red']);
+                    if ($user->intentos != 0) {
+                        return back()->with(['message' => 'Credenciales incorrectas, tiene solo ' . $user->intentos . ' intentos para poder acceder a su cuenta.', 'color' => 'red']);
                     }
                     return back()->with(['message' => 'Intentos maximos de inicio de sesión superados. Para poder acceder a su cuenta es necesario acudir a la direccion para su desbloqueo.', 'color' => 'red']);
                 }

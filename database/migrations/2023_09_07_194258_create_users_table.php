@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('usuario')->unique()->nullable(false);
             $table->string('password')->nullable(false);
             $table->string('contrasenia')->nullable(false);
-            $table->unsignedInteger('intentos')->nullable(false)->default(10);
+            $table->integer('intentos')->nullable(false)->default(10);
+            $table->dateTime('fecha_Creacion')->nullable(false)->default(now());
+            $table->boolean('cambioContrasenia')->nullable(false)->default(false);
             $table->foreignId('idTipoUsuario')->references('idTipoUsuario')->on('tipoUsuarios');
             $table->rememberToken();
             $table->softDeletes();

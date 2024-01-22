@@ -28,7 +28,9 @@ class usuarios extends Authenticatable
         'usuario',
         'contrasenia',
         'idTipoUsuario',
-        'intentos'
+        'intentos',
+        'fecha_Creacion',
+        'cambioContrasenia',
     ];
     
     protected $hidden = [

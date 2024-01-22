@@ -24,6 +24,7 @@ use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Exception;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -62,15 +63,25 @@ class AdminController extends Controller
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Funciones para acceder a la página de Inicio    
     public function index()
-    {        
+    {
         return Inertia::render('Principal');
     }
 
     public function inicio()
     {
         $usuario = $this->obtenerInfoUsuario();
-        
-        return Inertia::render('Admin/Inicio',['usuario' => $usuario]);
+        $message = '';
+        $color = '';
+
+        if ($usuario->cambioContrasenia === 0) {
+            $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
+            $fechaFormateada = $fechaLimite->format('d/m/Y');
+            $horaFormateada = $fechaLimite->format('H:i');
+            $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivara y sera necesario acudir a la dirección para solucionar la situación";
+            $color = "red";
+            return Inertia::render('Admin/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color]);
+        }
+        return Inertia::render('Admin/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color]);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -709,12 +720,12 @@ class AdminController extends Controller
         //$materias = materias::where('esTaller', 'true')->get();
         //$alumnos = alumnos::all();
         return Inertia::render('Admin/Tutores_Alumnos', [
-            'tutores' => $tutores, 
-            'alumnos' => $alumnos, 
-            'generos' => $generos, 
-            'tipoSangre' => $tipoSangre, 
-            'grados' => $grados, 
-            'grupos' => $grupos, 
+            'tutores' => $tutores,
+            'alumnos' => $alumnos,
+            'generos' => $generos,
+            'tipoSangre' => $tipoSangre,
+            'grados' => $grados,
+            'grupos' => $grupos,
             'talleres' => $materiasT,
             'usuario' => $usuario
         ]);
@@ -1711,14 +1722,15 @@ class AdminController extends Controller
             return $usuario->personal;
         } catch (Exception $e) {
             Log::info($e);
-            return ['personal'=>'Sin asignar'];
+            return ['personal' => 'Sin asignar'];
         }
     }
 
-    public function obtenerInfoUsuario(){
+    public function obtenerInfoUsuario()
+    {
         $idUsuario = auth()->user()->idUsuario;
         $usuario = usuarios::find($idUsuario);
-        $usuario->tipoUsuario1=$usuario->tipoUsuarios->tipoUsuario;
+        $usuario->tipoUsuario1 = $usuario->tipoUsuarios->tipoUsuario;
         return $usuario;
     }
 }
