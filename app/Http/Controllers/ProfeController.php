@@ -37,10 +37,23 @@ use Mockery\Undefined;
 
 class ProfeController extends Controller
 {
+    public function obtenerInfoUsuario()
+    {
+        $idUsuario = auth()->user()->idUsuario;
+        $usuario = usuarios::where('idUsuario', $idUsuario)->with(['personal'])->first();
+        $usuario->tipoUsuario1 = $usuario->tipoUsuarios->tipoUsuario;
+        $usuario->personalNombre = $usuario->personal->nombre_completo;
+
+        return $usuario;
+    }
 
     public function inicio()
     {
-        return Inertia::render('Profe/Inicio');
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Profe/Inicio', [
+            'usuario' => $usuario
+        ]);
     }
 
     public function actividades()
@@ -49,11 +62,13 @@ class ProfeController extends Controller
         $clases = clases::all();
         $periodos = periodos::all();
         $tipoActividad = tiposActividades::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Profe/Clases', [
-        'actividades' => $actividades,
-        'periodos'=>$periodos,
-        'tipoActividad'=>$tipoActividad,
+            'actividades' => $actividades,
+            'periodos' => $periodos,
+            'tipoActividad' => $tipoActividad,
+            'usuario' => $usuario
         ]);
     }
 
@@ -63,13 +78,15 @@ class ProfeController extends Controller
         $clases = clases::all();
         $periodos = periodos::all();
         $tipoActividad = tiposActividades::all();
+        $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Profe/Clase', [
-        'actividades' => $actividades,
-        'clases' => $clases,
-        'periodos'=>$periodos,
-        'tipoActividad'=>$tipoActividad,
-    ]);
+            'actividades' => $actividades,
+            'clases' => $clases,
+            'periodos' => $periodos,
+            'tipoActividad' => $tipoActividad,
+            'usuario' => $usuario
+        ]);
     }
 
     public function addActividades(Request $request)
@@ -100,29 +117,18 @@ class ProfeController extends Controller
     public function clases()
     {
         $grupos = grupos::all();
-        $grados = grados::all();
-        $materias = materias::all();
-        $ciclos = ciclos::all();
-        $clases = clases::all();
-        //$personal = personal::all();
-
-        // Obtener el personal autenticado
-        $personalAutenticado = auth()->user()->personal;
-
-        // Verificar si el personal tiene clases asociadas
-        if ($personalAutenticado) {
-            $clases = $personalAutenticado->clases;
-        } else {
-            $clases = []; // Otra lógica si el personal no tiene clases
-        }
+        $grados = grados::all();        
+        $ciclos = ciclos::all();    
+        $usuario = $this->obtenerInfoUsuario();
+        $clases = $this->obtenerDatosClase($usuario->personal->idPersonal);              
+        
 
         return Inertia::render('Profe/Clases', [
             'clases' => $clases,
             'grupos' => $grupos,
             'grados' => $grados,
-            'personal' => $personalAutenticado,
-            'materias' => $materias,
             'ciclos' => $ciclos,
+            'usuario' => $usuario
         ]);
     }
 
@@ -189,15 +195,15 @@ class ProfeController extends Controller
     public function perfil()
     {
         try {
-            $usuario = auth()->user();
+            $usuario = $this->obtenerInfoUsuario();
             $personal = personal::where('idUsuario', $usuario->idUsuario)->with(['generos', 'tipo_sangre', 'direcciones'])->first();
 
             $personal->domicilio = $personal->direcciones->calle . " #" . $personal->direcciones->numero . ", " . $personal->direcciones->asentamientos->asentamiento
                 . ", " . $personal->direcciones->asentamientos->municipios->municipio . ", " . $personal->direcciones->asentamientos->municipios->estados->estado
                 . ", " . $personal->direcciones->asentamientos->codigoPostal->codigoPostal;
 
-
-            return Inertia::render('Profe/Perfil', ['usuario' => $usuario, 'profesor' => $personal]);
+            
+            return Inertia::render('Profe/Perfil', ['usuario' => $usuario, 'profesor' => $personal, 'usuario' => $usuario]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -207,8 +213,9 @@ class ProfeController extends Controller
     {
         try {
             $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            $usuario = $this->obtenerInfoUsuario();
 
-            return Inertia::render('Profe/Clase', ['clase' => $clase]);
+            return Inertia::render('Profe/Clase', ['clase' => $clase, 'usuario' => $usuario]);
         } catch (Exception $e) {
             dd($e);
         }

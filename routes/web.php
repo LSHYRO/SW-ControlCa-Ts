@@ -32,7 +32,6 @@ Route::controller(LoginController::class)->group(function () {
 
 Route::middleware(['adminS'])->group(function () {
     Route::controller(AdminController::class)->group(function () {
-        Route::get('/prueba/{idUsuario}', 'ObtenerInfoUsuario')->name('mostrarPanelDe');
         Route::get('/administrador', 'inicio')->name('admin.inicio');
         Route::get('/administrador/profesores', 'profesores')->name('admin.profesores');
 

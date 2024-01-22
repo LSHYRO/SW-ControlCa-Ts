@@ -8,6 +8,7 @@ const props = defineProps({
     clase: { Object: Object },
     periodos: { Object: Object },
     tipoActividad: { Object: Object },
+    usuario: { type: Object }
 });
 
 const mostrarModal = ref(false);
@@ -38,7 +39,7 @@ const cerrarModalE = () => {
 </script>
 
 <template>
-    <ProfeLayout title="clases">
+    <ProfeLayout title="clases" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg alturaM">
             <h2 class="text-black text-2xl text-center font-semibold p-5">{{ clase['materias'].materia }}</h2>
 

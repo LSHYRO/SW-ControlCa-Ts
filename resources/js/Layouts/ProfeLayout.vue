@@ -5,8 +5,9 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import TopContentProfe from '@/Components/profe/TopContentProfe.vue'
 import OpcionesNavProfe from '@/Components/profe/OpcionesNavProfe.vue';
 
-defineProps({
+const props = defineProps({
     title: String,
+    usuario: { type: Object }
 });
 const tipo_usuario = ref('');
 const nombre_usuario = ref('');
@@ -21,7 +22,7 @@ const switchToTeam = (team) => {
         preserveState: false,
     });
 };
-
+/*
 onMounted(async () => {
     try {
         const usuario = await axios.get(route('obtenerUsuario'));
@@ -36,7 +37,7 @@ onMounted(async () => {
         tipo_usuario.value = "Sin asignar";
         console.log("Error: " + e);
     }
-});
+});*/
 </script>
 
 <template>
@@ -44,7 +45,7 @@ onMounted(async () => {
 
         <Head :title="title" />
 
-        <TopContentProfe />
+        <TopContentProfe :usuario="props.usuario"/>
 
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
@@ -57,9 +58,9 @@ onMounted(async () => {
                                 src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
                         </div>
                         <div class="flex-col justify-start items-center inline-flex">
-                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{ nombre_persona }}
+                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{ props.usuario.personalNombre }}
                             </div>
-                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">{{ nombre_usuario }}
+                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">{{ props.usuario.usuario }}
                             </div>
                         </div>
                     </div>
