@@ -851,7 +851,7 @@ class DirectorController extends Controller
 
             //Guardado
             $tutor->save();
-            return redirect()->route('director.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM, "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->With(["message" => "Tutor agregado correctamente: " . $tutor->nombre . " " . $tutor->apellidoP . " " . $tutor->apellidoM. " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia, "color" => "green"]);
         } catch (Exception $e) {
             return redirect()->route('director.tutoresAlum')->With(["message" => "El tutor no se agrego correctamente", "color" => "red"]);
             dd($e);
@@ -1006,9 +1006,12 @@ class DirectorController extends Controller
             $usuario = new usuarios();
             $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->password =  bcrypt($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
             $usuario->save();
 
             //Se busca el tipo de usuario en la BD
@@ -1059,7 +1062,7 @@ class DirectorController extends Controller
 
             $alumno->save();
 
-            return redirect()->route('director.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto, "color" => "green"]);
+            return redirect()->route('director.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto. " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
             return redirect()->route('director.tutoresAlum')->With(["message" => "Error al agregar al alumno " . $e, "color" => "red"]);

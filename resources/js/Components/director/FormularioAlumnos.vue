@@ -418,7 +418,7 @@ const obtenerGruposXGrado = async () => {
     grupoS.removeAttribute("disabled");
     try {
         const idGrado = form.grado;
-        const response = await axios.get(route('ad.gradosXgrupos', idGrado));
+        const response = await axios.get(route('director.gradosXgrupos', idGrado));
         grupos.value = await response.data;
     } catch (error) {
         console.log('Error al obtener grupos: ', error);
@@ -467,7 +467,7 @@ const obtenerInformacion = (query) => {
     if (query.lenght < 1) {
         return;
     }
-    axios.get('/admin/buscar/tutor', { params: { query } }).then(response => {
+    axios.get('/director/buscar/tutor', { params: { query } }).then(response => {
         tutores.value = response.data;
     }).catch(error => {
         console.error('Error al obtener tutores: ', error);
