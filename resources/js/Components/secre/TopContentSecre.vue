@@ -2,6 +2,10 @@
 import { ref, watchEffect } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
+const props = defineProps({
+    usuario: { type: Object }
+});
+
 const page = usePage();
 const show = ref(true);
 const style = ref('success');
@@ -30,7 +34,6 @@ watchEffect(async () => {
         <div class="flex items-center"> <!-- Mostrado en todos los dispositivos -->
             <h1 class="font-bold text-2xl">Telesecundaria clave: 20DTV1474D</h1>
         </div>
-
     </div>
 
     <!-- Ícono de Notificación y Perfil -->
@@ -38,7 +41,7 @@ watchEffect(async () => {
         <!-- Botón de Perfil -->
         <div>
             <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
-            <i class="text-white font-['DM Sans']"> Secretario </i>
+            <i class="text-white font-['DM Sans'] m-3"> {{ props.usuario.tipoUsuario1 }} </i>
         </div>
     </div>
 </div>

@@ -158,6 +158,7 @@ Route::middleware(['directorS'])->group(function () {
         Route::get('/director/directivos', 'directivos')->name('director.directivos');
         Route::get('/director/materias', 'materias')->name('director.materias');
         Route::get('/director/clases', 'clases')->name('director.clases');
+        Route::get('/director/alumnosclases', 'alumnosclases')->name('director.alumnosclases');
         Route::get('/director/calificaciones', 'calificaciones')->name('director.calificaciones');
         Route::get('/director/gradosgrupos', 'gradosgrupos')->name('director.gradosgrupos');
         Route::get('/director/ciclosperiodos', 'ciclosperiodos')->name('director.ciclosperiodos');
@@ -175,6 +176,7 @@ Route::middleware(['directorS'])->group(function () {
         Route::post('/director/periodos', 'addPeriodos')->name('director.addPeriodos');
         Route::post('/director/clases', 'addClases')->name('director.addClases');
         Route::post('/director/cuentas', 'addCuentas')->name('director.addCuentas');
+        Route::post('/director/alumnosclases', 'addAlumnosClases')->name('director.addAlumnosClases');
 
         Route::get('/director/buscar/tutor', 'buscarTutor')->name('director.busquedaTutor');
 
@@ -228,6 +230,10 @@ Route::middleware(['directorS'])->group(function () {
         Route::delete('/director/cuentas/{idUsuario}', 'eliminarCuentas')->name('director.eliminarCuentas');
         Route::put('/director/cuentas/{idUsuario}/edit', 'actualizarCuentas')->name('director.actualizarCuentas');
         Route::delete('/director/cuentas/delete/{usuariosIds}', 'elimUsuarios')->name('director.elimCuentas');
+
+        Route::delete('/director/alumnosclases/{idClase}', 'eliminarAlumnosClases')->name('director.eliminarAlumnosClases');
+        Route::delete('/director/alumnosclases/delete/{clases_alumnosIds}', 'elimAlumnosClases')->name('director.elimAlumnosClases');
+        //Route::put('/director/alumnosclases/{idClase}/edit', 'actualizarClases')->name('director.actualizarClases');
     });
 });
 

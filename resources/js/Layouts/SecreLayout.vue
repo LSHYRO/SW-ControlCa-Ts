@@ -2,8 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
-import TopContentProfe from '@/Components/profe/TopContentProfe.vue'
-import OpcionesNavProfe from '@/Components/profe/OpcionesNavProfe.vue';
+import TopContentSecre from '@/Components/secre/TopContentSecre.vue'
+import OpcionesNavSecre from '@/Components/secre/OpcionesNavSecre.vue';
 
 const props = defineProps({
     title: String,
@@ -45,7 +45,7 @@ onMounted(async () => {
 
         <Head :title="title" />
 
-        <TopContentProfe :usuario="props.usuario"/>
+        <TopContentSecre suario="props.usuario"/>
 
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
@@ -66,7 +66,7 @@ onMounted(async () => {
                     </div>
                     <!-- Señalador de ubicación -->
                     <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
-                    <OpcionesNavProfe />
+                    <OpcionesNavSecre />
                 </nav>
                 <!-- Señalador de ubicación -->
                 <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>

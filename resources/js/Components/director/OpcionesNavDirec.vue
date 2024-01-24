@@ -30,6 +30,10 @@ defineProps({
         <i class="fas fa-desktop mr-2"></i>Clases
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+        :href="route('director.alumnosclases')">
+        <i class="fa fa-user-plus" aria-hidden="true"></i> Agregar alumnos a clases
+    </a>
+    <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
         :href="route('director.calificaciones')">
         <i class="fa fa-star" aria-hidden="true"></i> Calificaciones
     </a>

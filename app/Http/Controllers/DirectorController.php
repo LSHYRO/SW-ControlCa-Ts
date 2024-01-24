@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
+use App\Models\clases_alumnos;
 use App\Models\ciclos;
 use App\Models\periodos;
 use App\Models\tutores;
@@ -1806,5 +1807,77 @@ class DirectorController extends Controller
         $alumnos = alumnos::where();
         $personal = personal::all();
         $tutores = tutores::all();
+    }
+
+    public function alumnosclases()
+    {
+
+        $clases = clases::all();
+        $alumnos = alumnos::all();
+        $materias = materias::all();
+        $grados = grados::all();
+        $grupos = grupos::all();
+        $clases_alumnos = clases_alumnos::all();
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Director/AlumnosClase', [
+            'clases' => $clases,
+            'alumnos' => $alumnos,
+            'materias' => $materias,
+            'usuario' => $usuario,
+            'grados' => $grados,
+            'grupos' => $grupos,
+            'clases_alumnos' => $clases_alumnos,
+        ]);
+    }
+
+    public function addAlumnosClases(Request $request)
+    {
+        try {
+            $request->validate([
+                'clase' => 'required',
+                'alumno' => 'required',
+            ]);
+
+            $clase_alumno = new clases_alumnos();
+            $clase_alumno->idClase = $request->clase;
+            $clase_alumno->idAlumno = $request->alumno;
+            $clase_alumno->calificacionClase = 0;  // Asigna un valor por defecto o ajusta según tus necesidades
+
+            $clase_alumno->save();
+        } catch (Exception $e) {
+            dd($e);
+        }
+        return redirect()->route('director.alumnosclases')->with('message', "Alumno agregada correctamente: ");
+    }
+
+    public function eliminarAlumnosClases($idClaseAlumno)
+    {
+        $clase_alumno = clases_alumnos::find($idClaseAlumno);
+        $clase_alumno ->delete();
+        return redirect()->route('director.alumnosclases')->with('message', "Clase eliminada correctamente");
+    }
+
+    public function elimAlumnosClases($clases_alumnosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $clasesAlumnosIdsArray = explode(',', $clases_alumnosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $clasesAlumnosIdsArray = array_map('intval', $clasesAlumnosIdsArray);
+
+            // Elimina los ciclos
+            clases_alumnos::whereIn('idClaseAlumno', $clasesAlumnosIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('director.alumnosclases')->with('message', "Clases eliminadas correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
 }
