@@ -1832,24 +1832,30 @@ class DirectorController extends Controller
     }
 
     public function addAlumnosClases(Request $request)
-    {
-        try {
-            $request->validate([
-                'clase' => 'required',
-                'alumno' => 'required',
-            ]);
+{
+    try {
+        $request->validate([
+            'clase' => 'required',
+            'alumno' => 'required|array', // Ahora esperamos un array de alumnos
+        ]);
 
+        $clase_id = $request->clase;
+        $alumnos = $request->alumno;
+
+        foreach ($alumnos as $alumno_id) {
             $clase_alumno = new clases_alumnos();
-            $clase_alumno->idClase = $request->clase;
-            $clase_alumno->idAlumno = $request->alumno;
-            $clase_alumno->calificacionClase = 0;  // Asigna un valor por defecto o ajusta según tus necesidades
-
+            $clase_alumno->idClase = $clase_id;
+            $clase_alumno->idAlumno = $alumno_id;
+            $clase_alumno->calificacionClase = 0;
             $clase_alumno->save();
-        } catch (Exception $e) {
-            dd($e);
         }
-        return redirect()->route('director.alumnosclases')->with('message', "Alumno agregada correctamente: ");
+    } catch (Exception $e) {
+        dd($e);
     }
+
+    return redirect()->route('director.alumnosclases')->with('message', "Alumnos agregados correctamente");
+}
+
 
     public function eliminarAlumnosClases($idClaseAlumno)
     {

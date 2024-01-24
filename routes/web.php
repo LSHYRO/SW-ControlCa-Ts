@@ -264,7 +264,10 @@ Route::middleware(['profesorS'])->group(function () {
 });
 
 Route::controller(SecreController::class)->group(function () {
-    Route::get('/directivo', 'inicio')->name('secre.inicio');
+    Route::get('/secre', 'inicio')->name('secre.inicio');
+    Route::get('/secre/alumnosclases', 'alumnosclases')->name('secre.alumnosclases');
+    Route::delete('/secre/alumnosclases/{idClase}', 'eliminarAlumnosClases')->name('secre.eliminarAlumnosClases');
+        Route::delete('/secre/alumnosclases/delete/{clases_alumnosIds}', 'elimAlumnosClases')->name('secre.elimAlumnosClases');
 });
 
 Route::controller(TutorController::class)->group(function () {
