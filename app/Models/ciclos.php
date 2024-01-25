@@ -23,9 +23,9 @@ class ciclos extends Model
         'activo',
     ];
 
-    public function periodos(): BelongsTo
+    public function periodos(): BelongsToMany
     {
-        return $this->belongsTo(periodos::class, 'idCiclo', 'idCiclo');
+        return $this->belongsToMany(periodos::class, 'idCiclo', 'idCiclo');
     }
 
     public function grupos(): BelongsToMany

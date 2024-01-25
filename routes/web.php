@@ -243,7 +243,7 @@ Route::middleware(['profesorS'])->group(function () {
         Route::get('/profesor/actividades', 'actividades')->name('profe.actividades');
         Route::get('/profesor/actividades/clase', 'actividadesClase')->name('profe.actividadesClase');
         Route::get('/profesor/tutores_alumnos', 'tutores_alumnos')->name('profe.tutoresAlum');
-        //Route::get('/profesor/materias', 'materias')->name('profe.materias');
+        
         Route::get('/profesor/clases', 'clases')->name('profe.clases');
         Route::get('/profesor/perfil', 'perfil')->name('profe.usuario');
         Route::put('/profesor/perfil/actualizar/contraseña','actualizarContrasenia')->name('profe.actualizarContraseña');
@@ -256,7 +256,7 @@ Route::middleware(['profesorS'])->group(function () {
         Route::get('/profesor/grupos/obtener/datos/{idClase}', 'obtenerDatosGrupo')->name('obtenerDatosGrupo');
 
         
-        Route::post('/profesor/actividades', 'addActividades')->name('profe.addActividades');
+        Route::post('/profesor/actividad', 'agregarActividad')->name('profe.agregarActividad');
         Route::delete('/profesor/actividades/{idActividad}', 'eliminarActividades')->name('profe.eliminarActividades');
         Route::put('/profesor/actividades/{idActividad}/edit', 'actualizarActividades')->name('profe.actualizarActividades');
         Route::delete('/profesor/actividades/delete/{actividadesIds}', 'elimPeriodos')->name('profe.elimActividades');
@@ -273,23 +273,3 @@ Route::controller(SecreController::class)->group(function () {
 Route::controller(TutorController::class)->group(function () {
     Route::get('/tutor', 'inicio')->name('tutor.inicio');
 });
-/*
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-});
-*/

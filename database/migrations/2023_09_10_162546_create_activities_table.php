@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('actividades', function (Blueprint $table) {
             $table->id(column:'idActividad');
-            $table->string(column:'descripcion');
+            $table->string(column:'titulo')->nullable(false);
+            $table->string(column:'descripcion')->nullable(true);
+            $table->date(column:'fecha_inicio')->nullable(false)->default(now());
+            $table->date(column:'fecha_entrega')->nullable(false)->default(now());
             $table->foreignId(column:'idClase')->references('idClase')->on('clases');
             $table->foreignId(column:'idPeriodo')->references('idPeriodo')->on('periodos');
             $table->foreignId(column:'idTipoActividad')->references('idTipoActividad')->on('tiposActividades');
