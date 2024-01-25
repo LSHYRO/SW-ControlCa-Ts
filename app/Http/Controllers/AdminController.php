@@ -1613,20 +1613,36 @@ class AdminController extends Controller
     }
 
     public function addPeriodos(Request $request)
-    {
-        $request->validate([
-            'ciclos' => 'required',
-        ]);
+{
+    $request->validate([
+        'periodo' => 'required',
+        'fecha_inicio' => 'required',
+        'fecha_fin' => 'required',
+        'ciclos' => 'required',
+    ]);
 
-        $periodo = new periodos();
-        $periodo->periodo = $request->periodo;
-        $periodo->fecha_inicio = $request->fecha_inicio;
-        $periodo->fecha_fin = $request->fecha_fin;
-        $periodo->idCiclo = $request->ciclos;
+    // Verificar si ya existe un periodo con los mismos datos
+    $existingPeriodo = periodos::where('periodo', $request->periodo)
+        ->where('fecha_inicio', $request->fecha_inicio)
+        ->where('fecha_fin', $request->fecha_fin)
+        ->where('idCiclo', $request->ciclos)
+        ->first();
 
-        $periodo->save();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo agregado correctamente: " . $periodo->periodo);
+    if ($existingPeriodo) {
+        return redirect()->route('admin.ciclosperiodos')->with('message', 'El periodo ya existe en la base de datos.');
     }
+
+    // Si no existe, proceder con la inserción
+    $periodo = new periodos();
+    $periodo->periodo = $request->periodo;
+    $periodo->fecha_inicio = $request->fecha_inicio;
+    $periodo->fecha_fin = $request->fecha_fin;
+    $periodo->idCiclo = $request->ciclos;
+
+    $periodo->save();
+
+    return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo agregado correctamente: " . $periodo->periodo);
+}
 
     public function eliminarPeriodos($idPeriodo)
     {
