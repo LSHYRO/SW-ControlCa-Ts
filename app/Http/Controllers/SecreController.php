@@ -136,29 +136,47 @@ class SecreController extends Controller{
     }
 
     public function addAlumnosClases(Request $request)
-{
-    try {
-        $request->validate([
-            'clase' => 'required',
-            'alumno' => 'required|array', // Ahora esperamos un array de alumnos
-        ]);
-
-        $clase_id = $request->clase;
-        $alumnos = $request->alumno;
-
-        foreach ($alumnos as $alumno_id) {
-            $clase_alumno = new clases_alumnos();
-            $clase_alumno->idClase = $clase_id;
-            $clase_alumno->idAlumno = $alumno_id;
-            $clase_alumno->calificacionClase = 0;
-            $clase_alumno->save();
+    {
+        try {
+            $request->validate([
+                'clase' => 'required',
+                'alumno' => 'required|array',
+            ]);
+            $clase_id = $request->clase;
+            $alumnos = $request->alumno;
+            // Utilizar transacción
+            DB::beginTransaction();
+            try {
+                // Verificar si ya existe una entrada con el mismo idClase e idAlumno
+                foreach ($alumnos as $alumno_id) {
+                    $existingEntry = clases_alumnos::where('idClase', $clase_id)->where('idAlumno', $alumno_id)->first();
+    
+                    if (!$existingEntry) {
+                        $clase_alumno = new clases_alumnos();
+                        $clase_alumno->idClase = $clase_id;
+                        $clase_alumno->idAlumno = $alumno_id;
+                        $clase_alumno->calificacionClase = 0;
+                        $clase_alumno->save();
+                    } else {
+                        // Si al menos un alumno ya existe, hacer rollback y redirigir
+                        DB::rollBack();
+                        return redirect()->route('director.alumnosclases')->with('message', "El alumno ya está agregado en la clase seleccionada");
+                    }
+                }
+                // Commit solo si no hubo problemas
+                DB::commit();
+    
+                return redirect()->route('director.alumnosclases')->with('message', "Alumno(s) agregado(s) correctamente");
+            } catch (\Exception $e) {
+                // Manejar excepciones específicas
+                DB::rollBack();
+                return redirect()->route('director.alumnosclases')->with('message', "Error al agregar alumnos: " . $e->getMessage());
+            }
+        } catch (\Exception $e) {
+            // Manejar excepciones generales
+            dd($e);
         }
-    } catch (Exception $e) {
-        dd($e);
     }
-
-    return redirect()->route('secre.alumnosclases')->with('message', "Alumnos agregados correctamente");
-}
 
 
     public function eliminarAlumnosClases($idClaseAlumno)

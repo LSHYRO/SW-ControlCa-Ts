@@ -82,10 +82,15 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
+// Validación de los select múltiples
+const validateSelectMultiple = (selectedValues) => {
+    return Array.isArray(selectedValues) && selectedValues.length > 0;
+};
+
 const save = async () => {
     claseError.value = validateSelect(form.clase) ? '' : 'Seleccione la clase';
     //  Tipo de sangre
-    alumnoError.value = validateSelect(form.alumno) ? '' : 'Seleccione los alumnos';
+    alumnoError.value = validateSelectMultiple(form.alumno) ? '' : 'Seleccione los alumnos';
 
     if (
         claseError.value || alumnoError.value
