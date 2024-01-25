@@ -17,7 +17,10 @@ class actividades extends Model
     protected $primaryKey = 'idActividad';
 
     protected $fillable = [
+        'titulo',
         'descripcion',
+        'fecha_inicio',
+        'fecha_entrega',
         'idClase',
         'idPeriodo',
         'idTipoActividad',

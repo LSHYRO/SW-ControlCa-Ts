@@ -20,7 +20,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    actividades: {
+    actividad: {
         type: Object,
         default: () => ({}),
     },
@@ -36,7 +36,7 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
-    tipoActividad: {
+    tiposActividades: {
         type: Object,
         default: () => ({}),
     },
@@ -52,27 +52,25 @@ const close = () => {
     form.reset(); // Llamar a la función reset para restablecer el formulario
 };
 
-console.log('props.actividades:', props.actividades);
-
 const form = useForm({
-    idActividad: props.actividades.idActividad,
-    nombreActividad: props.actividades.descripcion,
+    idActividad: props.actividad.idActividad,
+    titulo: props.actividad.titulo,
+    descripcion: props.actividad.descripcion,
+    fecha_inicio: props.fecha_inicio,
+    fecha_entrega: props.fecha_entrega,
     idClase: props.clases.idClase,
-    clases: props.actividades.idClase,
-    periodos: props.actividades.idPeriodo,//Le agregué la s
-    tipoActividad: props.actividades.idTipoActividad,//Le agregue la s a ciclo
+    periodo: props.actividad.idPeriodo,
+    tipoActividad: props.actividad.idTipoActividad,
 
 });
 
-console.log('props.actividades.periodos:', props.actividades.periodos);
-console.log('props.actividades.tipoActividad:', props.actividades.tipoActividad);
-
-
 // Variables para los mensajes de validación
 const descripcionError = ref('');
-const claseError = ref('');
 const periodoError = ref('');
 const tipoActividadError = ref('');
+const tituloError = ref('');
+const fecha_inicioError = ref('');
+const fecha_entregaError = ref('');
 
 // Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
@@ -87,40 +85,53 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
+const validateFechaTrabajo = (value) => {
+    const fechaInicioPeriodo = form.periodo.fecha_inicio;
+    const fechaFinPeriodo = form.periodo.fecha_fin;
+
+    return value >= fechaInicioPeriodo && value <= fechaFinPeriodo;
+};
+
+const validarFechasT = () => {
+    return form.fecha_entrega >= form.fecha_inicio;
+}
+
+
 const save = () => {
-    descripcionError.value = validateStringNotEmpty(form.nombreActividad) ? '' : 'Ingrese el nombre de la actividad';
-    claseError.value = validateSelect(form.clases) ? '' : 'Seleccione la clase';
-    periodoError.value = validateSelect(form.periodos) ? '' : 'Seleccione el periodo';
+    tituloError.value = validateStringNotEmpty(form.titulo) ? '' : 'Ingrese el titulo de la actividad';
+    periodoError.value = validateSelect(form.periodo) ? '' : 'Seleccione el periodo';
+    fecha_inicioError.value  = validarFechasT() && validateFechaTrabajo(form.fecha_inicio) ? '' : 'Ingrese una fecha correcta';  
+    fecha_entregaError.value  = validarFechasT() && validateFechaTrabajo(form.fecha_entrega) ? '' : 'Ingrese una fecha correcta';  
     tipoActividadError.value = validateSelect(form.tipoActividad) ? '' : 'Seleccione el tipo de actividad';
 
     if (
-        descripcionError.value || claseError.value || periodoError.value || tipoActividadError.value
+        tituloError.value || periodoError.value || fecha_inicioError.value || fecha_entregaError.value || tipoActividadError.value
     ) {
-
         return;
     }
-
-    form.post(route('profe.addActividades'), {
+    form.idClase = props.clases.idClase;
+    form.post(route('profe.agregarActividad'), {
         onSuccess: () => {
             close()
-            descripcionError.value = '';
-            claseError.value = '';
+            tituloError.value = '';
             periodoError.value = '';
+            fecha_inicioError.value = '';
+            fecha_entregaError.value = '';
             tipoActividadError.value = '';
         }
     });
 }
 
 const update = () => {
-    descripcionError.value = validateStringNotEmpty(form.nombreActividad) ? '' : 'Ingrese el nombre de la actividad';
-    claseError.value = validateSelect(form.clases) ? '' : 'Seleccione la clase';
-    periodoError.value = validateSelect(form.periodos) ? '' : 'Seleccione el periodo';
+    tituloError.value = validateStringNotEmpty(form.titulo) ? '' : 'Ingrese el titulo de la actividad';
+    periodoError.value = validateSelect(form.periodo) ? '' : 'Seleccione el periodo';
+    fecha_inicioError.value  = validarFechasT() && validateFechaTrabajo(form.fecha_inicio) ? '' : 'Ingrese una fecha correcta';  
+    fecha_entregaError.value  = validarFechasT() && validateFechaTrabajo(form.fecha_entrega) ? '' : 'Ingrese una fecha correcta';  
     tipoActividadError.value = validateSelect(form.tipoActividad) ? '' : 'Seleccione el tipo de actividad';
 
     if (
-        descripcionError.value || claseError.value || periodoError.value || tipoActividadError.value
+        tituloError.value || periodoError.value || fecha_inicioError.value || fecha_entregaError.value || tipoActividadError.value
     ) {
-
         return;
     }
 
@@ -130,21 +141,24 @@ const update = () => {
     form.put(route('profe.actualizarActividades', idActividad), {
         onSuccess: () => {
             close()
-            descripcionError.value = '';
-            claseError.value = '';
+            tituloError.value = '';
             periodoError.value = '';
+            fecha_inicioError.value = '';
+            fecha_entregaError.value = '';
             tipoActividadError.value = '';
         }
     });
 }
 
-watch(() => props.actividades, (newVal) => {
-    //form.idClase = newVal.idClase;
+watch(() => props.actividad, (newVal) => {
     form.idActividad = newVal.idActividad;
-    form.nombreActividad = newVal.nombreActividad;
-    form.clases = newVal.idClase;
-    form.periodos = newVal.idPeriodo;
+    form.titulo = newVal.nombreActividad;
+    form.idClase = newVal.idClase;
+    form.periodo = newVal.idPeriodo;
     form.tipoActividad = newVal.idTipoActividad;
+    form.descripcion = newVal.descripcion;
+    form.fecha_inicio = newVal.fecha_inicio;
+    form.fecha_entrega = newVal.fecha_entrega;
 }, { deep: true });
 
 </script>
@@ -168,33 +182,34 @@ watch(() => props.actividades, (newVal) => {
                             </div>
                         </div>
 
-                        <div class="sm:col-span-1 md:col-span-3"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="descripcion" class="block text-sm font-medium leading-6 text-gray-900">Nombre de la actividad</label>
+                        <div class="sm:col-span-1 md:col-span-4"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="titulo" class="block text-sm font-medium leading-6 text-gray-900">Nombre de la actividad</label>
                             <div class="mt-2">
-                                <input type="text" name="descripcion" :id="'descripcion' + op" v-model="form.nombreActividad"
+                                <input type="text" name="titulo" :id="'titulo' + op" v-model="form.titulo"
                                     placeholder="Ingrese el nombre de la actividad"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
+                            <div v-if="tituloError != ''" class="text-red-500 text-xs">{{ tituloError }}</div>
+                        </div>
+
+                        <div class="sm:col-span-1 md:col-span-6"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="descripcion" class="block text-sm font-medium leading-6 text-gray-900">Descripción de la actividad</label>
+                            <div class="mt-2">
+                                <textarea type="text" name="descripcion" :id="'descripcion' + op" v-model="form.descripcion"
+                                    placeholder="Ingrese la descripción de la actividad"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                            </div>
                             <div v-if="descripcionError != ''" class="text-red-500 text-xs">{{ descripcionError }}</div>
                         </div>
-
-                        <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idClase" class="block text-sm font-medium leading-6 text-gray-900">id Clase</label>
-                            <div class="mt-2">
-                                <input type="number" name="idClase" v-model="form.idClase" placeholder="Ingrese id"
-                                    :id="'idClase' + op"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>
-
+                        
                         <div class="sm:col-span-3">
                             <label for="periodos" class="block text-sm font-medium leading-6 text-gray-900">Periodo</label>
                             <div class="mt-2">
-                                <select name="periodos" :id="'periodos' + op" v-model="form.periodos"
+                                <select name="periodos" :id="'periodos' + op" v-model="form.periodo"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un periodo</option>
-                                    <option v-for="periodo in periodos" :key="periodo.idPeriodo" :value="periodo.idPeriodo">
-                                        {{ periodo.periodo }}
+                                    <option v-for="periodo in periodos" :key="periodo.idPeriodo" :value="periodo">
+                                        {{ periodo.descripcion }}
                                     </option>
                                 </select>
                             </div>
@@ -207,13 +222,42 @@ watch(() => props.actividades, (newVal) => {
                                 <select name="tipoActividad" :id="'tipoActividad' + op" v-model="form.tipoActividad"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona el tipo de actividad</option>
-                                    <option v-for="tipoActi in tipoActividad" :key="tipoActi.idTipoActividad" :value="tipoActi.idTipoActividad">
-                                        {{ tipoActi.tipoActividad }}
+                                    <option v-for="tipoActividad in props.tiposActividades" :key="tipoActividad.idTipoActividad" :value="tipoActividad.idTipoActividad">
+                                        {{ tipoActividad.tipoActividad }}
                                     </option>
                                 </select>
                             </div>
                             <div v-if="periodoError != ''" class="text-red-500 text-xs">{{ periodoError }}</div>
                         </div>
+
+                        <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="fecha_inicio" class="block text-sm font-medium leading-6 text-gray-900">Fecha de inicio</label>
+                            <div class="mt-2">
+                                <input type="date" name="fecha_inicio" :id="'fecha_inicio' + op" v-model="form.fecha_inicio"
+                                    placeholder="Ingrese la descripción de la actividad"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                            </div>
+                            <div v-if="fecha_inicioError != ''" class="text-red-500 text-xs">{{ fecha_inicioError }}</div>
+                        </div>
+
+                        <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="fecha_entrega" class="block text-sm font-medium leading-6 text-gray-900">Fecha de entrega</label>
+                            <div class="mt-2">
+                                <input type="date" name="fecha_entrega" :id="'fecha_entrega' + op" v-model="form.fecha_entrega"
+                                    placeholder="Ingrese la descripción de la actividad"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                            </div>
+                            <div v-if="fecha_entregaError != ''" class="text-red-500 text-xs">{{ fecha_entregaError }}</div>
+                        </div>
+
+                        <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="idClase" class="block text-sm font-medium leading-6 text-gray-900">id Clase</label>
+                            <div class="mt-2">
+                                <input type="number" name="idClase" v-model="form.idClase" placeholder="Ingrese id"
+                                    :id="'idClase' + op"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>                       
 
                     </div>
                 </div>

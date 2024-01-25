@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class periodos extends Model
 {
@@ -21,9 +22,9 @@ class periodos extends Model
         'idCiclo',
     ];
 
-    protected function ciclos(): HasMany
+    protected function ciclos(): HasOne
     {
-        return $this->hasMany(ciclos::class, 'idCiclo', 'idCiclo');
+        return $this->hasOne(ciclos::class, 'idCiclo', 'idCiclo');
     }
 
     protected function actividades(): BelongsToMany

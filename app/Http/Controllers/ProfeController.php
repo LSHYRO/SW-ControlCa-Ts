@@ -62,7 +62,7 @@ class ProfeController extends Controller
             $color = "red";
             return Inertia::render('Profe/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color]);
         }
-        
+
 
         return Inertia::render('Profe/Inicio', [
             'usuario' => $usuario, 'message' => $message, 'color' => $color
@@ -130,11 +130,11 @@ class ProfeController extends Controller
     public function clases()
     {
         $grupos = grupos::all();
-        $grados = grados::all();        
-        $ciclos = ciclos::all();    
+        $grados = grados::all();
+        $ciclos = ciclos::all();
         $usuario = $this->obtenerInfoUsuario();
-        $clases = $this->obtenerDatosClase($usuario->personal->idPersonal);              
-        
+        $clases = $this->obtenerDatosClase($usuario->personal->idPersonal);
+
 
         return Inertia::render('Profe/Clases', [
             'clases' => $clases,
@@ -215,7 +215,7 @@ class ProfeController extends Controller
                 . ", " . $personal->direcciones->asentamientos->municipios->municipio . ", " . $personal->direcciones->asentamientos->municipios->estados->estado
                 . ", " . $personal->direcciones->asentamientos->codigoPostal->codigoPostal;
 
-            
+
             return Inertia::render('Profe/Perfil', ['usuario' => $usuario, 'profesor' => $personal, 'usuario' => $usuario]);
         } catch (Exception $e) {
             dd($e);
@@ -226,11 +226,61 @@ class ProfeController extends Controller
     {
         try {
             $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
-            $usuario = $this->obtenerInfoUsuario();
+            $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
+            $periodos = $periodosC->map(function ($periodo) {
+                $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_inicio . " - " . $periodo->fecha_fin;
+                return $periodo;
+            });
 
-            return Inertia::render('Profe/Clase', ['clase' => $clase, 'usuario' => $usuario]);
+
+            $usuario = $this->obtenerInfoUsuario();
+            $tiposActividades = tiposActividades::all();
+            $actividadesC = actividades::where('idClase', $clase->idClase)->get();
+            $actividades = $actividadesC->map(function ($actividad) {
+                $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+                return $actividad;
+            });
+            
+            return Inertia::render('Profe/Clase', [
+                'clase' => $clase,
+                'usuario' => $usuario,
+                'tiposActividades' => $tiposActividades,
+                'periodos' => $periodos,
+                'actividades' => $actividades
+            ]);
         } catch (Exception $e) {
             dd($e);
+        }
+    }
+
+    public function agregarActividad(Request $request)
+    {
+        try {
+            $actividad = new actividades();
+            $actividad->titulo = $request->titulo;
+            $actividad->descripcion = $request->descripcion;
+            $actividad->fecha_inicio = $request->fecha_inicio;
+            $actividad->fecha_entrega = $request->fecha_entrega;
+            $actividad->idPeriodo = $request->periodo['idPeriodo'];
+            $actividad->idClase = $request->idClase;
+            $actividad->idTipoActividad = $request->tipoActividad;
+
+            $actividadExistente = actividades::where('titulo', $actividad->titulo)
+                ->where('descripcion', $actividad->descripcion)
+                ->where('fecha_inicio', $actividad->fecha_inicio)
+                ->where('fecha_entrega', $actividad->fecha_entrega)
+                ->where('idClase', $actividad->idClase)
+                ->where('idPeriodo', $actividad->idPeriodo)
+                ->where('idTipoActividad', $actividad->idTipoActividad)
+                ->first();
+            if ($actividadExistente) {
+                return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "La actividad ya existe", "color" => "red"]);
+            }
+            $actividad->save();
+            return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Actividad agregada correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Error al crear actividad", "color" => "red"]);
         }
     }
 
