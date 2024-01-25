@@ -34,6 +34,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Mockery\Undefined;
+use Illuminate\Validation\Rule;
 
 class DirectorController extends Controller
 {
@@ -1192,17 +1193,26 @@ class DirectorController extends Controller
     }
 
     public function addMaterias(Request $request)
-    {
+{
+    // Verificar si la materia ya existe en la base de datos
+    $existingMateria = Materias::where('materia', $request->materia)->first();
 
-        $materia = new materias();
-        $materia->materia = $request->materia;
-        $materia->descripcion = $request->descripcion;
-        $materia->esTaller = $request->esTaller;
-        $materia->esTaller = $request->esTaller;
-
-        $materia->save();
-        return redirect()->route('director.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
+    if ($existingMateria) {
+        // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
+        return redirect()->route('director.materias')->with('message', "La materia ya está registrada: " . $request->materia);
     }
+
+    // Si la materia no existe, proceder a agregarla a la base de datos
+    $materia = new Materias();
+    $materia->materia = $request->materia;
+    $materia->descripcion = $request->descripcion;
+    $materia->esTaller = $request->esTaller;
+
+    $materia->save();
+
+    return redirect()->route('director.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
+}
+
 
     public function eliminarMaterias($idMateria)
     {
@@ -1260,30 +1270,45 @@ class DirectorController extends Controller
     }
 
     public function addClases(Request $request)
-    {
-        try {
-            $request->validate([
-                'grupos' => 'required',
-                'grados' => 'required',
-                'personal' => 'required',
-                'materias' => 'required',
-                'ciclos' => 'required',
-            ]);
+{
+    try {
+        $request->validate([
+            'grupos' => 'required',
+            'grados' => 'required',
+            'personal' => 'required',
+            'materias' => 'required',
+            'ciclos' => 'required',
+        ]);
 
+        // Verificar si la clase ya existe
+        $claseExistente = clases::where([
+            'idGrado' => $request->grados['idGrado'],
+            'idGrupo' => $request->grupos,
+            'idPersonal' => $request->personal,
+            'idMateria' => $request->materias,
+            'idCiclo' => $request->ciclos,
+        ])->first();
 
-            $clase = new clases();
-            $clase->idGrado = $request->grados['idGrado'];
-            $clase->idGrupo = $request->grupos;
-            $clase->idPersonal = $request->personal;
-            $clase->idMateria = $request->materias;
-            $clase->idCiclo = $request->ciclos;
-
-            $clase->save();
-            return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
-        } catch (Exception $e) {
-            Log::info('Error en guardar la clase: ' . $e);
+        if ($claseExistente) {
+            return redirect()->route('director.clases')->with('message', 'La clase no se puede agregar, porque ya se encunetra registrado.');
         }
+
+        // Crear y guardar la nueva clase
+        $clase = new clases();
+        $clase->idGrado = $request->grados['idGrado'];
+        $clase->idGrupo = $request->grupos;
+        $clase->idPersonal = $request->personal;
+        $clase->idMateria = $request->materias;
+        $clase->idCiclo = $request->ciclos;
+
+        $clase->save();
+
+        return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
+    } catch (Exception $e) {
+        Log::info('Error en guardar la clase: ' . $e);
+        return redirect()->route('director.clases')->withErrors(['message' => 'Error al guardar la clase.']);
     }
+}
 
     public function eliminarClases($idClase)
     {
@@ -1371,19 +1396,31 @@ class DirectorController extends Controller
         }
     }
 
-    public function addGrados(Request $request)
-    {
-        $request->validate([
-            'ciclos' => 'required',
-        ]);
+    
+public function addGrados(Request $request)
+{
+    $request->validate([
+        'ciclos' => 'required',
+        'grado' => 'required',
+    ]);
 
-        $grado = new grados();
-        $grado->grado = $request->grado;
-        $grado->idCiclo = $request->ciclos;
+    // Verifica si ya existe un grado con el mismo valor en la base de datos
+    $existingGrado = grados::where('grado', $request->grado)
+                           ->where('idCiclo', $request->ciclos)
+                           ->first();
 
-        $grado->save();
-        return redirect()->route('director.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
+    if ($existingGrado) {
+        return redirect()->route('director.gradosgrupos')->with('message', "El grado ya existe en la base de datos");
     }
+
+    $grado = new grados();
+    $grado->grado = $request->grado;
+    $grado->idCiclo = $request->ciclos;
+
+    $grado->save();
+    
+    return redirect()->route('director.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
+}
 
     public function eliminarGrados($idGrado)
     {
@@ -1460,18 +1497,30 @@ class DirectorController extends Controller
     }
 
     public function addGrupos(Request $request)
-    {
-        $request->validate([
-            'ciclos' => 'required',
-        ]);
+{
+    $request->validate([
+        'grupo' => 'required',
+        'ciclos' => 'required',
+    ]);
 
-        $grupo = new grupos();
-        $grupo->grupo = $request->grupo;
-        $grupo->idCiclo = $request->ciclos;
+    // Verificar si ya existe un grupo con los mismos datos
+    $existingGroup = grupos::where('grupo', $request->grupo)
+                           ->where('idCiclo', $request->ciclos)
+                           ->first();
 
-        $grupo->save();
-        return redirect()->route('director.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
+    if ($existingGroup) {
+        return redirect()->route('director.gradosgrupos')->with('message', 'El grupo ya está registrado.');
     }
+
+    // Si no existe, proceder con el registro
+    $grupo = new grupos();
+    $grupo->grupo = $request->grupo;
+    $grupo->idCiclo = $request->ciclos;
+    $grupo->save();
+
+    return redirect()->route('director.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
+}
+
 
     public function eliminarGrupos($idGrupo)
     {
@@ -1521,15 +1570,29 @@ class DirectorController extends Controller
     }
 
     public function addCiclos(Request $request)
-    {
-        $ciclo = new ciclos();
-        $ciclo->fecha_inicio = $request->fecha_inicio;
-        $ciclo->fecha_fin = $request->fecha_fin;
-        $ciclo->descripcionCiclo = $request->descripcionCiclo;
+{
+    // Validación para evitar ciclos duplicados
+    $existingCiclo = Ciclos::where('fecha_inicio', $request->fecha_inicio)
+                          ->where('fecha_fin', $request->fecha_fin)
+                          ->where('descripcionCiclo', $request->descripcionCiclo)
+                          ->first();
 
-        $ciclo->save();
-        return redirect()->route('director.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo);
+    if ($existingCiclo) {
+        // Devuelve una respuesta indicando que el ciclo ya existe
+        return redirect()->route('director.ciclosperiodos')->with('message', 'El ciclo ya está registrado.');
     }
+
+    // Si no hay ciclos duplicados, procede con la creación y guardado del nuevo ciclo
+    $ciclo = new Ciclos();
+    $ciclo->fecha_inicio = $request->fecha_inicio;
+    $ciclo->fecha_fin = $request->fecha_fin;
+    $ciclo->descripcionCiclo = $request->descripcionCiclo;
+
+    $ciclo->save();
+
+    return redirect()->route('director.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo);
+}
+
 
     public function eliminarCiclos($idCiclo)
     {
