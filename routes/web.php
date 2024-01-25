@@ -61,6 +61,9 @@ Route::middleware(['adminS'])->group(function () {
 
         Route::get('/administrador/admin/buscar/tutor', 'buscarTutor')->name('ad.busquedaTutor');
 
+        Route::get('/administrador/contrasenia', 'perfil')->name('admin.contrasenia');
+        Route::put('/administrador/contrasenia/actualizar/contraseña','actualizarContrasenia')->name('admin.actualizarContraseña');
+
         Route::delete('/administrador/alumnos/delete/{alumnosIds}', 'eliminarAlumnos')->name('admin.elimAlumnos');
         Route::delete('/administrador/alumnos/{idAlumno}', 'eliminarAlumno')->name('admin.eliminarAlumno');
         Route::put('/administrador/alumnos/{idAlumno}/edit', 'actualizarAlumno')->name('admin.actualizarAlumno');
@@ -224,7 +227,6 @@ Route::middleware(['directorS'])->group(function () {
         Route::get('/director/perfil', 'perfil')->name('director.perfil');
         Route::put('/director/perfil/actualizar/contraseña','actualizarContrasenia')->name('director.actualizarContraseña');
 
-        Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
         Route::get('/director/obtener/datos/clases/materiasxguposxgrados/{idClase}', 'obtenerClasesXMateriaGradoGrupo')->name('director.clasesXmateriasXgradosXgrupos');
 
         Route::delete('/director/cuentas/{idUsuario}', 'eliminarCuentas')->name('director.eliminarCuentas');
@@ -234,6 +236,9 @@ Route::middleware(['directorS'])->group(function () {
         Route::delete('/director/alumnosclases/{idClase}', 'eliminarAlumnosClases')->name('director.eliminarAlumnosClases');
         Route::delete('/director/alumnosclases/delete/{clases_alumnosIds}', 'elimAlumnosClases')->name('director.elimAlumnosClases');
         //Route::put('/director/alumnosclases/{idClase}/edit', 'actualizarClases')->name('director.actualizarClases');
+
+        Route::get('/director/obtener/datos/ciclo/xgrados/{idGrado}', 'obtenerCicloXGrado')->name('director.cicloXgrupos');
+        Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
     });
 });
 

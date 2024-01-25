@@ -3,6 +3,7 @@ import Modal from '../Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const props = defineProps({
     show: {
@@ -55,9 +56,20 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
+const grupos = ref([]);
+const ciclos = ref([]);
+
 const close = () => {
     emit('close');
     form.reset();
+    try {
+        const grupoS = document.getElementById('grupo' + props.op);
+        grupoS.setAttribute("disabled", "");
+        const cicloS = document.getElementById('ciclo' + props.op);
+        cicloS.setAttribute("disabled", "");
+    } catch (e) {
+        console.log(e);
+    }
 };
 
 const form = useForm({
@@ -160,6 +172,38 @@ watch(() => props.clase, (newVal) => {
     form.ciclos = newVal.idCiclo;
 }, { deep: true });
 
+watch(() => form.grados, async () => {
+    await obtenerGruposXGrado();
+    await obtenerCicloXGrado();
+})
+
+const obtenerGruposXGrado = async () => {
+    const grupoS = document.getElementById('grupo' + props.op);
+    grupoS.removeAttribute("disabled");
+    try {
+        const idGrado = form.grados.idGrado;
+        const response = await axios.get(route('director.gradosXgrupos', idGrado));        
+        grupos.value = await response.data;
+    } catch (error) {
+        console.log('Error al obtener grupos: ', error);
+    }
+};
+
+const obtenerCicloXGrado = async () => {
+    const cicloS = document.getElementById('ciclo' + props.op);
+    cicloS.removeAttribute("disabled");
+    try {
+        const idGrado = form.grados.idGrado;
+        const response2 = await axios.get(route('director.cicloXgrupos', idGrado));
+        console.log(response2.data);
+        ciclos.value = await response2.data;
+    } catch (error) {
+        console.log(response2);
+        console.log('Error al obtener ciclos: ', error);
+    }
+}
+
+
 </script>
 
 
@@ -186,29 +230,30 @@ watch(() => props.clase, (newVal) => {
                         <div class="sm:col-span-3">
                             <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
-                                <select name="grado" :id="'grado' + op" v-model="form.grados"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Selecciona un grado</option>
-                                    <option v-for="grado in grados" :key="grado.idGrado" :value="grado.idGrado">
-                                        {{ grado.grado }}
-                                    </option>
-                                </select>
+                                <v-select name="grado" :id="'grado' + op" v-model="form.grados"
+                                    placeholder="Seleccione el grado"
+                                    class="grado-class-func block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    :options="grados" :filterable="true" label="descripcion" modelValue="idGrado"
+                                    modelProp="idGrado" :on-change="obtenerGruposXGrado && obtenerCicloXGrado" >
+                                </v-select>
                             </div>
-                            <div v-if="gradoError != ''" class="text-red-500 text-xs">{{ gradoError }}</div>
+                            <div v-if="gradoError != ''" class="text-red-500 text-xs mt-1">{{ gradoError }}</div>
                         </div>
 
                         <div class="sm:col-span-3">
                             <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
                             <div class="mt-2">
                                 <select name="grupo" :id="'grupo' + op" v-model="form.grupos"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Selecciona un grupo</option>
+                                    placeholder="Seleccione el grupo"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    disabled>
+                                    <option value="" disabled selected>Seleccione un grupo</option>
                                     <option v-for="grupo in grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
-                                        {{ grupo.grupo }}
+                                        {{ grupo.grupoC }}
                                     </option>
                                 </select>
                             </div>
-                            <div v-if="grupoError != ''" class="text-red-500 text-xs">{{ grupoError }}</div>
+                            <div v-if="grupoError != ''" class="text-red-500 text-xs mt-1">{{ grupoError }}</div>
                         </div>
 
                         <div class="sm:col-span-6">
@@ -243,7 +288,7 @@ watch(() => props.clase, (newVal) => {
                         <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos"
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos" disabled
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un ciclo</option>
                                     <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
@@ -266,3 +311,6 @@ watch(() => props.clase, (newVal) => {
         </div>
     </Modal>
 </template>
+<style>
+@import "vue-select/dist/vue-select.css";
+</style>

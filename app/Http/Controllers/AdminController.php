@@ -1491,7 +1491,7 @@ class AdminController extends Controller
         $ciclo->descripcionCiclo = $request->descripcionCiclo;
 
         $ciclo->save();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->ciclo);
+        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo);
     }
 
     public function eliminarCiclos($idCiclo)
@@ -1733,4 +1733,40 @@ class AdminController extends Controller
         $usuario->tipoUsuario1 = $usuario->tipoUsuarios->tipoUsuario;
         return $usuario;
     }
+
+    public function perfil()
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            $personal = personal::where('idUsuario', $usuario->idUsuario)->with(['generos', 'tipo_sangre', 'direcciones'])->first();
+         
+            return Inertia::render('Admin/Contrasenia', [
+                'usuario' => $usuario, 
+                'director' => $personal,
+            ]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function actualizarContrasenia(Request $request)
+    {
+        try {
+            $usuario = usuarios::find($request->idUsuario);
+            $user = Auth::user();
+            if (Hash::check($request->password_actual, $user->password)) {
+                $usuario->contrasenia = $request->password_nueva;
+                $usuario->password = bcrypt($request->password_nueva);
+                $usuario->cambioContrasenia = 1;
+                $usuario->save();
+
+                return redirect()->route('admin.contrasenia')->With(["message" => "Contraseña actualizada correctamente, recuerde su contraseña: " . $usuario->contrasenia, "color" => "green"]);
+            }
+            return redirect()->route('admin.contrasenia')->With(["message" => "Contraseña actual incorrecta", "color" => "red"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.contrasenia')->With(["message" => "Error al actualizar contraseña", "color" => "red"]);
+            dd($e);
+        }
+    }
+    
 }

@@ -654,10 +654,16 @@ class DirectorController extends Controller
 
         $clases = clases::all();
         $grupos = grupos::all();
-        $grados = grados::all();
+        $gradosPrincipal = grados::with('ciclos')->get();
+        $grados = $gradosPrincipal->map(function ($grado) {
+            $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
+
+            return $grado;
+        });
         //$personal = personal::all();
         $materias = materias::all();
         $ciclos = ciclos::all();
+
         $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Director/Clases', [
@@ -1266,17 +1272,17 @@ class DirectorController extends Controller
 
 
             $clase = new clases();
+            $clase->idGrado = $request->grados['idGrado'];
             $clase->idGrupo = $request->grupos;
-            $clase->idGrado = $request->grados;
             $clase->idPersonal = $request->personal;
             $clase->idMateria = $request->materias;
             $clase->idCiclo = $request->ciclos;
 
             $clase->save();
+            return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
         } catch (Exception $e) {
+            Log::info('Error en guardar la clase: ' . $e);
         }
-        return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->clase);
-        //return redirect()->route('admin.clases');
     }
 
     public function eliminarClases($idClase)
@@ -1350,6 +1356,19 @@ class DirectorController extends Controller
             ->get();
 
         return response()->json($clases);
+    }
+
+    public function obtenerCicloXGrado($idGrado)
+    {
+        try {
+            $grado = grados::find($idGrado);
+            $fecha = $grado->idCiclo;
+            $ciclo = ciclos::where('idCiclo', $fecha)->get();
+
+            return response()->json($ciclo);
+        } catch (Exception $e) {
+            dd($grado);
+        }
     }
 
     public function addGrados(Request $request)
@@ -1509,7 +1528,7 @@ class DirectorController extends Controller
         $ciclo->descripcionCiclo = $request->descripcionCiclo;
 
         $ciclo->save();
-        return redirect()->route('director.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->ciclo);
+        return redirect()->route('director.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo);
     }
 
     public function eliminarCiclos($idCiclo)
