@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class clases_alumnos extends Model
@@ -19,13 +20,13 @@ class clases_alumnos extends Model
         'calificacionClase'
     ];
 
-    public function clases(): HasOne
+    public function clases(): HasMany
     {
-        return $this->hasOne(clases::class, "idClase", "idClase");
+        return $this->hasMany(clases::class, "idClase", "idClase");
     }
 
-    public function alumnos(): HasOne
+    public function alumnos(): HasMany
     {
-        return $this->hasOne(alumnos::class, 'idAlumno', 'idAlumno');
+        return $this->hasMany(alumnos::class, 'idAlumno', 'idAlumno');
     }
 }

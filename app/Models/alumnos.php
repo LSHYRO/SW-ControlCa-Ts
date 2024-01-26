@@ -63,9 +63,9 @@ class alumnos extends Model
         return $this->belongsTo(tutores::class, 'idTutor', 'idTutor');
     }
 
-    public function clases_alumnos(): BelongsToMany
+    public function clases_alumnos(): BelongsTo
     {
-        return $this->belongsToMany(clases_alumnos::class, 'idAlumno', 'idAlumno');
+        return $this->belongsTo(clases_alumnos::class, 'idAlumno', 'idAlumno');
     }
 
     public function calificaciones(): BelongsToMany
@@ -91,5 +91,10 @@ class alumnos extends Model
     public function generos(): HasOne
     {
         return $this->hasOne(generos::class, 'idGenero', 'idGenero');
+    }
+
+    public function calificaciones_periodos(): BelongsToMany 
+    {
+        return $this->belongsToMany(calificaciones_periodos::class, 'idAlumnos', 'idAlumnos');
     }
 }
