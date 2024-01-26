@@ -137,7 +137,7 @@ class AdminController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -185,7 +185,7 @@ class AdminController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->rfc = $request->rfc;
-            $personal->idTipoSangre = $request->tipo_sangre;
+            $personal->idTipoSangre = $request->tipoSangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -228,6 +228,7 @@ class AdminController extends Controller
         $usuarioTipoUsuario->delete();
         $usuario->delete();
         $direccion->delete();
+        
         return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
     }
 
@@ -392,7 +393,7 @@ class AdminController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -453,7 +454,7 @@ class AdminController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->rfc = $request->rfc;
-            $personal->idTipoSangre = $request->tipo_sangre;
+            $personal->idTipoSangre = $request->tipoSangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -982,7 +983,7 @@ class AdminController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1024,7 +1025,7 @@ class AdminController extends Controller
             $alumno->idGenero = $request->genero;
             $alumno->correoElectronico = $request->correoElectronico;
             $alumno->numTelefono = $request->numTelefono;
-            $alumno->idTipoSangre = $request->tipo_sangre;
+            $alumno->idTipoSangre = $request->tipoSangre;
             $alumno->alergias = $request->alergias;
             $alumno->discapacidad = $request->discapacidad;
             $alumno->idDireccion = $domicilio->idDireccion;
