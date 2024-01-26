@@ -697,8 +697,8 @@ class AdminController extends Controller
                 $alumno->materia = "Ninguno";
             }
             $alumno->tutor = $alumno->tutores->nombre_completo;
-            $alumno->tutorTel = $alumno->tutores->numTelefono;
-            $alumno->tipo_sangre = $alumno->tipo_sangre->tipo_sangre;
+            $alumno->tutorTel = $alumno->tutores->numTelefono;            
+            $alumno->tipoS = $alumno->tipo_Sangre->tipoSangre;
             $alumno->tutorC = $alumno->tutores;
             $alumno->gradoC = $alumno->grados;
             $alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
@@ -723,7 +723,7 @@ class AdminController extends Controller
             'tutores' => $tutores,
             'alumnos' => $alumnos,
             'generos' => $generos,
-            'tipo_sangre' => $tipo_sangre,
+            'tipoSangre' => $tipo_sangre,
             'grados' => $grados,
             'grupos' => $grupos,
             'talleres' => $materiasT,
