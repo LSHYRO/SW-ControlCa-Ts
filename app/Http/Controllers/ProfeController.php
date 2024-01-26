@@ -9,6 +9,7 @@ use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\alumnos;
+use App\Models\calificaciones;
 use App\Models\materias;
 use App\Models\clases;
 use App\Models\ciclos;
@@ -259,10 +260,9 @@ class ProfeController extends Controller
                     'actividades' => $actividades,
                     'alumnos' => $alumnos
                 ]);
-            }else{
+            } else {
                 return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
             }
-            
         } catch (Exception $e) {
             dd($e);
         }
@@ -299,8 +299,48 @@ class ProfeController extends Controller
         }
     }
 
-    public function calificarActividad(){
-        return Inertia::render('Profe/CalificarActividad', []);
+    public function calificarActividad($idClase, $idActividad)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        $actividad = actividades::where('idClase', $idClase)->where('idActividad', $idActividad)->first();
+        if ($clase && $actividad) {
+            $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+            $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+            $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
+            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+            $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+
+            return Inertia::render('Profe/CalificarActividad', [
+                'actividad' => $actividad,
+                'usuario' => $usuario,
+                'clase' => $clase,
+                'alumnos' => $alumnos
+            ]);
+        }
+    }
+
+    public function almacenarCalificaciones(Request $request)
+    {        
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $request->clase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        $actividad = actividades::where('idClase', $request->clase)->where('idActividad', $request->actividad)->first();
+        if ($clase && $actividad) {
+            foreach ($request->calificaciones as $alumnoId => $calificacion) {
+                $calificacionA = new calificaciones();
+                $calificacionA->idClase = $request->clase;
+                $calificacionA->idActividad = $request->actividad; // Ajusta según tu lógica
+                $calificacionA->idAlumno = $alumnoId;
+                $calificacionA->calificacion = $calificacion;
+                $calificacionA->save();
+            }
+            return redirect()->route('profe.mostrarClase', $request->clase)->with(['message' => "Actividad calificada correctamente: " . $actividad->titulo, "color" => "green"]);
+        }else{
+            return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+        }
     }
 
     public function actualizarContrasenia(Request $request)

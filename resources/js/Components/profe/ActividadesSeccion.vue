@@ -34,6 +34,10 @@ const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
 
+const calificar = (idClase, idActividad) => {
+    route('profe.calificarAct', [idClase, idActividad]);
+};
+
 </script>
 <template>
     <div>
@@ -74,9 +78,12 @@ const masInfo = (idActividad) => {
                         <p class="text-sm m-1">
                             <strong>Fecha de entrega: </strong>{{ actividad.fecha_e }}
                         </p>
-                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-0 px-1 rounded my-2">
-                            <i class="fa fa-pen-to-square plus mr-2 text-sm"></i>Calificar
-                        </button>
+                        <div class="my-2">
+                            <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded"
+                            :href="route('profe.calificarAct', [props.clase.idClase, actividad.idActividad])">
+                                <i class="fa fa-pen-to-square plus mr-2 text-sm"></i>Calificar
+                            </a>
+                        </div>
                     </div>
                 </li>
             </ul>
