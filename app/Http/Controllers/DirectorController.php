@@ -110,7 +110,7 @@ class DirectorController extends Controller
             $tipo_sangre = $tipo_sangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
             $persona->genero = $genero ? $genero->genero : null;
-            $persona->tipo_sangre = $tipo_sangre ? $tipo_sangre->tipo_sangre : null;
+            $persona->tipoSangre = $tipo_sangre ? $tipo_sangre->tipoSangre : null;
             $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
             $persona->calle = $direccion ? $direccion->calle : null;
             $persona->numero = $direccion ? $direccion->numero : null;
@@ -125,7 +125,7 @@ class DirectorController extends Controller
 
         return Inertia::render('Director/Profesores', [
             'personal' => $personalConNombres,
-            'tipo_sangre' => $tipo_sangre,
+            'tipoSangre' => $tipo_sangre,
             'generos' => $generos,
             'usuario' => $usuario
         ]);
@@ -377,7 +377,7 @@ class DirectorController extends Controller
             $tipo_sangre = $tipo_sangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
             $persona->genero = $genero ? $genero->genero : null;
-            $persona->tipo_sangre = $tipo_sangre ? $tipo_sangre->tipo_sangre : null;
+            $persona->tipoSangre = $tipo_sangre ? $tipo_sangre->tipoSangre : null;
             $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
             $persona->calle = $direccion ? $direccion->calle : null;
             $persona->numero = $direccion ? $direccion->numero : null;
@@ -392,7 +392,7 @@ class DirectorController extends Controller
 
         return Inertia::render('Director/Directivos', [
             'personal' => $personalConNombres,
-            'tipo_sangre' => $tipo_sangre,
+            'tipoSangre' => $tipo_sangre,
             'generos' => $generos,
             'tipo_personal' => $tipo_personal,
             'usuario' => $usuario
@@ -728,7 +728,7 @@ class DirectorController extends Controller
                 $alumno->materia = "Ninguno";
             }
             $alumno->tutor = $alumno->tutores->nombre_completo;
-            $alumno->tipo_sangre = $alumno->tipo_sangre->tipo_sangre;
+            $alumno->tipoSangre = $alumno->tipo_sangre->tipoSangre;
             $alumno->tutorC = $alumno->tutores;
             $alumno->gradoC = $alumno->grados;
             $alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
@@ -752,7 +752,7 @@ class DirectorController extends Controller
             'tutores' => $tutores,
             'alumnos' => $alumnos,
             'generos' => $generos,
-            'tipo_sangre' => $tipo_sangre,
+            'tipoSangre' => $tipo_sangre,
             'grados' => $grados,
             'grupos' => $grupos,
             'talleres' => $materiasT,

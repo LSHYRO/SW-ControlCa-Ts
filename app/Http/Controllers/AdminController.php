@@ -105,7 +105,7 @@ class AdminController extends Controller
             $tipo_sangre = $tipo_sangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
             $persona->genero = $genero ? $genero->genero : null;
-            $persona->tipo_sangre = $tipo_sangre ? $tipo_sangre->tipo_sangre : null;
+            $persona->tipoSangre = $tipo_sangre ? $tipo_sangre->tipoSangre : null;
             $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
             $persona->calle = $direccion ? $direccion->calle : null;
             $persona->numero = $direccion ? $direccion->numero : null;
@@ -118,7 +118,7 @@ class AdminController extends Controller
 
         $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Admin/Profesores', [
-            'personal' => $personalConNombres, 'tipo_sangre' => $tipo_sangre, 'generos' => $generos, 'usuario' => $usuario
+            'personal' => $personalConNombres, 'tipoSangre' => $tipo_sangre, 'generos' => $generos, 'usuario' => $usuario
         ]);
     }
 
@@ -356,7 +356,7 @@ class AdminController extends Controller
             $tipo_sangre = $tipo_sangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
             $persona->genero = $genero ? $genero->genero : null;
-            $persona->tipo_sangre = $tipo_sangre ? $tipo_sangre->tipo_sangre : null;
+            $persona->tipoSangre = $tipo_sangre ? $tipo_sangre->tipoSangre : null;
             $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
             $persona->calle = $direccion ? $direccion->calle : null;
             $persona->numero = $direccion ? $direccion->numero : null;
@@ -371,7 +371,7 @@ class AdminController extends Controller
 
         return Inertia::render('Admin/Directivos', [
             'personal' => $personalConNombres,
-            'tipo_sangre' => $tipo_sangre,
+            'tipoSangre' => $tipo_sangre,
             'generos' => $generos,
             'tipo_personal' => $tipo_personal,
             'usuario' => $usuario
