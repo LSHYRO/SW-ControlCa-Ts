@@ -12,6 +12,7 @@ use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
 use App\Models\ciclos;
+use App\Models\clases_alumnos;
 use App\Models\periodos;
 use App\Models\tutores;
 use App\Models\direcciones;
@@ -225,29 +226,43 @@ class ProfeController extends Controller
     public function mostrarClase($idClase)
     {
         try {
-            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
-            $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
-            $periodos = $periodosC->map(function ($periodo) {
-                $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_inicio . " - " . $periodo->fecha_fin;
-                return $periodo;
-            });
-
-
             $usuario = $this->obtenerInfoUsuario();
-            $tiposActividades = tiposActividades::all();
-            $actividadesC = actividades::where('idClase', $clase->idClase)->get();
-            $actividades = $actividadesC->map(function ($actividad) {
-                $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
-                return $actividad;
-            });
+            $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+            $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+            if ($clase) {
+                $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+                $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
+                $periodos = $periodosC->map(function ($periodo) {
+                    $periodo->fecha_inicio = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
+                    $periodo->fecha_fin = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
+                    $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_inicio . " - " . $periodo->fecha_fin;
+                    return $periodo;
+                });
+
+                $tiposActividades = tiposActividades::all();
+                $actividadesC = actividades::where('idClase', $clase->idClase)->get();
+                $actividades = $actividadesC->map(function ($actividad) {
+                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                    $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+                    return $actividad;
+                });
+
+                $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+                $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+
+                return Inertia::render('Profe/Clase', [
+                    'clase' => $clase,
+                    'usuario' => $usuario,
+                    'tiposActividades' => $tiposActividades,
+                    'periodos' => $periodos,
+                    'actividades' => $actividades,
+                    'alumnos' => $alumnos
+                ]);
+            }else{
+                return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+            }
             
-            return Inertia::render('Profe/Clase', [
-                'clase' => $clase,
-                'usuario' => $usuario,
-                'tiposActividades' => $tiposActividades,
-                'periodos' => $periodos,
-                'actividades' => $actividades
-            ]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -282,6 +297,10 @@ class ProfeController extends Controller
             dd($e);
             return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Error al crear actividad", "color" => "red"]);
         }
+    }
+
+    public function calificarActividad(){
+        return Inertia::render('Profe/CalificarActividad', []);
     }
 
     public function actualizarContrasenia(Request $request)

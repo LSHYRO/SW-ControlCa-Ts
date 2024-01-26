@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -32,9 +33,9 @@ class clases extends Model
         return $this->hasOne(grupos::class, 'idGrupo', 'idGrupo');
     }
 
-    public function profesor(): HasOne
+    public function personal(): HasOne
     {
-        return  $this->hasOne(profesores::class,'idProfesor','idProfesor');
+        return  $this->hasOne(personal::class,'idPersonal','idPersonal');
     }
 
     public function materias(): HasOne
@@ -47,9 +48,9 @@ class clases extends Model
         return $this->hasOne(ciclos::class, 'idCiclo', 'idCiclo');
     }
 
-    public function clases_alumnos(): BelongsToMany
+    public function clases_alumnos(): BelongsTo
     {
-        return $this->belongsToMany(clases_alumnos::class, 'idClase', 'idClase');
+        return $this->belongsTo(clases_alumnos::class, 'idClase', 'idClase');
     }
 
     public function actividades(): BelongsToMany
@@ -60,5 +61,15 @@ class clases extends Model
     public function asistencias(): BelongsToMany
     {
         return $this->belongsToMany(asistencias::class, 'idClase', 'idClase');
+    }
+
+    public function calificaciones(): BelongsToMany
+    {
+        return $this->belongsToMany(calificaciones::class, 'idClase', 'idClase');
+    }
+
+    public function calificaciones_periodos(): BelongsToMany
+    {
+        return $this->belongsToMany(calificaciones_periodos::class, 'idClase', 'idClase');
     }
 }

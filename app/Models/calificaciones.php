@@ -16,6 +16,7 @@ class calificaciones extends Model
     protected $fillable = [
         'idActividad',
         'idAlumno',
+        'idClase',
         'calificacion',
     ];
 
@@ -27,5 +28,10 @@ class calificaciones extends Model
     public function alumnos(): HasOne
     {
         return 	$this->hasOne(alumnos::class,'idAlumno','idAlumno');
+    }
+
+    public function clases(): HasOne
+    {
+        return $this->hasOne(clases::class, 'idClase', 'idClase');
     }
 }

@@ -34,15 +34,13 @@ const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
 
-
-console.log(props.actividades);
 </script>
 <template>
     <div>
         <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
         <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente un tutor               -->
         <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-        :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
             <span class="font-medium">
                 {{ $page.props.flash.message }}
             </span>
@@ -53,11 +51,12 @@ console.log(props.actividades);
             <i class="fa fa-plus mr-2"></i> Agregar Actividad
         </button>
         <div>
-            <ul v-for="actividad in props.actividades" :key="actividad.idActividad" class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 px-2">
+            <ul v-for="actividad in props.actividades" :key="actividad.idActividad"
+                class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 px-2">
                 <li>
-                    <div class="w-full grid-cols-12 grid" @click="masInfo(actividad.idActividad)">
+                    <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfo(actividad.idActividad)">
                         <h4 class="text-base col-span-11">
-                            <strong class="start">{{ actividad.tipoActividadD }}:</strong>
+                            <strong>{{ actividad.tipoActividadD }}:</strong>
                             {{ actividad.titulo }}
                         </h4>
                         <div class="col-span-1 items-end text-end">
@@ -65,15 +64,25 @@ console.log(props.actividades);
                             <i v-if="mostrarDetalles[actividad.idActividad]" class="fa-solid fa-caret-down text-lg"></i>
                         </div>
                     </div>
-                    <div v-if="mostrarDetalles[actividad.idActividad]" class="w-full px-1">
-                        <p>
-                            Descripción: {{ actividad.descripcion }}
+                    <div v-if="mostrarDetalles[actividad.idActividad]" class="w-full px-1 border-t-2 border-cyan-300">
+                        <p class="text-sm m-1">
+                            <strong>Descripción: </strong>{{ actividad.descripcion }}
                         </p>
+                        <p class="text-sm m-1">
+                            <strong>Fecha de inicio: </strong>{{ actividad.fecha_i }}
+                        </p>
+                        <p class="text-sm m-1">
+                            <strong>Fecha de entrega: </strong>{{ actividad.fecha_e }}
+                        </p>
+                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-0 px-1 rounded my-2">
+                            <i class="fa fa-pen-to-square plus mr-2 text-sm"></i>Calificar
+                        </button>
                     </div>
                 </li>
             </ul>
         </div>
     </div>
     <formulario-actividades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="actDesModal()"
-    :title="'Añadir actividad'" :op="'1'" :modal="'modalCreate'" :clases="props.clase" :periodos="props.periodos"
-    :tiposActividades="props.tiposActividades"></formulario-actividades></template>
+        :title="'Añadir actividad'" :op="'1'" :modal="'modalCreate'" :clases="props.clase" :periodos="props.periodos"
+        :tiposActividades="props.tiposActividades"></formulario-actividades>
+</template>

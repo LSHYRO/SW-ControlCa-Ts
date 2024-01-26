@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('calificaciones', function (Blueprint $table) {
             $table->id(column:'idCalificacion');
+            $table->foreignId(column:'idClase')->references('idClase')->on('clases');
             $table->foreignId(column:'idActividad')->references('idActividad')->on('actividades');
             $table->foreignId(column:'idAlumno')->references('idAlumno')->on('alumnos');
             $table->integer(column:'calificacion');

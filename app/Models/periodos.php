@@ -31,4 +31,9 @@ class periodos extends Model
     {
         return $this->belongsToMany(actividades::class, 'idPeriodo', 'idPeriodo');
     }
+
+    protected function calificiones_periodos(): BelongsToMany
+    {
+        return $this->belongsToMany(calificaciones_periodos::class, 'idPeriodo', 'idPeriodo');
+    }
 }
