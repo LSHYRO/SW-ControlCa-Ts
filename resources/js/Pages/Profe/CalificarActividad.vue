@@ -7,30 +7,28 @@ const props = defineProps({
     clase: { type: Object },
     usuario: { type: Object },
     actividad: { type: Object },
-    alumnos: { type: Object }
+    alumnos: { type: Object },
+    calificaciones: {
+        type: Object,
+        default: () => ({})
+    },
 });
 
-const guardarCalificaciones = async () => {       
+const guardarCalificaciones = async () => {
     try {        
         await form.transform(data => ({
-        ...data,
-        clase: props.clase.idClase,
-        actividad: props.actividad.idActividad
-    })).post(route('profe.almacCalificaciones'));
-
-        // Redirige a la página de calificaciones con un mensaje
-        // await Inertia.reload();
+            ...data,
+            clase: props.clase.idClase,
+            actividad: props.actividad.idActividad
+        })).post(route('profe.almacCalificaciones'));
     } catch (error) {
         console.error('Error al enviar datos:', error);
     }
 };
 
-const form = useForm ({
-    calificaciones: {}
+const form = useForm({
+    calificaciones: props.calificaciones
 });
-
-//const calificaciones = {};
-
 </script>
 <template>
     <ProfeLayout :title="props.actividad.titulo" :usuario="props.usuario">
