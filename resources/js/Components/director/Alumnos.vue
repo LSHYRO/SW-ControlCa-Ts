@@ -96,7 +96,7 @@ const columns2 = [
         return row.numTelefono + " " +`<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
     }},
     { data: 'correoElectronico' },
-    { data: 'tipoSangre' },
+    { data: 'tipo_sangre' },
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'domicilio' },

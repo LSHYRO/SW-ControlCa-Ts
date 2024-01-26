@@ -98,7 +98,7 @@ const columns2 = [
         }
     },
     { data: 'correoElectronico' },
-    { data: 'tipoSangre' },
+    { data: 'tipo_sangre' },
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'domicilio' },

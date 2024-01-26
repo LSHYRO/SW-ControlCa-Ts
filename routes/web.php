@@ -125,6 +125,9 @@ Route::controller(InfoController::class)->group(
 
 Route::controller(AlumnoController::class)->group(function () {
     Route::get('/alumno', 'inicio')->name('alumno.inicio');
+
+    Route::get('/alumno/perfil', 'perfil')->name('alumno.perfil');
+    Route::put('/alumno/perfil/actualizar/contraseña','actualizarContrasenia')->name('alumno.actualizarContraseña');
 });
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales
@@ -277,4 +280,7 @@ Route::controller(SecreController::class)->group(function () {
 
 Route::controller(TutorController::class)->group(function () {
     Route::get('/tutor', 'inicio')->name('tutor.inicio');
+
+    Route::get('/tutor/perfil', 'perfil')->name('tutor.perfil');
+    Route::put('/tutor/perfil/actualizar/contraseña','actualizarContrasenia')->name('tutor.actualizarContrasenia');
 });

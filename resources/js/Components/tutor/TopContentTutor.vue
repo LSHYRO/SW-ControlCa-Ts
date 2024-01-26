@@ -42,7 +42,7 @@ watchEffect(async () => {
         <!-- Botón de Perfil -->
         <div>
             <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
-            <i class="text-white font-['DM Sans'] m-3"> {{ props.usuario.tipoUsuario1 }} </i>
+            <i class="text-white font-['DM Sans'] m-3"> {{ props.usuario.tipoUsuario6}} </i>
         </div>
     </div>
 </div>

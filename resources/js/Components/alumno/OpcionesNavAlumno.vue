@@ -6,7 +6,7 @@ defineProps({
 
 <template>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        :href="route('admin.inicio')">
+        :href="route('alumno.inicio')">
         <i class="fas fa-home mr-2"></i>Inicio
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
@@ -18,7 +18,7 @@ defineProps({
         <i class="fas fa-pencil mr-2"></i>Boletas
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        :href="route('admin.materias')">
-        <i class="fa fa-book mr-2"></i>Mis Datos
+        :href="route('alumno.perfil')">
+        <i class="fas fa-user mr-2"></i>Perfil
     </a>
 </template>

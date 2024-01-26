@@ -101,16 +101,16 @@ class DirectorController extends Controller
             ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
 
-        $tipoSangre = tipo_Sangre::all();
+        $tipo_sangre = tipo_Sangre::all();
         $generos = generos::all();
         $direcciones = direcciones::all();
 
-        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
+        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipo_sangre, $direcciones) {
             $genero = $generos->where('idGenero', $persona->idGenero)->first();
-            $tipoSangre = $tipoSangre->where('idTipoSangre', $persona->idTipoSangre)->first();
+            $tipo_sangre = $tipo_sangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
             $persona->genero = $genero ? $genero->genero : null;
-            $persona->tipoSangre = $tipoSangre ? $tipoSangre->tipoSangre : null;
+            $persona->tipo_sangre = $tipo_sangre ? $tipo_sangre->tipo_sangre : null;
             $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
             $persona->calle = $direccion ? $direccion->calle : null;
             $persona->numero = $direccion ? $direccion->numero : null;
@@ -125,7 +125,7 @@ class DirectorController extends Controller
 
         return Inertia::render('Director/Profesores', [
             'personal' => $personalConNombres,
-            'tipoSangre' => $tipoSangre,
+            'tipo_sangre' => $tipo_sangre,
             'generos' => $generos,
             'usuario' => $usuario
         ]);
@@ -146,7 +146,7 @@ class DirectorController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipoSangre' => 'required',
+                'tipo_sangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -198,7 +198,7 @@ class DirectorController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->rfc = $request->rfc;
-            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->idTipoSangre = $request->tipo_sangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -298,7 +298,7 @@ class DirectorController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipoSangre' => 'required',
+                'tipo_sangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -326,7 +326,7 @@ class DirectorController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->RFC = $request->rfc;
-            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->idTipoSangre = $request->tipo_sangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -366,18 +366,18 @@ class DirectorController extends Controller
             })
             ->get();
 
-        $tipoSangre = tipo_Sangre::all();
+        $tipo_sangre = tipo_Sangre::all();
         $generos = generos::all();
         $direcciones = direcciones::all();
         $tipo_personal = tipo_personal::all();
 
 
-        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipoSangre, $direcciones) {
+        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipo_sangre, $direcciones) {
             $genero = $generos->where('idGenero', $persona->idGenero)->first();
-            $tipoSangre = $tipoSangre->where('idTipoSangre', $persona->idTipoSangre)->first();
+            $tipo_sangre = $tipo_sangre->where('idTipoSangre', $persona->idTipoSangre)->first();
             $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
             $persona->genero = $genero ? $genero->genero : null;
-            $persona->tipoSangre = $tipoSangre ? $tipoSangre->tipoSangre : null;
+            $persona->tipo_sangre = $tipo_sangre ? $tipo_sangre->tipo_sangre : null;
             $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
             $persona->calle = $direccion ? $direccion->calle : null;
             $persona->numero = $direccion ? $direccion->numero : null;
@@ -392,7 +392,7 @@ class DirectorController extends Controller
 
         return Inertia::render('Director/Directivos', [
             'personal' => $personalConNombres,
-            'tipoSangre' => $tipoSangre,
+            'tipo_sangre' => $tipo_sangre,
             'generos' => $generos,
             'tipo_personal' => $tipo_personal,
             'usuario' => $usuario
@@ -413,7 +413,7 @@ class DirectorController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipoSangre' => 'required',
+                'tipo_sangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -475,7 +475,7 @@ class DirectorController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->rfc = $request->rfc;
-            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->idTipoSangre = $request->tipo_sangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -579,7 +579,7 @@ class DirectorController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipoSangre' => 'required',
+                'tipo_sangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -609,7 +609,7 @@ class DirectorController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->RFC = $request->rfc;
-            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->idTipoSangre = $request->tipo_sangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -703,7 +703,7 @@ class DirectorController extends Controller
         $generos = generos::all();
 
         // Obtención de datos de alumnos
-        $alumnosPrincipal = alumnos::with(['generos', 'direcciones', 'tipoSangre', 'grados', 'grupos', 'materias', 'tutores'])->get();
+        $alumnosPrincipal = alumnos::with(['generos', 'direcciones', 'tipo_sangre', 'grados', 'grupos', 'materias', 'tutores'])->get();
 
         $alumnos = $alumnosPrincipal->map(function ($alumno) {
             $genero = $alumno->generos ? $alumno->generos->genero : null;
@@ -728,14 +728,14 @@ class DirectorController extends Controller
                 $alumno->materia = "Ninguno";
             }
             $alumno->tutor = $alumno->tutores->nombre_completo;
-            $alumno->tipoSangre = $alumno->tipoSangre->tipoSangre;
+            $alumno->tipo_sangre = $alumno->tipo_sangre->tipo_sangre;
             $alumno->tutorC = $alumno->tutores;
             $alumno->gradoC = $alumno->grados;
             $alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
             return $alumno;
         });
 
-        $tipoSangre = tipo_Sangre::all();
+        $tipo_sangre = tipo_Sangre::all();
 
         $gradosPrincipal = grados::with('ciclos')->get();
         $grados = $gradosPrincipal->map(function ($grado) {
@@ -752,7 +752,7 @@ class DirectorController extends Controller
             'tutores' => $tutores,
             'alumnos' => $alumnos,
             'generos' => $generos,
-            'tipoSangre' => $tipoSangre,
+            'tipo_sangre' => $tipo_sangre,
             'grados' => $grados,
             'grupos' => $grupos,
             'talleres' => $materiasT,
@@ -1001,7 +1001,7 @@ class DirectorController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipoSangre' => 'required',
+                'tipo_sangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1046,7 +1046,7 @@ class DirectorController extends Controller
             $alumno->idGenero = $request->genero;
             $alumno->correoElectronico = $request->correoElectronico;
             $alumno->numTelefono = $request->numTelefono;
-            $alumno->idTipoSangre = $request->tipoSangre;
+            $alumno->idTipoSangre = $request->tipo_sangre;
             $alumno->alergias = $request->alergias;
             $alumno->discapacidad = $request->discapacidad;
             $alumno->idDireccion = $domicilio->idDireccion;
@@ -1090,7 +1090,7 @@ class DirectorController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipoSangre' => 'required',
+                'tipo_sangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1111,7 +1111,7 @@ class DirectorController extends Controller
             $alumno->idGenero = $request->genero;
             $alumno->correoElectronico = $request->correoElectronico;
             $alumno->numTelefono = $request->numTelefono;
-            $alumno->idTipoSangre = $request->tipoSangre;
+            $alumno->idTipoSangre = $request->tipo_sangre;
             $alumno->alergias = $request->alergias;
             $alumno->discapacidad = $request->discapacidad;
             $alumno->idDireccion = $domicilio->idDireccion;

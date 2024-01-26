@@ -30,7 +30,7 @@ class tutores extends Model
 
     public function usuarios():HasOne
     {
-        return $this->hasOne(usuarios::class, 'idUsuario', 'idUsuario');
+        return $this->hasOne(tutores::class, 'idUsuario', 'idUsuario');
     }
 
     public function alumnos(): HasMany{

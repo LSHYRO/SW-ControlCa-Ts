@@ -1,5 +1,5 @@
 <script setup>
-import ProfeLayout from '@/Layouts/ProfeLayout.vue';
+import TutorLayout from '@/Layouts/TutorLayout.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -7,7 +7,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 
 const props = defineProps({
     usuario: { type: Object },
-    profesor: { type: Object },
+    tutor: { type: Object },
 });
 
 const form = useForm({
@@ -45,7 +45,7 @@ const update = () => {
     if (contraActualError.value || contraNuevaError.value || contraConfirmacionError.value) {
         return;
     }
-    form.put(route('profe.actualizarContraseña', form.idUsuario), {
+    form.put(route('tutor.actualizarContrasenia', form.idUsuario), {
         onSuccess: () => {
             password_actual.value = '';
             password_nueva.value = '';
@@ -61,7 +61,7 @@ onMounted(async () => {
 
 
 <template>
-    <ProfeLayout title="Perfil" :usuario="props.usuario">
+    <TutorLayout title="Perfil" :usuario="props.usuario">
         <div class=" bg-white p-4 shadow rounded-lg h-5/6 mt-10 sm:mt-0">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Perfil</h2>
             <div class="my-1"></div>
@@ -82,57 +82,27 @@ onMounted(async () => {
                             <div class="col-span-4 m-2 md:grid md:grid-4">
                                 <div class="col-span-3 sm:col-span-4 mt-2">
                                     <InputLabel for="nombre_completo" value="Nombre completo" />
-                                    <TextInput id="nombre_completo" v-model="props.profesor.nombre_completo" type="text"
-                                        class="mt-1 block w-full" disabled />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4 mt-2">
-                                    <InputLabel for="fechaNac" value="Fecha de nacimiento" />
-                                    <TextInput id="fechaNac" v-model="props.profesor.fechaNacimiento" type="date"
+                                    <TextInput id="nombre_completo" v-model="props.tutor.nombre_completo" type="text"
                                         class="mt-1 block w-full" disabled />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4 mt-2">
                                     <InputLabel for="genero" value="Genero" />
-                                    <TextInput id="genero" v-model="props.profesor['generos'].genero" type="text"
+                                    <TextInput id="genero" v-model="props.tutor['generos'].genero" type="text"
                                         class="mt-1 block w-full" disabled />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4 mt-2">
-                                    <InputLabel for="CURP" value="CURP" />
-                                    <TextInput id="CURP" v-model="props.profesor.CURP" type="text" class="mt-1 block w-full"
-                                        disabled />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4 mt-2">
-                                    <InputLabel for="RFC" value="RFC" />
-                                    <TextInput id="RFC" v-model="props.profesor.RFC" type="text" class="mt-1 block w-full"
-                                        disabled />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4 mt-2">
                                     <InputLabel for="correoElectronico" value="Correo electronico" />
-                                    <TextInput id="correoElectronico" v-model="props.profesor.correoElectronico" type="text"
+                                    <TextInput id="correoElectronico" v-model="props.tutor.correoElectronico" type="text"
                                         class="mt-1 block w-full" disabled />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4 mt-2">
                                     <InputLabel for="numTelefono" value="Telefono" />
-                                    <TextInput id="numTelefono" v-model="props.profesor.numTelefono" type="text"
-                                        class="mt-1 block w-full" disabled />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4 mt-2">
-                                    <InputLabel for="tipoSangre" value="Tipo de sangre" />
-                                    <TextInput id="tipoSangre" v-model="props.profesor['tipo_sangre'].tipoSangre" type="text"
-                                        class="mt-1 block w-full" disabled />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4 mt-2">
-                                    <InputLabel for="alergias" value="Alergias" />
-                                    <TextInput id="alergias" v-model="props.profesor.alergias" type="text"
-                                        class="mt-1 block w-full" disabled />
-                                </div>
-                                <div class="col-span-6 sm:col-span-4 mt-2">
-                                    <InputLabel for="discapacidad" value="Discapacidad" />
-                                    <TextInput id="discapacidad" v-model="props.profesor.discapacidad" type="text"
+                                    <TextInput id="numTelefono" v-model="props.tutor.numTelefono" type="text"
                                         class="mt-1 block w-full" disabled />
                                 </div>
                                 <div class="col-span-6 sm:col-span-4 mt-2">
                                     <InputLabel for="direccion" value="Direccion" />
-                                    <TextInput id="direccion" v-model="props.profesor.domicilio" type="text"
+                                    <TextInput id="direccion" v-model="props.tutor.domicilio" type="text"
                                         class="mt-1 block w-full" disabled />
                                 </div>
                             </div>
@@ -203,5 +173,5 @@ onMounted(async () => {
                 </form>
             </div>
         </div>
-    </ProfeLayout>
+    </TutorLayout>
 </template>

@@ -83,7 +83,7 @@ class alumnos extends Model
         return $this->belongsToMany(asistencias::class, 'idAlumno', 'idAlumno');
     }
 
-    public function tipoSangre(): HasOne 
+    public function tipo_Sangre(): HasOne 
     {
         return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
     }

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, defineProps, onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 import TopContentTutor from '@/Components/tutor/TopContentTutor.vue'
@@ -22,22 +22,7 @@ const switchToTeam = (team) => {
         preserveState: false,
     });
 };
-/*
-onMounted(async () => {
-    try {
-        const usuario = await axios.get(route('obtenerUsuario'));
-        const idTipoUsuario = usuario.data.idTipoUsuario;
-        const tipoUsuario = await axios.get(route('obtenerTipoUsuario', idTipoUsuario));
-        const nombre_per = await axios.get(route('obtenerDatoPersona', usuario.data.idUsuario));
-        tipo_usuario.value = tipoUsuario.data.tipoUsuario;
-        nombre_usuario.value = usuario.data.usuario;
-        nombre_persona.value = nombre_per.data.nombre_completo;
 
-    } catch (e) {
-        tipo_usuario.value = "Sin asignar";
-        console.log("Error: " + e);
-    }
-});*/
 </script>
 
 <template>
@@ -58,7 +43,7 @@ onMounted(async () => {
                                 src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
                         </div>
                         <div class="flex-col justify-start items-center inline-flex">
-                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{ props.usuario.personalNombre }}
+                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{ props.usuario.tutorNombre }}
                             </div>
                             <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">{{ props.usuario.usuario }}
                             </div>
