@@ -426,20 +426,23 @@ class DirectorController extends Controller
             $contrasenia = $this->generarContraseña();
             //Creacion de usuario
             $usuario = new usuarios();
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario','directivo')->first();
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
             $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
             $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
             $usuario->password =  bcrypt($contrasenia);
             //$usuario->activo = 1;
             //echo "Tu contraseña generada es: $contrasenia";
             //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+
+            //$usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+
+            $usuario->save();
+
             $tipoUsuario = tipoUsuarios::where(function ($query) {
                 $query->where('tipoUsuario', 'Director')
                     ->orWhere('tipoUsuario', 'Personal escolar');
             })->first(); //cambie get()
-
-            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-
-            $usuario->save();
 
             //Se busca el tipo de usuario en la BD
             //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();

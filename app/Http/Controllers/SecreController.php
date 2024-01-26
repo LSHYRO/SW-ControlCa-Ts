@@ -24,6 +24,7 @@ use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Exception;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -35,9 +36,52 @@ use Mockery\Undefined;
 
 class SecreController extends Controller{
 
+    public function obtenerInfoUsuario()
+    {
+        $idUsuario = auth()->user()->idUsuario;
+        $usuario = usuarios::where('idUsuario', $idUsuario)->with(['personal'])->first();
+        $usuario->tipoUsuario3 = $usuario->tipoUsuarios->tipoUsuario;
+        $usuario->secretariaNombre = $usuario->personal->nombre_completo;
+
+        return $usuario;
+    }
+
     public function inicio()
     {
-        return Inertia::render('Secre/Inicio');
+        $usuario = $this->obtenerInfoUsuario();
+        $message = '';
+        $color = '';
+
+        if ($usuario->cambioContrasenia === 0) {
+            $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
+            $fechaFormateada = $fechaLimite->format('d/m/Y');
+            $horaFormateada = $fechaLimite->format('H:i');
+            $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivara y sera necesario acudir a la dirección para solucionar la situación";
+            $color = "red";
+            return Inertia::render('Secre/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color]);
+        }
+
+
+        return Inertia::render('Secre/Inicio', [
+            'usuario' => $usuario, 'message' => $message, 'color' => $color
+        ]);
+    }
+
+    public function perfil()
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            $personal = personal::where('idUsuario', $usuario->idUsuario)->with(['generos', 'tipo_sangre', 'direcciones'])->first();
+
+            $personal->domicilio = $personal->direcciones->calle . " #" . $personal->direcciones->numero . ", " . $personal->direcciones->asentamientos->asentamiento
+                . ", " . $personal->direcciones->asentamientos->municipios->municipio . ", " . $personal->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $personal->direcciones->asentamientos->codigoPostal->codigoPostal;
+
+
+            return Inertia::render('Secre/Perfil', ['usuario' => $usuario, 'directivo' => $personal, 'usuario' => $usuario]);
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 
     public function cuentas()
@@ -47,7 +91,7 @@ class SecreController extends Controller{
         })
         ->get();
 
-        return Inertia::render('Director/Cuentas', [
+        return Inertia::render('Secre/Cuentas', [
             'usuarios' => $usuarios,
         ]);
     }
@@ -62,7 +106,7 @@ class SecreController extends Controller{
         $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
 
         $usuario->save();
-        return redirect()->route('director.cuentas')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
+        return redirect()->route('secre.cuentas')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
     }
 
     public function elimCuentas($usuariosIds)
@@ -78,7 +122,7 @@ class SecreController extends Controller{
             usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.usuarios')->with('message', "Usuarios eliminados correctamente");
+            return redirect()->route('secre.usuarios')->with('message', "Usuarios eliminados correctamente");
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -92,7 +136,7 @@ class SecreController extends Controller{
     {
         $usuario = usuarios::find($idUsuario);
         $usuario->delete();
-        return redirect()->route('director.cuentas')->with('message', "Usuario eliminado correctamente");
+        return redirect()->route('secre.cuentas')->with('message', "Usuario eliminado correctamente");
     }
 
     public function actualizarCuentas(Request $request, $idUsuario)
@@ -110,7 +154,7 @@ class SecreController extends Controller{
         } catch (Exception $e) {
             dd($e);
         }
-        return redirect()->route('director.cuentas')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
+        return redirect()->route('secre.cuentas')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
     }
 
     public function alumnosclases()
@@ -160,17 +204,17 @@ class SecreController extends Controller{
                     } else {
                         // Si al menos un alumno ya existe, hacer rollback y redirigir
                         DB::rollBack();
-                        return redirect()->route('director.alumnosclases')->with('message', "El alumno ya está agregado en la clase seleccionada");
+                        return redirect()->route('secre.alumnosclases')->with('message', "El alumno ya está agregado en la clase seleccionada");
                     }
                 }
                 // Commit solo si no hubo problemas
                 DB::commit();
     
-                return redirect()->route('director.alumnosclases')->with('message', "Alumno(s) agregado(s) correctamente");
+                return redirect()->route('secre.alumnosclases')->with('message', "Alumno(s) agregado(s) correctamente");
             } catch (\Exception $e) {
                 // Manejar excepciones específicas
                 DB::rollBack();
-                return redirect()->route('director.alumnosclases')->with('message', "Error al agregar alumnos: " . $e->getMessage());
+                return redirect()->route('secre.alumnosclases')->with('message', "Error al agregar alumnos: " . $e->getMessage());
             }
         } catch (\Exception $e) {
             // Manejar excepciones generales
@@ -206,6 +250,26 @@ class SecreController extends Controller{
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
+        }
+    }
+
+    public function actualizarContrasenia(Request $request)
+    {
+        try {
+            $usuario = usuarios::find($request->idUsuario);
+            $user = Auth::user();
+            if (Hash::check($request->password_actual, $user->password)) {
+                $usuario->contrasenia = $request->password_nueva;
+                $usuario->password = bcrypt($request->password_nueva);
+                $usuario->cambioContrasenia = 1;
+                $usuario->save();
+
+                return redirect()->route('secre.perfil')->With(["message" => "Contraseña actualizada correctamente, recuerde su contraseña: " . $usuario->contrasenia, "color" => "green"]);
+            }
+            return redirect()->route('secre.perfil')->With(["message" => "Contraseña actual incorrecta", "color" => "red"]);
+        } catch (Exception $e) {
+            return redirect()->route('secre.perfil')->With(["message" => "Error al actualizar contraseña", "color" => "red"]);
+            dd($e);
         }
     }
     

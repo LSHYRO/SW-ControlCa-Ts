@@ -274,8 +274,12 @@ Route::middleware(['profesorS'])->group(function () {
 Route::controller(SecreController::class)->group(function () {
     Route::get('/secre', 'inicio')->name('secre.inicio');
     Route::get('/secre/alumnosclases', 'alumnosclases')->name('secre.alumnosclases');
+
+    Route::get('/secre/cuentas', 'cuentas')->name('secre.cuentas');
+    Route::get('/secre/perfil', 'perfil')->name('secre.perfil');
+    Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
     Route::delete('/secre/alumnosclases/{idClase}', 'eliminarAlumnosClases')->name('secre.eliminarAlumnosClases');
-        Route::delete('/secre/alumnosclases/delete/{clases_alumnosIds}', 'elimAlumnosClases')->name('secre.elimAlumnosClases');
+    Route::delete('/secre/alumnosclases/delete/{clases_alumnosIds}', 'elimAlumnosClases')->name('secre.elimAlumnosClases');
 });
 
 Route::controller(TutorController::class)->group(function () {

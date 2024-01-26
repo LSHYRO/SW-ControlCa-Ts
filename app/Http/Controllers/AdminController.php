@@ -405,25 +405,27 @@ class AdminController extends Controller
             //Contraseña generada
             $contrasenia = $this->generarContraseña();
             //Creacion de usuario
-            $tipo_personalF = tipo_personal::find($request->tipoPersonal);
-            if ($tipo_personalF->tipo_personal != "Director") {
-                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'directivo')->first();
-            } elseif ($tipo_personalF->tipo_personal === "Director") {
-                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
-            }
             $usuario = new usuarios();
-            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
-            $usuario->contrasenia = $contrasenia;
-            $usuario->password = bcrypt($contrasenia);
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario','directivo')->first();
             $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
+            $usuario->password =  bcrypt($contrasenia);
+            //$usuario->activo = 1;
+            //echo "Tu contraseña generada es: $contrasenia";
+            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+
+            //$usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+
+            $usuario->save();
 
             $tipoUsuario = tipoUsuarios::where(function ($query) {
                 $query->where('tipoUsuario', 'Director')
                     ->orWhere('tipoUsuario', 'Personal escolar');
             })->first(); //cambie get()
 
-            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-            $usuario->save();
+            //Se busca el tipo de usuario en la BD
+            //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
 
             $usuarioTipoUsuario = new usuarios_tiposUsuarios();
             $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
@@ -437,6 +439,8 @@ class AdminController extends Controller
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
 
+            //Se busca el tipo de personal en la BD
+            //$tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
             $tipo_personal = tipo_personal::where(function ($query) {
                 $query->where('tipo_personal', 'Director')
                     ->orWhere('tipo_personal', 'Personal escolar');
@@ -476,7 +480,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
+            return redirect()->route('director.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
         } catch (Exception $e) {
             dd($e);
         }
