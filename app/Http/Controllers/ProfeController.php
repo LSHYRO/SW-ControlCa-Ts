@@ -306,6 +306,9 @@ class ProfeController extends Controller
         $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
         $actividad = actividades::where('idClase', $idClase)->where('idActividad', $idActividad)->first();
         if ($clase && $actividad) {
+            $calificaciones = calificaciones::where('idClase', $idClase)
+                ->where('idActividad', $idActividad)
+                ->get();
             $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
             $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
             $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
@@ -313,6 +316,16 @@ class ProfeController extends Controller
             $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
             $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
 
+            if ($calificaciones) {
+                $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
+                return Inertia::render('Profe/CalificarActividad', [
+                    'actividad' => $actividad,
+                    'usuario' => $usuario,
+                    'clase' => $clase,
+                    'alumnos' => $alumnos,
+                    'calificaciones' => $calificacionesArray,
+                ]);
+            }
             return Inertia::render('Profe/CalificarActividad', [
                 'actividad' => $actividad,
                 'usuario' => $usuario,
@@ -323,22 +336,36 @@ class ProfeController extends Controller
     }
 
     public function almacenarCalificaciones(Request $request)
-    {        
+    {
         $usuario = $this->obtenerInfoUsuario();
         $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
         $clase = clases::where('idClase', $request->clase)->where('idPersonal', $personalDocente->idPersonal)->first();
         $actividad = actividades::where('idClase', $request->clase)->where('idActividad', $request->actividad)->first();
         if ($clase && $actividad) {
-            foreach ($request->calificaciones as $alumnoId => $calificacion) {
-                $calificacionA = new calificaciones();
-                $calificacionA->idClase = $request->clase;
-                $calificacionA->idActividad = $request->actividad; // Ajusta según tu lógica
-                $calificacionA->idAlumno = $alumnoId;
-                $calificacionA->calificacion = $calificacion;
-                $calificacionA->save();
+            $calificacionesBD = calificaciones::where('idClase', $request->clase)
+                ->where('idActividad', $request->actividad)
+                ->get();
+            if ($calificacionesBD) {
+                foreach ($request->calificaciones as $alumnoId => $calificacion) {
+                    $calificacionA = calificaciones::where('idClase', $request->clase)
+                        ->where('idActividad', $request->actividad)
+                        ->where('idAlumno', $alumnoId)
+                        ->first();
+                    $calificacionA->calificacion = $calificacion;
+                    $calificacionA->save();
+                }
+            } else {
+                foreach ($request->calificaciones as $alumnoId => $calificacion) {
+                    $calificacionA = new calificaciones();
+                    $calificacionA->idClase = $request->clase;
+                    $calificacionA->idActividad = $request->actividad; // Ajusta según tu lógica
+                    $calificacionA->idAlumno = $alumnoId;
+                    $calificacionA->calificacion = $calificacion;
+                    $calificacionA->save();
+                }
             }
             return redirect()->route('profe.mostrarClase', $request->clase)->with(['message' => "Actividad calificada correctamente: " . $actividad->titulo, "color" => "green"]);
-        }else{
+        } else {
             return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
         }
     }
