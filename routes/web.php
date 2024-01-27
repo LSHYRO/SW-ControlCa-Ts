@@ -128,6 +128,12 @@ Route::controller(AlumnoController::class)->group(function () {
 
     Route::get('/alumno/perfil', 'perfil')->name('alumno.perfil');
     Route::put('/alumno/perfil/actualizar/contraseña','actualizarContrasenia')->name('alumno.actualizarContraseña');
+    Route::get('/alumno/clases', 'clases')->name('alumno.enCurso');
+    Route::get('/alumno/clases/clase/{idAlumno}', 'mostrarClasesAlumno')->name('alumno.mostrarClase'); 
+    Route::get('/alumno/clases/obtener/datos/{idPersonal}', 'obtenerDatosClase')->name('obtenerDatosClaseA');
+    Route::get('/alumno/materias/obtener/datos/{idClase}', 'obtenerDatosMateria')->name('obtenerDatosMateriaA');
+    Route::get('/alumno/grados/obtener/datos/{idClase}', 'obtenerDatosGrado')->name('obtenerDatosGradoA');
+    Route::get('/alumno/grupos/obtener/datos/{idClase}', 'obtenerDatosGrupo')->name('obtenerDatosGrupoA');
 });
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales

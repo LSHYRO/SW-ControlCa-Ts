@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
+use App\Models\clases_alumnos;
 use App\Models\ciclos;
 use App\Models\periodos;
 use App\Models\tutores;
@@ -105,5 +106,157 @@ class AlumnoController extends Controller{
             dd($e);
         }
     }
+
+    public function clases()
+    {
+        $grupos = grupos::all();
+        $grados = grados::all();
+        $ciclos = ciclos::all();
+        $usuario = $this->obtenerInfoUsuario();
+        $clases = $this->obtenerDatosClase($usuario->alumno);
+
+
+        return Inertia::render('Alumno/EnCurso', [
+            'clases' => $clases,
+            'grupos' => $grupos,
+            'grados' => $grados,
+            'ciclos' => $ciclos,
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function obtenerDatosClase($idAlumno)
+    {
+        try {
+            $alumno = alumnos::where('idAlumno', $idAlumno)->with(['clases_alumnos'])->first();
+            $clases = $alumno->clases;
+            Log::info($clases);
+            $clasesM = [];
+            for ($i = 0; $i < count($clases); $i++) {
+                Log::info($clases[$i]);
+                $clase = clases_alumnos::where('idClase', $clases[$i]->idClase)->with(['materias', 'grados', 'grupos'])->first();
+                array_push($clasesM, $clase);
+            }
+
+            return  $clasesM;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['clases_alumnos' => 'Sin asignar'];
+        }
+    }
+
+    public function obtenerDatosMateria($idClase)
+    {
+        try {
+            $clases = clases::where('idClase', $idClase)->with(['materias'])->first();
+            return $clases->materias;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['materias' => 'Sin asignar'];
+        }
+    }
+
+    public function obtenerDatosGrado($idClase)
+    {
+        try {
+            $clases = clases::where('idClase', $idClase)->with(['grados'])->first();
+            return $clases->grados;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['grados' => 'Sin asignar'];
+        }
+    }
+    public function obtenerDatosGrupo($idClase)
+    {
+        try {
+            $clases = clases::where('idClase', $idClase)->with(['grupos'])->first();
+            return $clases->grupos;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['grupos' => 'Sin asignar'];
+        }
+    }
+
+    public function mostrarClase($idClase)
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
+            //$personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+            $clasesAlumno = clases_alumnos::where('idClase,',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
+            //$clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+            if ($clase) {
+                $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+                $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
+                $periodos = $periodosC->map(function ($periodo) {
+                    $periodo->fecha_inicio = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
+                    $periodo->fecha_fin = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
+                    $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_inicio . " - " . $periodo->fecha_fin;
+                    return $periodo;
+                });
+
+                $tiposActividades = tiposActividades::all();
+                $actividadesC = actividades::where('idClase', $clase->idClase)->get();
+                $actividades = $actividadesC->map(function ($actividad) {
+                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                    $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+                    return $actividad;
+                });
+
+                $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+                $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+
+                return Inertia::render('Alumno/Curso', [
+                    'clase' => $clase,
+                    'usuario' => $usuario,
+                    'tiposActividades' => $tiposActividades,
+                    'periodos' => $periodos,
+                    'actividades' => $actividades,
+                    'alumnos' => $alumnos
+                ]);
+            } else {
+                return redirect()->route('alumno.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+            }
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function mostrarClasesAlumno($idAlumno)
+{
+    try {
+        // Obtener información del usuario actual
+        $usuario = $this->obtenerInfoUsuario();
+
+        // Buscar al alumno en la tabla de Alumnos
+        $alumno = alumnos::find($idAlumno);
+
+        // Verificar si el alumno existe
+        if (!$alumno) {
+            return redirect()->route('inicio')->with(['message' => "Alumno no encontrado", "color" => "red"]);
+        }
+
+        // Obtener las clases en las que está inscrito el alumno
+        $clasesAlumno = clases_alumnos::where('idAlumno', $idAlumno)->get();
+
+        // Obtener detalles adicionales de las clases (puedes adaptar según tus necesidades)
+        $detallesClases = $clasesAlumno->map(function ($claseAlumno) {
+            $clase = clases::find($claseAlumno->idClase);
+            $clase->calificacion = $claseAlumno->calificacionClase; // Puedes agregar la calificación u otros detalles según sea necesario
+            return $clase;
+        });
+
+        // Renderizar la vista con la información obtenida
+        return Inertia::render('Alumno/EnCurso', [
+            'usuario' => $usuario,
+            'alumno' => $alumno,
+            'clases' => $detallesClases,
+        ]);
+    } catch (Exception $e) {
+        dd($e);
+    }
+}
+
 
 }

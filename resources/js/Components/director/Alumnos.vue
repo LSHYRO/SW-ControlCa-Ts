@@ -89,24 +89,32 @@ const columns2 = [
     { data: 'apellidoP' },
     { data: 'apellidoM' },
     { data: 'nombre' },
-    { data: 'fechaNacimiento'},
+    { data: 'fechaNacimiento' },
     { data: 'CURP' },
     { data: 'genero' },
-    { data: null, render: function(data, type, row, meta){
-        return row.numTelefono + " " +`<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
-    }},
+    {
+        data: null, render: function (data, type, row, meta) {
+            return row.numTelefono + " " + `<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+        }
+    },
     { data: 'correoElectronico' },
     { data: 'tipoSangre' },
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'domicilio' },
-    { data: 'esForaneo', render: function (data, type, row) {
+    {
+        data: 'esForaneo', render: function (data, type, row) {
             return data ? 'Si' : 'No';
-        }},
+        }
+    },
     { data: 'grado' },
     { data: 'grupo' },
     { data: 'materia' },
-    { data: 'tutor' },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return row.tutor + " " + `<a href="tel:${row.tutorTel} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+        }
+    },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idAlumno}"><i class="fa fa-pencil"></i></button>`;
