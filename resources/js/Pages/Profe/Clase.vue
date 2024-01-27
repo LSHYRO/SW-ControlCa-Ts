@@ -1,7 +1,6 @@
 <script setup>
 import ProfeLayout from '@/Layouts/ProfeLayout.vue';
 import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
 import Actividades from '@/Components/profe/ActividadesSeccion.vue';
 import AlumnosSeccion from '@/Components/profe/AlumnosSeccion.vue';
 

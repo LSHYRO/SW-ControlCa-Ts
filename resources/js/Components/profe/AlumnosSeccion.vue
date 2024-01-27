@@ -25,6 +25,9 @@ const props = defineProps({
             </button>
         </div>
         <div class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 px-2">
+            <div class="w-full border-b-2 border-cyan-500 hover:border-cyan-600 my-1 pl-2">
+                <p class="text-lg"><strong> Alumno </strong></p>
+            </div>
             <div v-for="alumno in props.alumnos" :key="alumno.idAlumno"  class="w-full border-b-2 border-cyan-500 hover:border-cyan-600 my-1 px-2">
                 <p> {{ alumno.nombre_completo }} </p>
             </div>
