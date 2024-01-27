@@ -421,28 +421,28 @@ class DirectorController extends Controller
             ]);
 
             //fechaFormateada
-            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
-            //Contraseña generada
-            $contrasenia = $this->generarContraseña();
-            //Creacion de usuario
-            $usuario = new usuarios();
-            //$tipoUsuario = tipoUsuarios::where('tipoUsuario','directivo')->first();
-            //$usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
-            $usuario->contrasenia = $contrasenia; //Hash::make($contrasenia);
-            $usuario->password =  bcrypt($contrasenia);
-            //$usuario->activo = 1;
-            //echo "Tu contraseña generada es: $contrasenia";
-            //return $usuario -> contrasenia . " " . Hash::check($contrasenia,$usuario -> contrasenia);
+        $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+        //Contraseña generada
+        $contrasenia = $this->generarContraseña();
+        //Creacion de usuario
+        $usuario = new usuarios();
+        $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
+        $usuario->contrasenia = $contrasenia;
+        $usuario->password = bcrypt($contrasenia);
+        
+        $tipo_personal = tipo_personal::find($request->tipoPersonal);
 
-            //$usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+        // Se asigna el tipo de usuario según el tipo_personal seleccionado
+        if ($tipo_personal->tipo_personal ==='Director') {
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
+        } elseif ($tipo_personal->tipo_personal === 'Personal escolar') {
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'directivo')->first();
+        } else {
+            // Manejo de caso no previsto
+            // Puedes decidir qué hacer en caso de que el tipo_personal no sea 'Director' ni 'Personal escolar'
+        }
 
-            $tipoUsuario = tipoUsuarios::where(function ($query) {
-                $query->where('tipoUsuario', 'Director')
-                    ->orWhere('tipoUsuario', 'Personal escolar');
-            })->first(); //cambie get()
-
-            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
 
             $usuario->save();
 
@@ -460,14 +460,6 @@ class DirectorController extends Controller
             $domicilio->numero = $request->numero;
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
-
-            //Se busca el tipo de personal en la BD
-            //$tipo_personal = tipo_personal::where('tipo_personal', 'profesor')->first();
-            $tipo_personal = tipo_personal::where(function ($query) {
-                $query->where('tipo_personal', 'Director')
-                    ->orWhere('tipo_personal', 'Personal escolar');
-            })->first();
-
 
             //$personal = new personal($request->input());
             $personal = new personal();
