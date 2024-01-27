@@ -55,14 +55,14 @@ const submit = () => {
             <div class="">
                 <InputLabel for="usuario" value="Usuario" />
                 <TextInput id="usuario" v-model="form.usuario" type="text" class="mt-1 block w-full" required autofocus
-                    autocomplete="username" />
+                    autocomplete="usuario" />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div class="mt-4">
                 <InputLabel for="password" value="Password" />
                 <TextInput id="password" v-model="form.password" type="password" class="mt-1 block w-full" required
-                    autocomplete="current-password" />
+                    autocomplete="password" />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 

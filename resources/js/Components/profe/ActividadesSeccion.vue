@@ -34,10 +34,6 @@ const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
 
-const calificar = (idClase, idActividad) => {
-    route('profe.calificarAct', [idClase, idActividad]);
-};
-
 </script>
 <template>
     <div>
@@ -50,9 +46,17 @@ const calificar = (idClase, idActividad) => {
             </span>
         </div>
         <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mt-2" @click="actDesModal()"
-            data-bs-toggle="modal" data-bs-target="#modalCreate">
+        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mt-2 mx-1"
+            @click="actDesModal()" data-bs-toggle="modal" data-bs-target="#modalCreate">
             <i class="fa fa-plus mr-2"></i> Agregar Actividad
+        </button>
+        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mt-2 mx-1"
+            data-bs-toggle="modal" data-bs-target="#modalCreate">
+            <i class="fa fa-check-double mr-2"></i> Calificar periodo
+        </button>
+        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mt-2 mx-1"
+            data-bs-toggle="modal" data-bs-target="#modalCreate">
+            <i class="fa fa-circle-check mr-2"></i> Calificar clase
         </button>
         <div>
             <ul v-for="actividad in props.actividades" :key="actividad.idActividad"
@@ -79,9 +83,13 @@ const calificar = (idClase, idActividad) => {
                             <strong>Fecha de entrega: </strong>{{ actividad.fecha_e }}
                         </p>
                         <div class="my-2">
-                            <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded"
-                            :href="route('profe.calificarAct', [props.clase.idClase, actividad.idActividad])">
+                            <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1"
+                                :href="route('profe.calificarAct', [props.clase.idClase, actividad.idActividad])">
                                 <i class="fa fa-pen-to-square plus mr-2 text-sm"></i>Calificar
+                            </a>
+                            <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1"
+                            :href="route('profe.mostrarCal', [props.clase.idClase, actividad.idActividad])">
+                                <i class="fa fa-award plus mr-2 text-sm"></i>Ver calificaciones
                             </a>
                         </div>
                     </div>

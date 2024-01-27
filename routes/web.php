@@ -258,6 +258,7 @@ Route::middleware(['profesorS'])->group(function () {
 
         Route::post('/profesor/calificar/actividad', 'almacenarCalificaciones')->name('profe.almacCalificaciones');
         Route::get('/profesor/clases/clase/{idClase}/calificar/{idActividad}', 'calificarActividad')->name('profe.calificarAct');
+        Route::get('/profesor/clases/clase/{idClase}/mostrarCalificacion/{idActividad}', 'mostrarCalificaciones')->name('profe.mostrarCal');
         
         Route::get('/profesor/clases/clase/{idClase}', 'mostrarClase')->name('profe.mostrarClase');
         Route::get('/profesor/personal/obtener', 'obtenerPersonal')->name('obtenerPersonal');
