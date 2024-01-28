@@ -2,10 +2,11 @@
 import AlumnoLayout from '@/Layouts/AlumnoLayout.vue';
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import Actividades from '@/Components/profe/ActividadesSeccion.vue';
+import Actividades from '@/Components/alumno/ActividadesSeccion.vue';
 
 const props = defineProps({
     clase: { type: Object },
+    clasesA: { type: Object },
     periodos: { type: Object },
     tiposActividades: { type: Object },
     usuario: { type: Object },
@@ -13,16 +14,28 @@ const props = defineProps({
     alumnos: { type: Object }
 });
 
+const mostrarAc = ref(true);
+const mostrarAl = ref(false);
+
+const mostrarActividades = () => {
+    const btnActividades = document.getElementById("btnMAc");
+    const btnAlumnos = document.getElementById("btnMAl");
+    btnActividades.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    mostrarAc.value = true;
+    mostrarAl.value = false;
+};
+
 </script>
 
 <template>
     <AlumnoLayout title="clases" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg alturaM">
-            <h2 class="text-black text-2xl text-center font-semibold p-5">{{ clase['materias'].materia }}</h2>
+            <h2 class="text-black text-2xl text-center font-semibold p-5">{{ clasesA['materias'].materia }}</h2>
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <div class="m-1">
-                    <a :href="route('profe.clases')"><i class="fa-solid fa-arrow-left"> </i> Volver</a>
+                    <a :href="route('alumno.enCurso')"><i class="fa-solid fa-arrow-left"> </i> Volver</a>
                 </div>
             </div>
             <!-- Linea de separación -->
@@ -33,19 +46,11 @@ const props = defineProps({
                     <a @click="mostrarActividades()" id="btnMAc"
                         class="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">Actividades</a>
                 </li>
-                <li class="w-full">
-                    <a @click="mostrarAlumnos()" id="btnMAl"
-                        class="inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">
-                        Alumnos</a>
-                </li>
             </ul>
-            <div v-if="mostrarAc">
-                <actividades :tiposActividades="props.tiposActividades" :clase="props.clase" :periodos="props.periodos"
-                    :actividades="props.actividades" />
-            </div>
-            <div v-if="mostrarAl">
-                <AlumnosSeccion :alumnos="props.alumnos" />
-            </div>
+                <div v-if="mostrarAc">
+                    <actividades :tiposActividades="props.tiposActividades" :clase="props.clasesA" :periodos="props.periodos"
+                        :actividades="props.actividades" />
+                </div>
         </div>
 
 

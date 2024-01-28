@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\personas;
+use App\Models\actividades;
+use App\Models\tiposActividades;
 use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
@@ -112,10 +114,11 @@ class AlumnoController extends Controller{
         $grupos = grupos::all();
         $grados = grados::all();
         $ciclos = ciclos::all();
+        $calificaciones= calificaciones::all();
         //$clases_alumnos = clases_alumnos::all();
         $usuario = $this->obtenerInfoUsuario();
         $clases = $this->obtenerDatosClase($usuario->alumnos->idAlumno);//aquí está el error
-        dd($clases);
+        //dd($clases);
 
 
         return Inertia::render('Alumno/EnCurso', [
@@ -124,7 +127,8 @@ class AlumnoController extends Controller{
             'grupos' => $grupos,
             'grados' => $grados,
             'ciclos' => $ciclos,
-            'usuario' => $usuario
+            'usuario' => $usuario,
+            'calificaciones'=> $calificaciones,
         ]);
     }
 
@@ -139,12 +143,12 @@ class AlumnoController extends Controller{
     public function obtenerDatosClase($idAlumno)//El error es aquí
     {
         try {
-            $alumnos = alumnos::where('idAlumno', $idAlumno)->with(['clases_alumnos'])->first();
-            $clasesA = $alumnos->clases_alumnos();
-            dd($clasesA);            //$clasesA = $alumnos->clases_alumnos->toArray();
+            $alumnos = alumnos::where('idAlumno', $idAlumno)->first();
+            $clasesA = clases_alumnos::where('idAlumno',$alumnos->idAlumno)->get();
+            //dd($clasesA);            //$clasesA = $alumnos->clases_alumnos->toArray();
             Log::info($clasesA);
             $clasesM = [];
-            for ($i = 0; $i < count($clases_alumnos); $i++) {
+            for ($i = 0; $i < count($clasesA); $i++) {
                 Log::info($clasesA[$i]);
                 $clase = clases::where('idClase', $clasesA[$i]->idClase)->with(['materias', 'grados', 'grupos'])->first();
                 //$clase = clases_alumnos::where('idClase', $clasesA[$i]->idClase)->first();
@@ -199,26 +203,25 @@ class AlumnoController extends Controller{
             if ($clasesA) {
                 $clasesA = clases::where('idClase', $idClase)->with(['materias'])->first();
 
-                //$tiposActividades = tiposActividades::all();
-            
-                    $actividadesC = actividades::where('idClase', $clase->idClase)->get();
-                    $actividades = $actividadesC->map(function ($actividad) {
-                    $actividad->calificacion=calificaciones::where('idClase',$clase->idClase)->where('idActividad',$actividad->idActividad)->where('idAlumno',$alumno->idAlumno)->get();
-                    $calificaciones=$actividad->calificacion;
-                    //$actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
-                    //$actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                $actividadesC = actividades::where('idClase', $clasesA->idClase)->get();
+
+                $actividades = $actividadesC->map(function ($actividad) {
+                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                    $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
+                    $actividad->periodos->fecha_f = Carbon::parse($actividad->periodos->fecha_fin)->format('d-m-Y');
+                    $actividad->periodos->descripcion = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_ini . " - " . $actividad->periodos->fecha_f;
+                    $actividad->periodo = $actividad->periodos;
                     $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
                     return $actividad;
                 });
 
-                //$idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
-                //$alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
-
-                return Inertia::render('Alumno/EnCurso', [
+                return Inertia::render('Alumno/Curso', [
                     'clasesA' => $clasesA,
                     'usuario' => $usuario,
                     'actividades' => $actividades,
-                    'alumnos' => $alumnos
+                    'actividadesC' => $actividadesC,
+                    'alumno' => $alumno,
                 ]);
             } else {
                 return redirect()->route('alumno.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
@@ -227,4 +230,63 @@ class AlumnoController extends Controller{
             dd($e);
         }
     }
+
+    public function mostrarCalificaciones($idClase, $idActividad)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
+        $clasesA = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
+        //$personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        //$clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        $actividad = actividades::where('idClase', $idClase)->where('idActividad', $idActividad)->first();
+        if ($claseA && $actividad) {
+            $calificaciones = calificaciones::where('idClase', $idClase)
+                ->where('idActividad', $idActividad)
+                ->get();
+            $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+            $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+            $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
+            $actividad->tipAct = $actividad->tiposActividades->tipoActividad;
+            $claseA = clases::where('idClase', $idClase)->with(['materias'])->first();
+
+            $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
+            // Asignar "Sin calificar" a los alumnos que no tienen calificación
+            $alumnoConCalificaciones = $alumno->map(function ($alumno) use ($calificacionesArray) {
+                $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
+                return $alumno;
+            });
+
+            return Inertia::render('Alumno/Clase', [
+                'actividad' => $actividad,
+                'usuario' => $usuario,
+                'claseA' => $claseA,
+                'alumnos' => $alumno,
+                'calificaciones' => $alumnoConCalificaciones,
+            ]);
+        }
+    }
+
+        public function mostrarCalificacion($idClase, $idActividad)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
+        $clasesA = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $alumno->idAlumno)->first();
+
+        if ($clasesA && $actividad) {
+            $actividad = actividades::where('idClase', $idClase)->where('idActividad', $idActividad)->first();
+            $calificaciones = calificaciones::where('idClase', $idClase)->where('idActividad', $idActividad)->first();
+
+            return Inertia::render('Alumno/Clase', [
+                'actividad' => $actividad,
+                'usuario' => $usuario,
+                'claseA' => $claseA,
+                'alumnos' => $alumnos,
+                'calificaciones' => $calificaciones,
+            ]);
+        } else {
+            // Manejar el caso en el que no se cumple la condición principal
+            return response()->json(['error' => 'No se encontró la clase o la actividad'], 404);
+        }
+    }
+
 }

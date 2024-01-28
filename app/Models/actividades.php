@@ -45,4 +45,8 @@ class actividades extends Model
     {
         return $this->belongsToMany(calificaciones::class, 'idActividad', 'idActividad');
     }
+    public function calificacion(): HasOne
+{
+    return $this->hasOne(calificaciones::class, 'idActividad', 'idActividad');
+}
 }

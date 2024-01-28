@@ -34,4 +34,8 @@ class calificaciones extends Model
     {
         return $this->hasOne(clases::class, 'idClase', 'idClase');
     }
+    public function actividad(): BelongsTo
+{
+    return $this->belongsTo(actividades::class, 'idActividad', 'idActividad');
+}
 }
