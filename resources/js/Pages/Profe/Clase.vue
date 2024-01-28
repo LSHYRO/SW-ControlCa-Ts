@@ -10,8 +10,11 @@ const props = defineProps({
     periodos: { type: Object },
     tiposActividades: { type: Object },
     usuario: { type: Object },
-    actividades: { type: Object }, 
-    alumnos: { type: Object }
+    actividades: { type: Object },
+    alumnos: { type: Object },
+    actividadesCompleto: { type: Object },
+    tiposActividadesAlum: { type: Object },
+    actividadesAlum: { type: Object },
 });
 
 const mostrarAc = ref(true);
@@ -53,8 +56,7 @@ const mostrarAlumnos = () => {
             <ul class="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex m-2 ">
                 <li class="w-full">
                     <a @click="mostrarActividades()" id="btnMAc"
-                        class="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer"
-                        >Actividades</a>
+                        class="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">Actividades</a>
                 </li>
                 <li class="w-full">
                     <a @click="mostrarAlumnos()" id="btnMAl"
@@ -67,7 +69,8 @@ const mostrarAlumnos = () => {
                     :actividades="props.actividades" />
             </div>
             <div v-if="mostrarAl">
-                <AlumnosSeccion :alumnos="props.alumnos"/>
+                <AlumnosSeccion :tiposActividades="props.tiposActividadesAlum" :clase="props.clase"
+                    :periodos="props.periodos" :actividades="props.actividadesAlum" />
             </div>
         </div>
 

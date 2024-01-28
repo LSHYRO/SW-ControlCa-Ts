@@ -233,15 +233,35 @@ class ProfeController extends Controller
             if ($clase) {
                 $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
                 $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
-                $periodos = $periodosC->map(function ($periodo) {
-                    $periodo->fecha_inicio = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
-                    $periodo->fecha_fin = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
-                    $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_inicio . " - " . $periodo->fecha_fin;
+                $periodos = $periodosC->map(function ($periodo) {                    
+                    $periodo->fecha_ini = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
+                    $periodo->fecha_f = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
+                    $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_ini . " - " . $periodo->fecha_f;
                     return $periodo;
                 });
+                $actividadesCompleto = actividades::where('idClase', $clase->idClase)->get();
 
-                $tiposActividades = tiposActividades::all();
-                $actividadesC = actividades::where('idClase', $clase->idClase)->get();
+                $tiposActividadesAlum = tiposActividades::where('tipoActividad', 'Asistencia')
+                    ->orWhere('tipoActividad', 'Vestuario')->get();
+                $actividadesCA = actividades::where('idClase', $clase->idClase)
+                    ->whereHas('tiposActividades', function ($query) {
+                        $query->where('tipoActividad', ['Asistencia', 'Vestuario']);
+                    })
+                    ->get();
+                $actividadesAlum = $actividadesCA->map(function ($actividad) {
+                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                    $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+                    return $actividad;
+                });
+
+                $tiposActividades = tiposActividades::whereNotIn('tipoActividad', ['Asistencia', 'Vestuario'])->get();
+
+                $actividadesC = actividades::where('idClase', $clase->idClase)
+                    ->whereHas('tiposActividades', function ($query) {
+                        $query->whereNotIn('tipoActividad', ['Asistencia', 'Vestuario']);
+                    })
+                    ->get();
                 $actividades = $actividadesC->map(function ($actividad) {
                     $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
                     $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
@@ -258,7 +278,12 @@ class ProfeController extends Controller
                     'tiposActividades' => $tiposActividades,
                     'periodos' => $periodos,
                     'actividades' => $actividades,
-                    'alumnos' => $alumnos
+                    'alumnos' => $alumnos,
+                    'actividadesCompleto' => $actividadesCompleto,
+                    'tiposActividadesAlum' => $tiposActividadesAlum,
+                    'actividadesAlum' => $actividadesAlum,
+
+
                 ]);
             } else {
                 return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
@@ -293,6 +318,36 @@ class ProfeController extends Controller
             }
             $actividad->save();
             return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Actividad agregada correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Error al crear actividad", "color" => "red"]);
+        }
+    }
+
+    public function agregarPaseLista(Request $request)
+    {
+        try {
+            $actividad = new actividades();
+            $actividad->titulo = "Pase de lista de la fecha " . Carbon::parse($request->fecha_inicio)->format('d-m-Y');
+            $actividad->fecha_inicio = $request->fecha_inicio;
+            $actividad->fecha_entrega = $request->fecha_inicio;
+            $actividad->idPeriodo = $request->periodo['idPeriodo'];
+            $actividad->idClase = $request->idClase;
+            $actividad->idTipoActividad = $request->tipoActividad;
+
+            $actividadExistente = actividades::where('titulo', $actividad->titulo)
+                ->where('descripcion', $actividad->descripcion)
+                ->where('fecha_inicio', $actividad->fecha_inicio)
+                ->where('fecha_entrega', $actividad->fecha_entrega)
+                ->where('idClase', $actividad->idClase)
+                ->where('idPeriodo', $actividad->idPeriodo)
+                ->where('idTipoActividad', $actividad->idTipoActividad)
+                ->first();
+            if ($actividadExistente) {
+                return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "El pase de lista ya existe", "color" => "red"]);
+            }
+            $actividad->save();
+            return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Pase de lista agregado correctamente", "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
             return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Error al crear actividad", "color" => "red"]);
@@ -401,6 +456,42 @@ class ProfeController extends Controller
                 'clase' => $clase,
                 'alumnos' => $alumnos,
                 'calificaciones' => $alumnosConCalificaciones,
+            ]);
+        }
+    }
+
+    public function paseLista($idClase, $idActividad)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        $actividad = actividades::where('idClase', $idClase)->where('idActividad', $idActividad)->first();
+        if ($clase && $actividad) {
+            $calificaciones = calificaciones::where('idClase', $idClase)
+                ->where('idActividad', $idActividad)
+                ->get();
+            $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+            $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+            $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
+            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+            $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+
+            if ($calificaciones) {
+                $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
+                return Inertia::render('Profe/PaseLista', [
+                    'actividad' => $actividad,
+                    'usuario' => $usuario,
+                    'clase' => $clase,
+                    'alumnos' => $alumnos,
+                    'calificaciones' => $calificacionesArray,
+                ]);
+            }
+            return Inertia::render('Profe/PaseLista', [
+                'actividad' => $actividad,
+                'usuario' => $usuario,
+                'clase' => $clase,
+                'alumnos' => $alumnos
             ]);
         }
     }

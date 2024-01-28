@@ -15,6 +15,8 @@ const props = defineProps({
 });
 
 const form = useForm({
+    periodo: props.actividad.idPeriodo,
+    fecha_inicio: props.actividad.fecha_inicio,
     calificaciones: props.calificaciones
 });
 
