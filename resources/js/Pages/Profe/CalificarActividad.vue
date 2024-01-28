@@ -43,6 +43,9 @@ const form = useForm({
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <div class="my-2">
                 <p class="my-1">
+                    <strong>Tipo de actividad: </strong> {{ props.actividad.tipAct }}
+                </p>
+                <p class="my-1">
                     <strong>Fecha de inicio: </strong> {{ props.actividad.fecha_i }}
                 </p>
                 <p class="my-1">

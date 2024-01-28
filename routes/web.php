@@ -264,6 +264,8 @@ Route::middleware(['profesorS'])->group(function () {
         Route::put('/profesor/perfil/actualizar/contraseña','actualizarContrasenia')->name('profe.actualizarContraseña');
         Route::delete('/profesor/clases/clase/{idClase}/actividad/{idActividad}/eliminar', 'eliminarActividad')->name('profe.eliminarAct');
         Route::post('/profesor/calificar/actividad', 'almacenarCalificaciones')->name('profe.almacCalificaciones');
+        Route::get('/profesor/clases/clase/{idClase}/pasar-lista/{idActividad}', 'paseLista')->name('profe.paseLista');
+        Route::get('/profesor/clases/clase/{idClase}/mostrarPaseLista/{idActividad}', 'mostrarPaseLista')->name('profe.mostrarPasLis');
         Route::get('/profesor/clases/clase/{idClase}/calificar/{idActividad}', 'calificarActividad')->name('profe.calificarAct');
         Route::get('/profesor/clases/clase/{idClase}/mostrarCalificacion/{idActividad}', 'mostrarCalificaciones')->name('profe.mostrarCal');
         
@@ -276,7 +278,8 @@ Route::middleware(['profesorS'])->group(function () {
 
         Route::post('/profesor/pase-lista', 'agregarPaseLista')->name('profe.agregarPaseL');
         Route::post('/profesor/actividad', 'agregarActividad')->name('profe.agregarActividad');
-        Route::put('/profesor/actividad/actualizar', 'actualizarActividad')->name('profe.actActividad');        
+        Route::put('/profesor/actividad/actualizar', 'actualizarActividad')->name('profe.actActividad');    
+        Route::put('/profesor/actividad/pase-lista/actualizar', 'actualizarPaseLista')->name('profe.actPaseLista');        
         Route::put('/profesor/actividades/{idActividad}/edit', 'actualizarActividades')->name('profe.actualizarActividades');
         Route::delete('/profesor/actividades/delete/{actividadesIds}', 'elimPeriodos')->name('profe.elimActividades');
     });

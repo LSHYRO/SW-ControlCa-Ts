@@ -56,7 +56,7 @@ const form = useForm({
     idActividad: props.actividad.idActividad,    
     fecha_inicio: props.fecha_inicio,    
     idClase: props.clases.idClase,
-    periodo: props.actividad.idPeriodo,
+    periodo: props.actividad.periodo,
     tipoActividad: props.actividad.idTipoActividad,
 
 });
@@ -122,15 +122,11 @@ const update = () => {
     }
 
     var idActividad = document.getElementById('idActividad2').value;
-    console.log(idActividad);
-    console.log(document.getElementById('actividad2').value);
-    form.put(route('profe.actualizarActividades', idActividad), {
+    form.put(route('profe.actPaseLista', idActividad), {
         onSuccess: () => {
             close()
-            tituloError.value = '';
             periodoError.value = '';
             fecha_inicioError.value = '';
-            fecha_entregaError.value = '';
             tipoActividadError.value = '';
         }
     });
@@ -139,7 +135,7 @@ const update = () => {
 watch(() => props.actividad, (newVal) => {
     form.idActividad = newVal.idActividad;    
     form.idClase = newVal.idClase;
-    form.periodo = newVal.idPeriodo;
+    form.periodo = newVal.periodo;
     form.tipoActividad = newVal.idTipoActividad;    
     form.fecha_inicio = newVal.fecha_inicio;
 }, { deep: true });

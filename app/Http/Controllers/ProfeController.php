@@ -364,10 +364,8 @@ class ProfeController extends Controller
             $calificaciones = calificaciones::where('idClase', $clase->idClase)
                 ->where('idActividad', $actividad->idActividad)
                 ->get();
-            Log::info("Tiene contenido? " . $calificaciones ? true : false);
-            if ($calificaciones) {
+            if (!$calificaciones->isEmpty()) {
                 foreach ($calificaciones as $calificacion) {
-                    Log::info("Entro al foreach");
                     $calificacion->delete();
                 }
             }
@@ -409,6 +407,32 @@ class ProfeController extends Controller
         }
     }
 
+    public function actualizarPaseLista(Request $request)
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+            $clase = clases::where('idClase', $request->clase)->where('idPersonal', $personalDocente->idPersonal)->first();
+            $actividad = actividades::where('idClase', $request->clase)->where('idActividad', $request->idActividad)->first();
+            if ($clase && $actividad) {
+                $actividad = actividades::find($request->idActividad);
+                $actividad->titulo = "Pase de lista de la fecha " . Carbon::parse($request->fecha_inicio)->format('d-m-Y');
+                $actividad->fecha_inicio = $request->fecha_inicio;
+                $actividad->fecha_entrega = $request->fecha_inicio;
+                $actividad->idPeriodo = $request->periodo['idPeriodo'];
+                $actividad->idClase = $request->idClase;
+                $actividad->idTipoActividad = $request->tipoActividad;
+                $actividad->save();
+                return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Pase de lista actualizada correctamente", "color" => "green"]);
+            } else {
+                return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+            }
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->route('profe.mostrarClase', $request->idClase)->with(['message' => "Error al crear actividad", "color" => "red"]);
+        }
+    }
+
     public function calificarActividad($idClase, $idActividad)
     {
         $usuario = $this->obtenerInfoUsuario();
@@ -422,6 +446,7 @@ class ProfeController extends Controller
             $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
             $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
             $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
+            $actividad->tipAct = $actividad->tiposActividades->tipoActividad;
             $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
             //$clases_alumnos = $clase->clases_alumnos()->get();            
             $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
@@ -503,6 +528,7 @@ class ProfeController extends Controller
             $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
             $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
             $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
+            $actividad->tipAct = $actividad->tiposActividades->tipoActividad;
             $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
             $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
             $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
@@ -538,11 +564,12 @@ class ProfeController extends Controller
             $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
             $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
             $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
+            $actividad->tipAct = $actividad->tiposActividades->tipoActividad;
             $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            //$clases_alumnos = $clase->clases_alumnos()->get();            
             $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
             $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
-
-            if ($calificaciones) {
+            if (!$calificaciones->isEmpty()) {
                 $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
                 return Inertia::render('Profe/PaseLista', [
                     'actividad' => $actividad,
@@ -557,6 +584,42 @@ class ProfeController extends Controller
                 'usuario' => $usuario,
                 'clase' => $clase,
                 'alumnos' => $alumnos
+            ]);
+        }
+    }
+
+    public function mostrarPaseLista($idClase, $idActividad)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        $actividad = actividades::where('idClase', $idClase)->where('idActividad', $idActividad)->first();
+        if ($clase && $actividad) {
+            $calificaciones = calificaciones::where('idClase', $idClase)
+                ->where('idActividad', $idActividad)
+                ->get();
+            $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+            $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+            $actividad->periodoD = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_inicio . " - " . $actividad->periodos->fecha_fin;
+            $actividad->tipAct = $actividad->tiposActividades->tipoActividad;
+            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+            $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+
+
+            $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
+            // Asignar "Sin calificar" a los alumnos que no tienen calificación
+            $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
+                $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin puntuar';
+                return $alumno;
+            });
+
+            return Inertia::render('Profe/VerPaseLista', [
+                'actividad' => $actividad,
+                'usuario' => $usuario,
+                'clase' => $clase,
+                'alumnos' => $alumnos,
+                'calificaciones' => $alumnosConCalificaciones,
             ]);
         }
     }
