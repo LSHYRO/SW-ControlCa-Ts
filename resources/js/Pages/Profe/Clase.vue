@@ -70,7 +70,7 @@ const mostrarAlumnos = () => {
             </div>
             <div v-if="mostrarAl">
                 <AlumnosSeccion :tiposActividades="props.tiposActividadesAlum" :clase="props.clase"
-                    :periodos="props.periodos" :actividades="props.actividadesAlum" />
+                    :periodos="props.periodos" :actividades="props.actividadesAlum"/>
             </div>
         </div>
 

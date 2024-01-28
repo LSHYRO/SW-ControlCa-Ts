@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import FormularioAlumPaseL from './FormularioAlumPaseL.vue';
+import Swal from 'sweetalert2';
+import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     tiposActividades: {
@@ -25,15 +27,50 @@ const mostrarDetalles = ref({});
 const mostrarModal = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
+const mostrarModalEditar = ref(false);
+const form = useForm({});
 
 const actDesModal = () => {
     mostrarModal.value = !mostrarModal.value;
+};
+
+const actDesModalEditar = () => {
+    mostrarModalEditar.value = !mostrarModalEditar.value;
 };
 
 const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
 
+const actE = ref({});
+
+const abrirE = (actividad) => {
+    actE.value = actividad;
+    actDesModalEditar();
+}
+
+const editar = (idAct) => {
+    const actividad = props.actividades.find(a => a.idActividad === idAct);
+    abrirE(actividad);
+}
+
+const eliminarActividad = (idClase, idActividad, nombreAct) => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: `¿Estas seguro que deseas eliminar actividad ` + nombreAct + '?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('profe.eliminarAct', [idClase, idActividad]));
+        }
+
+    })
+};
 </script>
 <template>
     <div>
@@ -68,13 +105,21 @@ const masInfo = (idActividad) => {
                         <p class="text-sm m-1">
                             <strong>Fecha: </strong>{{ actividad.fecha_i }}
                         </p>
-                        <div class="my-2">
+                        <div class="my-2 w-full">
+                            <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1 cursor-pointer"
+                                @click="editar(actividad.idActividad)">
+                                <i class="fa fa-pencil plus mr-2 text-sm"></i>Editar actividad
+                            </a>
+                            <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1 cursor-pointer"
+                                @click="eliminarActividad(props.clase.idClase, actividad.idActividad, actividad.titulo)">
+                                <i class="fa fa-trash plus mr-2 text-sm"></i>Eliminar actividad
+                            </a>
                             <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1"
-                                :href="route('profe.calificarAct', [props.clase.idClase, actividad.idActividad])">
+                                :href="route('profe.paseLista', [props.clase.idClase, actividad.idActividad])">
                                 <i class="fa fa-pen-to-square plus mr-2 text-sm"></i>Pasar Lista
                             </a>
                             <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1"
-                            :href="route('profe.mostrarCal', [props.clase.idClase, actividad.idActividad])">
+                                :href="route('profe.mostrarPasLis', [props.clase.idClase, actividad.idActividad])">
                                 <i class="fa fa-award plus mr-2 text-sm"></i>Ver calificaciones
                             </a>
                         </div>
@@ -86,4 +131,7 @@ const masInfo = (idActividad) => {
     <FormularioAlumPaseL :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="actDesModal()"
         :title="'Añadir pase de lista'" :op="'1'" :modal="'modalCreate'" :clases="props.clase" :periodos="props.periodos"
         :tiposActividades="props.tiposActividades"></FormularioAlumPaseL>
+    <FormularioAlumPaseL :show="mostrarModalEditar" :max-width="maxWidth" :closeable="closeable" @close="actDesModalEditar()"
+        :title="'Añadir pase de lista'" :op="'2'" :modal="'modalCreate'" :clases="props.clase" :periodos="props.periodos"
+        :tiposActividades="props.tiposActividades" :actividad="actE"></FormularioAlumPaseL>
 </template>

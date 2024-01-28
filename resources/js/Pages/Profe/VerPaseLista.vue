@@ -94,13 +94,10 @@ const botones = [{
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <div class="my-2">
                 <p class="my-1">
-                    <strong>Tipo de actividad: </strong> {{ props.actividad.tipAct }}
+                    <strong>Tipo: </strong> {{ props.actividad.tipAct }}
                 </p>
                 <p class="my-1">
-                    <strong>Fecha de inicio: </strong> {{ props.actividad.fecha_i }}
-                </p>
-                <p class="my-1">
-                    <strong>Fecha de entrega: </strong> {{ props.actividad.fecha_e }}
+                    <strong>Fecha: </strong> {{ props.actividad.fecha_i }}
                 </p>
                 <p class="my-1">
                     <strong>Periodo: </strong> {{ props.actividad.periodoD }}
@@ -126,7 +123,7 @@ const botones = [{
                                 #
                             </th>
                             <th class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">Alumno</th>
-                            <th class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">Calificación</th>
+                            <th class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">Puntuación</th>
                         </tr>
                     </thead>
                 </DataTable>

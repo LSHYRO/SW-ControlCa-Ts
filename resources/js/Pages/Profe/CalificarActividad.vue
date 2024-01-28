@@ -43,6 +43,9 @@ const form = useForm({
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <div class="my-2">
                 <p class="my-1">
+                    <strong>Tipo de actividad: </strong> {{ props.actividad.tipAct }}
+                </p>
+                <p class="my-1">
                     <strong>Fecha de inicio: </strong> {{ props.actividad.fecha_i }}
                 </p>
                 <p class="my-1">
@@ -65,7 +68,7 @@ const form = useForm({
                             <tr v-for="alumno in alumnos" :key="alumno.idAlumno" class="border-b border-cyan-100">
                                 <td class="border-r border-cyan-300 text-sm pl-3">{{ alumno.nombre_completo }}: </td>
                                 <td class="text-center text-sm">
-                                    <input v-model="form.calificaciones[alumno.idAlumno]" type="number"
+                                    <input v-model="form.calificaciones[alumno.idAlumno]" type="number" required
                                         placeholder="Calificación"
                                         class="text-sm border rounded-md border-gray-300 min-w-24 " min="0" max="10">
                                 </td>
