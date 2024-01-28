@@ -113,7 +113,7 @@ class AlumnoController extends Controller{
         $grados = grados::all();
         $ciclos = ciclos::all();
         $usuario = $this->obtenerInfoUsuario();
-        $clases = $this->obtenerDatosClase($usuario->alumno);
+        $clases = $this->obtenerDatosClase($usuario->alumnos->idAlumno);
 
 
         return Inertia::render('Alumno/EnCurso', [
@@ -125,16 +125,24 @@ class AlumnoController extends Controller{
         ]);
     }
 
+    public function obtenerAlumno($idUsuario)
+    {
+        // Modifica esto según la relación en tu base de datos
+        $alumnos = alumnos::where('idUsuario', $idUsuario)->get();
+        dd($alumnos);
+        return response()->json($alumnos);
+    }
+
     public function obtenerDatosClase($idAlumno)
     {
         try {
-            $alumno = alumnos::where('idAlumno', $idAlumno)->with(['clases_alumnos'])->first();
-            $clases = $alumno->clases;
+            $alumnos = alumnos::where('idAlumno', $idAlumno)->with(['clases_alumnos'])->first();
+            $clases = $alumnos->clases;
             Log::info($clases);
             $clasesM = [];
             for ($i = 0; $i < count($clases); $i++) {
-                Log::info($clases[$i]);
-                $clase = clases_alumnos::where('idClase', $clases[$i]->idClase)->with(['materias', 'grados', 'grupos'])->first();
+                Log::info($clases_alumnos[$i]);
+                $clase = clases::where('idClase', $clases[$i]->idClase)->with(['materias', 'grados', 'grupos'])->first();
                 array_push($clasesM, $clase);
             }
 
@@ -182,9 +190,8 @@ class AlumnoController extends Controller{
         try {
             $usuario = $this->obtenerInfoUsuario();
             $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
-            //$personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
-            $clasesAlumno = clases_alumnos::where('idClase,',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
-            //$clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+            $clasesA = clases_alumnos::where('idClase,',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
+            $clase = clases::where('idClase', $clasesA->idClase)->first();
             if ($clase) {
                 $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
                 $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
@@ -204,10 +211,10 @@ class AlumnoController extends Controller{
                     return $actividad;
                 });
 
-                $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
-                $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+                //$idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+                //$alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
 
-                return Inertia::render('Alumno/Curso', [
+                return Inertia::render('Alumno/EnCurso', [
                     'clase' => $clase,
                     'usuario' => $usuario,
                     'tiposActividades' => $tiposActividades,
@@ -222,7 +229,7 @@ class AlumnoController extends Controller{
             dd($e);
         }
     }
-
+    /*
     public function mostrarClasesAlumno($idAlumno)
 {
     try {
@@ -256,7 +263,7 @@ class AlumnoController extends Controller{
     } catch (Exception $e) {
         dd($e);
     }
-}
+}*/
 
 
 }

@@ -38,6 +38,11 @@ class alumnos extends Model
         'nombre_completo',
     ];
 
+    public function clases()
+    {
+    return $this->hasMany(clases::class, 'idAlumno');
+    }
+
     public function grados(): HasOne
     {
         return $this->hasOne(grados::class, 'idGrado', 'idGrado');
@@ -96,5 +101,10 @@ class alumnos extends Model
     public function calificaciones_periodos(): BelongsToMany 
     {
         return $this->belongsToMany(calificaciones_periodos::class, 'idAlumnos', 'idAlumnos');
+    }
+
+    public function clasesInscritas()
+    {
+        return $this->belongsToMany(clases::class, 'clases_alumnos', 'idAlumno', 'idClase');
     }
 }

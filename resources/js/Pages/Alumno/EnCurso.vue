@@ -2,7 +2,7 @@
 import { ref, computed, getCurrentInstance, onMounted } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import AlumnoLayout from '@/Layouts/AlumnoLayout.vue';
-import MenuOpcionesProfe from '@/Components/profe/MenuOpcionesProfe.vue';
+import MenuOpcionesAlumno from '@/Components/alumno/MenuOpcionesAlumno.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import pdfmake from 'pdfmake';
@@ -17,13 +17,38 @@ const props = defineProps({
     clases: { type: Object },
 });
 
+const tipo_usuario = ref('');
+const nombre_usuario = ref('');
+const nombre_persona = ref('');
+const nombreMateria = ref('');
 
+const materias = (datos) => {
+    try {
+        const clases = datos.map((clase) => clase.idMateria);
+        const idMaterias = materias.join(',');
+        return idMaterias;
+    } catch (error) {
+        console.log("Error al eliminar varias materias: " + error);
+        return [];
+    }
+}
+
+const grupos = (datos) => {
+    try {
+        const clases = datos.map((clase) => clase.idGrupo);
+        const idGrupo = grupos.join(',');
+        return idGrupo;
+    } catch (error) {
+        console.log("Error al eliminar varios grados: " + error);
+        return [];
+    }
+}
 </script>
 
 <template>
     <AlumnoLayout title="Clases" :usuario="props.usuario">
         <div class=" bg-white p-4 shadow rounded-lg alturaM">
-            <h2 class="text-black text-2xl text-center font-semibold p-5">Materias cursando</h2>
+            <h2 class="text-black text-2xl text-center font-semibold p-5">Clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <div class="flex">
@@ -44,7 +69,6 @@ const props = defineProps({
         </div>
     </AlumnoLayout>
 </template>
-
 <style>
 .alturaM {
     min-height: 80vh;

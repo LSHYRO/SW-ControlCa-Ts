@@ -3,6 +3,16 @@ import AlumnoLayout from '@/Layouts/AlumnoLayout.vue';
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import Actividades from '@/Components/profe/ActividadesSeccion.vue';
+
+const props = defineProps({
+    clase: { type: Object },
+    periodos: { type: Object },
+    tiposActividades: { type: Object },
+    usuario: { type: Object },
+    actividades: { type: Object }, 
+    alumnos: { type: Object }
+});
+
 </script>
 
 <template>
