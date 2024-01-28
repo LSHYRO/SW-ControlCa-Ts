@@ -65,7 +65,7 @@ const form = useForm({
                             <tr v-for="alumno in alumnos" :key="alumno.idAlumno" class="border-b border-cyan-100">
                                 <td class="border-r border-cyan-300 text-sm pl-3">{{ alumno.nombre_completo }}: </td>
                                 <td class="text-center text-sm">
-                                    <input v-model="form.calificaciones[alumno.idAlumno]" type="number"
+                                    <input v-model="form.calificaciones[alumno.idAlumno]" type="number" required
                                         placeholder="Calificación"
                                         class="text-sm border rounded-md border-gray-300 min-w-24 " min="0" max="10">
                                 </td>
