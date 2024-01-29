@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 
@@ -20,15 +20,13 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    calificaciones:{
+    calificaciones: {
         type: Object,
         default: () => ({})
     },
 });
 
-console.log(props.actividades);
-console.log(props.calificaciones);
-
+const calificaciones = ref([]);
 const mostrarDetalles = ref({});
 const maxWidth = 'xl';
 const closeable = true;
@@ -38,7 +36,17 @@ const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
 
-const actE = ref({});
+const obtenerCalificacion = async (idClase, idActividad) => {
+    try {
+        const response = await axios.get(`alumno.verCal`);
+        // Manipula la respuesta según tus necesidades
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error al obtener la calificación', error);
+    }
+};
+
+
 </script>
 
 <template>
@@ -54,10 +62,10 @@ const actE = ref({});
 
         <div>
             <ul v-for="actividad in props.actividades" :key="actividad.idActividad"
-                class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 px-2">
+                class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 mb-2 px-2">
                 <li>
                     <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfo(actividad.idActividad)">
-                        <h4 class="text-base col-span-11">
+                        <h4 class="text-base col-span-11 mb-2">
                             <strong>{{ actividad.tipoActividadD }}:</strong>
                             {{ actividad.titulo }}
                         </h4>
@@ -73,13 +81,12 @@ const actE = ref({});
                         <p class="text-sm m-1">
                             <strong>Fecha de inicio: </strong>{{ actividad.fecha_i }}
                         </p>
-                        <p class="text-sm m-1">
+                        <p class="text-sm m-1 ">
                             <strong>Fecha de entrega: </strong>{{ actividad.fecha_e }}
                         </p>
-                        <p class="underline">
+                        <p class="underline mb-2">
                             <strong style="font-weight: bold; color: black;">Calificación: </strong>
-                            <span style="font-weight: normal; color: your_color_here;">{{ calificaciones.idActividad }}</span>
-                            <a :href="route('alumno.verCal', [actividad.idClase, actividad.idActividad])" style="font-weight: normal; color: your_color_here;">Texto del enlace</a>
+                            <span style="font-weight: normal; color: your_color_here;">{{ actividad.calificacion }}</span>
                         </p>
                     </div>
                 </li>
