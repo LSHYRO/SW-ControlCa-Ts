@@ -137,7 +137,6 @@ Route::controller(AlumnoController::class)->group(function () {
     Route::get('/alumno/materiasA/obtener/datos/{idClase}', 'obtenerDatosMateria')->name('obtenerDatosMateriaA');
     Route::get('/alumno/gradosA/obtener/datos/{idClase}', 'obtenerDatosGrado')->name('obtenerDatosGradoA');
     Route::get('/alumno/gruposA/obtener/datos/{idClase}', 'obtenerDatosGrupo')->name('obtenerDatosGrupoA');
-    Route::get('/alumno/actCalificacion/clase/{idClase}/mostrarCalificacion/{idActividad}', 'mostrarCalificacion')->name('alumno.verCal');
 });
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales
@@ -301,7 +300,9 @@ Route::controller(SecreController::class)->group(function () {
 
 Route::controller(TutorController::class)->group(function () {
     Route::get('/tutor', 'inicio')->name('tutor.inicio');
-
     Route::get('/tutor/perfil', 'perfil')->name('tutor.perfil');
     Route::put('/tutor/perfil/actualizar/contraseña','actualizarContrasenia')->name('tutor.actualizarContrasenia');
+    Route::get('/tutorr/calificaciones', 'calificaciones')->name('tutor.calificaciones');
+    Route::get('/tutor/hijos/obtener/datos/{idTutor}', 'obtenerDatosHijos')->name('tutor.obtenerDatosHijoss');
+    Route::get('/tutor/tutor/obtener', 'obtenerTutor')->name('obtenerTutor');
 });

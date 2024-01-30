@@ -67,6 +67,14 @@ class TutorController extends Controller{
         return $usuario;
     }
 
+    public function obtenerTutor($idUsuario)
+    {
+        // Modifica esto según la relación en tu base de datos
+        $tutor = tutores::where('idUsuario', $idUsuario)->get();
+        dd($tutor);
+        return response()->json($tutor);
+    }
+
     public function perfil()
     {
         try {
@@ -103,6 +111,42 @@ class TutorController extends Controller{
         } catch (Exception $e) {
             return redirect()->route('tutor.perfil')->With(["message" => "Error al actualizar contraseña", "color" => "red"]);
             dd($e);
+        }
+    }
+
+    public function calificaciones(){
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            $alumnos = $this-> obtenerDatosHijos($usuario->tutores->idTutor);
+            //$tutores = tutores::all();
+            //dd($alumnos);
+            return Inertia::render('Tutor/Calificaciones', [
+                'usuario' => $usuario,
+                'alumnos' => $alumnos,
+                //'tutores' => $tutores,
+            ]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function obtenerDatosHijos($idTutor){
+        try{
+            $tutor = tutores::where('idTutor', $idTutor)->first();
+            //dd($tutor);
+            $alumnos = alumnos::where('idTutor',$tutor->idTutor)->get();
+           // $alumnos = $tutor->alumnos;
+           //dd($alumnos);
+            Log::info($alumnos);
+            $alumnosM = [];
+            for ($i = 0; $i < count($alumnos); $i++){
+                Log::info($alumnos[$i]);
+                $alumno = alumnos::where('idAlumno',$alumnos[$i]->idAlumno)->with(['tutores'])->first();
+                array_push($alumnosM, $alumno);
+            }
+            return $alumnosM;
+        }catch(Exception $e){
+            Log::info($e);
         }
     }
 

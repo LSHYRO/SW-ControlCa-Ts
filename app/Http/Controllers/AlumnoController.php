@@ -188,7 +188,7 @@ class AlumnoController extends Controller{
         try {
             $alumnos = alumnos::where('idAlumno', $idAlumno)->first();
             $clasesA = clases_alumnos::where('idAlumno',$alumnos->idAlumno)->get();
-            //dd($clasesA);            //$clasesA = $alumnos->clases_alumnos->toArray();
+            //dd($alumnos);            //$clasesA = $alumnos->clases_alumnos->toArray();
             Log::info($clasesA);
             $clasesM = [];
             for ($i = 0; $i < count($clasesA); $i++) {
@@ -287,42 +287,4 @@ class AlumnoController extends Controller{
             dd($e);
         }
     }
-
-    public function mostrarCalificacion($idClase, $idActividad){
-
-    $usuario = $this->obtenerInfoUsuario();
-    $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
-    $clasesA = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $alumno->idAlumno)->first();
-
-    if ($clasesA) {
-        $actividades = actividades::where('idClase', $idClase)->get();
-
-        $actividadesConCalificacion = $actividades->map(function ($actividad) {
-            //Aquí iría la misma consulta de calificación que tienen ahí
-            $calificacion = calificaciones::where('idClase', $idClase)
-                ->where('idActividad', $actividad->idActividad)
-                ->where('idAlumno', $alumno->idAlumno)
-                ->first();
-
-        if($calificacion){
-           $actividad->calificacion = $calificacion->calificacion;
-        }else{
-           $actividad->calificacion = "Sin calificar";
-        }
-            return $actividad;
-        });
-        dd($actividadesConCalificacion);
-        return Inertia::render('Alumno/Clase', [
-            'actividades' => $actividadesConCalificacion,
-            'usuario' => $usuario,
-            'clasesA' => $clasesA,
-            'alumnos' => $alumnos, // Asegúrate de definir $alumnos antes de usarlo
-        ]);
-    } else {
-        // Manejar el caso en el que no se cumple la condición principal
-        return response()->json(['error' => 'No se encontró la clase o el alumno'], 404);
-    }
-}
-
-
 }
