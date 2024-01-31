@@ -87,14 +87,6 @@ const eliminarActividad = (idClase, idActividad, nombreAct) => {
             @click="actDesModal()" data-bs-toggle="modal" data-bs-target="#modalCreate">
             <i class="fa fa-plus mr-2"></i> Agregar Actividad
         </button>
-        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mt-2 mx-1"
-            data-bs-toggle="modal" data-bs-target="#modalCreate">
-            <i class="fa fa-check-double mr-2"></i> Calificar periodo
-        </button>
-        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded mt-2 mx-1"
-            data-bs-toggle="modal" data-bs-target="#modalCreate">
-            <i class="fa fa-circle-check mr-2"></i> Calificar clase
-        </button>
         <div>
             <ul v-for="actividad in props.actividades" :key="actividad.idActividad"
                 class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 px-2">

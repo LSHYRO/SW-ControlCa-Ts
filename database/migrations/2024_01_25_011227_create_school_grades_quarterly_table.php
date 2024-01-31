@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId(column:"idClase")->references("idClase")->on("clases");
             $table->foreignId(column:"idAlumno")->references("idAlumno")->on("alumnos");
             $table->foreignId(column:"idPeriodo")->references("idPeriodo")->on("periodos");
-            $table->integer(column:"calificacion")->nullable(true);
+            $table->double("calificacion", 5, 2)->nullable(true);
             $table->timestamps();
         });
     }

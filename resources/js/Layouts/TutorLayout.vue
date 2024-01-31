@@ -30,7 +30,7 @@ const switchToTeam = (team) => {
 
         <Head :title="title" />
 
-        <TopContentTutor :usuario="props.usuario"/>
+        <TopContentTutor :usuario="props.usuario" />
 
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
@@ -38,14 +38,17 @@ const switchToTeam = (team) => {
                 <nav>
                     <div class="w-60 h-16 justify-start items-center px-2 inline-flex">
                         <div class="w-12 h-12 relative">
-                            <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full"></div>
-                            <img class="w-12 h-12 left-0 top-0 absolute"
-                                src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
+                            <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full">
+                                <img class="w-12 h-12 left-0 top-0 absolute"
+                                    src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
+                            </div>
                         </div>
                         <div class="flex-col justify-start items-center inline-flex">
-                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{ props.usuario.tutorNombre }}
+                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{
+                                props.usuario.tutorNombre }}
                             </div>
-                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">{{ props.usuario.usuario }}
+                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">{{
+                                props.usuario.usuario }}
                             </div>
                         </div>
                     </div>
