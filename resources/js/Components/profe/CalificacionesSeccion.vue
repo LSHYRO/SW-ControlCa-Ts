@@ -49,7 +49,7 @@ const calificarClase = () => {
             buttonsStyling: true
         })
         swal.fire({
-            title: '¿Ya ha calificado los periodos?',
+            title: '¿Desea realizar las calificaciones de la clase?\n Recuerde haber realizado las calificaciones de todos los periodos de la clase',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -78,6 +78,25 @@ const eliminarCalificacionesPer = (idClase, idPeriodo) => {
     }).then((result) => {
         if (result.isConfirmed) {
             form.delete(route('profe.eliminarCalPer', [idClase, idPeriodo]));
+        }
+
+    })
+};
+
+const eliminarCalificacionesFin = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar las calificaciones finales de la clase?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
+
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('profe.eliminarCalFin', props.clase.idClase));
         }
 
     })
@@ -157,7 +176,7 @@ const eliminarCalificacionesPer = (idClase, idPeriodo) => {
                         <div class="my-2 w-full" id="btnsActividad">
                             <a
                                 class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1 cursor-pointer"
-                                :href="route('profe.eliminarCalFin', props.clase.idClase)">
+                                @click="eliminarCalificacionesFin()">
                                 <i class="fa fa-trash plus mr-2 text-sm"></i>Eliminar calificaciones
                             </a>
                             <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-1 px-1 rounded mx-1"
@@ -173,3 +192,8 @@ const eliminarCalificacionesPer = (idClase, idPeriodo) => {
     <formularioCalificarPeriodo :periodos="props.periodos" :show="mostrarModal" :max-width="maxWidth" :closeable="closeable"
         @close="actDesModal()" :title="'Calificar periodo'" :op="'1'" :modal="'modalCreate'" :clases="props.clase" />
 </template>
+<style>
+.swal2-popup {
+    font-size: 15px !important;
+}
+</style>

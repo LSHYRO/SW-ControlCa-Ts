@@ -6,6 +6,8 @@ import { useForm } from '@inertiajs/vue3';
 import { onMounted, watch, ref, } from 'vue';
 import axios from 'axios';
 const emit = defineEmits(['close']);
+import Swal from 'sweetalert2';
+
 
 const props = defineProps({
     show: {
@@ -89,13 +91,31 @@ const save = () => {
         return;
     }
     form.idClase = props.clases.idClase;
-    form.post(route('profe.calificarPeriodo'), {
-        onSuccess: () => {
-            close()
-            periodoError.value = '';
-            tiposActividad.value = {};
-        }
-    });
+    try {
+        const swal = Swal.mixin({
+            buttonsStyling: true
+        })
+        swal.fire({
+            title: '¿Desea calificar el periodo seleccionado? \nRecuerde haber calificado todas las actividades pertenecientes a dicho periodo',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+            cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.post(route('profe.calificarPeriodo'), {
+                    onSuccess: () => {
+                        close()
+                        periodoError.value = '';
+                        tiposActividad.value = {};
+                    }
+                });
+            }
+        })
+    } catch (e) {
+        console.log(e);
+    }
+
 }
 /*
 const update = () => {
@@ -229,4 +249,8 @@ watch(() => props.actividad, (newVal) => {
     100% {
         transform: rotate(360deg);
     }
-}</style>
+}
+.swal2-popup {
+    font-size: 15px !important;
+}
+</style>
