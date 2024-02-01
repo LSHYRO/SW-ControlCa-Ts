@@ -303,8 +303,10 @@ Route::controller(TutorController::class)->group(function () {
     Route::get('/tutor/perfil', 'perfil')->name('tutor.perfil');
     Route::put('/tutor/perfil/actualizar/contraseña','actualizarContrasenia')->name('tutor.actualizarContrasenia');
     Route::get('/tutorr/calificaciones', 'calificaciones')->name('tutor.calificaciones');
+    Route::get('/tutorr/califica', 'cursoHijo')->name('tutor.cursoHijo');
     Route::get('/tutor/hijos/obtener/datos/{idTutor}', 'obtenerDatosHijos')->name('tutor.obtenerDatosHijoss');
     Route::get('/tutor/tutor/obtener', 'obtenerTutor')->name('obtenerTutor');
     Route::get('/tutor/clasesHijos/obtener/datos/{idAlumno}', 'obtenerDatosClase')->name('obtenerDatossClaseA');
     Route::get('/tutor/clasesHijo/clase/{idClase}', 'mostrarClasesHijo')->name('tutor.mostrarClasessHijo');
+    Route::get('/tutor/califi/obtener/datos/{idAlumno}', 'obtenerDatosCalificacionesHijos')->name('tutor.obtenerCalificacionesHijos');
 });

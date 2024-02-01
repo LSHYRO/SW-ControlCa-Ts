@@ -20,13 +20,17 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    calificaciones: {
+    calificacion: {
+        type: Object,
+        default: () => ({})
+    },
+    clasesPorAlumno: {
         type: Object,
         default: () => ({})
     },
 });
-
-console.log(props.actividades);
+console.log("clases por alumno en Seccion");
+console.log(props.clasesPorAlumno);
 
 const calificaciones = ref([]);
 const mostrarDetalles = ref({});
@@ -37,17 +41,6 @@ const form = useForm({});
 const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
-
-const obtenerCalificacion = async (idClase, idActividad) => {
-    try {
-        const response = await axios.get(`alumno.verCal`);
-        // Manipula la respuesta según tus necesidades
-        console.log(response.data);
-    } catch (error) {
-        console.error('Error al obtener la calificación', error);
-    }
-};
-
 
 </script>
 
@@ -88,7 +81,7 @@ const obtenerCalificacion = async (idClase, idActividad) => {
                         </p>
                         <p class="underline mb-2">
                             <strong style="font-weight: bold; color: black;">Calificación: </strong>
-                            <span style="font-weight: normal; color: your_color_here;">{{ actividad.calificacion }}</span>
+                            <span style="font-weight: normal; color: your_color_here;">{{ actividad.calificacionesAlumnos }}</span>
                         </p>
                     </div>
                 </li>

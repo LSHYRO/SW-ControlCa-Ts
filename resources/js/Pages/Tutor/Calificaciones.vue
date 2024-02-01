@@ -9,7 +9,7 @@ const props = defineProps({
     alumnos: { type: Object },
     clasesPorAlumno: { type: Array },
 });
-console.log(props.alumnos);
+console.log("Se muestra props alumnos");
 console.log(props.clasesPorAlumno);
 
 </script>
@@ -37,8 +37,7 @@ console.log(props.clasesPorAlumno);
                                             {{ clase.materias.materia }}
                                             </h2>
                                             <p class="mb-3 font-normal text-sm">{{ nombre_persona }}</p>
-                                            <p class="mb-3 font-normal text-sm">Grado: {{ clase["grados"].grado }}</p>
-                                            <p class="mb-3 font-normal text-sm">Grupo: {{ clase["grupos"].grupo }}</p>
+                                            <p class="mb-3 font-normal text-sm">Grado: {{ clase["grados"].grado }} - Grupo: {{ clase["grupos"].grupo }}</p>
 
                                         </div>
                                     </div>
