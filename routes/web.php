@@ -308,5 +308,5 @@ Route::controller(TutorController::class)->group(function () {
     Route::get('/tutor/tutor/obtener', 'obtenerTutor')->name('obtenerTutor');
     Route::get('/tutor/clasesHijos/obtener/datos/{idAlumno}', 'obtenerDatosClase')->name('obtenerDatossClaseA');
     Route::get('/tutor/clasesHijo/clase/{idClase}', 'mostrarClasesHijo')->name('tutor.mostrarClasessHijo');
-    Route::get('/tutor/califi/obtener/datos/{idAlumno}', 'obtenerDatosCalificacionesHijos')->name('tutor.obtenerCalificacionesHijos');
+    Route::get('/tutor/clasesHi/clase/{idClase}/mostrarCalificacionesHijo/{idActividad}', 'mostrarCalificacionesHijo')->name('tutor.mostrarCalificacionesHijo');
 });

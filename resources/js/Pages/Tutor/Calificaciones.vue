@@ -46,7 +46,6 @@ console.log(props.clasesPorAlumno);
                     </div>
                 </div>
             </div>
-
         </div>
     </TutorLayout>
 </template>

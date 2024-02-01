@@ -122,23 +122,12 @@ class TutorController extends Controller{
         try {
             $usuario = $this->obtenerInfoUsuario();
             $alumnos = $this-> obtenerDatosHijos($usuario->tutores->idTutor);
-            // foreach ($alumnos as $alumno) {
-            //     $clases = $this->obtenerDatosClase($alumno['idAlumno']);
-            // }
             $clasesPorAlumno = [];
             foreach ($alumnos as $alumno) {
             $clasesPorAlumno[$alumno['idAlumno']]['info'] = $alumno;
             $clasesPorAlumno[$alumno['idAlumno']]['clases_cursadas'] = $this->obtenerDatosClase($alumno['idAlumno']);
             }
-             // Utilizar el idAlumno del primer alumno (si existe) para obtener calificaciones
-            //$calificaciones = !empty($alumnos) ? $this->obtenerDatosCalificacionesHijos($alumnos[0]['idAlumno']) : [];
-            //$calificaciones = $this->obtenerDatosCalificaciones($usuario->alumnos[0]['idAlumno']);
-            /*$calificacionesPorAlumno = [];
-            foreach ($alumnos as $alumno) {
-                $calificacionesPorAlumno[$alumno['idAlumno']] = $this->obtenerDatosCalificacionesHijos($alumno['idAlumno']);
-            }*/
 
-            //dd($clasesPorAlumno);
             return Inertia::render('Tutor/Calificaciones', [
                 'usuario' => $usuario,
                 'alumnos' => $alumnos,
@@ -258,4 +247,58 @@ class TutorController extends Controller{
         }
     }
 
+    public function mostrarCalificacionesHijo($idClase, $idActividad)
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            $alumnos = $this-> obtenerDatosHijos($usuario->tutores->idTutor);
+            dd($alumnos);
+            $clasesPorAlumno = [];
+            foreach ($alumnos as $alumno) {
+            $clasesPorAlumno[$alumno['idAlumno']]['info'] = $alumno;
+            $clasesPorAlumno[$alumno['idAlumno']]['clases_cursadas'] = $this->obtenerDatosClase($alumno['idAlumno']);
+            }
+            $actividadesC = actividades::where('idClase', $clasesA->idClase)->where('idActividad', $idActividad)->first();
+            //dd($clasesPorAlumno);
+            if ($clasesPorAlumno && $actividadesC) {
+                //dd($clasesPorAlumno);
+                $calificaciones = calificaciones::where('idClase', $idClase)
+                ->where('idActividad', $idActividad)
+                ->get();
+
+                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                    $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
+                    $actividad->periodos->fecha_f = Carbon::parse($actividad->periodos->fecha_fin)->format('d-m-Y');
+                    $actividad->periodos->descripcion = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_ini . " - " . $actividad->periodos->fecha_f;
+                    $actividad->periodo = $actividad->periodos;
+                    $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+                    $clasesA = clases::where('idClase', $idClase)->with(['materias'])->first();
+                    
+                    $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
+                    // Asignar "Sin calificar" a los alumnos que no tienen calificación
+                    $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
+                        $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
+                        return $alumno;
+                    });
+
+                    return $actividad;
+
+                return Inertia::render('Tutor/Calificaciones', [
+                    'clasesPorAlumno' => $clasesPorAlumno,
+                    'usuario' => $usuario,
+                    'actividades' => $actividades,
+                    'actividadesC' => $actividadesC,
+                    'alumno' => $alumno,
+                    'alumnos' => $alumnos,
+                    'clasesA' => $clasesA,
+                    //'calificacionesAlumno' => $calificacionesAlumno,
+                ]);
+            } else {
+                return redirect()->route('tutor.calificaciones')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+            }
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
 }
