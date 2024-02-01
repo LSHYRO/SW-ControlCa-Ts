@@ -240,8 +240,6 @@ class TutorController extends Controller{
                     return $actividad;
                 });
 
-                //dd($actividades);
-
                 return Inertia::render('Tutor/Curso', [
                     'clasesPorAlumno' => $clasesPorAlumno,
                     'usuario' => $usuario,
@@ -260,30 +258,4 @@ class TutorController extends Controller{
         }
     }
 
-        public function obtenerDatosCalificacionesHijos($idAlumno)
-    {
-        try {
-            $alumnos = alumnos::where('idAlumno', $idAlumno)->first();
-
-            //$actividadesA = actividades::where('idAlumno', $alumnos->idAlumno)->get();
-            $actividadesA = [];
-            foreach ($alumnos as $alumno) {
-                $actividadesAlumno = actividades::where('idAlumno', $alumno->idAlumno)->get();
-                $actividadesA = array_merge($actividadesA, $actividadesAlumno);
-            }
-
-            Log::info($actividadesA);
-            //dd($actividadesA);
-            $actividadesM = [];
-            for ($i = 0; $i < count($actividadesA); $i++) {
-                Log::info($actividadesA[$i]);
-                $calificacion = calificaciones::where('idCalificacion', $actividadesA[$i]->idCalificacion)->first();
-                array_push($actividadesM, $calificacion);
-            }
-
-            return $actividadesM;
-        } catch (\Exception $e) {
-            Log::info($e);
-        }
-    }
 }

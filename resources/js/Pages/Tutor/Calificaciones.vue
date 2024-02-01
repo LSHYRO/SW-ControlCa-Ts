@@ -36,9 +36,7 @@ console.log(props.clasesPorAlumno);
                                             <h2 class="mb-2 text-md font-bold tracking-tight">
                                             {{ clase.materias.materia }}
                                             </h2>
-                                            <p class="mb-3 font-normal text-sm">{{ nombre_persona }}</p>
                                             <p class="mb-3 font-normal text-sm">Grado: {{ clase["grados"].grado }} - Grupo: {{ clase["grupos"].grupo }}</p>
-
                                         </div>
                                     </div>
                                 </div>

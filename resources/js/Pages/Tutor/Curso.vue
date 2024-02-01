@@ -12,11 +12,11 @@ const props = defineProps({
     tiposActividades: { type: Object },
     usuario: { type: Object },
     actividades: { type: Object },
-    alumnos: { type: Object },
+    alumno: { type: Object },
     calificacion: { type: Object }
 });
-console.log("clases por alumno en Curso.vue");
-console.log(props.clasesPorAlumno);
+console.log("usuario en Curso.vue");
+console.log(props.usuario);
 console.log("actividades en Curso.vue");
 console.log(props.actividades);
 const mostrarAc = ref(true);
@@ -52,8 +52,8 @@ const mostrarActividades = () => {
                 </li>
             </ul>
             <div v-if="mostrarAc">
-                <actividades :tiposActividades="props.tiposActividades" :clase="props.clasesPorAlumno" :periodos="props.periodos"
-                    :actividades="props.actividades" />
+                <actividades :tiposActividades="props.tiposActividades" :clase="props.clasesA" :periodos="props.periodos"
+                    :actividades="props.actividades" :clasesPorAlumno="props.clasesPorAlumno" :usuario="$props.usuario"/>
             </div>
         </div>
 

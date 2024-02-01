@@ -28,9 +28,19 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
+    alumno: {
+        type: Object,
+        default: () => ({})
+    },
+    usuario: {
+        type: Object,
+        default: () => ({})
+    },
 });
 console.log("clases por alumno en Seccion");
 console.log(props.clasesPorAlumno);
+console.log("alumno en Seccion");
+console.log(props.alumno);
 
 const calificaciones = ref([]);
 const mostrarDetalles = ref({});
@@ -41,6 +51,7 @@ const form = useForm({});
 const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
+
 
 </script>
 
@@ -80,8 +91,9 @@ const masInfo = (idActividad) => {
                             <strong>Fecha de entrega: </strong>{{ actividad.fecha_e }}
                         </p>
                         <p class="underline mb-2">
-                            <strong style="font-weight: bold; color: black;">Calificación: </strong>
-                            <span style="font-weight: normal; color: your_color_here;">{{ actividad.calificacionesAlumnos }}</span>
+                        <div v-for="alumno in props.clasesPorAlumno" :key="alumno.info.idAlumno" class="mb-4">
+                            <strong style="font-weight: bold; color: black;">Calificación: {{ actividad.calificacionesAlumnos[alumno.info.idAlumno]}}</strong>
+                        </div>
                         </p>
                     </div>
                 </li>
