@@ -1088,7 +1088,7 @@ class DirectorController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1109,7 +1109,7 @@ class DirectorController extends Controller
             $alumno->idGenero = $request->genero;
             $alumno->correoElectronico = $request->correoElectronico;
             $alumno->numTelefono = $request->numTelefono;
-            $alumno->idTipoSangre = $request->tipo_sangre;
+            $alumno->idTipoSangre = $request->tipoSangre;
             $alumno->alergias = $request->alergias;
             $alumno->discapacidad = $request->discapacidad;
             $alumno->idDireccion = $domicilio->idDireccion;

@@ -109,7 +109,7 @@ const form = useForm({
     idUsuario: props.alumno.idUsuario,
     tutor: props.alumno.tutorC,
     foraneo: props.alumno.esForaneo,
-    taller: props.alumno.idMateria,
+    taller: props.alumno.materias,
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -144,7 +144,7 @@ watch(() => props.alumno, async (newVal) => {
     form.idUsuario = newVal.idUsuario;
     form.tutor = newVal.tutorC;
     form.foraneo = newVal.esForaneo;
-    form.taller = newVal.idMateria;
+    form.taller = newVal.materias;
 }, { deep: true }
 );
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -345,7 +345,7 @@ const update = async () => {
     // Verificar que el codigo postal sea al correspondiente
     codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
     //  taller
-    //tallerError.value = validateSelect(form.taller) ? '' : 'Seleccione el taller';
+    tallerError.value = validateSelect(form.taller) ? '' : 'Seleccione el taller';
 
     if (
         nombreError.value || apellidoMError.value || apellidoPError.value ||
@@ -378,7 +378,7 @@ const update = async () => {
             fechaNError.value = '';
             curpError.value = '';
             tutorError.value = '';
-            //tallerError.value = '';
+            tallerError.value = '';
         }
     });
 }
