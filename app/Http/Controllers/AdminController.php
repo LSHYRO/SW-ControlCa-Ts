@@ -1538,11 +1538,33 @@ class AdminController extends Controller
             return redirect()->route('admin.ciclosperiodos')->With(["message" => "El ciclo ya se encuentra registrado", "color" => "red"]);
         }
 
+        // Verificar si las fechas del nuevo ciclo se superponen con otro ciclo existente
+        $conflictingCiclo = Ciclos::where(function ($query) use ($request) {
+            $query->where(function ($subquery) use ($request) {
+                $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                    ->where('fecha_inicio', '<=', $request->fecha_fin);
+            })
+                ->orWhere(function ($subquery) use ($request) {
+                    $subquery->where('fecha_fin', '>=', $request->fecha_inicio)
+                        ->where('fecha_fin', '<=', $request->fecha_fin);
+                });
+        })
+            ->first();
+
+        if ($conflictingCiclo) {
+            return redirect()->route('admin.ciclosperiodos')->with(["message" => "No se puede agregar el ciclo, las fechas se superponen con otro ciclo.", "color" => "red"]);
+        }
+
+        $anioInicio = date('Y', strtotime($request->fecha_inicio));
+        $anioFin = date('Y', strtotime($request->fecha_fin));
+
         // Si no hay ciclos duplicados, procede con la creación y guardado del nuevo ciclo
         $ciclo = new Ciclos();
         $ciclo->fecha_inicio = $request->fecha_inicio;
         $ciclo->fecha_fin = $request->fecha_fin;
-        $ciclo->descripcionCiclo = $request->descripcionCiclo;
+        
+        $ciclo->descripcionCiclo = $anioInicio . "-" . $anioFin;
+        //$ciclo->descripcionCiclo = $request->descripcionCiclo;
 
         $ciclo->save();
         return redirect()->route('admin.ciclosperiodos')->With(["message" => "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo, "color" => "green"]);
@@ -1590,11 +1612,44 @@ class AdminController extends Controller
                 'fecha_fin' => 'required',
                 'descripcionCiclo' => 'required',
             ]);
+
+            // Validación para evitar ciclos duplicados
+            $existingCiclo = Ciclos::where('idCiclo', '!=', $idCiclo)
+                ->where('fecha_inicio', $request->fecha_inicio)
+                ->where('fecha_fin', $request->fecha_fin)
+                ->where('descripcionCiclo', $request->descripcionCiclo)
+                ->first();
+
+            if ($existingCiclo) {
+                return redirect()->route('admin.ciclosperiodos')->with(["message" => "El ciclo ya se encuentra registrado", "color" => "red"]);
+            }
+
+            // Verificar si las fechas del ciclo actualizado se superponen con otro ciclo existente
+            $conflictingCiclo = Ciclos::where('idCiclo', '!=', $idCiclo)
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('fecha_inicio', '<=', $request->fecha_fin)
+                            ->where('fecha_fin', '>=', $request->fecha_inicio);
+                    })
+                        ->orWhere(function ($subquery) use ($request) {
+                            $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                                ->where('fecha_inicio', '<=', $request->fecha_fin)
+                                ->where('fecha_fin', '>=', $request->fecha_fin);
+                        });
+                })
+                ->first();
+
+            if ($conflictingCiclo) {
+                return redirect()->route('admin.ciclosperiodos')->with(["message" => "No se puede actualizar el ciclo, las fechas se superponen con otro ciclo.", "color" => "red"]);
+            }
+            $anioInicio = date('Y', strtotime($request->fecha_inicio));
+            $anioFin = date('Y', strtotime($request->fecha_fin));
+
             $ciclos->fecha_inicio = $request->fecha_inicio;
             $ciclos->fecha_fin = $request->fecha_fin;
-            $ciclos->descripcionCiclo = $request->descripcionCiclo;
+            $ciclos->descripcionCiclo = $anioInicio . "-" . $anioFin;
 
-            $ciclos->fill($request->input())->saveOrFail();
+            $ciclos->save();
         } catch (Exception $e) {
             return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al actualizar el ciclo", "color" => "red"]);
         }
@@ -1742,7 +1797,6 @@ class AdminController extends Controller
 
             $periodos->fill($request->input())->saveOrFail();
         } catch (Exception $e) {
-            dd($e);
             return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al actualizar el periodo", "color" => "red"]);
         }
         return redirect()->route('admin.ciclosperiodos')->With(["message" => "Periodo actualizado correctamente", "color" => "green"]);

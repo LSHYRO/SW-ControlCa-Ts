@@ -72,13 +72,17 @@ const validateSelect = (selectedValue) => {
 
 //Validación para el date
 const validateDate = (date) => {
-    return date !== null && date !== undefined && date !== '';
+    return date !== null && date !== undefined && date !== '' && validarFechasT();
 };
+
+const validarFechasT = () => {
+    return form.fecha_fin >= form.fecha_inicio;
+}
 
 const save = () => {
     periodoError.value = validateStringNotEmpty(form.periodo) ? '' : 'Ingrese el periodo';
-    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
-    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Ingrese la fecha de inicio correcto';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Ingrese la fecha de terminación correcto';
     ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
@@ -101,8 +105,8 @@ const save = () => {
 
 const update = () => {
     periodoError.value = validateStringNotEmpty(form.periodo) ? '' : 'Ingrese el periodo';
-    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
-    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Ingrese la fecha de inicio correcto';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Ingrese la fecha de terminación correcto';
     ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
