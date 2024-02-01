@@ -818,9 +818,18 @@ class DirectorController extends Controller
                 ['nombre', $request->nombre],
                 ['apellidoP', $request->apellidoP],
                 ['apellidoM', $request->apellidoM],
+                ['numTelefono', $request->numTelefono],
+                ['correoElectronico', $request->correoElectronico],
             ])->exists();
-            if ($existingTutor) {
-                return redirect()->route('director.tutoresAlum')->with(["message" => "El tutor ya está registrado.", "color" => "red"]);
+            
+            $existingAddress = direcciones::where([
+                ['calle', $request->calle],
+                ['numero', $request->numero],
+                ['idAsentamiento', $request->asentamiento],
+            ])->exists();
+            
+            if ($existingTutor || $existingAddress) {
+                return redirect()->route('director.tutoresAlum')->with(["message" => "El tutor ya está registrado o la dirección ya existe.", "color" => "red"]);
             }
 
             //Contraseña generada
@@ -1013,11 +1022,17 @@ class DirectorController extends Controller
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
-
-            $curpExistente = alumnos::where('CURP', $request->curp)->first();
-
-            if ($curpExistente) {
-                return redirect()->route('director.tutoresAlum')->with(["message" => "El alumno ya se encuentra registrado, la CURP coincide con otro.", "color" => "red"]);
+            $existingAlumno = alumnos::where([
+                ['nombre', $request->nombre],
+                ['apellidoP', $request->apellidoP],
+                ['apellidoM', $request->apellidoM],
+                ['numTelefono', $request->numTelefono],
+                ['correoElectronico', $request->correoElectronico],
+                ['curp', $request->curp],
+            ])->exists();
+            
+            if ($existingAlumno) {
+                return redirect()->route('admin.tutoresAlum')->with(["message" => "El alumno ya está registrado.","color" => "red"]);
             }
 
             //fechaFormateada
