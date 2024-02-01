@@ -7,7 +7,7 @@ import OpcionesNavAdmin from '@/Components/admin/OpcionesNavAdmin.vue';
 
 const props = defineProps({
     title: String,
-    usuario: {type: Object}
+    usuario: { type: Object }
 });
 
 const showingNavigationDropdown = ref(false);
@@ -23,22 +23,26 @@ const switchToTeam = (team) => {
 
 <template>
     <div class="flex flex-col h-screen bg-gray-100">
+
         <Head :title="title" />
-        <TopContent :usuario="props.usuario"/>
+        <TopContent :usuario="props.usuario" />
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
             <div class="p-2 bg-white w-full md:w-60 flex flex-col md:flex" id="sideNav">
                 <nav>
                     <div class="w-60 h-16 justify-evenly items-center px-2 inline-flex">
                         <div class="w-12 h-12 relative">
-                            <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full"></div>
-                            <img class="w-12 h-12 left-0 top-0 absolute"
-                                src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
+                            <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full">
+                                <img class="w-12 h-12 left-0 top-0 absolute"
+                                    src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
+                            </div>
                         </div>
                         <div class="flex-col justify-start items-center inline-flex">
-                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{ props.usuario.usuario }}
+                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{
+                                props.usuario.usuario }}
                             </div>
-                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']"> {{  props.usuario.tipoUsuario1 }}
+                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']"> {{
+                                props.usuario.tipoUsuario1 }}
                             </div>
                         </div>
                     </div>
@@ -63,5 +67,4 @@ const switchToTeam = (team) => {
                 </main>
             </div>
         </div>
-    </div>
-</template>
+    </div></template>

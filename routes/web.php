@@ -264,12 +264,19 @@ Route::middleware(['profesorS'])->group(function () {
         Route::get('/profesor/clases', 'clases')->name('profe.clases');
         Route::get('/profesor/perfil', 'perfil')->name('profe.usuario');
         Route::put('/profesor/perfil/actualizar/contraseña','actualizarContrasenia')->name('profe.actualizarContraseña');
+        Route::delete('/profesor/clases/clase/{idClase}/periodo/{idPeriodo}/eliminar/calificaciones-periodo', 'eliminarCalificacionesPeriodo')->name('profe.eliminarCalPer');
+        Route::get('/profesor/clases/clase/{idClase}/eliminar/calificaciones-finales', 'eliminarCalificacionFinal')->name('profe.eliminarCalFin');
         Route::delete('/profesor/clases/clase/{idClase}/actividad/{idActividad}/eliminar', 'eliminarActividad')->name('profe.eliminarAct');
         Route::post('/profesor/calificar/actividad', 'almacenarCalificaciones')->name('profe.almacCalificaciones');
         Route::get('/profesor/clases/clase/{idClase}/pasar-lista/{idActividad}', 'paseLista')->name('profe.paseLista');
         Route::get('/profesor/clases/clase/{idClase}/mostrarPaseLista/{idActividad}', 'mostrarPaseLista')->name('profe.mostrarPasLis');
         Route::get('/profesor/clases/clase/{idClase}/calificar/{idActividad}', 'calificarActividad')->name('profe.calificarAct');
+        Route::get('/profesor/clases/clase/{idClase}/calificacion-periodo/{idPeriodo}', 'mostrarCalificacionesPer')->name('profe.mostrarCalPer');
         Route::get('/profesor/clases/clase/{idClase}/mostrarCalificacion/{idActividad}', 'mostrarCalificaciones')->name('profe.mostrarCal');
+        Route::post('/profesor/calificar/periodo', 'calificarPeriodo')->name('profe.calificarPeriodo');
+        Route::post('/profesor/clases/clase/{idClase}/calificacion-final', 'calificarClase')->name('profe.calificarClase');
+        Route::get('/profesor/clases/clase/{idClase}/ver/calificacion-final', 'mostrarCalificacionClase')->name('profe.mostrarCalFin');
+        
         
         Route::get('/profesor/clases/clase/{idClase}', 'mostrarClase')->name('profe.mostrarClase');
         Route::get('/profesor/personal/obtener', 'obtenerPersonal')->name('obtenerPersonal');
@@ -284,6 +291,8 @@ Route::middleware(['profesorS'])->group(function () {
         Route::put('/profesor/actividad/pase-lista/actualizar', 'actualizarPaseLista')->name('profe.actPaseLista');        
         Route::put('/profesor/actividades/{idActividad}/edit', 'actualizarActividades')->name('profe.actualizarActividades');
         Route::delete('/profesor/actividades/delete/{actividadesIds}', 'elimPeriodos')->name('profe.elimActividades');
+
+        Route::get('/profesor/buscar/{idClase}/tipos-actividades/{idPeriodo}', 'obtenerTiposActividades')->name('profe.buscarTipAct');
     });
 });
 

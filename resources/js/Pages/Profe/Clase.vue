@@ -3,7 +3,7 @@ import ProfeLayout from '@/Layouts/ProfeLayout.vue';
 import { ref } from 'vue';
 import Actividades from '@/Components/profe/ActividadesSeccion.vue';
 import AlumnosSeccion from '@/Components/profe/AlumnosSeccion.vue';
-
+import Calificaciones from '@/Components/profe/CalificacionesSeccion.vue'
 
 const props = defineProps({
     clase: { type: Object },
@@ -19,25 +19,43 @@ const props = defineProps({
 
 const mostrarAc = ref(true);
 const mostrarAl = ref(false);
+const mostrarCal = ref(false);
 
 const mostrarActividades = () => {
     const btnActividades = document.getElementById("btnMAc");
     const btnAlumnos = document.getElementById("btnMAl");
+    const btnCalificaciones = document.getElementById("btnMCal");
     btnActividades.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnCalificaciones.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     mostrarAc.value = true;
     mostrarAl.value = false;
+    mostrarCal.value = false;
 };
 
 const mostrarAlumnos = () => {
     const btnActividades = document.getElementById("btnMAc");
     const btnAlumnos = document.getElementById("btnMAl");
+    const btnCalificaciones = document.getElementById("btnMCal");
     btnAlumnos.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     btnActividades.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnCalificaciones.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     mostrarAc.value = false;
     mostrarAl.value = true;
+    mostrarCal.value = false;
 }
 
+const mostrarCalificaciones = () => {
+    const btnActividades = document.getElementById("btnMAc");
+    const btnAlumnos = document.getElementById("btnMAl");
+    const btnCalificaciones = document.getElementById("btnMCal");
+    btnCalificaciones.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnActividades.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    mostrarAc.value = false;
+    mostrarAl.value = false;
+    mostrarCal.value = true;
+}
 </script>
 
 <template>
@@ -63,6 +81,11 @@ const mostrarAlumnos = () => {
                         class="inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">
                         Alumnos</a>
                 </li>
+                <li class="w-full">
+                    <a @click="mostrarCalificaciones()" id="btnMCal"
+                        class="inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">
+                        Calificaciones</a>
+                </li>
             </ul>
             <div v-if="mostrarAc">
                 <actividades :tiposActividades="props.tiposActividades" :clase="props.clase" :periodos="props.periodos"
@@ -71,6 +94,9 @@ const mostrarAlumnos = () => {
             <div v-if="mostrarAl">
                 <AlumnosSeccion :tiposActividades="props.tiposActividadesAlum" :clase="props.clase"
                     :periodos="props.periodos" :actividades="props.actividadesAlum"/>
+            </div>
+            <div v-if="mostrarCal">
+                <Calificaciones :periodos="props.periodos" :clase="props.clase"/>
             </div>
         </div>
 

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class ciclos extends Model
 {
@@ -42,4 +44,14 @@ class ciclos extends Model
     {
         return $this->belongsToMany(ciclos::class, 'idCiclo', 'idCiclo');
     }
+    /*
+    protected function fechaInicio(): Attribute
+    {
+        return new Attribute(
+            get: function ($value) {
+                return Carbon::parse($value)->format('d-m-Y');
+            }
+        );
+    }
+    */
 }

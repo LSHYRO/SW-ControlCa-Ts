@@ -228,7 +228,7 @@ class AdminController extends Controller
         $usuarioTipoUsuario->delete();
         $usuario->delete();
         $direccion->delete();
-        
+
         return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
     }
 
@@ -401,28 +401,28 @@ class AdminController extends Controller
             ]);
 
             //fechaFormateada
-        $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
-        //Contraseña generada
-        $contrasenia = $this->generarContraseña();
-        //Creacion de usuario
-        $usuario = new usuarios();
-        $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
-        $usuario->contrasenia = $contrasenia;
-        $usuario->password = bcrypt($contrasenia);
-        
-        $tipo_personal = tipo_personal::find($request->tipoPersonal);
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Contraseña generada
+            $contrasenia = $this->generarContraseña();
+            //Creacion de usuario
+            $usuario = new usuarios();
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->contrasenia = $contrasenia;
+            $usuario->password = bcrypt($contrasenia);
 
-        // Se asigna el tipo de usuario según el tipo_personal seleccionado
-        if ($tipo_personal->tipo_personal ==='Director') {
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
-        } elseif ($tipo_personal->tipo_personal === 'Personal escolar') {
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'directivo')->first();
-        } else {
-            // Manejo de caso no previsto
-            // Puedes decidir qué hacer en caso de que el tipo_personal no sea 'Director' ni 'Personal escolar'
-        }
+            $tipo_personal = tipo_personal::find($request->tipoPersonal);
 
-        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            // Se asigna el tipo de usuario según el tipo_personal seleccionado
+            if ($tipo_personal->tipo_personal === 'Director') {
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
+            } elseif ($tipo_personal->tipo_personal === 'Personal escolar') {
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'directivo')->first();
+            } else {
+                // Manejo de caso no previsto
+                // Puedes decidir qué hacer en caso de que el tipo_personal no sea 'Director' ni 'Personal escolar'
+            }
+
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
 
             $usuario->save();
 
@@ -696,7 +696,7 @@ class AdminController extends Controller
                 $alumno->materia = "Ninguno";
             }
             $alumno->tutor = $alumno->tutores->nombre_completo;
-            $alumno->tutorTel = $alumno->tutores->numTelefono;            
+            $alumno->tutorTel = $alumno->tutores->numTelefono;
             $alumno->tipoS = $alumno->tipo_Sangre->tipoSangre;
             $alumno->tutorC = $alumno->tutores;
             $alumno->gradoC = $alumno->grados;
@@ -1169,25 +1169,25 @@ class AdminController extends Controller
     }
 
     public function addMaterias(Request $request)
-{
-    // Verificar si la materia ya existe en la base de datos
-    $existingMateria = Materias::where('materia', $request->materia)->first();
+    {
+        // Verificar si la materia ya existe en la base de datos
+        $existingMateria = Materias::where('materia', $request->materia)->first();
 
-    if ($existingMateria) {
-        // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
-        return redirect()->route('admin.materias')->with('message', "La materia ya está registrada: " . $request->materia);
+        if ($existingMateria) {
+            // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
+            return redirect()->route('admin.materias')->with('message', "La materia ya está registrada: " . $request->materia);
+        }
+
+        // Si la materia no existe, proceder a agregarla a la base de datos
+        $materia = new Materias();
+        $materia->materia = $request->materia;
+        $materia->descripcion = $request->descripcion;
+        $materia->esTaller = $request->esTaller;
+
+        $materia->save();
+
+        return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
     }
-
-    // Si la materia no existe, proceder a agregarla a la base de datos
-    $materia = new Materias();
-    $materia->materia = $request->materia;
-    $materia->descripcion = $request->descripcion;
-    $materia->esTaller = $request->esTaller;
-
-    $materia->save();
-
-    return redirect()->route('admin.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
-}
 
     public function eliminarMaterias($idMateria)
     {
@@ -1219,7 +1219,6 @@ class AdminController extends Controller
         }
     }
 
-
     public function actualizarMateria(Request $request, $idMateria)
     {
 
@@ -1245,45 +1244,45 @@ class AdminController extends Controller
     }
 
     public function addClases(Request $request)
-{
-    try {
-        $request->validate([
-            'grupos' => 'required',
-            'grados' => 'required',
-            'personal' => 'required',
-            'materias' => 'required',
-            'ciclos' => 'required',
-        ]);
+    {
+        try {
+            $request->validate([
+                'grupos' => 'required',
+                'grados' => 'required',
+                'personal' => 'required',
+                'materias' => 'required',
+                'ciclos' => 'required',
+            ]);
 
-        // Verificar si la clase ya existe
-        $claseExistente = clases::where([
-            'idGrado' => $request->grados['idGrado'],
-            'idGrupo' => $request->grupos,
-            'idPersonal' => $request->personal,
-            'idMateria' => $request->materias,
-            'idCiclo' => $request->ciclos,
-        ])->first();
+            // Verificar si la clase ya existe
+            $claseExistente = clases::where([
+                'idGrado' => $request->grados['idGrado'],
+                'idGrupo' => $request->grupos,
+                'idPersonal' => $request->personal,
+                'idMateria' => $request->materias,
+                'idCiclo' => $request->ciclos,
+            ])->first();
 
-        if ($claseExistente) {
-            return redirect()->route('admin.clases')->with('message', 'La clase no se puede agregar, porque ya se encunetra registrado.');
+            if ($claseExistente) {
+                return redirect()->route('admin.clases')->with('message', 'La clase no se puede agregar, porque ya se encunetra registrado.');
+            }
+
+            // Crear y guardar la nueva clase
+            $clase = new clases();
+            $clase->idGrado = $request->grados['idGrado'];
+            $clase->idGrupo = $request->grupos;
+            $clase->idPersonal = $request->personal;
+            $clase->idMateria = $request->materias;
+            $clase->idCiclo = $request->ciclos;
+
+            $clase->save();
+
+            return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
+        } catch (Exception $e) {
+            Log::info('Error en guardar la clase: ' . $e);
+            return redirect()->route('director.clases')->withErrors(['message' => 'Error al guardar la clase.']);
         }
-
-        // Crear y guardar la nueva clase
-        $clase = new clases();
-        $clase->idGrado = $request->grados['idGrado'];
-        $clase->idGrupo = $request->grupos;
-        $clase->idPersonal = $request->personal;
-        $clase->idMateria = $request->materias;
-        $clase->idCiclo = $request->ciclos;
-
-        $clase->save();
-
-        return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
-    } catch (Exception $e) {
-        Log::info('Error en guardar la clase: ' . $e);
-        return redirect()->route('director.clases')->withErrors(['message' => 'Error al guardar la clase.']);
     }
-}
 
     public function eliminarClases($idClase)
     {
@@ -1359,29 +1358,29 @@ class AdminController extends Controller
     }
 
     public function addGrados(Request $request)
-{
-    $request->validate([
-        'ciclos' => 'required',
-        'grado' => 'required',
-    ]);
+    {
+        $request->validate([
+            'ciclos' => 'required',
+            'grado' => 'required',
+        ]);
 
-    // Verifica si ya existe un grado con el mismo valor en la base de datos
-    $existingGrado = grados::where('grado', $request->grado)
-                           ->where('idCiclo', $request->ciclos)
-                           ->first();
+        // Verifica si ya existe un grado con el mismo valor en la base de datos
+        $existingGrado = grados::where('grado', $request->grado)
+            ->where('idCiclo', $request->ciclos)
+            ->first();
 
-    if ($existingGrado) {
-        return redirect()->route('admin.gradosgrupos')->with('message', "El grado ya existe en la base de datos");
+        if ($existingGrado) {
+            return redirect()->route('admin.gradosgrupos')->with('message', "El grado ya existe en la base de datos");
+        }
+
+        $grado = new grados();
+        $grado->grado = $request->grado;
+        $grado->idCiclo = $request->ciclos;
+
+        $grado->save();
+
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
     }
-
-    $grado = new grados();
-    $grado->grado = $request->grado;
-    $grado->idCiclo = $request->ciclos;
-
-    $grado->save();
-    
-    return redirect()->route('admin.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
-}
 
     public function eliminarGrados($idGrado)
     {
@@ -1458,29 +1457,29 @@ class AdminController extends Controller
     }
 
     public function addGrupos(Request $request)
-{
-    $request->validate([
-        'grupo' => 'required',
-        'ciclos' => 'required',
-    ]);
+    {
+        $request->validate([
+            'grupo' => 'required',
+            'ciclos' => 'required',
+        ]);
 
-    // Verificar si ya existe un grupo con los mismos datos
-    $existingGroup = grupos::where('grupo', $request->grupo)
-                           ->where('idCiclo', $request->ciclos)
-                           ->first();
+        // Verificar si ya existe un grupo con los mismos datos
+        $existingGroup = grupos::where('grupo', $request->grupo)
+            ->where('idCiclo', $request->ciclos)
+            ->first();
 
-    if ($existingGroup) {
-        return redirect()->route('admin.gradosgrupos')->with('message', 'El grupo ya está registrado.');
+        if ($existingGroup) {
+            return redirect()->route('admin.gradosgrupos')->with('message', 'El grupo ya está registrado.');
+        }
+
+        // Si no existe, proceder con el registro
+        $grupo = new grupos();
+        $grupo->grupo = $request->grupo;
+        $grupo->idCiclo = $request->ciclos;
+        $grupo->save();
+
+        return redirect()->route('admin.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
     }
-
-    // Si no existe, proceder con el registro
-    $grupo = new grupos();
-    $grupo->grupo = $request->grupo;
-    $grupo->idCiclo = $request->ciclos;
-    $grupo->save();
-
-    return redirect()->route('admin.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
-}
 
     public function eliminarGrupos($idGrupo)
     {
@@ -1531,31 +1530,58 @@ class AdminController extends Controller
     {
         // Validación para evitar ciclos duplicados
         $existingCiclo = Ciclos::where('fecha_inicio', $request->fecha_inicio)
-                              ->where('fecha_fin', $request->fecha_fin)
-                              ->where('descripcionCiclo', $request->descripcionCiclo)
-                              ->first();
-    
+            ->where('fecha_fin', $request->fecha_fin)
+            ->where('descripcionCiclo', $request->descripcionCiclo)
+            ->first();
+
         if ($existingCiclo) {
-            // Devuelve una respuesta indicando que el ciclo ya existe
-            return redirect()->route('admin.ciclosperiodos')->with('message', 'El ciclo ya está registrado.');
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "El ciclo ya se encuentra registrado", "color" => "red"]);
         }
-    
+
+        // Verificar si las fechas del nuevo ciclo se superponen con otro ciclo existente
+        $conflictingCiclo = Ciclos::where(function ($query) use ($request) {
+            $query->where(function ($subquery) use ($request) {
+                $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                    ->where('fecha_inicio', '<=', $request->fecha_fin);
+            })
+                ->orWhere(function ($subquery) use ($request) {
+                    $subquery->where('fecha_fin', '>=', $request->fecha_inicio)
+                        ->where('fecha_fin', '<=', $request->fecha_fin);
+                });
+        })
+            ->first();
+
+        if ($conflictingCiclo) {
+            return redirect()->route('admin.ciclosperiodos')->with(["message" => "No se puede agregar el ciclo, las fechas se superponen con otro ciclo.", "color" => "red"]);
+        }
+
+        $anioInicio = date('Y', strtotime($request->fecha_inicio));
+        $anioFin = date('Y', strtotime($request->fecha_fin));
+
         // Si no hay ciclos duplicados, procede con la creación y guardado del nuevo ciclo
         $ciclo = new Ciclos();
         $ciclo->fecha_inicio = $request->fecha_inicio;
         $ciclo->fecha_fin = $request->fecha_fin;
-        $ciclo->descripcionCiclo = $request->descripcionCiclo;
-    
+        
+        $ciclo->descripcionCiclo = $anioInicio . "-" . $anioFin;
+        //$ciclo->descripcionCiclo = $request->descripcionCiclo;
+
         $ciclo->save();
-    
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo);
+        return redirect()->route('admin.ciclosperiodos')->With(["message" => "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo, "color" => "green"]);
     }
 
     public function eliminarCiclos($idCiclo)
     {
-        $ciclo = ciclos::find($idCiclo);
-        $ciclo->delete();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Materia eliminada correctamente");
+        try {
+            $ciclo = ciclos::find($idCiclo);
+            if (!$ciclo) {
+                return redirect()->route('admin.ciclosperiodos')->With(["message" => "El ciclo no existe", "color" => "red"]);
+            }
+            $ciclo->delete();
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Ciclo eliminado correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al eliminar el ciclo", "color" => "red"]);
+        }
     }
 
     public function elimCiclos($ciclosIds)
@@ -1571,11 +1597,9 @@ class AdminController extends Controller
             ciclos::whereIn('idCiclo', $ciclosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclos eliminadas correctamente");
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Ciclos eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al eliminar los ciclos", "color" => "red"]);
         }
     }
 
@@ -1588,15 +1612,48 @@ class AdminController extends Controller
                 'fecha_fin' => 'required',
                 'descripcionCiclo' => 'required',
             ]);
+
+            // Validación para evitar ciclos duplicados
+            $existingCiclo = Ciclos::where('idCiclo', '!=', $idCiclo)
+                ->where('fecha_inicio', $request->fecha_inicio)
+                ->where('fecha_fin', $request->fecha_fin)
+                ->where('descripcionCiclo', $request->descripcionCiclo)
+                ->first();
+
+            if ($existingCiclo) {
+                return redirect()->route('admin.ciclosperiodos')->with(["message" => "El ciclo ya se encuentra registrado", "color" => "red"]);
+            }
+
+            // Verificar si las fechas del ciclo actualizado se superponen con otro ciclo existente
+            $conflictingCiclo = Ciclos::where('idCiclo', '!=', $idCiclo)
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('fecha_inicio', '<=', $request->fecha_fin)
+                            ->where('fecha_fin', '>=', $request->fecha_inicio);
+                    })
+                        ->orWhere(function ($subquery) use ($request) {
+                            $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                                ->where('fecha_inicio', '<=', $request->fecha_fin)
+                                ->where('fecha_fin', '>=', $request->fecha_fin);
+                        });
+                })
+                ->first();
+
+            if ($conflictingCiclo) {
+                return redirect()->route('admin.ciclosperiodos')->with(["message" => "No se puede actualizar el ciclo, las fechas se superponen con otro ciclo.", "color" => "red"]);
+            }
+            $anioInicio = date('Y', strtotime($request->fecha_inicio));
+            $anioFin = date('Y', strtotime($request->fecha_fin));
+
             $ciclos->fecha_inicio = $request->fecha_inicio;
             $ciclos->fecha_fin = $request->fecha_fin;
-            $ciclos->descripcionCiclo = $request->descripcionCiclo;
+            $ciclos->descripcionCiclo = $anioInicio . "-" . $anioFin;
 
-            $ciclos->fill($request->input())->saveOrFail();
+            $ciclos->save();
         } catch (Exception $e) {
-            dd($e);
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al actualizar el ciclo", "color" => "red"]);
         }
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo);;
+        return redirect()->route('admin.ciclosperiodos')->With(["message" => "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo, "color" => "green"]);
     }
 
     public function getCiclos($searchTerm)
@@ -1612,42 +1669,65 @@ class AdminController extends Controller
     }
 
     public function addPeriodos(Request $request)
-{
-    $request->validate([
-        'periodo' => 'required',
-        'fecha_inicio' => 'required',
-        'fecha_fin' => 'required',
-        'ciclos' => 'required',
-    ]);
+    {
+        $request->validate([
+            'periodo' => 'required',
+            'fecha_inicio' => 'required',
+            'fecha_fin' => 'required',
+            'ciclos' => 'required',
+        ]);
 
-    // Verificar si ya existe un periodo con los mismos datos
-    $existingPeriodo = periodos::where('periodo', $request->periodo)
-        ->where('fecha_inicio', $request->fecha_inicio)
-        ->where('fecha_fin', $request->fecha_fin)
-        ->where('idCiclo', $request->ciclos)
-        ->first();
+        // Verificar si ya existe un periodo con los mismos datos
+        $existingPeriodo = periodos::where('periodo', $request->periodo)
+            ->where('fecha_inicio', $request->fecha_inicio)
+            ->where('fecha_fin', $request->fecha_fin)
+            ->where('idCiclo', $request->ciclos)
+            ->first();
 
-    if ($existingPeriodo) {
-        return redirect()->route('admin.ciclosperiodos')->with('message', 'El periodo ya existe en la base de datos.');
+        if ($existingPeriodo) {
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => 'El periodo ya existe en la base de datos.', "color" => "red"]);
+        }
+
+        // Verificar si las fechas están dentro de otro periodo
+        $conflictingPeriodo = periodos::where('idCiclo', $request->ciclos)
+            ->where(function ($query) use ($request) {
+                $query->where(function ($subquery) use ($request) {
+                    $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                        ->where('fecha_inicio', '<=', $request->fecha_fin);
+                })
+                    ->orWhere(function ($subquery) use ($request) {
+                        $subquery->where('fecha_fin', '>=', $request->fecha_inicio)
+                            ->where('fecha_fin', '<=', $request->fecha_fin);
+                    });
+            })
+            ->first();
+
+        if ($conflictingPeriodo) {
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => 'No se puede agregar un periodo dentro de las fechas de otro.', "color" => "red"]);
+        }
+
+
+        // Si no existe, proceder con la inserción
+        $periodo = new periodos();
+        $periodo->periodo = $request->periodo;
+        $periodo->fecha_inicio = $request->fecha_inicio;
+        $periodo->fecha_fin = $request->fecha_fin;
+        $periodo->idCiclo = $request->ciclos;
+
+        $periodo->save();
+
+        return redirect()->route('admin.ciclosperiodos')->With(["message" => "Periodo agregado correctamente: " . $periodo->periodo, "color" => "green"]);
     }
-
-    // Si no existe, proceder con la inserción
-    $periodo = new periodos();
-    $periodo->periodo = $request->periodo;
-    $periodo->fecha_inicio = $request->fecha_inicio;
-    $periodo->fecha_fin = $request->fecha_fin;
-    $periodo->idCiclo = $request->ciclos;
-
-    $periodo->save();
-
-    return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo agregado correctamente: " . $periodo->periodo);
-}
 
     public function eliminarPeriodos($idPeriodo)
     {
-        $periodo = periodos::find($idPeriodo);
-        $periodo->delete();
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo eliminado correctamente");
+        try {
+            $periodo = periodos::find($idPeriodo);
+            $periodo->delete();
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Periodo eliminado correctamente", "color" => "green"]);
+        } catch (Exception $a) {
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al eliminar el periodo", "color" => "red"]);
+        }
     }
 
     public function elimPeriodos($periodosIds)
@@ -1663,13 +1743,9 @@ class AdminController extends Controller
             periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.ciclosperiodos')->with('message', "Periodos eliminados correctamente");
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Periodos eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
-            // Manejo de errores
-            dd($e);
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al eliminar los periodos", "color" => "red"]);
         }
     }
 
@@ -1688,11 +1764,42 @@ class AdminController extends Controller
             $periodos->fecha_fin = $request->fecha_fin;
             $periodos->idCiclo = $request->ciclos;
 
+            // Verificar si ya existe un periodo con los mismos datos
+            $existingPeriodo = periodos::where('idPeriodo', '!=', $idPeriodo) // Excluir el propio periodo que se está actualizando
+                ->where('periodo', $request->periodo)
+                ->where('fecha_inicio', $request->fecha_inicio)
+                ->where('fecha_fin', $request->fecha_fin)
+                ->where('idCiclo', $request->ciclos)
+                ->first();
+
+            if ($existingPeriodo) {
+                return redirect()->route('admin.ciclosperiodos')->with(["message" => "El periodo ya existe en la base de datos.", "color" => "red"]);
+            }
+
+            // Verificar si las fechas están dentro de otro periodo
+            $conflictingPeriodo = periodos::where('idCiclo', $request->ciclos)
+                ->where('idPeriodo', '!=', $idPeriodo) // Excluir el propio periodo que se está actualizando
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                            ->where('fecha_inicio', '<=', $request->fecha_fin);
+                    })
+                        ->orWhere(function ($subquery) use ($request) {
+                            $subquery->where('fecha_fin', '>=', $request->fecha_inicio)
+                                ->where('fecha_fin', '<=', $request->fecha_fin);
+                        });
+                })
+                ->first();
+
+            if ($conflictingPeriodo) {
+                return redirect()->route('admin.ciclosperiodos')->with(["message" => "No se puede actualizar el periodo con fechas que se superponen con otro periodo.", "color" => "red"]);
+            }
+
             $periodos->fill($request->input())->saveOrFail();
         } catch (Exception $e) {
-            dd($e);
+            return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al actualizar el periodo", "color" => "red"]);
         }
-        return redirect()->route('admin.ciclosperiodos')->with('message', "Periodo actualizado correctamente: " . $periodos->periodo);;
+        return redirect()->route('admin.ciclosperiodos')->With(["message" => "Periodo actualizado correctamente", "color" => "green"]);
     }
 
     public function getPeriodos($searchTerm)
@@ -1812,9 +1919,9 @@ class AdminController extends Controller
         try {
             $usuario = $this->obtenerInfoUsuario();
             $personal = personal::where('idUsuario', $usuario->idUsuario)->with(['generos', 'tipo_sangre', 'direcciones'])->first();
-         
+
             return Inertia::render('Admin/Contrasenia', [
-                'usuario' => $usuario, 
+                'usuario' => $usuario,
                 'director' => $personal,
             ]);
         } catch (Exception $e) {
@@ -1841,5 +1948,4 @@ class AdminController extends Controller
             dd($e);
         }
     }
-    
 }

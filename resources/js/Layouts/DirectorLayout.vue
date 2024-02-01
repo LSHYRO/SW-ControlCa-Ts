@@ -23,23 +23,6 @@ const switchToTeam = (team) => {
         preserveState: false,
     });
 };
-/*
-onMounted(async () => {
-    try {
-        const usuario = await axios.get(route('obtenerUsuario'));
-        const idTipoUsuario = usuario.data.idTipoUsuario;
-        const tipoUsuario = await axios.get(route('obtenerTipoUsuario', idTipoUsuario));
-        const nombre_per= await axios.get(route('obtenerDatoPersona', usuario.data.idUsuario));
-        tipo_usuario.value = tipoUsuario.data.tipoUsuario;
-        nombre_usuario.value = usuario.data.usuario;
-        nombre_persona.value = nombre_per.data.nombre_completo;
-
-    } catch (e) {
-        tipo_usuario.value = "Sin asignar";
-        console.log("Error: " + e);
-    }
-});
-*/
 </script>
 
 <template>
@@ -47,7 +30,7 @@ onMounted(async () => {
 
         <Head :title="title" />
 
-        <TopContentDirec :usuario="props.usuario"/>
+        <TopContentDirec :usuario="props.usuario" />
 
         <div class="flex-1 flex flex-wrap">
             <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
@@ -55,14 +38,17 @@ onMounted(async () => {
                 <nav>
                     <div class="w-60 h-16 justify-start items-center px-2 inline-flex">
                         <div class="w-12 h-12 relative">
-                            <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full"></div>
-                            <img class="w-12 h-12 left-0 top-0 absolute"
-                                src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
+                            <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full">
+                                <img class="w-12 h-12 left-0 top-0 absolute"
+                                    src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
+                            </div>
                         </div>
                         <div class="flex-col justify-start items-center inline-flex">
-                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{ props.usuario.personalNombre }}
+                            <div class="text-center text-black text-base font-semibold font-['DM Sans'] px-2">{{
+                                props.usuario.personalNombre }}
                             </div>
-                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">{{ props.usuario.usuario }}
+                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">{{
+                                props.usuario.usuario }}
                             </div>
                         </div>
                     </div>

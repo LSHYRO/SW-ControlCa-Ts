@@ -10,6 +10,7 @@ use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\alumnos;
 use App\Models\calificaciones;
+use App\Models\calificaciones_periodos;
 use App\Models\materias;
 use App\Models\clases;
 use App\Models\ciclos;
@@ -37,6 +38,8 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Mockery\Undefined;
+
+use function PHPUnit\Framework\isEmpty;
 
 class ProfeController extends Controller
 {
@@ -232,6 +235,9 @@ class ProfeController extends Controller
             $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
             if ($clase) {
                 $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+                $fecha_ic = Carbon::parse($clase->ciclos->fecha_inicio)->format('d/m/Y');
+                $fecha_fc = Carbon::parse($clase->ciclos->fecha_fin)->format('d/m/Y');
+                $clase->descripcionCiclo = $fecha_ic . " - " . $fecha_fc;
                 $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
                 $periodos = $periodosC->map(function ($periodo) {
                     $periodo->fecha_ini = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
@@ -493,9 +499,10 @@ class ProfeController extends Controller
                         $calificacionA->idAlumno = $alumnoId;
                         $calificacionA->calificacion = $calificacionB;
                         $calificacionA->save();
+                    } else {
+                        $calificacionA->calificacion = $calificacionB;
+                        $calificacionA->save();
                     }
-                    $calificacionA->calificacion = $calificacionB;
-                    $calificacionA->save();
                 }
             } else {
                 foreach ($request->calificaciones as $alumnoId => $calificacion) {
@@ -622,6 +629,276 @@ class ProfeController extends Controller
                 'calificaciones' => $alumnosConCalificaciones,
             ]);
         }
+    }
+
+    public function obtenerTiposActividades($idClase, $idPeriodo)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        if ($clase) {
+            $tiposDeActividad = actividades::where('idPeriodo', $idPeriodo)
+                ->where('idClase', $idClase)
+                ->distinct('idTipoActividad')
+                ->pluck('idTipoActividad');
+            $detallesTiposDeActividad = tiposActividades::whereIn('idTipoActividad', $tiposDeActividad)
+                ->get();
+            return response()->json($detallesTiposDeActividad);
+        } else {
+            return redirect('/profesor')->with('error', 'No tiene permisos para acceder a esta funcionalidad.');
+        }
+    }
+
+    public function calificarPeriodo(Request $request)
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+            $clase = clases::where('idClase', $request->idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+            if ($clase) {
+                $tipos_actividad = $request->calTipoAct;
+                $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+                $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+                $calificaciones_periodosA = calificaciones_periodos::where('idClase', $clase->idClase)
+                    ->where('idPeriodo', $request->periodo['idPeriodo'])
+                    ->get();
+                if (!$calificaciones_periodosA->isEmpty()) {
+                    for ($index = 0; $index < count($alumnos); $index++) {
+                        $cal_periodo = calificaciones_periodos::where('idClase', $clase->idClase)
+                            ->where('idAlumno', $alumnos[$index]->idAlumno)
+                            ->where('idPeriodo', $request->periodo['idPeriodo'])
+                            ->first();
+                        if (!$cal_periodo) {
+                            $calificacionPeriodo = 0;
+                            foreach ($tipos_actividad as $tipoActividadId => $porcentaje) {
+                                $sumaCalificacionTipoAct = 0;
+                                $actividades = actividades::where('idClase', $clase->idClase)
+                                    ->where('idPeriodo', $request->periodo['idPeriodo'])
+                                    ->where('idTipoActividad', $tipoActividadId)
+                                    ->get();
+                                for ($jIndex = 0; $jIndex < count($actividades); $jIndex++) {
+                                    $calificacion = calificaciones::where('idClase', $clase->idClase)
+                                        ->where('idActividad', $actividades[$jIndex]->idActividad)
+                                        ->where('idAlumno', $alumnos[$index]->idAlumno)
+                                        ->first();
+                                    $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                }
+                                $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
+                                $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
+                            }
+                            $calificaciones_periodos = new calificaciones_periodos();
+                            $calificaciones_periodos->idClase = $clase->idClase;
+                            $calificaciones_periodos->idPeriodo = $request->periodo['idPeriodo'];
+                            $calificaciones_periodos->idAlumno = $alumnos[$index]->idAlumno;
+                            $calificaciones_periodos->calificacion = $calificacionPeriodo;
+                            $calificaciones_periodos->save();
+                        } else {
+                            $calificacionPeriodo = 0;
+                            foreach ($tipos_actividad as $tipoActividadId => $porcentaje) {
+                                $sumaCalificacionTipoAct = 0;
+                                $actividades = actividades::where('idClase', $clase->idClase)
+                                    ->where('idPeriodo', $request->periodo['idPeriodo'])
+                                    ->where('idTipoActividad', $tipoActividadId)
+                                    ->get();
+                                for ($jIndex = 0; $jIndex < count($actividades); $jIndex++) {
+                                    $calificacion = calificaciones::where('idClase', $clase->idClase)
+                                        ->where('idActividad', $actividades[$jIndex]->idActividad)
+                                        ->where('idAlumno', $alumnos[$index]->idAlumno)
+                                        ->first();
+                                    $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                }
+                                $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
+                                $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
+                            }
+                            $cal_periodo->calificacion = $calificacionPeriodo;
+                            $cal_periodo->save();
+                        }
+                    }
+                    $fecha_i = Carbon::parse($request->periodo['fecha_inicio'])->format('d-m-Y');
+                    $fecha_f = Carbon::parse($request->periodo['fecha_fin'])->format('d-m-Y');
+                    $descripcionPeriodo = $request->periodo['periodo'] . ' => ' . $fecha_i . ' - ' . $fecha_f;
+                    return redirect()->route('profe.mostrarClase', $clase->idClase)->with(['message' => "Periodo calificado actualizado: " . $descripcionPeriodo .". Recuerde volver a realizar la calificacion final en dado caso de ya haberlo hecho antes.", "color" => "green"]);
+                } else {
+                    //Metodo para guardarlos como si fueran nuevos
+                    for ($index = 0; $index < count($alumnos); $index++) {
+                        $calificacionPeriodo = 0;
+                        foreach ($tipos_actividad as $tipoActividadId => $porcentaje) {
+                            $sumaCalificacionTipoAct = 0;
+                            $actividades = actividades::where('idClase', $clase->idClase)
+                                ->where('idPeriodo', $request->periodo['idPeriodo'])
+                                ->where('idTipoActividad', $tipoActividadId)
+                                ->get();
+                            for ($jIndex = 0; $jIndex < count($actividades); $jIndex++) {
+                                $calificacion = calificaciones::where('idClase', $clase->idClase)
+                                    ->where('idActividad', $actividades[$jIndex]->idActividad)
+                                    ->where('idAlumno', $alumnos[$index]->idAlumno)
+                                    ->first();
+                                $sumaCalificacionTipoAct += $calificacion->calificacion;
+                            }
+                            $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
+                            $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
+                        }
+                        $calificaciones_periodos = new calificaciones_periodos();
+                        $calificaciones_periodos->idClase = $clase->idClase;
+                        $calificaciones_periodos->idPeriodo = $request->periodo['idPeriodo'];
+                        $calificaciones_periodos->idAlumno = $alumnos[$index]->idAlumno;
+                        $calificaciones_periodos->calificacion = $calificacionPeriodo;
+                        $calificaciones_periodos->save();
+                    }
+
+                    $fecha_i = Carbon::parse($request->periodo['fecha_inicio'])->format('d-m-Y');
+                    $fecha_f = Carbon::parse($request->periodo['fecha_fin'])->format('d-m-Y');
+                    $descripcionPeriodo = $request->periodo['periodo'] . ' => ' . $fecha_i . ' - ' . $fecha_f;
+                    return redirect()->route('profe.mostrarClase', $clase->idClase)->with(['message' => "Periodo calificado: " . $descripcionPeriodo, "color" => "green"]);
+                }
+            } else {
+                return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+            }
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function mostrarCalificacionesPer($idClase, $idPeriodo)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        if ($clase) {
+            $periodo = periodos::find($idPeriodo);
+            $calificaciones = calificaciones_periodos::where('idClase', $idClase)
+                ->where('idPeriodo', $idPeriodo)
+                ->get();
+            $periodo->fecha_i = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
+            $periodo->fecha_f = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
+            $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_i . " - " . $periodo->fecha_f;
+
+            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+            $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+
+
+            $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
+            // Asignar "Sin calificar" a los alumnos que no tienen calificación
+            $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
+                $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
+                return $alumno;
+            });
+
+            return Inertia::render('Profe/VerCalificacionesPer', [
+                'periodo' => $periodo,
+                'usuario' => $usuario,
+                'clase' => $clase,
+                'alumnos' => $alumnos,
+                'calificaciones' => $alumnosConCalificaciones,
+            ]);
+        }
+    }
+
+    public function eliminarCalificacionesPeriodo($idClase, $idPeriodo)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        if ($clase) {
+            $calificaciones_periodo = calificaciones_periodos::where('idClase', $idClase)
+                ->where('idPeriodo', $idPeriodo)
+                ->get();
+            if (!$calificaciones_periodo->isEmpty()) {
+                foreach ($calificaciones_periodo as $calificacion) {
+                    $calificacion->delete();
+                }
+                return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Calificaciones del periodo eliminadas correctamente", "color" => "green"]);
+            }
+            return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Aun no se ha calificado este periodo", "color" => "yellow"]);
+        } else {
+            return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+        }
+    }
+
+    public function calificarClase($idClase)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        if ($clase) {
+            $calificaciones_periodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+            $periodos_totales = periodos::where('idCiclo', $clase->idCiclo)->get();
+            if (!$calificaciones_periodos->isEmpty()) {
+                $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+                $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+                for ($index = 0; $index < count($alumnos); $index++) {
+                    $cal_per = calificaciones_periodos::where('idClase', $clase->idClase)
+                        ->where('idAlumno', $alumnos[$index]->idAlumno)
+                        ->get();
+                    $calif = 0;
+                    for ($i = 0; $i < count($cal_per); $i++) {
+                        $calif += $cal_per[$i]->calificacion;
+                    }                    
+                    $clases_alumno = clases_alumnos::where('idAlumno', $alumnos[$index]->idAlumno)
+                        ->where('idClase', $clase->idClase)
+                        ->first();                    
+                    $cal_total_alumno = $calif / count($periodos_totales);
+                    $clases_alumno->calificacionClase = round($cal_total_alumno);
+                    $clases_alumno->save();
+                }
+                return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Calificacion final realizada", "color" => "green"]);
+            }
+            return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Aun no se ha calificado ningun periodo", "color" => "yellow"]);
+        }
+        return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+    }
+
+    public function mostrarCalificacionClase($idClase)
+    {
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        if ($clase) {
+            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+            $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+            $cl_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+            $fecha_ic = Carbon::parse($clase->ciclos->fecha_inicio)->format('d/m/Y');
+            $fecha_fc = Carbon::parse($clase->ciclos->fecha_fin)->format('d/m/Y');
+            $clase->descripcionCiclo = $fecha_ic . " - " . $fecha_fc;
+
+            $calificacionesArray = $cl_alumnos->pluck('calificacionClase', 'idAlumno')->toArray();
+            // Asignar "Sin calificar" a los alumnos que no tienen calificación
+            $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
+                $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
+                return $alumno;
+            });
+            return Inertia::render('Profe/VerCalificacionFinal', [
+                'usuario' => $usuario,
+                'clase' => $clase,
+                'alumnos' => $alumnosConCalificaciones,
+            ]);
+        }
+        return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+    }
+
+    public function eliminarCalificacionFinal ($idClase){
+        $usuario = $this->obtenerInfoUsuario();
+        $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        if ($clase) {
+            $calificaciones_periodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();            
+            if (!$calificaciones_periodos->isEmpty()) {
+                $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+                $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
+                for ($index = 0; $index < count($alumnos); $index++) {                           
+                    $clases_alumno = clases_alumnos::where('idAlumno', $alumnos[$index]->idAlumno)
+                        ->where('idClase', $clase->idClase)
+                        ->first();                                        
+                    $clases_alumno->calificacionClase = null;
+                    $clases_alumno->save();
+                }
+                return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Calificaciones finales eliminadas", "color" => "green"]);
+            }
+            return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Aun no se ha calificado ningun periodo", "color" => "yellow"]);
+        }
+        return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
     }
 
     public function actualizarContrasenia(Request $request)

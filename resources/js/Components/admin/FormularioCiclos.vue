@@ -67,14 +67,18 @@ const validateSelect = (selectedValue) => {
 
 //Validación para el date
 const validateDate = (date) => {
-    return date !== null && date !== undefined && date !== '';
+    return date !== null && date !== undefined && date !== '' && validarFechasT();
 };
+
+const validarFechasT = () => {
+    return form.fecha_fin >= form.fecha_inicio;
+}
 
 
 const save = () => {
-    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
-    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
-    descripcionCicloError.value = validateStringNotEmpty(form.descripcionCiclo) ? '' : 'Ingrese la descripción';
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Ingrese la fecha de inicio correcto';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Ingrese la fecha de terminación correcto';
+    //descripcionCicloError.value = validateStringNotEmpty(form.descripcionCiclo) ? '' : 'Ingrese la descripción';
 
     if (
         fecha_inicioError.value || fecha_finError.value || descripcionCicloError.value
@@ -94,10 +98,9 @@ const save = () => {
 }
 
 const update = () => {
-
-    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Seleccione la fecha de inicio';
-    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Seleccione la fecha de terminación';
-    descripcionCicloError.value = validateStringNotEmpty(form.descripcionCiclo) ? '' : 'Ingrese la descripción';
+    fecha_inicioError.value = validateDate(form.fecha_inicio) ? '' : 'Ingrese la fecha de inicio correcto';
+    fecha_finError.value = validateDate(form.fecha_fin) ? '' : 'Ingrese la fecha de terminación correcto';
+    //descripcionCicloError.value = validateStringNotEmpty(form.descripcionCiclo) ? '' : 'Ingrese la descripción';
 
     if (
         fecha_inicioError.value || fecha_finError.value || descripcionCicloError.value
@@ -171,8 +174,8 @@ watch(() => props.ciclos, (newVal) => {
                             </div>
                             <div v-if="fecha_finError != ''" class="text-red-500 text-xs">{{ fecha_finError }}</div>
                         </div>
-
-                        <div class="sm:col-span-1 md:col-span-6">
+                        
+                        <div class="sm:col-span-1 md:col-span-6" hidden>
                             <label for="descripcionCiclo"
                                 class="block text-sm font-medium leading-6 text-gray-900">Descripción</label>
                             <div class="mt-2">

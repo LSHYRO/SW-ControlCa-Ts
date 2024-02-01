@@ -247,9 +247,8 @@ const optionsPeriodo = {
         <div class="my-1"></div> <!-- Espacio de separación -->
         <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
         <!-- flash message start -->
-        <div v-if="$page.props.flash.message"
-            class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg"
-            role="alert">
+        <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
             <span class="font-medium">
                 {{ $page.props.flash.message }}
             </span>
