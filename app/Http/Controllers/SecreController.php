@@ -10,6 +10,7 @@ use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
 use App\Models\ciclos;
+use App\Models\clases_alumnos;
 use App\Models\periodos;
 use App\Models\tutores;
 use App\Models\direcciones;
