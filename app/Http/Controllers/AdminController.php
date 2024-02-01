@@ -981,7 +981,7 @@ class AdminController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipoSangre' => 'required',
+                'tipoSangre' => 'required', 
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1066,7 +1066,7 @@ class AdminController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1087,7 +1087,7 @@ class AdminController extends Controller
             $alumno->idGenero = $request->genero;
             $alumno->correoElectronico = $request->correoElectronico;
             $alumno->numTelefono = $request->numTelefono;
-            $alumno->idTipoSangre = $request->tipo_sangre;
+            $alumno->idTipoSangre = $request->tipoSangre;
             $alumno->alergias = $request->alergias;
             $alumno->discapacidad = $request->discapacidad;
             $alumno->idDireccion = $domicilio->idDireccion;
@@ -1111,7 +1111,7 @@ class AdminController extends Controller
             $alumno->save();
             return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno " . $e, "color" => "red"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno", "color" => "red"]);
         }
     }
 
@@ -1121,7 +1121,7 @@ class AdminController extends Controller
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
 
             $alumno = alumnos::find($idAlumno);
-            $usuario = usuarios::find($alumno->idUsuario);
+            $usuario = usuarios::find($alumno->idUsuario);            
             $direccion = direcciones::find($alumno->idDireccion);
             $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                 ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
