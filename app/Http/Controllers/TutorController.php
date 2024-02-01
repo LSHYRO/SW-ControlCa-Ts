@@ -179,7 +179,7 @@ class TutorController extends Controller{
         }
     }
 
-    public function mostrarClasesHijo($idClase)
+    public function mostrarClasesHijo($idClase, $idAlumno)
     {
         try {
             $usuario = $this->obtenerInfoUsuario();
@@ -193,6 +193,7 @@ class TutorController extends Controller{
             //dd($clasesPorAlumno);
             if ($clasesPorAlumno) {
                 //dd($clasesPorAlumno);
+                $alumno = alumnos::find($idAlumno);
                 $clasesA = clases::where('idClase', $idClase)->with(['materias'])->first();
 
                 $actividadesC = actividades::where('idClase', $clasesA->idClase)->get();
@@ -200,7 +201,11 @@ class TutorController extends Controller{
                 //dd($actividadesC);
 
                 //dd($actividadesC);
-                $actividades = $actividadesC->map(function ($actividad)use($clasesPorAlumno,$alumnos,$clasesA) {
+                $actividades = $actividadesC->map(function ($actividad)use($clasesPorAlumno,$alumnos,$clasesA,$alumno) {
+                    $calificacionActividad = calificaciones::where('idClase', $clasesA->idClase)
+                    ->where('idActividad', $actividad->idActividad)
+                    ->where('idAlumno', $alumno->idAlumno)
+                    ->first();
                     $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
                     $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
                     $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
@@ -208,6 +213,14 @@ class TutorController extends Controller{
                     $actividad->periodos->descripcion = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_ini . " - " . $actividad->periodos->fecha_f;
                     $actividad->periodo = $actividad->periodos;
                     $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+
+                    if($calificacionActividad){
+                        $actividad->calif = $calificacionActividad->calificacion;
+                        }else{
+                        $actividad->calif = "Sin calificar";
+                        }
+
+                    $actividad->cal = $calificacionActividad->calificacion;
                     
                     $calificacionesAlumnos = [];
 
@@ -246,7 +259,7 @@ class TutorController extends Controller{
             dd($e);
         }
     }
-
+/*
     public function mostrarCalificacionesHijo($idClase, $idActividad)
     {
         try {
@@ -301,4 +314,5 @@ class TutorController extends Controller{
             dd($e);
         }
     }
+    */
 }
