@@ -151,7 +151,6 @@ class DirectorController extends Controller
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
-
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
@@ -814,6 +813,16 @@ class DirectorController extends Controller
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
+            // Validación de Nombre y Apellidos
+            $existingTutor = tutores::where([
+                ['nombre', $request->nombre],
+                ['apellidoP', $request->apellidoP],
+                ['apellidoM', $request->apellidoM],
+            ])->exists();
+            if ($existingTutor) {
+                return redirect()->route('director.tutoresAlum')->with(["message" => "El tutor ya está registrado.", "color" => "red"]);
+            }
+
             //Contraseña generada
             $contrasenia = $this->generarContraseña();
             //Creacion de usuario
@@ -1004,6 +1013,13 @@ class DirectorController extends Controller
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
+
+            $curpExistente = alumnos::where('CURP', $request->curp)->first();
+
+            if ($curpExistente) {
+                return redirect()->route('director.tutoresAlum')->with(["message" => "El alumno ya se encuentra registrado, la CURP coincide con otro.", "color" => "red"]);
+            }
+
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
