@@ -192,6 +192,21 @@ class AdminController extends Controller
             $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
             //$personal->activo = 1;
 
+            $existingPersonal = personal::where([
+                ['nombre', $request->nombre],
+                ['apellidoP', $request->apellidoP],
+                ['apellidoM', $request->apellidoM],
+                ['numTelefono', $request->numTelefono],
+                ['correoElectronico', $request->correoElectronico],
+                ['curp', $request->curp],
+                ['rfc', $request->rfc],
+                ['id_tipo_personal', $tipo_personal->id_tipo_personal], // Asegura que solo verifique profesores
+            ])->exists();
+            
+            if ($existingPersonal ) {
+                return redirect()->route('admin.profesores')->with(["message" => "El profesor ya está registrado", "color" => "red"]);
+            }
+
             //columna nombre completo
             $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
             $personal->nombre_completo = $nombreCompleto;
@@ -206,7 +221,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
+            return redirect()->route('admin.profesores')->With(["message" => "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -215,6 +230,7 @@ class AdminController extends Controller
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
+        try{
         $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
 
         $personal = personal::find($idPersonal);
@@ -229,6 +245,10 @@ class AdminController extends Controller
         $direccion->delete();
 
         return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
+    }catch(Exception $e){
+        //dd($e);
+        return redirect()->route('admin.profesores')->With(["message" =>"Error al eliminar Profesor".$e,"color"=>"red"]);
+    }
     }
 
     //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
@@ -458,6 +478,24 @@ class AdminController extends Controller
             $personal->idUsuario = $usuario->idUsuario;
             $personal->id_tipo_personal = $request->tipoPersonal;
             //$personal->activo = 1;
+            // Verificar duplicados solo para tipo de personal 'Director' o 'Personal escolar'
+        $existingPersonal = personal::where([
+            ['nombre', $request->nombre],
+            ['apellidoP', $request->apellidoP],
+            ['apellidoM', $request->apellidoM],
+            ['numTelefono', $request->numTelefono],
+            ['correoElectronico', $request->correoElectronico],
+            ['curp', $request->curp],
+            ['rfc', $request->rfc],
+            ['id_tipo_personal', $tipo_personal->id_tipo_personal],
+        ])->exists();
+
+        if ($existingPersonal) {
+            return redirect()->route('admin.directivos')->with([
+                "message" => "El directivo ya está registrado",
+                "color" => "red"
+            ]);
+        }
 
             //columna nombre completo
             $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
@@ -473,7 +511,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
+            return redirect()->route('admin.directivos')->With(["message" => "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia , "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -494,8 +532,8 @@ class AdminController extends Controller
             ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
             ->first();
         $personal->delete();
-        $usuarioTipoUsuario->delete();
         $usuario->delete();
+        $usuarioTipoUsuario->delete();
         $direccion->delete();
         return redirect()->route('admin.directivos')->With("message", "Personal eliminado correctamente");
     }

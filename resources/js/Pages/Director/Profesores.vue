@@ -54,9 +54,11 @@ const selectedPersonal = ref([]);
 // Creación de la constante para el llenado de datos del datatable, donde tambien se crea los 
 // checkboxes y los botones editar y eliminar
 const columns = [
-    { data: null, render : function(){
-        return '';
-    }},
+    {
+        data: null, render: function () {
+            return '';
+        }
+    },
     {
         data: null,
         render: function (data, type, row, meta) {
@@ -74,9 +76,11 @@ const columns = [
     { data: 'CURP' },
     { data: 'RFC' },
     { data: 'correoElectronico' },
-    { data: null, render: function(data, type, row, meta){
-        return row.numTelefono + " " +`<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
-    }},
+    {
+        data: null, render: function (data, type, row, meta) {
+            return row.numTelefono + " " + `<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+        }
+    },
     { data: 'tipoSangre' },
     { data: 'alergias' },
     { data: 'discapacidad' },
@@ -258,9 +262,8 @@ onMounted(() => {
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  // Mensaje para mostrar si se guardo o borro un profesor                                        -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-                role="alert">
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
                 </span>
@@ -373,6 +376,5 @@ onMounted(() => {
             :generos="props.generos"></formulario-prof>
         <formulario-prof :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar profesor'" :op="'2'" :modal="'modalEdit'" :personal="person" :tipoSangre="props.tipoSangre"
-            :generos="props.generos"></formulario-prof>
-    </DirectorLayout>
-</template>
+        :generos="props.generos"></formulario-prof>
+</DirectorLayout></template>

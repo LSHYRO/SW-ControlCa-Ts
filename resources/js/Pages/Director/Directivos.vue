@@ -1,6 +1,6 @@
 <script setup>
- // Importaciones necesarias para la vista 
- import { ref, onMounted } from 'vue';
+// Importaciones necesarias para la vista 
+import { ref, onMounted } from 'vue';
 import DirectorLayout from '@/Layouts/DirectorLayout.vue';
 import FormularioDirectivo from '@/Components/director/FormularioDirectivo.vue';
 import Swal from 'sweetalert2';
@@ -16,16 +16,16 @@ import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
 import jsZip from 'jszip';
 
- // Variables e inicializaciones para el datatable
- window.JSZip = jsZip;
+// Variables e inicializaciones para el datatable
+window.JSZip = jsZip;
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 DataTable.use(DataTablesLib);
 DataTable.use(ButtonsHtml5);
 DataTable.use(pdfmake);
 DataTable.use(Select);
 
- // Variables que recibe la vista para la funcionalidad
- const props = defineProps({
+// Variables que recibe la vista para la funcionalidad
+const props = defineProps({
     personal: { type: Object },
     tipoSangre: { type: Object },
     generos: { type: Object },
@@ -33,17 +33,20 @@ DataTable.use(Select);
     usuario: { type: Object }
 });
 
- // Constantes para el funcionamientos del modal y su configuración
+// Constantes para el funcionamientos del modal y su configuración
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
- // Constantes para el formulario
+// Constantes para el formulario
 var person = ({});
 const form = useForm({});
 const selectedPersonal = ref([]);
 
 const columns = [
+{ data: null, render : function(){
+        return '';
+    }},
     {
         data: null,
         render: function (data, type, row, meta) {
@@ -66,13 +69,14 @@ const columns = [
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'direccion' },
-    { data: 'id_tipo_personal',
-    render: function (data, type, row, meta) {
+    {
+        data: 'id_tipo_personal',
+        render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const directivo = props.tipo_personal.find(directivo => directivo.id_tipo_personal === data);
             return directivo ? directivo.tipo_personal : '';
         }
-     },
+    },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idPersonal}"><i class="fa fa-pencil"></i></button>`;
@@ -112,8 +116,8 @@ const botones = [{
 },
 ];
 
- // Funciones para el funcionamiento del modal
- const abrirE = ($directivo) => {
+// Funciones para el funcionamiento del modal
+const abrirE = ($directivo) => {
     person = $directivo;
     mostrarModalE.value = true;
 }
@@ -155,7 +159,7 @@ const togglePersonalSelection = (personal) => {
     const botonEliminar = document.getElementById("eliminarPBtn");
 
     if (selectedPersonal.value.length > 0) {
-        botonEliminar.removeAttribute("disabled");        
+        botonEliminar.removeAttribute("disabled");
     } else {
         botonEliminar.setAttribute("disabled", "");
     }
@@ -163,8 +167,8 @@ const togglePersonalSelection = (personal) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Función para eliminar varios profesores con el botón eliminar
- const eliminarDirectivos = () => {
+// Función para eliminar varios profesores con el botón eliminar
+const eliminarDirectivos = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -184,7 +188,7 @@ const togglePersonalSelection = (personal) => {
                 const botonEliminar = document.getElementById("eliminarPBtn");
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedPersonal.value = [];
-                botonEliminar.setAttribute("disabled", "");                
+                botonEliminar.setAttribute("disabled", "");
             } catch (error) {
                 console.log("Error al eliminar varias materias: " + error);
             }
@@ -239,9 +243,8 @@ onMounted(() => {
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  // Mensaje para mostrar si se guardo o borro un profesor                                        -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-                role="alert">
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
                 </span>
@@ -261,93 +264,95 @@ onMounted(() => {
                 </button>
                 <!-- </div> -->
             </div>
-
-            <div class="overflow-x-auto ">
-                <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="directivosTablaId" :columns="columns" :data="personal" :options="{
-                        autoWidth: false, dom: 'Bfrtip', language: {
-                            search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
-                            info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-                            infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-                            infoFiltered: '(filtrado de un total de _MAX_ registros)',
-                            lengthMenu: 'Mostrar _MENU_ registros',
-                            paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                        }, buttons: botones
-                    }">
-                    <thead>
-                        <tr class="text-sm leading-normal">
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                #
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido Paterno
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido Materno
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Fecha de nacimiento
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Genero
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                CURP
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                RFC
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Correo electronico
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Telefono
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Tipo de sangre
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Alergias
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Discapacidad(es)
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Direccion
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Tipo Personal
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                        </tr>
-                    </thead>
-                </DataTable>
+            <div>
+            <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
+                id="directivosTablaId" :columns="columns" :data="personal" :options="{
+                    responsive: true,autoWidth: false, dom: 'Bfrtip', language: {
+                        search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
+                        info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+                        infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+                        infoFiltered: '(filtrado de un total de _MAX_ registros)',
+                        lengthMenu: 'Mostrar _MENU_ registros',
+                        paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
+                    }, buttons: botones
+                }">
+                <thead>
+                    <tr class="text-sm leading-normal">
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            #
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Nombre
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Apellido Paterno
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Apellido Materno
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Fecha de nacimiento
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Genero
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            CURP
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            RFC
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Correo electronico
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Telefono
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Tipo de sangre
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Alergias
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Discapacidad(es)
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Direccion
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Tipo Personal
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                    </tr>
+                </thead>
+            </DataTable>
             </div>
         </div>
         <formulario-directivo :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"

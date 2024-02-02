@@ -151,6 +151,7 @@ class DirectorController extends Controller
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
+            
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
@@ -205,6 +206,21 @@ class DirectorController extends Controller
             $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
             //$personal->activo = 1;
 
+            $existingPersonal = personal::where([
+                ['nombre', $request->nombre],
+                ['apellidoP', $request->apellidoP],
+                ['apellidoM', $request->apellidoM],
+                ['numTelefono', $request->numTelefono],
+                ['correoElectronico', $request->correoElectronico],
+                ['curp', $request->curp],
+                ['rfc', $request->rfc],
+                ['id_tipo_personal', $tipo_personal->id_tipo_personal], // Asegura que solo verifique profesores
+            ])->exists();
+            
+            if ($existingPersonal ) {
+                return redirect()->route('director.profesores')->with(["message" => "El profesor ya está registrado", "color" => "red"]);
+            }
+
             //columna nombre completo
             $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
             $personal->nombre_completo = $nombreCompleto;
@@ -219,7 +235,7 @@ class DirectorController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.profesores')->With("message", "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
+            return redirect()->route('director.profesores')->With(["message" => "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -228,6 +244,7 @@ class DirectorController extends Controller
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
+        try{
         $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first(); //Le puse P mayuscula
 
         $personal = personal::find($idPersonal);
@@ -241,6 +258,9 @@ class DirectorController extends Controller
         $usuario->delete();
         $direccion->delete();
         return redirect()->route('director.profesores')->With("message", "Profesor eliminado correctamente");
+    }catch(Exception $e){
+        return redirect()->route('director.profesores')->With(["message" =>"Error al eliminar Profesor".$e,"color"=>"red"]);
+    }
     }
 
     //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
@@ -479,6 +499,24 @@ class DirectorController extends Controller
             $personal->id_tipo_personal = $request->tipoPersonal;
             //$personal->activo = 1;
 
+            $existingPersonal = personal::where([
+                ['nombre', $request->nombre],
+                ['apellidoP', $request->apellidoP],
+                ['apellidoM', $request->apellidoM],
+                ['numTelefono', $request->numTelefono],
+                ['correoElectronico', $request->correoElectronico],
+                ['curp', $request->curp],
+                ['rfc', $request->rfc],
+                ['id_tipo_personal', $tipo_personal->id_tipo_personal],
+            ])->exists();
+    
+            if ($existingPersonal) {
+                return redirect()->route('director.directivos')->with([
+                    "message" => "El directivo ya está registrado",
+                    "color" => "red"
+                ]);
+            }
+
             //columna nombre completo
             $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
             $personal->nombre_completo = $nombreCompleto;
@@ -493,7 +531,7 @@ class DirectorController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.directivos')->With("message", "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia);
+            return redirect()->route('director.directivos')->With(["message" => "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia , "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
