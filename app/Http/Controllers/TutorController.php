@@ -9,6 +9,7 @@ use App\Models\calificaciones;
 use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
+use App\Models\calificaciones_periodos;
 use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
@@ -190,17 +191,13 @@ class TutorController extends Controller{
             $clasesPorAlumno[$alumno['idAlumno']]['info'] = $alumno;
             $clasesPorAlumno[$alumno['idAlumno']]['clases_cursadas'] = $this->obtenerDatosClase($alumno['idAlumno']);
             }
-            //dd($clasesPorAlumno);
             if ($clasesPorAlumno) {
                 //dd($clasesPorAlumno);
                 $alumno = alumnos::find($idAlumno);
-                $clasesA = clases::where('idClase', $idClase)->with(['materias'])->first();
+                $clasesA = clases::where('idClase', $idClase)->with(['materias','ciclos'])->first();
 
                 $actividadesC = actividades::where('idClase', $clasesA->idClase)->get();
-                //$actividadesC = actividades::where('idClase', $clasesPorAlumno[$alumno['idAlumno']]['clases_cursadas'][0]->idClase)->get();
-                //dd($actividadesC);
 
-                //dd($actividadesC);
                 $actividades = $actividadesC->map(function ($actividad)use($clasesPorAlumno,$alumnos,$clasesA,$alumno) {
                     $calificacionActividad = calificaciones::where('idClase', $clasesA->idClase)
                     ->where('idActividad', $actividad->idActividad)
@@ -242,6 +239,15 @@ class TutorController extends Controller{
                     return $actividad;
                 });
 
+                $periodos = periodos::all();
+
+                $calificacionPer = calificaciones_periodos::where('idClase', $idClase)
+                ->where('idAlumno', $alumno->idAlumno)
+                ->get();
+                //dd($calificacionPer);
+
+                $clasesFinal = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
+
                 return Inertia::render('Tutor/Curso', [
                     'clasesPorAlumno' => $clasesPorAlumno,
                     'usuario' => $usuario,
@@ -250,6 +256,9 @@ class TutorController extends Controller{
                     'alumno' => $alumno,
                     'alumnos' => $alumnos,
                     'clasesA' => $clasesA,
+                    'calificacionPer' => $calificacionPer,
+                    'periodos' => $periodos,
+                    'clasesFinal' => $clasesFinal,
                     //'calificacionesAlumno' => $calificacionesAlumno,
                 ]);
             } else {
@@ -257,51 +266,6 @@ class TutorController extends Controller{
             }
         } catch (Exception $e) {
             dd($e);
-        }
-    }
-
-    public function mostrarCalificacionesPerHijos($idClase, $idPeriodo)
-    {
-        $usuario = $this->obtenerInfoUsuario();
-        $alumnos = $this-> obtenerDatosHijos($usuario->tutores->idTutor);
-        //$personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
-        //$clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
-        $clasesPorAlumno = [];
-            foreach ($alumnos as $alumno) {
-            $clasesPorAlumno[$alumno['idAlumno']]['info'] = $alumno;
-            $clasesPorAlumno[$alumno['idAlumno']]['clases_cursadas'] = $this->obtenerDatosClase($alumno['idAlumno']);
-            }
-        if ($clasesPorAlumno) {
-            $periodo = periodos::find($idPeriodo);
-
-            $calificaciones = calificaciones_periodos::where('idClase', $idClase)
-                ->where('idPeriodo', $idPeriodo)
-                ->get();
-
-                
-            $periodo->fecha_i = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
-            $periodo->fecha_f = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
-            $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_i . " - " . $periodo->fecha_f;
-
-            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
-            $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
-            $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
-
-
-            $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
-            // Asignar "Sin calificar" a los alumnos que no tienen calificación
-            $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
-                $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
-                return $alumno;
-            });
-
-            return Inertia::render('Profe/VerCalificacionesPer', [
-                'periodo' => $periodo,
-                'usuario' => $usuario,
-                'clase' => $clase,
-                'alumnos' => $alumnos,
-                'calificaciones' => $alumnosConCalificaciones,
-            ]);
         }
     }
 }

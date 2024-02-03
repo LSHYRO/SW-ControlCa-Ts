@@ -17,7 +17,12 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    califacionesPeriodos:
+    calificacionPer:
+    {
+        type: Object,
+        default: () => ({})
+    },
+    clasesFinal:
     {
         type: Object,
         default: () => ({})
@@ -25,6 +30,8 @@ const props = defineProps({
 });
 
 console.log(props.periodos);
+console.log("Calificaciones Per");
+console.log(props.calificacionPer);
 
 const mostrarDetalles = ref({});
 const mostrarDetallesFinal = ref(false);
@@ -35,20 +42,25 @@ const masInfo = (idPeriodo) => {
 
 const masInfoFinal = () => {
     mostrarDetallesFinal.value = !mostrarDetallesFinal.value;
-}
+};
+
+const obtenerPeriodo = (idPeriodo) => {
+    return props.periodos.find(periodo => periodo.idPeriodo === idPeriodo) || {};
+};
 
 </script>
 
 <template>
     <div>
         <div>
-            <ul v-for="periodoo in props.periodo" :key="periodoo.idPeriodo"
+            <ul v-for="periodoo in props.calificacionPer" :key="periodoo.idPeriodo"
                 class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 px-2">
                 <li>
                     <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfo(periodoo.idPeriodo)">
                         <h4 class="text-base col-span-11">
-                            <strong>Calificación de clase: </strong>
-                            {{ periodo.descripcion }}
+                            <strong>Periodo: </strong>{{ obtenerPeriodo(periodoo.idPeriodo).periodo }}
+                            <br>
+                            <strong>Calificación: </strong>{{ periodoo.calificacion }}
                         </h4>
                         <div class="col-span-1 items-end text-end">
                             <i v-if="!mostrarDetalles[periodoo.idPeriodo]" class="fa-solid fa-caret-right text-lg"></i>
@@ -56,12 +68,14 @@ const masInfoFinal = () => {
                         </div>
                     </div>
                     <div v-if="mostrarDetalles[periodoo.idPeriodo]" class="w-full px-1 border-t-2 border-cyan-300">
-                        <p class="text-sm m-1">
-                            <strong>Fecha inicio: </strong>{{ periodoo.fecha_ini }}
-                        </p>
-                        <p class="text-sm m-1">
-                            <strong>Fecha final: </strong>{{ periodoo.fecha_f }}
-                        </p>
+                        <template v-for="periodo in props.periodos">
+                            <p v-if="periodo.idPeriodo === periodoo.idPeriodo" class="text-sm m-1">
+                                <strong>Fecha inicio: </strong>{{ periodo.fecha_inicio }}
+                            </p>
+                            <p v-if="periodo.idPeriodo === periodoo.idPeriodo" class="text-sm m-1">
+                                <strong>Fecha final: </strong>{{ periodo.fecha_fin }}
+                            </p>
+                        </template>
                     </div>
                 </li>
             </ul>
@@ -71,8 +85,8 @@ const masInfoFinal = () => {
                 <li>
                     <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfoFinal()">
                         <h4 class="text-base col-span-11">
-                            <strong>Calificación final: </strong>
-                            {{ clasesA['materias'].materia }}
+                            <strong>Calificación final de {{ clasesA['materias'].materia }}: </strong>
+                            {{ props.clasesFinal.calificacionClase }}
                         </h4>
                         <div class="col-span-1 items-end text-end">
                             <i v-if="!mostrarDetallesFinal" class="fa-solid fa-caret-right text-lg"></i>
@@ -81,7 +95,7 @@ const masInfoFinal = () => {
                     </div>
                     <div v-if="mostrarDetallesFinal" class="w-full px-1 border-t-2 border-cyan-300">
                         <p class="text-sm m-1">
-                            <strong>Ciclo escolar: </strong>{{ clasesA.descripcionCiclo }}
+                            <strong>Ciclo escolar: </strong>{{ clasesA.ciclos.descripcionCiclo }}
                         </p>
                     </div>
                 </li>

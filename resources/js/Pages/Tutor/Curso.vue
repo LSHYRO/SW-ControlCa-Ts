@@ -10,11 +10,13 @@ const props = defineProps({
     clasesA: { type: Object },
     clasesPorAlumno:{ type: Object },
     periodos: { type: Object },
+    calificacionPer: { type: Object },
     tiposActividades: { type: Object },
     usuario: { type: Object },
     actividades: { type: Object },
     alumno: { type: Object },
     calificacion: { type: Object },
+    clasesFinal: { type: Object },
 });
 console.log("periodos");
 console.log(props.periodos);
@@ -26,10 +28,13 @@ const mostrarCal = ref(false);
 const mostrarActividades = () => {
     const btnActividades = document.getElementById("btnMAc");
     //const btnAlumnos = document.getElementById("btnMAl");
+    const btnCalificaciones = document.getElementById("btnMCal");
+    btnCalificaciones.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     btnActividades.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     //btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     mostrarAc.value = true;
     //mostrarAl.value = false;
+    mostrarCal.value = false;
 };
 
 const mostrarCalificaciones = () => {
@@ -75,7 +80,7 @@ const mostrarCalificaciones = () => {
                     :actividades="props.actividades" :clasesPorAlumno="props.clasesPorAlumno" :usuario="$props.usuario" :alumno="props.alumno"/>
             </div>
             <div v-if="mostrarCal">
-                <Calificaciones :periodos="props.periodos" :clasesA="props.clasesA"/>
+                <Calificaciones :periodos="props.periodos" :clasesA="props.clasesA" :calificacionPer="props.calificacionPer" :clasesFinal="props.clasesFinal"/>
             </div>
         </div>
 
