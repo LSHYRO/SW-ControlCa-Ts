@@ -127,7 +127,7 @@ const eliminarCalificacionesFin = () => {
                 <li>
                     <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfo(periodo.idPeriodo)">
                         <h4 class="text-base col-span-11">
-                            <strong>Calificacion de clase: </strong>
+                            <strong>Calificación de clase: </strong>
                             {{ periodo.descripcion }}
                         </h4>
                         <div class="col-span-1 items-end text-end">
@@ -161,7 +161,7 @@ const eliminarCalificacionesFin = () => {
                 <li>
                     <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfoFinal()">
                         <h4 class="text-base col-span-11">
-                            <strong>Calificacion de clase: </strong>
+                            <strong>Calificación de clase: </strong>
                             {{ clase['materias'].materia }}
                         </h4>
                         <div class="col-span-1 items-end text-end">

@@ -259,60 +259,49 @@ class TutorController extends Controller{
             dd($e);
         }
     }
-/*
-    public function mostrarCalificacionesHijo($idClase, $idActividad)
+
+    public function mostrarCalificacionesPerHijos($idClase, $idPeriodo)
     {
-        try {
-            $usuario = $this->obtenerInfoUsuario();
-            $alumnos = $this-> obtenerDatosHijos($usuario->tutores->idTutor);
-            dd($alumnos);
-            $clasesPorAlumno = [];
+        $usuario = $this->obtenerInfoUsuario();
+        $alumnos = $this-> obtenerDatosHijos($usuario->tutores->idTutor);
+        //$personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
+        //$clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+        $clasesPorAlumno = [];
             foreach ($alumnos as $alumno) {
             $clasesPorAlumno[$alumno['idAlumno']]['info'] = $alumno;
             $clasesPorAlumno[$alumno['idAlumno']]['clases_cursadas'] = $this->obtenerDatosClase($alumno['idAlumno']);
             }
-            $actividadesC = actividades::where('idClase', $clasesA->idClase)->where('idActividad', $idActividad)->first();
-            //dd($clasesPorAlumno);
-            if ($clasesPorAlumno && $actividadesC) {
-                //dd($clasesPorAlumno);
-                $calificaciones = calificaciones::where('idClase', $idClase)
-                ->where('idActividad', $idActividad)
+        if ($clasesPorAlumno) {
+            $periodo = periodos::find($idPeriodo);
+
+            $calificaciones = calificaciones_periodos::where('idClase', $idClase)
+                ->where('idPeriodo', $idPeriodo)
                 ->get();
 
-                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
-                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
-                    $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
-                    $actividad->periodos->fecha_f = Carbon::parse($actividad->periodos->fecha_fin)->format('d-m-Y');
-                    $actividad->periodos->descripcion = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_ini . " - " . $actividad->periodos->fecha_f;
-                    $actividad->periodo = $actividad->periodos;
-                    $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
-                    $clasesA = clases::where('idClase', $idClase)->with(['materias'])->first();
-                    
-                    $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
-                    // Asignar "Sin calificar" a los alumnos que no tienen calificación
-                    $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
-                        $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
-                        return $alumno;
-                    });
+                
+            $periodo->fecha_i = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
+            $periodo->fecha_f = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
+            $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_i . " - " . $periodo->fecha_f;
 
-                    return $actividad;
+            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
+            $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
+            $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
 
-                return Inertia::render('Tutor/Calificaciones', [
-                    'clasesPorAlumno' => $clasesPorAlumno,
-                    'usuario' => $usuario,
-                    'actividades' => $actividades,
-                    'actividadesC' => $actividadesC,
-                    'alumno' => $alumno,
-                    'alumnos' => $alumnos,
-                    'clasesA' => $clasesA,
-                    //'calificacionesAlumno' => $calificacionesAlumno,
-                ]);
-            } else {
-                return redirect()->route('tutor.calificaciones')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
-            }
-        } catch (Exception $e) {
-            dd($e);
+
+            $calificacionesArray = $calificaciones->pluck('calificacion', 'idAlumno')->toArray();
+            // Asignar "Sin calificar" a los alumnos que no tienen calificación
+            $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
+                $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
+                return $alumno;
+            });
+
+            return Inertia::render('Profe/VerCalificacionesPer', [
+                'periodo' => $periodo,
+                'usuario' => $usuario,
+                'clase' => $clase,
+                'alumnos' => $alumnos,
+                'calificaciones' => $alumnosConCalificaciones,
+            ]);
         }
     }
-    */
 }

@@ -129,7 +129,6 @@ Route::controller(AlumnoController::class)->group(function () {
     Route::get('/alumno/perfil', 'perfil')->name('alumno.perfil');
     Route::put('/alumno/perfil/actualizar/contraseña','actualizarContrasenia')->name('alumno.actualizarContraseña');
     Route::get('/alumno/clasesAlumno', 'clases')->name('alumno.enCurso');
-    Route::get('/alumno/clasesAlu', 'curso')->name('alumno.Curso');
     Route::get('/profesor/personal/obtener', 'obtenerAlumno')->name('obtenerAlumno');
     Route::get('/alumno/clasesA/clase/{idClase}', 'mostrarClase')->name('alumno.mostrarClase'); 
     Route::get('/alumno/clasesA/obtener/datos/{idAlumno}', 'obtenerDatosClase')->name('obtenerDatosClaseA');
@@ -137,6 +136,8 @@ Route::controller(AlumnoController::class)->group(function () {
     Route::get('/alumno/materiasA/obtener/datos/{idClase}', 'obtenerDatosMateria')->name('obtenerDatosMateriaA');
     Route::get('/alumno/gradosA/obtener/datos/{idClase}', 'obtenerDatosGrado')->name('obtenerDatosGradoA');
     Route::get('/alumno/gruposA/obtener/datos/{idClase}', 'obtenerDatosGrupo')->name('obtenerDatosGrupoA');
+    Route::get('/alumno/class/clase/{idClase}/cal-per/{idPeriodo}', 'mostrarCaliPer')->name('alumno.mostrarCalPeriodos');
+    Route::get('/alumno/clas/clase/{idClase}/ver/cal-final-clase', 'mostrarCalFinalClase')->name('alumno.mostrarCalFinal');
 });
 
 //Rutas para obtener los estados, municipios, asentamientos y codigos postales
