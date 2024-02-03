@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,7 +18,7 @@ return new class extends Migration
             $table->string('password')->nullable(false);
             $table->string('contrasenia')->nullable(false);
             $table->integer('intentos')->nullable(false)->default(10);
-            $table->dateTime('fecha_Creacion')->nullable(false)->default(now());
+            $table->dateTime('fecha_Creacion')->nullable(false)->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->boolean('cambioContrasenia')->nullable(false)->default(false);
             $table->foreignId('idTipoUsuario')->references('idTipoUsuario')->on('tipoUsuarios');
             $table->rememberToken();

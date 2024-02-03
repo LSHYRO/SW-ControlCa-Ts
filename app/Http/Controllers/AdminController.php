@@ -215,20 +215,23 @@ class AdminController extends Controller
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
+        try {
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
+            $personal = personal::find($idPersonal);
+            $usuario = usuarios::find($personal->idUsuario);
+            $direccion = direcciones::find($personal->idDireccion);
+            $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                ->first();
+            $personal->delete();
+            $usuarioTipoUsuario->delete();
+            $usuario->delete();
+            $direccion->delete();
 
-        $personal = personal::find($idPersonal);
-        $usuario = usuarios::find($personal->idUsuario);
-        $direccion = direcciones::find($personal->idDireccion);
-        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
-            ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
-            ->first();
-        $personal->delete();
-        $usuarioTipoUsuario->delete();
-        $usuario->delete();
-        $direccion->delete();
-
-        return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
+            return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
+        } catch (Exception $e) {
+            dd($e);
+        }
     }
 
     //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
@@ -773,7 +776,13 @@ class AdminController extends Controller
 
     public function ciclosperiodos()
     {
-        $ciclos = ciclos::all();
+        $ciclosA = ciclos::all();
+        $ciclos = $ciclosA->map(function ($ciclo) {
+            $fecha_ic = Carbon::parse($ciclo->fecha_inicio)->format('d/m/Y');
+            $fecha_fc = Carbon::parse($ciclo->fecha_fin)->format('d/m/Y');
+            $ciclo->descCiclo = $ciclo->descripcionCiclo . " (" . $fecha_ic . " - " . $fecha_fc . ")";
+            return $ciclo;
+        });
         $periodos = periodos::all();
         $usuario = $this->obtenerInfoUsuario();
 
@@ -989,7 +998,7 @@ class AdminController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipoSangre' => 'required', 
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1134,7 +1143,7 @@ class AdminController extends Controller
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
 
             $alumno = alumnos::find($idAlumno);
-            $usuario = usuarios::find($alumno->idUsuario);            
+            $usuario = usuarios::find($alumno->idUsuario);
             $direccion = direcciones::find($alumno->idDireccion);
             $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                 ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
@@ -1575,7 +1584,7 @@ class AdminController extends Controller
         $ciclo = new Ciclos();
         $ciclo->fecha_inicio = $request->fecha_inicio;
         $ciclo->fecha_fin = $request->fecha_fin;
-        
+
         $ciclo->descripcionCiclo = $anioInicio . "-" . $anioFin;
         //$ciclo->descripcionCiclo = $request->descripcionCiclo;
 
@@ -1841,61 +1850,79 @@ class AdminController extends Controller
 
     public function addUsuarios(Request $request)
     {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
-        $usuario = new usuarios();
-        $usuario->usuario = $request->usuario;
-        $usuario->contrasenia = $request->contrasenia;
-        $usuario->password = bcrypt($request->contrasenia);
-        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-
-        $usuario->save();
-        return redirect()->route('admin.usuarios')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
+        if (Auth::check()) {
+            try {
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
+                $usuario = new usuarios();
+                $usuario->usuario = $request->usuario;
+                $usuario->contrasenia = $request->contrasenia;
+                $usuario->password = bcrypt($request->contrasenia);
+                $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+                $usuario->save();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->with(['message' => "Error al agregar el usuario", "color" => "red"]);
+            }
+        }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function elimUsuarios($usuariosIds)
     {
-        try {
-            // Convierte la cadena de IDs en un array
-            $usuariosIdsArray = explode(',', $usuariosIds);
+        if (Auth::check()) {
+            try {
+                // Convierte la cadena de IDs en un array
+                $usuariosIdsArray = explode(',', $usuariosIds);
 
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
+                // Limpia los IDs para evitar posibles problemas de seguridad
+                $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
 
-            // Elimina los ciclos
-            usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
+                // Elimina los ciclos
+                usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
 
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.usuarios')->with('message', "Usuarios eliminados correctamente");
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+                // Redirige a la página deseada después de la eliminación
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuarios eliminados correctamente.", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al eliminar a los usuarios, es necesario eliminar los datos de las personas que tienen asignados dichos usuarios.", "color" => "red"]);
+            }
         }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function eliminarUsuarios($idUsuario)
     {
-        $usuario = usuarios::find($idUsuario);
-        $usuario->delete();
-        return redirect()->route('admin.usuarios')->with('message', "Usuario eliminado correctamente");
+        if (Auth::check()) {
+            try {
+                $usuario = usuarios::find($idUsuario);
+                $usuario->delete();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario eliminado correctamente.", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al eliminar al usuario, es necesario eliminar los datos de la persona que tiene asignado dicho usuario.", "color" => "red"]);
+            }
+        }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function actualizarUsuarios(Request $request, $idUsuario)
     {
-        try {
-            $usuarios = usuarios::find($idUsuario);
-            $request->validate([
-                'usuario' => 'required',
-                'contrasenia' => 'required',
-            ]);
-            $usuarios->usuario = $request->usuario;
-            $usuarios->contrasenia = $request->contrasenia;
+        if (Auth::check()) {
+            try {
+                $usuarios = usuarios::find($idUsuario);
+                $request->validate([
+                    'usuario' => 'required',
+                    'contrasenia' => 'required',
+                ]);
+                $usuarios->usuario = $request->usuario;
+                $usuarios->contrasenia = $request->contrasenia;
+                $usuarios->password = bcrypt($request->contrasenia);
 
-            $usuarios->fill($request->input())->saveOrFail();
-        } catch (Exception $e) {
-            dd($e);
+                $usuarios->save();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario actualizado correctamente "  . $usuarios->usuario, "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al actualizar el usuario", "color" => "red"]);
+            }
         }
-        return redirect()->route('admin.usuarios')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function obtenerUsuario()
@@ -1960,5 +1987,21 @@ class AdminController extends Controller
             return redirect()->route('admin.contrasenia')->With(["message" => "Error al actualizar contraseña", "color" => "red"]);
             dd($e);
         }
+    }
+
+    public function restaurarUsuario($idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = Usuarios::where("idUsuario", $idUsuario)->first();
+                $usuario->intentos = 10;
+                $usuario->fecha_Creacion = now();
+                $usuario->save();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario restaurado correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al restaurar al usuario", "color" => "red"]);
+            }
+        }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 }

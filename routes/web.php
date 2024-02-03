@@ -28,6 +28,7 @@ Route::controller(LoginController::class)->group(function () {
     Route::get('/', 'index')->name('inicioSesion');
     Route::post('/', 'login');
     Route::get('/logout', 'logout')->name('cerrarSesion');
+    Route::post('/register', 'register')->name('registrarse');
 });
 
 Route::middleware(['adminS'])->group(function () {
@@ -105,9 +106,12 @@ Route::middleware(['adminS'])->group(function () {
         Route::put('/administrador/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('admin.actualizarPeriodos');
         Route::delete('/administrador/periodos/delete/{periodosIds}', 'elimPeriodos')->name('admin.elimPeriodos');
 
+        Route::put('/administrador/usuarios/restaurar-usuario/{idUsuario}', 'restaurarUsuario')->name('admin.restUsuario');
+        Route::delete('/administrador/usuarios/delete/{usuariosIds}', 'elimUsuarios')->name('admin.elimUsuarios');
         Route::delete('/administrador/usuarios/{idUsuario}', 'eliminarUsuarios')->name('admin.eliminarUsuarios');
         Route::put('/administrador/usuarios/{idUsuario}/edit', 'actualizarUsuarios')->name('admin.actualizarUsuarios');
-        Route::delete('/administrador/usuarios/delete/{usuariosIds}', 'elimUsuarios')->name('admin.elimUsuarios');
+        
+        
 
         Route::get('obtener/datos/ciclo/xgrados/{idGrado}', 'obtenerCicloXGrado')->name('ad.cicloXgrupos');
         Route::get('obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('ad.gradosXgrupos');
