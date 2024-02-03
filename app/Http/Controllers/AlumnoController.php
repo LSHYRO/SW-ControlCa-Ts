@@ -220,8 +220,9 @@ class AlumnoController extends Controller{
             $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
             $clasesA = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
             if ($clasesA) {
-                $clasesA = clases::where('idClase', $idClase)->with(['materias'])->first();
 
+                $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
+                $clasesA = clases::where('idClase', $idClase)->with(['materias','ciclos'])->first();
                 $actividadesC = actividades::where('idClase', $clasesA->idClase)->get();
 
                 $actividades = $actividadesC->map(function ($actividad)use($clasesA,$alumno) {
@@ -252,16 +253,17 @@ class AlumnoController extends Controller{
                 ->where('idAlumno', $alumno->idAlumno)
                 ->get();
 
-                //dd($calificacionPer);
-
+                $clasesFinal = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
                 return Inertia::render('Alumno/Curso', [
                     'clasesA' => $clasesA,
+                    'ciclos' => $ciclos,
                     'usuario' => $usuario,
                     'actividades' => $actividades,
                     'actividadesC' => $actividadesC,
                     'alumno' => $alumno,
                     'calificacionPer' => $calificacionPer,
                     'periodos' => $periodos,
+                    'clasesFinal' => $clasesFinal,
                 ]);
             } else {
                 return redirect()->route('alumno.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
@@ -269,78 +271,5 @@ class AlumnoController extends Controller{
         } catch (Exception $e) {
             dd($e);
         }
-    }
-
-    public function mostrarCaliPer($idClase, $idPeriodo)
-    {
-        try {
-        $usuario = $this->obtenerInfoUsuario();
-        $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
-        $claseA = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
-        if ($claseA) {
-            $periodo = periodos::find($idPeriodo);
-            //dd($periodo);
-
-            $periodo->fecha_i = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
-            $periodo->fecha_f = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
-            $periodo->descripcion = $periodo->periodo . ": " . $periodo->fecha_i . " - " . $periodo->fecha_f;
-
-            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
-
-            $calificacionesPerAl = calificaciones_periodos::where('idClase', $idClase)
-                ->where('idPeriodo', $periodo->$idPeriodo)
-                ->where('idAlumno', $alumno->idAlumno)
-                ->first();//le cambie get
-
-                if($calificacionesPerAl){
-                    $periodo->calificacion = $calificacionesPerAl->calificacion;
-                    }else{
-                    $periodo->calificacion = "Sin calificar";
-                    }
-
-                return Inertia::render('Alumno/Curso', [
-                'periodo' => $periodo,
-                'usuario' => $usuario,
-                'claseA' => $claseA,
-                'clase' => $clase,
-                'alumno' => $alumno,
-                'calificacionesPerAl' => $calificacionesPerAl,
-            ]);
-        }
-    } catch (Exception $e){
-        dd($e);
-    }
-     }
-     
-     public function mostrarCalFinalClase($idClase)
-    {
-        $usuario = $this->obtenerInfoUsuario();
-        $alumno = alumnos::where('idUsuario', $usuario->idUsuario)->firrst();
-        //dd($alumno);
-        //$personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
-        //$clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
-        $clase = clases_alumnos::where('idClase', $idClase)->where('idAlumno'->$alumno->idAlumno)->first();
-        if ($clase) {
-            $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
-            //$idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
-            //$alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
-            $cl_alumnos = clases_alumnos::where('idClase', $clase->idClase)->first();
-            $fecha_ic = Carbon::parse($clase->ciclos->fecha_inicio)->format('d/m/Y');
-            $fecha_fc = Carbon::parse($clase->ciclos->fecha_fin)->format('d/m/Y');
-            $clase->descripcionCiclo = $fecha_ic . " - " . $fecha_fc;
-
-            $calificacionesArray = $cl_alumnos->pluck('calificacionClase', 'idAlumno')->toArray();
-            // Asignar "Sin calificar" a los alumnos que no tienen calificación
-            $alumnosConCalificaciones = $alumnos->map(function ($alumno) use ($calificacionesArray) {
-                $alumno->calificacion = $calificacionesArray[$alumno->idAlumno] ?? 'Sin calificar';
-                return $alumno;
-            });
-            return Inertia::render('Alumno/Curso', [
-                'usuario' => $usuario,
-                'clase' => $clase,
-                'alumnos' => $alumnosConCalificaciones,
-            ]);
-        }
-        return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
     }
 }

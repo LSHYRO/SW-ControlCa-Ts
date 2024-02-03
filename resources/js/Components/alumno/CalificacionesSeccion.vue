@@ -21,12 +21,23 @@ const props = defineProps({
     {
         type: Object,
         default: () => ({})
-    }
+    },
+    clasesFinal:
+    {
+        type: Object,
+        default: () => ({})
+    },
+    ciclos:
+    {
+        type: Object,
+        default: () => ({})
+    },
 });
-console.log("Calificacion periodo en Califficaciones Seccion");
-console.log(props.calificacionPer);
-console.log("periodos en Califficaciones Seccion");
-console.log(props.periodos);
+console.log("clasesA en Califficaciones Seccion");
+console.log(props.clasesA);
+
+console.log("ciclos en Califficaciones Seccion");
+console.log(props.ciclos);
 
 const mostrarDetalles = ref({});
 const mostrarDetallesFinal = ref(false);
@@ -80,8 +91,8 @@ const obtenerPeriodo = (idPeriodo) => {
                 <li>
                     <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfoFinal()">
                         <h4 class="text-base col-span-11">
-                            <strong>Calificación final: </strong>
-                            {{ clasesA['materias'].materia }}
+                            <strong>Calificación final de {{ clasesA['materias'].materia }}: </strong>
+                            {{ props.clasesFinal.calificacionClase }}
                         </h4>
                         <div class="col-span-1 items-end text-end">
                             <i v-if="!mostrarDetallesFinal" class="fa-solid fa-caret-right text-lg"></i>
@@ -90,7 +101,7 @@ const obtenerPeriodo = (idPeriodo) => {
                     </div>
                     <div v-if="mostrarDetallesFinal" class="w-full px-1 border-t-2 border-cyan-300">
                         <p class="text-sm m-1">
-                            <strong>Ciclo escolar: </strong>{{ clasesA.descripcionCiclo }}
+                            <strong>Ciclo escolar: </strong>{{ clasesA.ciclos.descripcionCiclo }}
                         </p>
                     </div>
                 </li>

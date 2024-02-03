@@ -6,6 +6,7 @@ import Calificaciones from '@/Components/alumno/CalificacionesSeccion.vue';
 
 const props = defineProps({
     clase: { type: Object },
+    ciclos: { type: Object },
     alumno: { type: Object },
     claseA: { type: Object },
     clasesA: { type: Object },
@@ -16,6 +17,7 @@ const props = defineProps({
     alumnos: { type: Object },
     calificaciones: { type: Object },
     calificacionPer: { type: Object },
+    clasesFinal: { type: Object },
 });
 console.log(props.periodos);
 const mostrarAc = ref(true);
@@ -76,7 +78,7 @@ const mostrarCalificaciones = () => {
                     :actividades="props.actividades" />
             </div>
             <div v-if="mostrarCal">
-                <Calificaciones :periodos="props.periodos" :claseA="props.claseA" :clasesA="props.clasesA" :calificacionPer="props.calificacionPer"/>
+                <Calificaciones :periodos="props.periodos" :claseA="props.claseA" :clasesA="props.clasesA" :calificacionPer="props.calificacionPer" :clasesFinal="props.clasesFinal" :ciclos="props.ciclos"/>
             </div>
         </div>
     </AlumnoLayout>
