@@ -1,5 +1,5 @@
 <script setup>
-import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -61,7 +61,7 @@ onMounted(async () => {
 
 
 <template>
-    <DirectorLayout title="Perfil" :usuario="props.usuario">
+    <AdminLayout title="Perfil" :usuario="props.usuario">
         <div class=" bg-white p-4 shadow rounded-lg h-5/6 mt-10 sm:mt-0">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Cambio de contraseña</h2>
             <div class="my-1"></div>
@@ -129,5 +129,5 @@ onMounted(async () => {
                 </form>
             </div>
         </div>
-    </DirectorLayout>
+    </AdminLayout>
 </template>

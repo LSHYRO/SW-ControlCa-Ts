@@ -556,7 +556,7 @@ class DirectorController extends Controller
         $usuarioTipoUsuario->delete();
         $usuario->delete();
         $direccion->delete();
-        return redirect()->route('director.directivos')->With("message", "Personal eliminado correctamente");
+        return redirect()->route('director.directivos')->With(["message" => "Directivo eliminado correctamente", "color" => "green"]);
     }
 
     public function elimDirectivos($personalIds)
@@ -579,11 +579,14 @@ class DirectorController extends Controller
                 $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                     ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
                     ->first();
+                    if ($usuarioTipoUsuario) {
+                        $usuarioTipoUsuario->delete();
+                    }
                 $personal->delete();
-                $usuarioTipoUsuario->delete();
+                //$usuarioTipoUsuario->delete();
                 $usuario->delete();
             }
-            return redirect()->route('director.directivos')->With("message", "Profesores eliminados correctamente");
+            return redirect()->route('director.directivos')->With(["message" => "Directivos eliminados correctamente", "color" => "green"]);
             /*
             // Elimina las materias
             materias::whereIn('idMateria', $personalIdsArray)->delete();
@@ -664,7 +667,7 @@ class DirectorController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.directivos')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.directivos')->With(["message" => "Informacion del directivo actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM, "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -1262,8 +1265,8 @@ class DirectorController extends Controller
     public function addMaterias(Request $request)
     {
         // Verificar si la materia ya existe en la base de datos
-        //$existingMateria = Materias::where('materia', $request->materia)->first();
-        $existingMateria = materias::where('materia', $request->materia)->whereNull('deleted_at')->first();
+        $existingMateria = Materias::where('materia', $request->materia)->first();
+        //$existingMateria = materias::where('materia', $request->materia)->whereNull('deleted_at')->first();
 
         if ($existingMateria) {
             // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
@@ -1286,7 +1289,7 @@ class DirectorController extends Controller
     {
         $materia = materias::find($idMateria);
         $materia->delete();
-        return redirect()->route('director.materias')->with('message', "Materia eliminada correctamente");
+        return redirect()->route('director.materias')->with(['message' => "Materia eliminada correctamente", "color" => "green"]);
     }
 
     public function elimMaterias($materiasIds)
@@ -1302,7 +1305,7 @@ class DirectorController extends Controller
             materias::whereIn('idMateria', $materiasIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('director.materias')->with('message', "Materias eliminadas correctamente");
+            return redirect()->route('director.materias')->with(['message' => "Materias eliminadas correctamente", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -1324,7 +1327,7 @@ class DirectorController extends Controller
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('director.materias')->with('message', "Materia actualizada correctamente: " . $materias->materia);;
+        return redirect()->route('director.materias')->with(['message'=> "Materia actualizada correctamente: " . $materias->materia, "color" => "green"]);
     }
 
     public function getMaterias($searchTerm)

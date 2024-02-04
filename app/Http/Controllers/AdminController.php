@@ -333,7 +333,8 @@ class AdminController extends Controller
             }
             return redirect()->route('admin.profesores')->With(["message" => "Profesores eliminados correctamente.", "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.profesores')->With(["message" => "Error al eliminar los datos de los profesores.", "color" => "red"]);
+            dd($e);
+            //return redirect()->route('admin.profesores')->With(["message" => "Error al eliminar los datos de los profesores.", "color" => "red"]);
         }
     }
 
@@ -353,7 +354,7 @@ class AdminController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -381,7 +382,7 @@ class AdminController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->RFC = $request->rfc;
-            $personal->idTipoSangre = $request->tipo_sangre;
+            $personal->idTipoSangre = $request->tipoSangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -403,6 +404,7 @@ class AdminController extends Controller
             $personal->save();
             return redirect()->route('admin.profesores')->With(["message" => "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . ".", "color" => "green"]);
         } catch (Exception $e) {
+            //dd($e);
             return redirect()->route("admin.profesores")->with(["message" => "Error al actualizar los datos del profesor.", "color" => "red"]);
         }
     }
@@ -591,7 +593,7 @@ class AdminController extends Controller
         $usuario->delete();
         $usuarioTipoUsuario->delete();
         $direccion->delete();
-        return redirect()->route('admin.directivos')->With("message", "Personal eliminado correctamente");
+        return redirect()->route('admin.directivos')->With(["message" => "Directivo eliminado correctamente", "color" => "green"]);
     }
 
     public function elimDirectivos($personalIds)
@@ -610,15 +612,21 @@ class AdminController extends Controller
 
             for ($i = 0; $i < count($personalIdsArray); $i++) {
                 $personal = personal::find($personalIdsArray[$i]);
+                $direccion = direcciones::find($personal->idDireccion);
                 $usuario = usuarios::find($personal->idUsuario);
                 $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                     ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
                     ->first();
+
+                if ($usuarioTipoUsuario) {
+                    $usuarioTipoUsuario->delete();
+                }
                 $personal->delete();
-                $usuarioTipoUsuario->delete();
                 $usuario->delete();
+                //$usuarioTipoUsuario->delete();
+                $direccion->delete();
             }
-            return redirect()->route('admin.directivos')->With("message", "Profesores eliminados correctamente");
+            return redirect()->route('admin.directivos')->With(["message" => "Directivos eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Ocurrió un error al eliminar'
@@ -641,7 +649,7 @@ class AdminController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -671,7 +679,7 @@ class AdminController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->RFC = $request->rfc;
-            $personal->idTipoSangre = $request->tipo_sangre;
+            $personal->idTipoSangre = $request->tipoSangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -691,7 +699,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('admin.directivos')->With(["message" => "Informacion del directivo actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM, "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -1339,8 +1347,8 @@ class AdminController extends Controller
     public function addMaterias(Request $request)
     {
         // Verificar si la materia ya existe en la base de datos
-        //$existingMateria = Materias::where('materia', $request->materia)->first();
-        $existingMateria = Materias::where('materia', $request->materia)->whereNull('deleted_at')->first();
+        $existingMateria = Materias::where('materia', $request->materia)->first();
+        //$existingMateria = Materias::where('materia', $request->materia)->whereNull('deleted_at')->first();
 
         if ($existingMateria) {
             // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
@@ -1362,7 +1370,7 @@ class AdminController extends Controller
     {
         $materia = materias::find($idMateria);
         $materia->delete();
-        return redirect()->route('admin.materias')->with('message', "Materia eliminada correctamente");
+        return redirect()->route('admin.materias')->with(['message' => "Materia eliminada correctamente", "color" => "green"]);
     }
 
     public function elimMaterias($materiasIds)
@@ -1378,7 +1386,7 @@ class AdminController extends Controller
             materias::whereIn('idMateria', $materiasIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.materias')->with('message', "Materias eliminadas correctamente");
+            return redirect()->route('admin.materias')->with(['message' => "Materias eliminadas correctamente", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -1399,7 +1407,7 @@ class AdminController extends Controller
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.materias')->with('message', "Materia actualizada correctamente: " . $materias->materia);;
+        return redirect()->route('admin.materias')->with(['message'=> "Materia actualizada correctamente: " . $materias->materia, "color" => "green"]);
     }
 
     public function getMaterias($searchTerm)

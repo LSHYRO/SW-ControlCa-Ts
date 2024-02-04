@@ -289,7 +289,7 @@ const update = async () => {
     }
 
     var idPersonal = document.getElementById('idPersonal2').value;
-    form.put(route('admin.actualizarDirectivo', idPersonal), {
+    form.put(route('admin.actualizarDirectivos', idPersonal), {
         onSuccess: () => {
             close()
             curpError.value = '';

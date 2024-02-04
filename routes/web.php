@@ -75,6 +75,7 @@ Route::middleware(['adminS'])->group(function () {
         Route::put('/administrador/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('admin.actualizarProfesores');
 
         Route::delete('/administrador/directivos/{idPersonal}', 'eliminarDirectivos')->name('admin.eliminarDirectivos');
+        Route::delete('/administrador/directivos/delete/{personalIds}', 'elimDirectivos')->name('admin.elimDirectivos');
         Route::put('/administrador/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('admin.actualizarDirectivos');
 
         Route::delete('/administrador/materias/delete/{materiasIds}', 'elimMaterias')->name('admin.elimMaterias');
