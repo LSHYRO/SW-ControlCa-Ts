@@ -76,6 +76,8 @@ const validateDate = (date) => {
 };
 
 const validarFechasT = () => {
+    
+
     return form.fecha_fin >= form.fecha_inicio;
 }
 

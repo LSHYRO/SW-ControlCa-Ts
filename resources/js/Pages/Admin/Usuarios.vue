@@ -37,6 +37,9 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
+const descripcionCrear = "Rellene todos los campos para poder registrar un nuevo usuario administrador";
+const descripcionEditar = "Rellene todos los campos para poder actualizar la información de un usuario";
+
 var usuariosE = ({});
 
 const selectedUsuarios = ref([]);
@@ -68,7 +71,20 @@ const columnsUsuario = [
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     { data: 'usuario' },
-    { data: 'contrasenia' },
+    //{ data: 'contrasenia' },
+    {
+        data: 'contrasenia', render: function (data, type, row, meta) {
+            return `<div class="password-container">
+                        <span class="ph password-hidden">${'*'.repeat(data.length)}</span>
+                        <button class="mostrar-password-button" data-id="${row.idUsuario}"><i class="fa fa-eye"></i></button>
+                    </div>`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="restaurar-usuario" data-id="${row.idUsuario}"><i class="fa fa-arrows-rotate"></i></button>`;
+        }
+    },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idUsuario}"><i class="fa fa-pencil"></i></button>`;
@@ -175,6 +191,30 @@ const eliminarUsuarios = () => {
     });
 };
 
+const restaurarUsuario = (usuario) => {
+    const idUsuario = usuario.idUsuario;
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+
+    swal.fire({
+        title: '¿Estas seguro de restaurar los intentos y/o tiempo de cambio de contraseña?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await form.put(route('admin.restUsuario', idUsuario));
+            } catch (error) {
+                console.log('El error se origina aquí');
+                console.log(error);
+            }
+        }
+    });
+};
+
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('usuariosTablaId').addEventListener('click', (event) => {
@@ -207,6 +247,27 @@ onMounted(() => {
         const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
         eliminarUsuario(usuarioId, usuario.usuario);
     });
+
+    $('#usuariosTablaId').on('click', '.mostrar-password-button', function () {
+        const usuarioId = $(this).data('id');
+        const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
+        const passwordCell = $(this).closest('td').find('.ph');
+
+        if (passwordCell.hasClass('password-hidden')) {
+            // Muestra la contraseña
+            passwordCell.removeClass('password-hidden').text(usuario.contrasenia);
+        } else {
+            // Oculta la contraseña
+            passwordCell.addClass('password-hidden').text('*'.repeat(usuario.contrasenia.length));
+        }
+    });
+
+    $('#usuariosTablaId').on('click', '.restaurar-usuario', function () {
+        const usuarioId = $(this).data('id');
+        const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
+        restaurarUsuario(usuario);
+    })
+
 });
 
 const optionsUsuario = {
@@ -234,9 +295,8 @@ const optionsUsuario = {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- flash message start -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-                role="alert">
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}`">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
                 </span>
@@ -278,9 +338,15 @@ const optionsUsuario = {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Re
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Ed
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                El
                             </th>
                         </tr>
                     </thead>
@@ -288,8 +354,35 @@ const optionsUsuario = {
             </div>
         </div>
         <formulario-usuarios :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'"></formulario-usuarios>
+            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'"
+            :descripcion="descripcionCrear"></formulario-usuarios>
         <formulario-usuarios :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar usuario'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE"></formulario-usuarios>
+            :title="'Editar usuario'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE"
+            :descripcion="descripcionEditar"></formulario-usuarios>
     </AdminLayout>
 </template>
+<style>
+.password-container {
+    display: flex;
+    align-items: center;
+}
+
+.password-hidden {
+    font-family: monospace;
+    color: gray;
+}
+
+.mostrar-password-button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: black;
+    text-decoration: underline;
+    margin-left: auto;
+    /* Esto alineará el botón a la derecha del contenedor */
+}
+
+.swal2-popup {
+    font-size: 14px !important;
+}
+</style>

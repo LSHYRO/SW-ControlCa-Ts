@@ -130,7 +130,7 @@ const eliminarCiclo = (idCiclo, ciclo) => {
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + ciclo + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + ciclo + '?' + '\nTodos los datos que hacen refencia a este ciclo serán eliminados.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -149,7 +149,7 @@ const eliminarCiclos = () => {
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los ciclos seleccionados?',
+        title: '¿Estas seguro que deseas eliminar los datos de los ciclos seleccionados?' + '\nTodos los datos que hacen refencia a estos ciclos serán eliminados.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -290,3 +290,8 @@ const optionsCiclo = {
     <formulario-ciclos :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
         :title="'Editar ciclo'" :op="'2'" :modal="'modalEdit'" :ciclos="cicloE"></formulario-ciclos>
 </template>
+<style>
+.swal2-popup {
+    font-size: 14px !important;
+}
+</style>

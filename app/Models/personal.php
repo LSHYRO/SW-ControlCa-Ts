@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class personal extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     protected $table = "personal";
     protected $primaryKey = 'idPersonal';

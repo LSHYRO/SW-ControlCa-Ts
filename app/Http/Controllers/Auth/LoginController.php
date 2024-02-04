@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\tipoUsuarios;
 use App\Models\usuarios;
 use Exception;
 use Illuminate\Http\Request;
@@ -41,13 +42,18 @@ class LoginController extends Controller
                     break;
             }
         }
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario','administrador')->first();
+        $usuarios = usuarios::where('idTipoUsuario', $tipoUsuario->idTipoUsuario)->get();
+        if($usuarios->isEmpty()){
+            return Inertia::render('Login/RegisterFT');    
+        }
         return Inertia::render('Login/Login');
     }
 
     public function login(Request $request): RedirectResponse
     {
-        try {
 
+        try {
             $request->validate([
                 'usuario' => ['required'],
                 'password' => ['required'],
@@ -57,8 +63,8 @@ class LoginController extends Controller
 
             $user = usuarios::where('usuario', $request->usuario)->first();
             if ($user) {
-                if($user->cambioContrasenia === 0){
-                    if(Carbon::parse($user->fecha_Creacion)->addHours(48) <= Carbon::now()){
+                if ($user->cambioContrasenia === 0) {
+                    if (Carbon::parse($user->fecha_Creacion)->addHours(48) <= Carbon::now()) {
                         return back()->with(['message' => 'Excedio el tiempo limite para el cambio de contraseña, para solucionarlo es necesario que acuda a la dirección', 'color' => 'red']);
                     }
                 }
@@ -117,5 +123,26 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('inicioSesion');
+    }
+
+    public function register(Request $request)
+    {
+        try{
+            $request->validate([
+                'usuario' => ['required'],
+                'password' => ['required'],
+            ]);
+            $tipoUs = tipoUsuarios::where('tipoUsuario', 'administrador')->first();            
+            $usuario = new usuarios();
+            $usuario->usuario = $request->usuario;
+            $usuario->contrasenia = $request->password;
+            $usuario->password = bcrypt($request->password);
+            $usuario->cambioContrasenia = true;        
+            $usuario->idTipoUsuario = $tipoUs->idTipoUsuario;
+            $usuario->save();
+            return redirect()->route('inicioSesion');
+        }catch(Exception $e){
+            dd($e);
+        }
     }
 }

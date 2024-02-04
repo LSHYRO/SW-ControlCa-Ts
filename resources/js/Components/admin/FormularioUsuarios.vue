@@ -27,6 +27,7 @@ const props = defineProps({
     title: { type: String },
     modal: { type: String },
     op: { type: String },
+    descripcion: { type: String },
     usuario: String,
     contrasenia: String,
 },
@@ -119,8 +120,7 @@ watch(() => props.usuarios, (newVal) => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un nuevo
-                        usuario
+                    <p class="mt-1 text-sm leading-6 text-gray-600"> {{ props.descripcion }}
                     </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">

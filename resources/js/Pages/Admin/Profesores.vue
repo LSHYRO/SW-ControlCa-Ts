@@ -146,7 +146,7 @@ const eliminarProfesor = (idPersonal, nombre) => {
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?' + '\nTodo lo relacionado al profesor (clases) sera eliminado.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -188,7 +188,7 @@ const eliminarProfesores = () => {
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los profesores seleccionados?',
+        title: '¿Estas seguro que deseas eliminar los datos de los profesores seleccionados?' + '\nTodo lo relacionado a los profesores (clases) seran eliminados.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -259,11 +259,11 @@ onMounted(() => {
             <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  // Mensaje para mostrar si se guardo o borro un profesor                                        -->
             <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
-        </div>
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}`">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div>
             <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <!-- <div class="w-full md:w-1/3 mb-4 md:mb-0 "></div> -->
@@ -375,3 +375,8 @@ onMounted(() => {
             :generos="props.generos"></formulario-prof>
     </AdminLayout>
 </template>
+<style>
+.swal2-popup {
+    font-size: 14px !important;
+}
+</style>

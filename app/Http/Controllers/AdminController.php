@@ -7,9 +7,12 @@ use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\alumnos;
+use App\Models\calificaciones;
+use App\Models\calificaciones_periodos;
 use App\Models\materias;
 use App\Models\clases;
 use App\Models\ciclos;
+use App\Models\clases_alumnos;
 use App\Models\periodos;
 use App\Models\tutores;
 use App\Models\direcciones;
@@ -24,6 +27,7 @@ use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -221,34 +225,58 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.profesores')->With(["message" => "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
+            return redirect()->route('admin.profesores')->With(["message" => "Profesor agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green"]);
         } catch (Exception $e) {
-            dd($e);
+            return redirect()->route("admin.profesores")->with(["message" => "Error al agregar al profesor.", "color" => "red"]);
         }
     }
 
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
-        try{
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
+        try {
+            $clasesProfesor = clases::where('idPersonal', $idPersonal)->get();
+            if (!$clasesProfesor->isEmpty()) {
+                //Se eliminan calificacionesPeriodos, calificaciones y clases alumnos para al final eliminar las clases del profesor
+                foreach ($clasesProfesor as $clase) {
+                    $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+                    $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
+                    $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
 
-        $personal = personal::find($idPersonal);
-        $usuario = usuarios::find($personal->idUsuario);
-        $direccion = direcciones::find($personal->idDireccion);
-        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
-            ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
-            ->first();
-        $personal->delete();
-        $usuarioTipoUsuario->delete();
-        $usuario->delete();
-        $direccion->delete();
+                    if (!$calificacionesPeriodos->isEmpty()) {
+                        foreach ($calificacionesPeriodos as $calPer) {
+                            $calPer->delete();
+                        }
+                    }
+                    if (!$calificaciones->isEmpty()) {
+                        foreach ($calificaciones as $calificacion) {
+                            $calificacion->delete();
+                        }
+                    }
+                    if (!$clases_alumnos->isEmpty()) {
+                        foreach ($clases_alumnos as $clasAlu) {
+                            $clasAlu->delete();
+                        }
+                    }
+                    $clase->delete();
+                }
+            }
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
+            $personal = personal::find($idPersonal);
+            $usuario = usuarios::find($personal->idUsuario);
+            $direccion = direcciones::find($personal->idDireccion);
+            $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                ->first();
+            $personal->delete();
+            $usuarioTipoUsuario->delete();
+            $usuario->delete();
+            $direccion->delete();
 
-        return redirect()->route('admin.profesores')->With("message", "Profesor eliminado correctamente");
-    }catch(Exception $e){
-        //dd($e);
-        return redirect()->route('admin.profesores')->With(["message" =>"Error al eliminar Profesor".$e,"color"=>"red"]);
-    }
+            return redirect()->route('admin.profesores')->With(["message" => "Profesor eliminado correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.profesores')->with(["message" => "Error al eliminar los datos del profesor", "color" => "red"]);
+        }
     }
 
     //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
@@ -265,19 +293,47 @@ class AdminController extends Controller
 
             for ($i = 0; $i < count($personalIdsArray); $i++) {
                 $personal = personal::find($personalIdsArray[$i]);
+                $clasesProfesor = clases::where('idPersonal', $personal->idPersonal)->get();
+                if (!$clasesProfesor->isEmpty()) {
+                    //Se eliminan calificacionesPeriodos, calificaciones y clases alumnos para al final eliminar las clases del profesor
+                    foreach ($clasesProfesor as $clase) {
+                        $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+                        $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
+                        $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+
+                        if (!$calificacionesPeriodos->isEmpty()) {
+                            foreach ($calificacionesPeriodos as $calPer) {
+                                $calPer->delete();
+                            }
+                        }
+                        if (!$calificaciones->isEmpty()) {
+                            foreach ($calificaciones as $calificacion) {
+                                $calificacion->delete();
+                            }
+                        }
+                        if (!$clases_alumnos->isEmpty()) {
+                            foreach ($clases_alumnos as $clasAlu) {
+                                $clasAlu->delete();
+                            }
+                        }
+                        $clase->delete();
+                    }
+                }
+
+
                 $usuario = usuarios::find($personal->idUsuario);
+                $direccion = direcciones::find($personal->idDireccion);
                 $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                     ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
                     ->first();
                 $personal->delete();
                 $usuarioTipoUsuario->delete();
                 $usuario->delete();
+                $direccion->delete();
             }
-            return redirect()->route('admin.profesores')->With("message", "Profesores eliminados correctamente");
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+            return redirect()->route('admin.profesores')->With(["message" => "Profesores eliminados correctamente.", "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.profesores')->With(["message" => "Error al eliminar los datos de los profesores.", "color" => "red"]);
         }
     }
 
@@ -345,9 +401,9 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.profesores')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('admin.profesores')->With(["message" => "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . ".", "color" => "green"]);
         } catch (Exception $e) {
-            dd($e);
+            return redirect()->route("admin.profesores")->with(["message" => "Error al actualizar los datos del profesor.", "color" => "red"]);
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -811,7 +867,13 @@ class AdminController extends Controller
 
     public function ciclosperiodos()
     {
-        $ciclos = ciclos::all();
+        $ciclosA = ciclos::all();
+        $ciclos = $ciclosA->map(function ($ciclo) {
+            $fecha_ic = Carbon::parse($ciclo->fecha_inicio)->format('d/m/Y');
+            $fecha_fc = Carbon::parse($ciclo->fecha_fin)->format('d/m/Y');
+            $ciclo->descCiclo = $ciclo->descripcionCiclo . " (" . $fecha_ic . " - " . $fecha_fc . ")";
+            return $ciclo;
+        });
         $periodos = periodos::all();
         $usuario = $this->obtenerInfoUsuario();
 
@@ -1036,7 +1098,7 @@ class AdminController extends Controller
                 'fechaNacimiento' => 'required',
                 'genero' => 'required',
                 'curp' => 'required',
-                'tipoSangre' => 'required', 
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -1113,10 +1175,9 @@ class AdminController extends Controller
             }
 
             $alumno->save();
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||", "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green"]);
         } catch (Exception $e) {
-            dd($e);
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno ", "color" => "red"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno.", "color" => "red"]);
         }
     }
 
@@ -1176,9 +1237,9 @@ class AdminController extends Controller
             }
 
             $alumno->save();
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno actualizado correctamente: " . $nombreCompleto . ".", "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno", "color" => "red"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno.", "color" => "red"]);
         }
     }
 
@@ -1186,9 +1247,29 @@ class AdminController extends Controller
     {
         try {
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
-
             $alumno = alumnos::find($idAlumno);
-            $usuario = usuarios::find($alumno->idUsuario);            
+            //Alumnos y clases
+            $calif_Per = calificaciones_periodos::where('idAlumno', $alumno->idAlumno)->get();
+            $calificaciones = calificaciones::where('idAlumno', $alumno->idAlumno)->get();
+            $cl_alumnos = clases_alumnos::where('idAlumno', $alumno->idAlumno)->get();
+
+            if (!$calif_Per->isEmpty()) {
+                foreach ($calif_Per as $c_per) {
+                    $c_per->delete();
+                }
+            }
+            if (!$calificaciones->isEmpty()) {
+                foreach ($calificaciones as $cali) {
+                    $cali->delete();
+                }
+            }
+            if (!$cl_alumnos->isEmpty()) {
+                foreach ($cl_alumnos as $cl_a) {
+                    $cl_a->delete();
+                }
+            }
+
+            $usuario = usuarios::find($alumno->idUsuario);
             $direccion = direcciones::find($alumno->idDireccion);
             $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                 ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
@@ -1198,9 +1279,9 @@ class AdminController extends Controller
             $usuario->delete();
             $direccion->delete();
 
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno eliminado correctamente", "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno eliminado correctamente.", "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar al alumno " . $e, "color" => "red"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar al alumno. ", "color" => "red"]);
         }
     }
 
@@ -1217,6 +1298,26 @@ class AdminController extends Controller
 
             for ($i = 0; $i < count($alumnosIdsArray); $i++) {
                 $alumno = alumnos::find($alumnosIdsArray[$i]);
+                //Alumnos y clases
+                $calif_Per = calificaciones_periodos::where('idAlumno', $alumno->idAlumno)->get();
+                $calificaciones = calificaciones::where('idAlumno', $alumno->idAlumno)->get();
+                $cl_alumnos = clases_alumnos::where('idAlumno', $alumno->idAlumno)->get();
+
+                if (!$calif_Per->isEmpty()) {
+                    foreach ($calif_Per as $c_per) {
+                        $c_per->delete();
+                    }
+                }
+                if (!$calificaciones->isEmpty()) {
+                    foreach ($calificaciones as $cali) {
+                        $cali->delete();
+                    }
+                }
+                if (!$cl_alumnos->isEmpty()) {
+                    foreach ($cl_alumnos as $cl_a) {
+                        $cl_a->delete();
+                    }
+                }
                 $usuario = usuarios::find($alumno->idUsuario);
                 $direccion = direcciones::find($alumno->idDireccion);
                 $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
@@ -1229,9 +1330,9 @@ class AdminController extends Controller
             }
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumnos eliminados correctamente", "color" => "green"]);
+            return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumnos eliminados correctamente.", "color" => "green"]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar a los alumnos " . $e, "color" => "red"]);
+            return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al eliminar a los alumnos.", "color" => "red"]);
         }
     }
 
@@ -1344,10 +1445,10 @@ class AdminController extends Controller
 
             $clase->save();
 
-            return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
+            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
         } catch (Exception $e) {
             Log::info('Error en guardar la clase: ' . $e);
-            return redirect()->route('director.clases')->withErrors(['message' => 'Error al guardar la clase.']);
+            return redirect()->route('admin.clases')->withErrors(['message' => 'Error al guardar la clase.']);
         }
     }
 
@@ -1629,7 +1730,7 @@ class AdminController extends Controller
         $ciclo = new Ciclos();
         $ciclo->fecha_inicio = $request->fecha_inicio;
         $ciclo->fecha_fin = $request->fecha_fin;
-        
+
         $ciclo->descripcionCiclo = $anioInicio . "-" . $anioFin;
         //$ciclo->descripcionCiclo = $request->descripcionCiclo;
 
@@ -1646,6 +1747,14 @@ class AdminController extends Controller
             }
             $ciclo->delete();
             return redirect()->route('admin.ciclosperiodos')->With(["message" => "Ciclo eliminado correctamente", "color" => "green"]);
+        } catch (QueryException $e) {
+            // Verificar si la excepción es debida a una restricción de clave externa
+            $errorCode = $e->errorInfo[1];
+
+            if ($errorCode == 1451) {
+                // El código 1451 generalmente indica una violación de clave externa
+                return redirect()->route('admin.ciclosperiodos')->With(["message" => "Es necesario que se elimine los datos que hagan referecia a este ciclo", "color" => "red"]);
+            }
         } catch (Exception $e) {
             return redirect()->route('admin.ciclosperiodos')->With(["message" => "Error al eliminar el ciclo", "color" => "red"]);
         }
@@ -1895,61 +2004,79 @@ class AdminController extends Controller
 
     public function addUsuarios(Request $request)
     {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
-        $usuario = new usuarios();
-        $usuario->usuario = $request->usuario;
-        $usuario->contrasenia = $request->contrasenia;
-        $usuario->password = bcrypt($request->contrasenia);
-        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-
-        $usuario->save();
-        return redirect()->route('admin.usuarios')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
+        if (Auth::check()) {
+            try {
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
+                $usuario = new usuarios();
+                $usuario->usuario = $request->usuario;
+                $usuario->contrasenia = $request->contrasenia;
+                $usuario->password = bcrypt($request->contrasenia);
+                $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+                $usuario->save();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->with(['message' => "Error al agregar el usuario", "color" => "red"]);
+            }
+        }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function elimUsuarios($usuariosIds)
     {
-        try {
-            // Convierte la cadena de IDs en un array
-            $usuariosIdsArray = explode(',', $usuariosIds);
+        if (Auth::check()) {
+            try {
+                // Convierte la cadena de IDs en un array
+                $usuariosIdsArray = explode(',', $usuariosIds);
 
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
+                // Limpia los IDs para evitar posibles problemas de seguridad
+                $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
 
-            // Elimina los ciclos
-            usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
+                // Elimina los ciclos
+                usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
 
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.usuarios')->with('message', "Usuarios eliminados correctamente");
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+                // Redirige a la página deseada después de la eliminación
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuarios eliminados correctamente.", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al eliminar a los usuarios, es necesario eliminar los datos de las personas que tienen asignados dichos usuarios.", "color" => "red"]);
+            }
         }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function eliminarUsuarios($idUsuario)
     {
-        $usuario = usuarios::find($idUsuario);
-        $usuario->delete();
-        return redirect()->route('admin.usuarios')->with('message', "Usuario eliminado correctamente");
+        if (Auth::check()) {
+            try {
+                $usuario = usuarios::find($idUsuario);
+                $usuario->delete();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario eliminado correctamente.", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al eliminar al usuario, es necesario eliminar los datos de la persona que tiene asignado dicho usuario.", "color" => "red"]);
+            }
+        }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function actualizarUsuarios(Request $request, $idUsuario)
     {
-        try {
-            $usuarios = usuarios::find($idUsuario);
-            $request->validate([
-                'usuario' => 'required',
-                'contrasenia' => 'required',
-            ]);
-            $usuarios->usuario = $request->usuario;
-            $usuarios->contrasenia = $request->contrasenia;
+        if (Auth::check()) {
+            try {
+                $usuarios = usuarios::find($idUsuario);
+                $request->validate([
+                    'usuario' => 'required',
+                    'contrasenia' => 'required',
+                ]);
+                $usuarios->usuario = $request->usuario;
+                $usuarios->contrasenia = $request->contrasenia;
+                $usuarios->password = bcrypt($request->contrasenia);
 
-            $usuarios->fill($request->input())->saveOrFail();
-        } catch (Exception $e) {
-            dd($e);
+                $usuarios->save();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario actualizado correctamente "  . $usuarios->usuario, "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al actualizar el usuario", "color" => "red"]);
+            }
         }
-        return redirect()->route('admin.usuarios')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 
     public function obtenerUsuario()
@@ -2014,5 +2141,21 @@ class AdminController extends Controller
             return redirect()->route('admin.contrasenia')->With(["message" => "Error al actualizar contraseña", "color" => "red"]);
             dd($e);
         }
+    }
+
+    public function restaurarUsuario($idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = Usuarios::where("idUsuario", $idUsuario)->first();
+                $usuario->intentos = 10;
+                $usuario->fecha_Creacion = now();
+                $usuario->save();
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario restaurado correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('admin.usuarios')->With(["message" => "Error al restaurar al usuario", "color" => "red"]);
+            }
+        }
+        return redirect()->route('admin.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 }

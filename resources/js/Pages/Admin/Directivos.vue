@@ -45,8 +45,9 @@ const selectedPersonal = ref([]);
 
 const columns = [
     {
-        data: null, render: function () {
-            return '';
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
         }
     },
     {
@@ -267,10 +268,10 @@ onMounted(() => {
                 <!-- </div> -->
             </div>
 
-            <div class="overflow-x-auto ">
-                <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
+            <div class=" ">
+                <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
                     id="directivosTablaId" :columns="columns" :data="personal" :options="{
-                        responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
+                        autoWidth: false, responsive: true, dom: 'Bfrtip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
                             infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',

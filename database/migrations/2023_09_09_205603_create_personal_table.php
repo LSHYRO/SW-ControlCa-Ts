@@ -29,8 +29,7 @@ return new class extends Migration
             $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
             $table->foreignId(column:'id_tipo_personal')->references('id_tipo_personal')->on('tipo_personal');
             $table->foreignId(column:'idUsuario')->references('idUsuario')->on('usuarios');
-            $table->timestamps();            
-            $table->softDeletes();
+            $table->timestamps();                        
         });
     }
 
