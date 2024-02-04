@@ -204,7 +204,7 @@ const eliminarAlumno = (idAlumno, alumno) => {
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + alumno + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + alumno + '?' + '\nTodos lo relacionado al alumno (calificaciones) sera eliminado.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -226,7 +226,7 @@ const eliminarAlumnos = () => {
         buttonsStyling: true
     })
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los alumnos seleccionadas?',
+        title: '¿Estas seguro que deseas eliminar los datos de los alumnos seleccionadas?' + '\nTodo lo relacionado a los alumnos seleccionados (calificaciones) sera eliminado.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -418,3 +418,8 @@ onMounted(() => {
         :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :alumno="alumnoE" :generos="props.generos"
         :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
 </template>
+<style>
+.swal2-popup {
+    font-size: 14px !important;
+}
+</style>

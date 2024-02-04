@@ -205,8 +205,8 @@ const restaurarUsuario = (usuario) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            try {                
-                await form.put(route('admin.restUsuario', idUsuario));                
+            try {
+                await form.put(route('admin.restUsuario', idUsuario));
             } catch (error) {
                 console.log('El error se origina aquí');
                 console.log(error);
@@ -296,11 +296,11 @@ const optionsUsuario = {
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- flash message start -->
             <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
-        </div>
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}`">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div>
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
                 <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
@@ -354,33 +354,35 @@ const optionsUsuario = {
             </div>
         </div>
         <formulario-usuarios :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'" :descripcion="descripcionCrear"></formulario-usuarios>
+            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'"
+            :descripcion="descripcionCrear"></formulario-usuarios>
         <formulario-usuarios :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar usuario'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE" :descripcion="descripcionEditar"></formulario-usuarios>
+            :title="'Editar usuario'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE"
+            :descripcion="descripcionEditar"></formulario-usuarios>
     </AdminLayout>
 </template>
 <style>
-    .password-container {
-        display: flex;
-        align-items: center;
-    }
+.password-container {
+    display: flex;
+    align-items: center;
+}
 
-    .password-hidden {
-        font-family: monospace;
-        color: gray;
-    }
+.password-hidden {
+    font-family: monospace;
+    color: gray;
+}
 
-    .mostrar-password-button {
-        cursor: pointer;
-        border: none;
-        background: none;
-        color: black;
-        text-decoration: underline;
-        margin-left: auto; /* Esto alineará el botón a la derecha del contenedor */
-    }
-</style>
-<style>
+.mostrar-password-button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: black;
+    text-decoration: underline;
+    margin-left: auto;
+    /* Esto alineará el botón a la derecha del contenedor */
+}
+
 .swal2-popup {
-    font-size: 15px !important;
+    font-size: 14px !important;
 }
 </style>

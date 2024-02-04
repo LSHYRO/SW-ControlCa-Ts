@@ -146,7 +146,7 @@ const eliminarProfesor = (idPersonal, nombre) => {
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?' + '\nTodo lo relacionado al profesor (clases) sera eliminado.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -188,7 +188,7 @@ const eliminarProfesores = () => {
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los profesores seleccionados?',
+        title: '¿Estas seguro que deseas eliminar los datos de los profesores seleccionados?' + '\nTodo lo relacionado a los profesores (clases) seran eliminados.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -258,9 +258,8 @@ onMounted(() => {
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  // Mensaje para mostrar si se guardo o borro un profesor                                        -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg"
-                role="alert">
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}`">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
                 </span>
@@ -376,3 +375,8 @@ onMounted(() => {
             :generos="props.generos"></formulario-prof>
     </AdminLayout>
 </template>
+<style>
+.swal2-popup {
+    font-size: 14px !important;
+}
+</style>
