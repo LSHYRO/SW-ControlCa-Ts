@@ -1262,11 +1262,12 @@ class DirectorController extends Controller
     public function addMaterias(Request $request)
     {
         // Verificar si la materia ya existe en la base de datos
-        $existingMateria = Materias::where('materia', $request->materia)->first();
+        //$existingMateria = Materias::where('materia', $request->materia)->first();
+        $existingMateria = materias::where('materia', $request->materia)->whereNull('deleted_at')->first();
 
         if ($existingMateria) {
             // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
-            return redirect()->route('director.materias')->with('message', "La materia ya está registrada: " . $request->materia);
+            return redirect()->route('director.materias')->with(['message'=> "La materia ya está registrada: " . $request->materia, "color" => "red"]);
         }
 
         // Si la materia no existe, proceder a agregarla a la base de datos
@@ -1277,7 +1278,7 @@ class DirectorController extends Controller
 
         $materia->save();
 
-        return redirect()->route('director.materias')->with('message', "Materia agregada correctamente: " . $materia->materia);
+        return redirect()->route('director.materias')->with(['message'=> "Materia agregada correctamente: " . $materia->materia, "color" => "green"]);
     }
 
 
