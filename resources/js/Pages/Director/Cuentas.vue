@@ -63,11 +63,19 @@ const columnsCuentas = [
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     { data: 'usuario' },
-    { data: 'contrasenia' },
+    //{ data: 'contrasenia' },
+    {
+        data: 'contrasenia', render: function (data, type, row, meta) {
+            return `<div class="password-container">
+                        <span class="ph password-hidden">${'*'.repeat(data.length)}</span>
+                        <button class="mostrar-password-button" data-id="${row.idUsuario}"><i class="fa fa-eye"></i></button>
+                    </div>`;
+        }
+    },
     { data: 'nombre_completo' },
     {
         data: null, render: function (data, type, row, meta) {
-            return `<button class="editar-button" data-id="${row.idUsuario}"><i class="fa fa-refresh" aria-hidden="true"></i></button>`;
+            return `<button class="restaurar-usuario" data-id="${row.idUsuario}"><i class="fa fa-arrows-rotate"></i></button>`;
         }
     },
     {
@@ -208,6 +216,26 @@ onMounted(() => {
         const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
         eliminarCuenta(usuarioId, usuario.usuario);
     });
+
+    $('#cuentasTablaId').on('click', '.mostrar-password-button', function () {
+        const usuarioId = $(this).data('id');
+        const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
+        const passwordCell = $(this).closest('td').find('.ph');
+
+        if (passwordCell.hasClass('password-hidden')) {
+            // Muestra la contraseña
+            passwordCell.removeClass('password-hidden').text(usuario.contrasenia);
+        } else {
+            // Oculta la contraseña
+            passwordCell.addClass('password-hidden').text('*'.repeat(usuario.contrasenia.length));
+        }
+    });
+
+    $('#cuentasTablaId').on('click', '.restaurar-usuario', function () {
+        const usuarioId = $(this).data('id');
+        const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
+        restaurarUsuario(usuario);
+    })
 });
 
 const optionsCuenta = {
@@ -257,9 +285,9 @@ const optionsCuenta = {
             </div>
             <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
             <!-- Línea con gradiente -->
-            <div class="overflow-x-auto">
+            <div class="">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="cuentasTablaId" :columns="columnsCuentas" :data="usuarios" :options="optionsCuenta">
+                    id="cuentasTablaId" :responsive="true" :columns="columnsCuentas" :data="usuarios" :options="optionsCuenta">
                     <thead>
                         <tr class="text-sm leading-normal">
                             <th
@@ -301,3 +329,28 @@ const optionsCuenta = {
             :title="'Editar cuenta'" :op="'2'" :modal="'modalEdit'" :usuarios="usuariosE"></formulario-cuentas>
     </DirectorLayout>
 </template>
+<style>
+.password-container {
+    display: flex;
+    align-items: center;
+}
+
+.password-hidden {
+    font-family: monospace;
+    color: gray;
+}
+
+.mostrar-password-button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: black;
+    text-decoration: underline;
+    margin-left: auto;
+    /* Esto alineará el botón a la derecha del contenedor */
+}
+
+.swal2-popup {
+    font-size: 14px !important;
+}
+</style>
