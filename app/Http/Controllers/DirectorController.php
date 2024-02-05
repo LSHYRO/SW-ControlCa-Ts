@@ -1767,7 +1767,7 @@ class DirectorController extends Controller
         } catch (Exception $e) {
             return redirect()->route('director.ciclosperiodos')->With(["message" => "Error al actualizar el ciclo", "color" => "red"]);
         }
-        return redirect()->route('director.ciclosperiodos')->with('message', "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo);;
+        return redirect()->route('director.ciclosperiodos')->with(["message" => "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo, "color" => "green"]);
     }
 
     public function getCiclos($searchTerm)

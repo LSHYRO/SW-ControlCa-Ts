@@ -149,7 +149,7 @@ const eliminarCiclos = () => {
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los ciclos seleccionados?',
+        title: '¿Estas seguro que deseas eliminar los datos de los ciclos seleccionados?' + '\nTodos los datos que hacen refencia a estos ciclos serán eliminados.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
