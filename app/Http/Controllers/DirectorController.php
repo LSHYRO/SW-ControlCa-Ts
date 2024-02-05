@@ -151,7 +151,7 @@ class DirectorController extends Controller
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
-            
+
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
             //Contraseña generada
@@ -216,8 +216,8 @@ class DirectorController extends Controller
                 ['rfc', $request->rfc],
                 ['id_tipo_personal', $tipo_personal->id_tipo_personal], // Asegura que solo verifique profesores
             ])->exists();
-            
-            if ($existingPersonal ) {
+
+            if ($existingPersonal) {
                 return redirect()->route('director.profesores')->with(["message" => "El profesor ya está registrado", "color" => "red"]);
             }
 
@@ -244,23 +244,23 @@ class DirectorController extends Controller
     //  Función para eliminar un profesor y redireccionar a la página de profesores o docentes
     public function eliminarProfesores($idPersonal)
     {
-        try{
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first(); //Le puse P mayuscula
+        try {
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first(); //Le puse P mayuscula
 
-        $personal = personal::find($idPersonal);
-        $usuario = usuarios::find($personal->idUsuario);
-        $direccion = direcciones::find($personal->idDireccion);
-        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
-            ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
-            ->first();
-        $personal->delete();
-        $usuarioTipoUsuario->delete();
-        $usuario->delete();
-        $direccion->delete();
-        return redirect()->route('director.profesores')->With("message", "Profesor eliminado correctamente");
-    }catch(Exception $e){
-        return redirect()->route('director.profesores')->With(["message" =>"Error al eliminar Profesor".$e,"color"=>"red"]);
-    }
+            $personal = personal::find($idPersonal);
+            $usuario = usuarios::find($personal->idUsuario);
+            $direccion = direcciones::find($personal->idDireccion);
+            $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                ->first();
+            $personal->delete();
+            $usuarioTipoUsuario->delete();
+            $usuario->delete();
+            $direccion->delete();
+            return redirect()->route('director.profesores')->With("message", "Profesor eliminado correctamente");
+        } catch (Exception $e) {
+            return redirect()->route('director.profesores')->With(["message" => "Error al eliminar Profesor" . $e, "color" => "red"]);
+        }
     }
 
     //  Función para eliminar varios profesores a la vez y redireccionar a la página de profesores o docentes    
@@ -509,7 +509,7 @@ class DirectorController extends Controller
                 ['rfc', $request->rfc],
                 ['id_tipo_personal', $tipo_personal->id_tipo_personal],
             ])->exists();
-    
+
             if ($existingPersonal) {
                 return redirect()->route('director.directivos')->with([
                     "message" => "El directivo ya está registrado",
@@ -531,7 +531,7 @@ class DirectorController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.directivos')->With(["message" => "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia , "color" => "green"]);
+            return redirect()->route('director.directivos')->With(["message" => "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia, "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -579,9 +579,9 @@ class DirectorController extends Controller
                 $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                     ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
                     ->first();
-                    if ($usuarioTipoUsuario) {
-                        $usuarioTipoUsuario->delete();
-                    }
+                if ($usuarioTipoUsuario) {
+                    $usuarioTipoUsuario->delete();
+                }
                 $personal->delete();
                 //$usuarioTipoUsuario->delete();
                 $usuario->delete();
@@ -862,13 +862,13 @@ class DirectorController extends Controller
                 ['numTelefono', $request->numTelefono],
                 ['correoElectronico', $request->correoElectronico],
             ])->exists();
-            
+
             $existingAddress = direcciones::where([
                 ['calle', $request->calle],
                 ['numero', $request->numero],
                 ['idAsentamiento', $request->asentamiento],
             ])->exists();
-            
+
             if ($existingTutor || $existingAddress) {
                 return redirect()->route('director.tutoresAlum')->with(["message" => "El tutor ya está registrado o la dirección ya existe.", "color" => "red"]);
             }
@@ -1071,9 +1071,9 @@ class DirectorController extends Controller
                 ['correoElectronico', $request->correoElectronico],
                 ['curp', $request->curp],
             ])->exists();
-            
+
             if ($existingAlumno) {
-                return redirect()->route('admin.tutoresAlum')->with(["message" => "El alumno ya está registrado.","color" => "red"]);
+                return redirect()->route('admin.tutoresAlum')->with(["message" => "El alumno ya está registrado.", "color" => "red"]);
             }
 
             //fechaFormateada
@@ -1270,7 +1270,7 @@ class DirectorController extends Controller
 
         if ($existingMateria) {
             // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
-            return redirect()->route('director.materias')->with(['message'=> "La materia ya está registrada: " . $request->materia, "color" => "red"]);
+            return redirect()->route('director.materias')->with(['message' => "La materia ya está registrada: " . $request->materia, "color" => "red"]);
         }
 
         // Si la materia no existe, proceder a agregarla a la base de datos
@@ -1281,7 +1281,7 @@ class DirectorController extends Controller
 
         $materia->save();
 
-        return redirect()->route('director.materias')->with(['message'=> "Materia agregada correctamente: " . $materia->materia, "color" => "green"]);
+        return redirect()->route('director.materias')->with(['message' => "Materia agregada correctamente: " . $materia->materia, "color" => "green"]);
     }
 
 
@@ -1327,7 +1327,7 @@ class DirectorController extends Controller
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('director.materias')->with(['message'=> "Materia actualizada correctamente: " . $materias->materia, "color" => "green"]);
+        return redirect()->route('director.materias')->with(['message' => "Materia actualizada correctamente: " . $materias->materia, "color" => "green"]);
     }
 
     public function getMaterias($searchTerm)
@@ -1876,7 +1876,7 @@ class DirectorController extends Controller
             $periodos->fecha_inicio = $request->fecha_inicio;
             $periodos->fecha_fin = $request->fecha_fin;
             $periodos->idCiclo = $request->ciclos;
-            
+
             // Verificar si ya existe un periodo con los mismos datos
             $existingPeriodo = periodos::where('idPeriodo', '!=', $idPeriodo) // Excluir el propio periodo que se está actualizando
                 ->where('periodo', $request->periodo)
@@ -1991,17 +1991,20 @@ class DirectorController extends Controller
 
     public function cuentas()
     {
-        //Para poder mostrar los nombres de los usuarios segun su idUsuario
-        $usuarios = DB::table('usuarios')
-            ->leftJoin('alumnos', 'usuarios.idUsuario', '=', 'alumnos.idUsuario')
+        $usuarios = usuarios::leftJoin('alumnos', 'usuarios.idUsuario', '=', 'alumnos.idUsuario')
             ->leftJoin('personal', 'usuarios.idUsuario', '=', 'personal.idUsuario')
             ->leftJoin('tutores', 'usuarios.idUsuario', '=', 'tutores.idUsuario')
             ->where(function ($query) {
-                $query->whereRaw('alumnos.idUsuario IS NOT NULL')
-                    ->orWhereRaw('personal.idUsuario IS NOT NULL')
-                    ->orWhereRaw('tutores.idUsuario IS NOT NULL')
+                $query->whereNotNull('alumnos.idUsuario')
+                    ->orWhereNotNull('personal.idUsuario')
+                    ->orWhereNotNull('tutores.idUsuario')
                     ->orWhereNull('usuarios.idTipoUsuario');
             })
+            ->whereNotIn('usuarios.idTipoUsuario', function ($query) {
+                $query->select('idTipoUsuario')
+                    ->from('tipoUsuarios')
+                    ->whereIn('tipoUsuario', ['administrador', 'director']);
+            }) // Excluir administrador y director (ajusta los valores según tus tipos de usuario)
             ->select('usuarios.*', DB::raw('COALESCE(alumnos.nombre_completo, personal.nombre_completo, tutores.nombre_completo) as nombre_completo'))
             ->get();
 
@@ -2175,5 +2178,21 @@ class DirectorController extends Controller
                 'error' => 'Ocurrió un error al eliminar'
             ], 500);
         }
+    }
+
+    public function restaurarUsuario($idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = Usuarios::where("idUsuario", $idUsuario)->first();
+                $usuario->intentos = 10;
+                $usuario->fecha_Creacion = now();
+                $usuario->save();
+                return redirect()->route('director.cuentas')->With(["message" => "Usuario restaurado correctamente: " . $usuario->usuario, "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('director.cuentas')->With(["message" => "Error al restaurar al usuario", "color" => "red"]);
+            }
+        }
+        return redirect()->route('director.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 }

@@ -247,6 +247,7 @@ Route::middleware(['directorS'])->group(function () {
 
         Route::get('/director/obtener/datos/clases/materiasxguposxgrados/{idClase}', 'obtenerClasesXMateriaGradoGrupo')->name('director.clasesXmateriasXgradosXgrupos');
 
+        Route::put('/director/usuarios/restaurar-usuario/{idUsuario}', 'restaurarUsuario')->name('director.restUsuario');
         Route::delete('/director/cuentas/{idUsuario}', 'eliminarCuentas')->name('director.eliminarCuentas');
         Route::put('/director/cuentas/{idUsuario}/edit', 'actualizarCuentas')->name('director.actualizarCuentas');
         Route::delete('/director/cuentas/delete/{usuariosIds}', 'elimUsuarios')->name('director.elimCuentas');

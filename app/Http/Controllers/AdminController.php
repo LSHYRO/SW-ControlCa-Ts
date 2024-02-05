@@ -2160,7 +2160,7 @@ class AdminController extends Controller
                 $usuario->intentos = 10;
                 $usuario->fecha_Creacion = now();
                 $usuario->save();
-                return redirect()->route('admin.usuarios')->With(["message" => "Usuario restaurado correctamente", "color" => "green"]);
+                return redirect()->route('admin.usuarios')->With(["message" => "Usuario restaurado correctamente: " . $usuario->usuario, "color" => "green"]);
             } catch (Exception $e) {
                 return redirect()->route('admin.usuarios')->With(["message" => "Error al restaurar al usuario", "color" => "red"]);
             }
