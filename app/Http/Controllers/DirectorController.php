@@ -1580,7 +1580,7 @@ class DirectorController extends Controller
             ->first();
 
         if ($existingGroup) {
-            return redirect()->route('director.gradosgrupos')->with('message', 'El grupo ya está registrado.');
+            return redirect()->route('director.gradosgrupos')->with(['message' => 'El grupo ya está registrado.', "color" => "red"]);
         }
 
         // Si no existe, proceder con el registro
@@ -1589,7 +1589,7 @@ class DirectorController extends Controller
         $grupo->idCiclo = $request->ciclos;
         $grupo->save();
 
-        return redirect()->route('director.gradosgrupos')->with('message', "Grupo agregado correctamente: " . $grupo->grupo);
+        return redirect()->route('director.gradosgrupos')->with(['message' => "Grupo agregado correctamente: " . $grupo->grupo, "color" => "green"]);
     }
 
 
@@ -1597,7 +1597,7 @@ class DirectorController extends Controller
     {
         $grupo = grupos::find($idGrupo);
         $grupo->delete();
-        return redirect()->route('director.gradosgrupos')->with('message', "Grupo eliminada correctamente");
+        return redirect()->route('director.gradosgrupos')->with(['message' => "Grupo eliminada correctamente", "color" => "green"]);
     }
 
     public function elimGrupos($gruposIds)
@@ -1613,7 +1613,7 @@ class DirectorController extends Controller
             grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('director.gradosgrupos')->with('message', "Grupos eliminadas correctamente");
+            return redirect()->route('director.gradosgrupos')->with(['message' => "Grupos eliminadas correctamente", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -1637,7 +1637,7 @@ class DirectorController extends Controller
             $grupos->fill($request->input())->saveOrFail();
         } catch (Exception $e) {
         }
-        return redirect()->route('director.gradosgrupos')->with('message', "Grupo actualizado correctamente: " . $grupos->grupo);;
+        return redirect()->route('director.gradosgrupos')->with(['message' => "Grupo actualizado correctamente: " . $grupos->grupo, "color" => "green"]);
     }
 
     public function addCiclos(Request $request)
