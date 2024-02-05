@@ -46,11 +46,6 @@ const props = defineProps({
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    //idGrado: String,
-    //idGrupo: String,
-    //idPersonal: String,
-    //idMateria: String,
-    //idCiclo: String,
 },
 );
 

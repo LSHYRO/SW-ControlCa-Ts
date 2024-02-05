@@ -1457,7 +1457,7 @@ class AdminController extends Controller
             return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
         } catch (Exception $e) {
             Log::info('Error en guardar la clase: ' . $e);
-            return redirect()->route('admin.clases')->withErrors(['message' => 'Error al guardar la clase.']);
+            return redirect()->route('admin.clases')->withErrors(['message' => 'Error al guardar la clase.', "color" => "red"]);
         }
     }
 
@@ -1465,7 +1465,7 @@ class AdminController extends Controller
     {
         $clase = clases::find($idClase);
         $clase->delete();
-        return redirect()->route('admin.clases')->with('message', "Clase eliminada correctamente");
+        return redirect()->route('admin.clases')->with(['message' => "Clase eliminada correctamente", "color" => "green"]);
     }
 
     public function elimClases($clasesIds)

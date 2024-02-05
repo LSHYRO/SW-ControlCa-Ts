@@ -307,12 +307,13 @@ const optionsUsuario = {
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-plus mr-2"></i>Agregar Usuario
                 </button>
+                <!--
                 <button id="eliminarUBtn" disabled="true"
                     class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                     @click="eliminarUsuarios">
                     <i class="fa fa-trash mr-2"></i>Borrar Usuario(s)
                 </button>
-                <!--</div>-->
+               </div>-->
             </div>
             <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
             <!-- Línea con gradiente -->
