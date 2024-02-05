@@ -1547,7 +1547,7 @@ class AdminController extends Controller
             ->first();
 
         if ($existingGrado) {
-            return redirect()->route('admin.gradosgrupos')->with('message', "El grado ya existe en la base de datos");
+            return redirect()->route('admin.gradosgrupos')->with(['message' => "El grado ya está registrado", "color" => "red"]);
         }
 
         $grado = new grados();
@@ -1556,14 +1556,14 @@ class AdminController extends Controller
 
         $grado->save();
 
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grado agregado correctamente: " . $grado->grado);
+        return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado agregado correctamente: " . $grado->grado, "color" => "green"]);
     }
 
     public function eliminarGrados($idGrado)
     {
         $grado = grados::find($idGrado);
         $grado->delete();
-        return redirect()->route('admin.gradosgrupos')->with('message', "Grado eliminado correctamente");
+        return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado eliminado correctamente", "color" => "green"]);
     }
 
     public function elimGrados($gradosIds)
@@ -1580,7 +1580,7 @@ class AdminController extends Controller
 
             // Redirige a la página deseada después de la eliminación
 
-            return redirect()->route('admin.gradosgrupos')->with('message', "Grados eliminados correctamente");
+            return redirect()->route('admin.gradosgrupos')->with(['message' =>'message', "Grados eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd($e);
