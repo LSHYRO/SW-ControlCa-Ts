@@ -316,9 +316,9 @@ const optionsUsuario = {
             </div>
             <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
             <!-- Línea con gradiente -->
-            <div class="overflow-x-auto">
+            <div class="">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="usuariosTablaId" :columns="columnsUsuario" :data="usuarios" :options="optionsUsuario">
+                    id="usuariosTablaId" :responsive="true" :columns="columnsUsuario" :data="usuarios" :options="optionsUsuario">
                     <thead>
                         <tr class="text-sm leading-normal">
                             <th
