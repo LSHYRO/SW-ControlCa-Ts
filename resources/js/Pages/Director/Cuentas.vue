@@ -53,12 +53,14 @@ const cerrarModalE = () => {
 };
 
 const columnsCuentas = [
+    /*
     {
         data: null,
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="cuenta-checkbox" data-id="${row.idUsuario}" ">`;
         }
     },
+    */
     {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
@@ -77,18 +79,20 @@ const columnsCuentas = [
         data: null, render: function (data, type, row, meta) {
             return `<button class="restaurar-usuario" data-id="${row.idUsuario}"><i class="fa fa-arrows-rotate"></i></button>`;
         }
-    },
+    },    
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idUsuario}"><i class="fa fa-pencil"></i></button>`;
         }
     },
+    /*
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="eliminar-button" data-id="${row.idUsuario}"><i class="fa fa-trash"></i></button>`;
         }
 
     }
+    */
 ];
 
 const botonesCuentas = [{
@@ -116,7 +120,7 @@ const botonesCuentas = [{
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 ];
-
+/*
 const toggleCuentaSelection = (usuario) => {
     if (selectedCuentas.value.includes(usuario)) {
         // Si la materia ya está seleccionada, la eliminamos del array
@@ -136,7 +140,8 @@ const toggleCuentaSelection = (usuario) => {
         console.log("Se ha deshabilitado el botón");
     }
 };
-
+*/
+/*
 const eliminarCuenta = (idUsuario, usuario) => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -154,7 +159,8 @@ const eliminarCuenta = (idUsuario, usuario) => {
 
     })
 };
-
+*/
+/*
 const eliminarCuentas = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -183,8 +189,33 @@ const eliminarCuentas = () => {
         }
     });
 };
+*/
+const restaurarUsuario = (usuario) => {
+    const idUsuario = usuario.idUsuario;
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+
+    swal.fire({
+        title: '¿Estas seguro de restaurar los intentos y/o tiempo de cambio de contraseña?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await form.put(route('director.restUsuario', idUsuario));
+            } catch (error) {
+                console.log('El error se origina aquí');
+                console.log(error);
+            }
+        }
+    });
+};
 
 onMounted(() => {
+    /*
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('cuentasTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
@@ -202,21 +233,21 @@ onMounted(() => {
             }
         }
     });
-
+    */
     // Manejar clic en el botón de editar
     $('#cuentasTablaId').on('click', '.editar-button', function () {
         const usuarioId = $(this).data('id');
         const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
         abrirCuenta(usuario);
     });
-
+    /*
     // Manejar clic en el botón de eliminar
     $('#cuentasTablaId').on('click', '.eliminar-button', function () {
         const usuarioId = $(this).data('id');
         const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
         eliminarCuenta(usuarioId, usuario.usuario);
     });
-
+    */
     $('#cuentasTablaId').on('click', '.mostrar-password-button', function () {
         const usuarioId = $(this).data('id');
         const usuario = props.usuarios.find(u => u.idUsuario === usuarioId);
@@ -270,8 +301,8 @@ const optionsCuenta = {
                     {{ $page.props.flash.message }}
                 </span>
             </div>
+            <!--
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-                <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
                 <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-plus mr-2"></i>Agregar Cuentas
@@ -281,18 +312,21 @@ const optionsCuenta = {
                     @click="eliminarCuentas">
                     <i class="fa fa-trash mr-2"></i>Borrar Cuenta(s)
                 </button>
-                <!--</div>-->
             </div>
+            -->
             <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
             <!-- Línea con gradiente -->
             <div class="">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="cuentasTablaId" :responsive="true" :columns="columnsCuentas" :data="usuarios" :options="optionsCuenta">
+                    id="cuentasTablaId" :responsive="true" :columns="columnsCuentas" :data="usuarios"
+                    :options="optionsCuenta">
                     <thead>
                         <tr class="text-sm leading-normal">
+                            <!--
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
+                            -->
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 #
@@ -315,9 +349,11 @@ const optionsCuenta = {
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
+                            <!--
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
+                            -->
                         </tr>
                     </thead>
                 </DataTable>
