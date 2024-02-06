@@ -2386,7 +2386,47 @@ class DirectorController extends Controller
 
                 $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
                 $clasesA = clases::where('idClase', $idClase)->with(['materias','ciclos'])->first();
-                $actividadesC = actividades::where('idClase', $clasesA->idClase)->get();
+
+                //Aqui en adelante le agregué
+                $tiposActividadesAlum = tiposActividades::where('tipoActividad', 'Asistencia')
+                    ->orWhere('tipoActividad', 'Vestuario')->get();
+                $actividadesCA = actividades::where('idClase', $clasesA->idClase)
+                    ->whereHas('tiposActividades', function ($query) {
+                        $query->where('tipoActividad', 'Asistencia')
+                        ->orWhere('tipoActividad', 'Vestuario');
+                    })
+                    ->get();
+                $actividadesAlum = $actividadesCA->map(function ($actividad)use($clasesA,$alumno) {
+                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                    $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
+                    $actividad->periodos->fecha_f = Carbon::parse($actividad->periodos->fecha_fin)->format('d-m-Y');
+                    $actividad->periodos->descripcion = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_ini . " - " . $actividad->periodos->fecha_f;
+                    $actividad->periodo = $actividad->periodos;
+                    $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+
+                    $calificacionAlum = calificaciones::where('idClase', $clasesA->idClase)
+                        ->where('idActividad', $actividad->idActividad)
+                        ->where('idAlumno', $alumno->idAlumno)
+                        ->first();
+
+                        if($calificacionAlum){
+                            $actividad->calificacion = $calificacionAlum->calificacion;
+                            }else{
+                            $actividad->calificacion = "Sin calificar";
+                            }
+
+                    return $actividad;
+                });
+
+                $tiposActividades = tiposActividades::whereNotIn('tipoActividad', ['Asistencia', 'Vestuario'])->get();
+                //Aqui en adelante ya estába
+                //$actividadesC = actividades::where('idClase', $clasesA->idClase)->get();
+                $actividadesC = actividades::where('idClase', $clasesA->idClase)
+                    ->whereHas('tiposActividades', function ($query) {
+                        $query->whereNotIn('tipoActividad', ['Asistencia', 'Vestuario']);
+                    })
+                    ->get();
 
                 $actividades = $actividadesC->map(function ($actividad)use($clasesA,$alumno) {
                     $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
@@ -2427,6 +2467,8 @@ class DirectorController extends Controller
                     'calificacionPer' => $calificacionPer,
                     'periodos' => $periodos,
                     'clasesFinal' => $clasesFinal,
+                    'tiposActividadesAlum' => $tiposActividadesAlum,
+                    'actividadesAlum' => $actividadesAlum,
                 ]);
             } else {
                 return redirect()->route('director.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);

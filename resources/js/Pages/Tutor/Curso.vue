@@ -1,8 +1,8 @@
 <script setup>
 import TutorLayout from '@/Layouts/TutorLayout.vue';
 import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
 import Actividades from '@/Components/tutor/ActividadesSeccion.vue';
+import AlumnosSeccion from '@/Components/tutor/AlumnosSeccion.vue';
 import Calificaciones from '@/Components/tutor/CalificacionesSeccion.vue'
 
 const props = defineProps({
@@ -17,6 +17,8 @@ const props = defineProps({
     alumno: { type: Object },
     calificacion: { type: Object },
     clasesFinal: { type: Object },
+    tiposActividadesAlum: { type: Object },
+    actividadesAlum: { type: Object },
 });
 console.log("periodos");
 console.log(props.periodos);
@@ -27,25 +29,37 @@ const mostrarCal = ref(false);
 
 const mostrarActividades = () => {
     const btnActividades = document.getElementById("btnMAc");
-    //const btnAlumnos = document.getElementById("btnMAl");
+    const btnAlumnos = document.getElementById("btnMAl");
     const btnCalificaciones = document.getElementById("btnMCal");
     btnCalificaciones.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     btnActividades.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
-    //btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     mostrarAc.value = true;
-    //mostrarAl.value = false;
+    mostrarAl.value = false;
     mostrarCal.value = false;
 };
 
+const mostrarAlumnos = () => {
+    const btnActividades = document.getElementById("btnMAc");
+    const btnAlumnos = document.getElementById("btnMAl");
+    const btnCalificaciones = document.getElementById("btnMCal");
+    btnAlumnos.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnActividades.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnCalificaciones.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    mostrarAc.value = false;
+    mostrarAl.value = true;
+    mostrarCal.value = false;
+}
+
 const mostrarCalificaciones = () => {
     const btnActividades = document.getElementById("btnMAc");
-    //const btnAlumnos = document.getElementById("btnMAl");
+    const btnAlumnos = document.getElementById("btnMAl");
     const btnCalificaciones = document.getElementById("btnMCal");
     btnCalificaciones.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
-    //btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     btnActividades.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     mostrarAc.value = false;
-    //mostrarAl.value = false;
+    mostrarAl.value = false;
     mostrarCal.value = true;
 }
 
@@ -70,6 +84,11 @@ const mostrarCalificaciones = () => {
                         class="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">Actividades</a>
                 </li>
                 <li class="w-full">
+                    <a @click="mostrarAlumnos()" id="btnMAl"
+                        class="inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">
+                        Asistencias</a>
+                </li>
+                <li class="w-full">
                     <a @click="mostrarCalificaciones()" id="btnMCal"
                         class="inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">
                         Calificaciones finales</a>
@@ -78,6 +97,10 @@ const mostrarCalificaciones = () => {
             <div v-if="mostrarAc">
                 <actividades :tiposActividades="props.tiposActividades" :clase="props.clasesA" :periodos="props.periodos"
                     :actividades="props.actividades" :clasesPorAlumno="props.clasesPorAlumno" :usuario="$props.usuario" :alumno="props.alumno"/>
+            </div>
+            <div v-if="mostrarAl">
+                <AlumnosSeccion :tiposActividades="props.tiposActividadesAlum" :clase="props.clase"
+                    :periodos="props.periodos" :actividadesAlum="props.actividadesAlum"/>
             </div>
             <div v-if="mostrarCal">
                 <Calificaciones :periodos="props.periodos" :clasesA="props.clasesA" :calificacionPer="props.calificacionPer" :clasesFinal="props.clasesFinal"/>
