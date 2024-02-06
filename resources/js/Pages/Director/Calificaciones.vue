@@ -15,6 +15,7 @@ import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
 import jsZip from 'jszip';
 window.JSZip = jsZip;
+import axios from 'axios'
 
 
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
@@ -33,11 +34,23 @@ const props = defineProps({
     talleres: { type: Object },
     usuario: { type: Object },
 });
-
+/*
 const verCalificaciones = (alumnoId) => {
     console.log("Esta dentro del const verCalificaciones");
     try {
         $inertia.visit(route('director.verCalificaciones', { idAlumno: alumnoId }));
+    } catch (error) {
+        console.error("Error al visitar la página de calificaciones:", error);
+    }
+};
+*/
+const verCalificaciones = async (alumno) => {
+    console.log("Esta dentro del const verCalificaciones");
+    console.log(alumno);
+    try {
+        const idAlumno = alumno.idAlumno;
+        console.log(idAlumno);
+        await axios.get(route('director.verCalificaciones', { idAlumno }))
     } catch (error) {
         console.error("Error al visitar la página de calificaciones:", error);
     }
@@ -73,20 +86,26 @@ const columns2 = [
         data: null,
         render: function (data, type, row, meta) {
             return `<div class="flex justify-center items-center">
-                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded ver-calificaciones-btn" data-id="${row.idAlumno}">
+                <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded ver-calificaciones-btn" data-id="${row.idAlumno}" href="/director/clasesAlumno/${ row.idAlumno }"">
                     Ver calificaciones
-                </button>
+                </a>
             </div>`;
         }
     },
 ];
 
-onMounted(() => {
+onMounted(() => {/*
     console.log("Entro en onMounted");
     const buttons = document.querySelectorAll('.ver-calificaciones-btn');
     console.log("está antes del forEach");
     console.log("Botones seleccionados:", buttons);
-
+    */
+    $('#alumnosTablaId').on('click', '.ver-calificaciones-btn', function () {
+        const alumnoId = $(this).data('id');
+        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
+        verCalificaciones(alumno);
+    });
+    /*
     buttons.forEach(button => {
         console.log(button);
         console.log("Está antes del addEventListener");
@@ -96,6 +115,7 @@ onMounted(() => {
             verCalificaciones(alumnoId);
         });
     });
+    */
 });
 
 
