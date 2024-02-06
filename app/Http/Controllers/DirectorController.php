@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\personas;
+use App\Models\actividades;
+use App\Models\tiposActividades;
+use App\Models\calificaciones_periodos;
+use App\Models\calificaciones;
 use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
@@ -1930,23 +1934,83 @@ class DirectorController extends Controller
 
     public function calificaciones()
     {
+        // Obtención de datos de tutores
+        $tutoresPrincipal = tutores::with(['generos', 'direcciones', 'alumnos'])->get();
+
+        $tutores = $tutoresPrincipal->map(function ($tutor) {
+            $genero = $tutor->generos ? $tutor->generos->genero : null;
+            $calle = $tutor->direcciones ? $tutor->direcciones->calle : null;
+            $numero = $tutor->direcciones ? $tutor->direcciones->numero : null;
+
+            $tutor->genero = $genero;
+            $tutor->calle = $calle;
+            $tutor->numero = $numero;
+            $tutor->codigoPos = $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $tutor->domicilio = $tutor->direcciones->calle . " #" . $tutor->direcciones->numero . ", " . $tutor->direcciones->asentamientos->asentamiento
+                . ", " . $tutor->direcciones->asentamientos->municipios->municipio . ", " . $tutor->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $tutor->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $tutor->idEstado = $tutor->direcciones->asentamientos->municipios->estados->idEstado;
+            $tutor->idMunicipio = $tutor->direcciones->asentamientos->municipios->idMunicipio;
+            $tutor->idAsentamiento = $tutor->direcciones->asentamientos->idAsentamiento;
+            return $tutor;
+        });
+        $generos = generos::all();
+
+        // Obtención de datos de alumnos
+        $alumnosPrincipal = alumnos::with(['generos', 'direcciones', 'tipo_sangre', 'grados', 'grupos', 'materias', 'tutores'])->get();
+
+        $alumnos = $alumnosPrincipal->map(function ($alumno) {
+            $genero = $alumno->generos ? $alumno->generos->genero : null;
+            $calle = $alumno->direcciones ? $alumno->direcciones->calle : null;
+            $numero = $alumno->direcciones ? $alumno->direcciones->numero : null;
+
+            $alumno->genero = $genero;
+            $alumno->calle = $calle;
+            $alumno->numero = $numero;
+            $alumno->codigoPos = $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $alumno->domicilio = $alumno->direcciones->calle . " #" . $alumno->direcciones->numero . ", " . $alumno->direcciones->asentamientos->asentamiento
+                . ", " . $alumno->direcciones->asentamientos->municipios->municipio . ", " . $alumno->direcciones->asentamientos->municipios->estados->estado
+                . ", " . $alumno->direcciones->asentamientos->codigoPostal->codigoPostal;
+            $alumno->idEstado = $alumno->direcciones->asentamientos->municipios->estados->idEstado;
+            $alumno->idMunicipio = $alumno->direcciones->asentamientos->municipios->idMunicipio;
+            $alumno->idAsentamiento = $alumno->direcciones->asentamientos->idAsentamiento;
+            $alumno->grado = $alumno->grados->grado;
+            $alumno->grupo = $alumno->grupos->grupo;
+            if ($alumno->materias != null) {
+                $alumno->materia = $alumno->materias->materia;
+            } else {
+                $alumno->materia = "Ninguno";
+            }
+            $alumno->tutor = $alumno->tutores->nombre_completo;
+            $alumno->tipoSangre = $alumno->tipo_sangre->tipoSangre;
+            $alumno->tutorC = $alumno->tutores;
+            $alumno->gradoC = $alumno->grados;
+            $alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
+            return $alumno;
+        });
+
+        $tipo_sangre = tipo_Sangre::all();
+
+        $gradosPrincipal = grados::with('ciclos')->get();
+        $grados = $gradosPrincipal->map(function ($grado) {
+            $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
+
+            return $grado;
+        });
 
         $grupos = grupos::all();
-        $grados = grados::all();
-        $personal = personal::all();
-        $materias = materias::all();
-        $clases = clases::all();
-        $ciclos = ciclos::all();
+        $materiasT = materias::where('esTaller', '1')->get();
         $usuario = $this->obtenerInfoUsuario();
 
         return Inertia::render('Director/Calificaciones', [
-            'clases' => $clases,
-            'grupos' => $grupos,
+            'tutores' => $tutores,
+            'alumnos' => $alumnos,
+            'generos' => $generos,
+            'tipoSangre' => $tipo_sangre,
             'grados' => $grados,
-            'personal' => $personal,
-            'materias' => $materias,
-            'ciclos' => $ciclos,
-            'usuario' => $usuario
+            'grupos' => $grupos,
+            'talleres' => $materiasT,
+            'usuario' =>  $usuario
         ]);
     }
 
@@ -2194,5 +2258,110 @@ class DirectorController extends Controller
             }
         }
         return redirect()->route('director.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
+    }
+
+    public function mostrarClase($idClase,$idAlumno)
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+            //$alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
+            $alumno = alumnos::where('idAlumno', $idAlumno)->first();
+            $clasesA = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$idAlumno)->first();
+            if ($clasesA) {
+
+                $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
+                $clasesA = clases::where('idClase', $idClase)->with(['materias','ciclos'])->first();
+                $actividadesC = actividades::where('idClase', $clasesA->idClase)->get();
+
+                $actividades = $actividadesC->map(function ($actividad)use($clasesA,$alumno) {
+                    $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
+                    $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
+                    $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
+                    $actividad->periodos->fecha_f = Carbon::parse($actividad->periodos->fecha_fin)->format('d-m-Y');
+                    $actividad->periodos->descripcion = $actividad->periodos->periodo . ": " . $actividad->periodos->fecha_ini . " - " . $actividad->periodos->fecha_f;
+                    $actividad->periodo = $actividad->periodos;
+                    $actividad->tipoActividadD = $actividad->tiposActividades->tipoActividad;
+
+                    $calificacion = calificaciones::where('idClase', $clasesA->idClase)
+                        ->where('idActividad', $actividad->idActividad)
+                        ->where('idAlumno', $alumno->idAlumno)
+                        ->first();
+
+                        if($calificacion){
+                            $actividad->calificacion = $calificacion->calificacion;
+                            }else{
+                            $actividad->calificacion = "Sin calificar";
+                            }
+                    return $actividad;
+                });
+
+                $periodos = periodos::all();
+
+                $calificacionPer = calificaciones_periodos::where('idClase', $idClase)
+                ->where('idAlumno', $alumno->idAlumno)
+                ->get();
+
+                $clasesFinal = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
+                return Inertia::render('Director/Curso', [
+                    'clasesA' => $clasesA,
+                    'ciclos' => $ciclos,
+                    'usuario' => $usuario,
+                    'actividades' => $actividades,
+                    'actividadesC' => $actividadesC,
+                    'alumno' => $alumno,
+                    'calificacionPer' => $calificacionPer,
+                    'periodos' => $periodos,
+                    'clasesFinal' => $clasesFinal,
+                ]);
+            } else {
+                return redirect()->route('director.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
+            }
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function clasesDeAlumno($idAlumno)
+    {
+        $grupos = grupos::all();
+        $grados = grados::all();
+        $ciclos = ciclos::all();
+        $periodos = periodos::all();
+        $usuario = $this->obtenerInfoUsuario();
+        $clases = $this->obtenerDatosClase($idAlumno);
+        //$calificaciones= $this->obtenerDatosCalificaciones($idAlumno);
+        $alumno = alumnos::where('idAlumno', $idAlumno)->first();
+        return Inertia::render('Director/VerCalificaciones', [
+            'clases' => $clases,
+            //'clases_alumnos'=> $clases_alumnos,
+            'grupos' => $grupos,
+            'grados' => $grados,
+            'ciclos' => $ciclos,
+            'usuario' => $usuario,
+            'alumno' => $alumno,
+            //'calificaciones'=> $calificaciones,
+        ]);
+    }
+
+    public function obtenerDatosClase($idAlumno)//El error es aquí
+    {
+        try {
+            $alumnos = alumnos::where('idAlumno', $idAlumno)->first();
+            $clasesA = clases_alumnos::where('idAlumno',$alumnos->idAlumno)->get();
+            //dd($alumnos);            //$clasesA = $alumnos->clases_alumnos->toArray();
+            Log::info($clasesA);
+            $clasesM = [];
+            for ($i = 0; $i < count($clasesA); $i++) {
+                Log::info($clasesA[$i]);
+                $clase = clases::where('idClase', $clasesA[$i]->idClase)->with(['materias', 'grados', 'grupos'])->first();
+                //$clase = clases_alumnos::where('idClase', $clasesA[$i]->idClase)->first();
+                array_push($clasesM, $clase);
+            }
+            //dd($clasesA);
+            return  $clasesM;
+        } catch (Exception $e) {
+            Log::info($e);
+            return ['clases_alumnos' => 'Sin asignar'];
+        }
     }
 }

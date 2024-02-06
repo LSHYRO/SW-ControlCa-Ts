@@ -156,7 +156,7 @@ watch(() => form.clase, () => {
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
-                    <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
+                    <h2 class="text-base font-semibold leading-7 text-gray-900">Añadir alumno(s) a clase</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar a los
                         alumnos a una clase
                     </p>

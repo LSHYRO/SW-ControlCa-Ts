@@ -258,6 +258,8 @@ Route::middleware(['directorS'])->group(function () {
 
         Route::get('/director/obtener/datos/ciclo/xgrados/{idGrado}', 'obtenerCicloXGrado')->name('director.cicloXgrupos');
         Route::get('/director/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('director.gradosXgrupos');
+        Route::get('/director/clasesAlumno/{idAlumno}', 'clasesDeAlumno')->name('director.verCalificaciones');
+        Route::get('/director/clasesA/clase/{idClase}/alum/{idAlumno}', 'mostrarClase')->name('director.mostrarClase');
     });
 });
 

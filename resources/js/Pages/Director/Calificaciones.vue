@@ -16,6 +16,7 @@ import Select from 'datatables.net-select-dt';
 import jsZip from 'jszip';
 window.JSZip = jsZip;
 
+
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 
 DataTable.use(DataTablesLib);
@@ -23,89 +24,115 @@ DataTable.use(ButtonsHtml5);
 DataTable.use(pdfmake);
 DataTable.use(Select);
 
-// Variables que recibe la vista 
+// Datos que recibe la vista para su uso
 const props = defineProps({
-    grados: {
-        type: Object,
-        default: () => ({}),
-    },
-    grupos: {
-        type: Object,
-        default: () => ({}),
-    },
-    materias: {
-        type: Object,
-        default: () => ({}),
-    },
-    clases: {
-        type: Object,
-        default: () => ({}),
-    },
-    usuario: {
-        type: Object, 
-        default: () => ({})
+    alumnos: { type: Object },
+    generos: { type: Object },
+    grados: { type: Object },
+    tipoSangre: { type: Object },
+    talleres: { type: Object },
+    usuario: { type: Object },
+});
+
+const verCalificaciones = (alumnoId) => {
+    console.log("Esta dentro del const verCalificaciones");
+    try {
+        $inertia.visit(route('director.verCalificaciones', { idAlumno: alumnoId }));
+    } catch (error) {
+        console.error("Error al visitar la página de calificaciones:", error);
     }
+};
+
+
+const columns2 = [
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return `<input type="checkbox" class="alumnos-checkboxes" data-id="${row.idAlumno}" ">`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) { return meta.row + 1 }
+    },
+    { data: 'nombre_completo' },
+    { data: 'grado' },
+    { data: 'grupo' },
+    { data: 'materia' },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return row.tutor + " " + `<a href="tel:${row.tutorTel} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return `<div class="flex justify-center items-center">
+                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded ver-calificaciones-btn" data-id="${row.idAlumno}">
+                    Ver calificaciones
+                </button>
+            </div>`;
+        }
+    },
+];
+
+onMounted(() => {
+    console.log("Entro en onMounted");
+    const buttons = document.querySelectorAll('.ver-calificaciones-btn');
+    console.log("está antes del forEach");
+    console.log("Botones seleccionados:", buttons);
+
+    buttons.forEach(button => {
+        console.log(button);
+        console.log("Está antes del addEventListener");
+        button.addEventListener('click', (event) => {
+            console.log("Evento de clic activado");
+            const alumnoId = event.target.dataset.id;
+            verCalificaciones(alumnoId);
+        });
+    });
 });
 
-const form = useForm({
-    idClase: props.clases.idClase,
-    grados: props.clases.idGrado,
-    grupos: props.clases.idGrupo,
-    personal: props.clases.idPersonal,
-    materias: props.clases.idMateria,
-    ciclos: props.clases.idCiclo,//Le agregué la s
-
-    idMateria: props.materias.idMateria,
-    materia: props.materias.materia,
-
-
-});
 
 const botones = [{
-    title: 'Materias registradas',
+    title: 'Alumnos registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Materias registradas',
+    title: 'Alumnos registrados',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Materias registradas',
+    title: 'Alumnos registrados',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Materias registradas',
+    title: 'Alumnos registrados',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 ];
 
-const getMateria = (idMateria) => {
-    const materia = props.materias.find(m => m.idMateria === idMateria);
-    return materia ? materia.materia : 'N/A';
-};
-
-const getGrado = (idGrado) => {
-    const grado = props.grados.find(g => g.idGrado === idGrado);
-    return grado ? grado.grado : 'N/A';
-};
-
-const getGrupo = (idGrupo) => {
-    const grupo = props.grupos.find(g => g.idGrupo === idGrupo);
-    return grupo ? grupo.grupo : 'N/A';
-};
+const maxWidth = 'xl';
+const closeable = true;
 
 </script>
 
+
 <template>
-    <DirectorLayout title="materias" :usuario="props.usuario">
+    <DirectorLayout title="Calificaciones" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Calificaciones</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
@@ -120,26 +147,9 @@ const getGrupo = (idGrupo) => {
                 </span>
             </div>
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-            <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-                <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
-                <div class="sm:col-span-3">
-                    <label for="clase" class="block text-sm font-medium leading-6 text-gray-900">Clase</label>
-                    <div class="mt-2">
-                        <select name="clase" :id="'clase' + op" v-model="form.idClase"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value="" disabled selected>Selecciona una materia</option>
-                            <option v-for="clase in clases" :key="clase.idClase" :value="clase.idClase">
-                                {{ console.log(clase) }}
-                                {{ `${getMateria(clase.idMateria)} - Grado: ${getGrado(clase.idGrado)} - Grupo: ${getGrupo(clase.idGrupo)}` }}
-                            </option>
-                        </select>
-                    </div>
-                    <div v-if="materiaError != ''" class="text-red-500 text-xs">{{ materiaError }}</div>
-                </div>
-            </div>
             <div>
                 <DataTable class="w-full table-auto text-sm nowrap display stripe compact cell-border order-column"
-                    id="materiasTablaId" :columns="columns" :data="materias" :options="{
+                    id="alumnosTablaId" :columns="columns2" :data="alumnos" :options="{
                         responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -150,34 +160,42 @@ const getGrupo = (idGrupo) => {
                         }, buttons: botones
                     }">
                     <thead>
-                        <tr class="text-sm leading-normal">
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                #
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Alumno
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Grado
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Grupo
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                        </tr>
-                    </thead>
+                    <tr class="text-sm leading-normal">
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            #
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Nombre
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Grado
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Grupo
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Taller
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            Tutor
+                        </th>
+                        <th
+                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                        </th>
+                    </tr>
+                </thead>
                 </DataTable>
             </div>
 
