@@ -138,6 +138,6 @@ const eliminarActividad = (idClase, idActividad, nombreAct) => {
         :title="'Añadir actividad'" :op="'1'" :modal="'modalCreate'" :clases="props.clase" :periodos="props.periodos"
         :tiposActividades="props.tiposActividades"></formulario-actividades>
     <formulario-actividades :show="mostrarModalEditar" :max-width="maxWidth" :closeable="closeable"
-        @close="actDesModalEditar()" :title="'Añadir actividad'" :op="'2'" :modal="'modalCreate'" :clases="props.clase"
+        @close="actDesModalEditar()" :title="'Editar actividad'" :op="'2'" :modal="'modalCreate'" :clases="props.clase"
         :periodos="props.periodos" :tiposActividades="props.tiposActividades" :actividad="actE"></formulario-actividades>
 </template>

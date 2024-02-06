@@ -122,6 +122,7 @@ const update = () => {
     }
 
     var idActividad = document.getElementById('idActividad2').value;
+    console.log(form.idClase);
     form.put(route('profe.actPaseLista', idActividad), {
         onSuccess: () => {
             close()

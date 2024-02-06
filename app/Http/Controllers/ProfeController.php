@@ -251,7 +251,8 @@ class ProfeController extends Controller
                     ->orWhere('tipoActividad', 'Vestuario')->get();
                 $actividadesCA = actividades::where('idClase', $clase->idClase)
                     ->whereHas('tiposActividades', function ($query) {
-                        $query->where('tipoActividad', ['Asistencia', 'Vestuario']);
+                        $query->where('tipoActividad', 'Asistencia')
+                        ->orWhere('tipoActividad', 'Vestuario');
                     })
                     ->get();
                 $actividadesAlum = $actividadesCA->map(function ($actividad) {
@@ -343,7 +344,7 @@ class ProfeController extends Controller
         $usuario = $this->obtenerInfoUsuario();
         $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
         $clase = clases::where('idClase', $request->clase)->where('idPersonal', $personalDocente->idPersonal)->first();
-        $actividad = actividades::where('idClase', $request->clase)->where('idActividad', $request->idActividad)->first();
+        $actividad = actividades::where('idClase', $request->clase)->where('idActividad', $request->idActividad)->first();        
         if ($clase && $actividad) {
             $actividad = actividades::find($request->idActividad);
             $actividad->titulo = $request->titulo;
@@ -418,8 +419,8 @@ class ProfeController extends Controller
         try {
             $usuario = $this->obtenerInfoUsuario();
             $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
-            $clase = clases::where('idClase', $request->clase)->where('idPersonal', $personalDocente->idPersonal)->first();
-            $actividad = actividades::where('idClase', $request->clase)->where('idActividad', $request->idActividad)->first();
+            $clase = clases::where('idClase', $request->idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
+            $actividad = actividades::where('idClase', $request->idClase)->where('idActividad', $request->idActividad)->first();            
             if ($clase && $actividad) {
                 $actividad = actividades::find($request->idActividad);
                 $actividad->titulo = "Pase de lista de la fecha " . Carbon::parse($request->fecha_inicio)->format('d-m-Y');
