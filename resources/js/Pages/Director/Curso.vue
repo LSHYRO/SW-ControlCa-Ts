@@ -54,13 +54,15 @@ const mostrarCalificaciones = () => {
         <div class="mt-8 bg-white p-4 shadow rounded-lg alturaM">
             <h2 class="text-black text-2xl text-center font-semibold p-5">{{ clasesA['materias'].materia }}</h2>
 
+            <h1 class="mb-0 text-md font-normal tracking-tight text-center"> Alumno: {{ alumno.nombre_completo }}</h1>
+
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-                <div class="m-1">
+                <div class="m-0">
                     <a :href="route('alumno.enCurso')"><i class="fa-solid fa-arrow-left"> </i> Volver</a><!-- Se tiene que cambiar la ruta -->
                 </div>
             </div>
             <!-- Linea de separación -->
-            <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+            <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-5"></div>
 
             <ul class="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex m-2 ">
                 <li class="w-full">

@@ -3,7 +3,7 @@
 // Importaciones necesarias para la funcionalidad de la vista en general
 import { ref, onMounted } from 'vue';
 import ProfeLayout from '@/Layouts/ProfeLayout.vue';
-import FormularioMateria from '@/Components/profe/FormularioMateria.vue';
+//import FormularioMateria from '@/Components/profe/FormularioMateria.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';

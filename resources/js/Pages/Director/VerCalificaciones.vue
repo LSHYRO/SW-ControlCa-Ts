@@ -28,7 +28,6 @@ const props = defineProps({
 });
 
 console.log(props.clases);
-const idAlumno = 1;
 const materias = (datos) => {
     try {
         const clases = datos.map((clase) => clase.idMateria);
@@ -59,9 +58,10 @@ const grupos = (datos) => {
     <div class=" bg-white p-4 shadow rounded-lg alturaM">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Clases cursando</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
+            <h1 class="mb-2 text-md font-normal tracking-tight text-center"> Alumno: {{ alumno.nombre_completo }}</h1>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <div class="flex">
-                <a v-for="clase in props.clases" :key="clase.idClase" :href="route('director.mostrarClase', { idClase: clase.idClase, idAlumno })"
+                <a v-for="clase in props.clases" :key="clase.idClase" :href="route('director.mostrarClase', { idClase: clase.idClase, idAlumno: alumno.idAlumno})"
                     class="flex flex-col items-center bg-cyan-300 text-black border border-cyan-400 rounded-lg shadow md:w-56 hover:bg-cyan-400 dark:border-cyan-500 dark:bg-cyan-400 dark:hover:bg-cyan-500 ml-4">
                     <div class="w-full h-full rounded-t-lg fondo">
                         <div class="w-full h-full rounded-t-lg filtro">

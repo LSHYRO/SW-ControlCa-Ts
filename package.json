@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "dev2": "npm-run-all --parallel serve dev",
-        "serve": "php artisan serve --host=192.168.1.72",
+        "serve": "php artisan serve --host=192.168.1.21",
         "build": "vite build",
         "watch": "vite watch"
     },
@@ -44,6 +44,7 @@
         "npm-watch": "^0.11.0",
         "pdfmake": "^0.2.8",
         "sweetalert2": "^11.7.32",
+        "vue-router": "^4.0.13",
         "vue-select": "^4.0.0-beta.6",
         "vue3-timepicker": "^1.0.0-beta.2",
         "vuetify": "^3.4.10"

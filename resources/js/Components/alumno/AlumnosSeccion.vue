@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 
@@ -16,41 +16,26 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    actividades: {
+    actividadesAlum: {
         type: Object,
         default: () => ({})
-    },
-    calificaciones: {
-        type: Object,
-        default: () => ({})
-    },
+    }
 });
-console.log("Actividades en ActividadesSeccion");
-console.log(props.actividades);
+console.log("ActiviadesAlum en AlumnosSeccion");
+console.log(props.actividadesAlum);
 
-const calificaciones = ref([]);
 const mostrarDetalles = ref({});
+const mostrarModal = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
+const mostrarModalEditar = ref(false);
 const form = useForm({});
 
 const masInfo = (idActividad) => {
     mostrarDetalles.value[idActividad] = !mostrarDetalles.value[idActividad];
 };
 
-const obtenerCalificacion = async (idClase, idActividad) => {
-    try {
-        const response = await axios.get(`alumno.verCal`);
-        // Manipula la respuesta según tus necesidades
-        console.log(response.data);
-    } catch (error) {
-        console.error('Error al obtener la calificación', error);
-    }
-};
-
-
 </script>
-
 <template>
     <div>
         <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -61,13 +46,12 @@ const obtenerCalificacion = async (idClase, idActividad) => {
                 {{ $page.props.flash.message }}
             </span>
         </div>
-
         <div>
-            <ul v-for="actividad in props.actividades" :key="actividad.idActividad"
-                class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 mb-2 px-2">
+            <ul v-for="actividad in props.actividadesAlum" :key="actividad.idActividad"
+                class="w-full rounded-md border-2 border-cyan-500 hover:border-cyan-600 my-4 px-2">
                 <li>
                     <div class="w-full grid-cols-12 grid cursor-pointer" @click="masInfo(actividad.idActividad)">
-                        <h4 class="text-base col-span-11 mb-2">
+                        <h4 class="text-base col-span-11">
                             <strong>{{ actividad.tipoActividadD }}:</strong>
                             {{ actividad.titulo }}
                         </h4>
@@ -78,15 +62,9 @@ const obtenerCalificacion = async (idClase, idActividad) => {
                     </div>
                     <div v-if="mostrarDetalles[actividad.idActividad]" class="w-full px-1 border-t-2 border-cyan-300">
                         <p class="text-sm m-1">
-                            <strong>Descripción: </strong>{{ actividad.descripcion }}
+                            <strong>Fecha: </strong>{{ actividad.fecha_i }}
                         </p>
-                        <p class="text-sm m-1">
-                            <strong>Fecha de inicio: </strong>{{ actividad.fecha_i }}
-                        </p>
-                        <p class="text-sm m-1 ">
-                            <strong>Fecha de entrega: </strong>{{ actividad.fecha_e }}
-                        </p>
-                        <p class="underline mb-2">
+                        <p class="underline mb-2 text-sm">
                             <strong style="font-weight: bold; color: black;">Calificación: </strong>
                             <span style="font-weight: normal; color: your_color_here;">{{ actividad.calificacion }}</span>
                         </p>
