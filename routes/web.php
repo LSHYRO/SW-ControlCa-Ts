@@ -185,6 +185,7 @@ Route::middleware(['directorS'])->group(function () {
         Route::get('/director/ciclosperiodos', 'ciclosperiodos')->name('director.ciclosperiodos');
         Route::get('/director/obtenerciclos', 'obtenerciclos')->name('director.obtenerciclos');
         Route::get('/director/cuentas', 'cuentas')->name('director.cuentas');
+        Route::get('/director/avisos', 'avisos')->name('director.avisos');
 
         Route::post('/director/profesores', 'addProfesores')->name('director.addProfesores');
         Route::post('/director/directivos', 'addDirectivos')->name('director.addDirectivos');
@@ -198,9 +199,13 @@ Route::middleware(['directorS'])->group(function () {
         Route::post('/director/clases', 'addClases')->name('director.addClases');
         Route::post('/director/cuentas', 'addCuentas')->name('director.addCuentas');
         Route::post('/director/alumnosclases', 'addAlumnosClases')->name('director.addAlumnosClases');
+        Route::post('/director/avisos', 'agregarAviso')->name('director.agregarAv');
 
         Route::get('/director/buscar/tutor', 'buscarTutor')->name('director.busquedaTutor');
 
+        Route::delete('/director/avisos/eliminar/vrsAvisos/{avisosIds}','eliminarAvisos')->name('director.eliminarAvs');
+        Route::delete('/director/avisos/eliminar/{idAviso}', 'eliminarAviso')->name('director.eliminarAv');
+        Route::put('/director/avisos/actualizar/aviso', 'actualizarAviso')->name('director.actualizarAv');        
         Route::delete('/director/alumnos/delete/{alumnosIds}', 'eliminarAlumnos')->name('director.elimAlumnos');
         Route::delete('/director/alumnos/{idAlumno}', 'eliminarAlumno')->name('director.eliminarAlumno');
         Route::put('/director/alumnos/{idAlumno}/edit', 'actualizarAlumno')->name('director.actualizarAlumno');

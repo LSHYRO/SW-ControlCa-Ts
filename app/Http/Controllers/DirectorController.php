@@ -7,6 +7,7 @@ use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\alumnos;
+use App\Models\avisos;
 use App\Models\materias;
 use App\Models\clases;
 use App\Models\clases_alumnos;
@@ -2194,5 +2195,119 @@ class DirectorController extends Controller
             }
         }
         return redirect()->route('director.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
+    }
+
+    public function avisos()
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = $this->obtenerInfoUsuario();
+                $avisos = avisos::all();
+                $avisosM = $avisos->map(function ($aviso) {
+                    $usuarioAviso = usuarios::where('idUsuario', $aviso->idUsuario)->with(['personal'])->first();
+                    $aviso->fecha_ini = Carbon::parse($aviso->fechaHoraInicio)->format('d/m/Y H:i');
+                    $aviso->fecha_fi = Carbon::parse($aviso->fechaHoraFin)->format('d/m/Y H:i');
+                    $aviso->nombre = $usuarioAviso->personal->nombre_completo;
+                    return $aviso;
+                });
+                //dd($usuario -> personalNombre);
+                return Inertia::render('Director/Avisos', [
+                    'avisos' => $avisosM,
+                    'usuario' => $usuario
+                ]);
+            } catch (Exception $e) {
+            }
+        }
+    }
+
+    public function agregarAviso(Request $request)
+    {
+        if (Auth::check()) {
+            try {
+                $request->validate([
+                    'titulo' => 'required',
+                    'descripcion' => 'required',
+                    'fechaHoraInicio' => 'required',
+                    'fechaHoraFin' => 'required',
+                ]);
+                $usuario = $this->obtenerInfoUsuario();
+
+                $aviso = new avisos();
+                $aviso->titulo = $request->titulo;
+                $aviso->descripcion = $request->descripcion;
+                $aviso->fechaHoraInicio = $request->fechaHoraInicio;
+                $aviso->fechaHoraFin = $request->fechaHoraFin;
+                $aviso->idUsuario = $usuario->idUsuario;
+                $aviso->save();
+
+                return redirect()->route('director.avisos')->With(["message" => "El aviso se ha creado correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('director.avisos')->With(["message" => "Hubó un error al agregar el nuevo aviso", "color" => "red"]);
+            }
+        }
+    }
+
+    public function eliminarAviso($idAviso)
+    {
+        if (Auth::check()) {
+            try {
+                $aviso = avisos::find($idAviso);
+                if ($aviso) {
+                    $aviso->delete();
+                    return redirect()->route('director.avisos')->With(["message" => "El aviso se ha eliminado correctamente", "color" => "green"]);
+                }
+                return redirect()->route('director.avisos')->With(["message" => "No se encuentra el aviso que se quiere eliminar", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('director.avisos')->With(["message" => "Error al eliminar el aviso", "color" => "red"]);
+            }
+        }
+    }
+
+    public function actualizarAviso(Request $request){
+        if (Auth::check()) {
+            try {
+                $request->validate([
+                    'titulo' => 'required',
+                    'descripcion' => 'required',
+                    'fechaHoraInicio' => 'required',
+                    'fechaHoraFin' => 'required',
+                ]);
+                $usuario = $this->obtenerInfoUsuario();
+
+                $aviso = avisos::find($request->idAviso);
+                $aviso->titulo = $request->titulo;
+                $aviso->descripcion = $request->descripcion;
+                $aviso->fechaHoraInicio = $request->fechaHoraInicio;
+                $aviso->fechaHoraFin = $request->fechaHoraFin;
+                $aviso->idUsuario = $usuario->idUsuario;
+                $aviso->save();
+
+                return redirect()->route('director.avisos')->With(["message" => "El aviso se ha actualizado correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('director.avisos')->With(["message" => "Hubó un error al actualizar el nuevo aviso", "color" => "red"]);
+            }
+        }
+    }
+
+    public function eliminarAvisos($avisosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $avisosIdsArray = explode(',', $avisosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $avisosIdsArray = array_map('intval', $avisosIdsArray);
+            // Elimina las materias
+            avisos::whereIn('idAviso', $avisosIdsArray)->delete();
+            
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('director.avisos')->with(['message' => "Avisos eliminados correctamente", "color" => "green"]);
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
     }
 }
