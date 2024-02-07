@@ -1547,7 +1547,7 @@ class DirectorController extends Controller
         }
 
         //$grados->fill($request->input())->saveOrFail();
-        return redirect()->route('director.gradosgrupos')->with('message', "Grado actualizado correctamente: " . $grados->grado);;
+        return redirect()->route('director.gradosgrupos')->with(['message' => "Grado actualizado correctamente: " . $grados->grado, "color" => "green"]);
     }
 
     public function getGrados($searchTerm)
