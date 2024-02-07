@@ -591,7 +591,9 @@ class AdminController extends Controller
             ->first();
         $personal->delete();
         $usuario->delete();
-        $usuarioTipoUsuario->delete();
+        if ($usuarioTipoUsuario) {
+            $usuarioTipoUsuario->delete();
+        }
         $direccion->delete();
         return redirect()->route('admin.directivos')->With(["message" => "Directivo eliminado correctamente", "color" => "green"]);
     }

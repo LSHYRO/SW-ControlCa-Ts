@@ -150,7 +150,7 @@ const eliminarProfesor = (idPersonal, nombre) => {
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?'+ '\nTodo lo relacionado al profesor (clases) será eliminado.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -192,7 +192,7 @@ const eliminarProfesores = () => {
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los profesores seleccionados?',
+        title: '¿Estas seguro que deseas eliminar los datos de los profesores seleccionados?' + '\nTodo lo relacionado a los profesores (clases) serán eliminados.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',

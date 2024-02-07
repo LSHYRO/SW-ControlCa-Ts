@@ -323,7 +323,7 @@ class DirectorController extends Controller
                 $usuarioTipoUsuario->delete();
                 $usuario->delete();
             }
-            return redirect()->route('director.profesores')->With("message", "Profesores eliminados correctamente");
+            return redirect()->route('director.profesores')->With(["message" => "Profesores eliminados correctamente.", "color" => "green"]);
             /*
             // Elimina las materias
             materias::whereIn('idMateria', $personalIdsArray)->delete();
@@ -355,7 +355,7 @@ class DirectorController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -383,7 +383,7 @@ class DirectorController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->RFC = $request->rfc;
-            $personal->idTipoSangre = $request->tipo_sangre;
+            $personal->idTipoSangre = $request->tipoSangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
@@ -403,9 +403,10 @@ class DirectorController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('director.profesores')->With("message", "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM);
+            return redirect()->route('director.profesores')->With(["message" => "Informacion del profesor actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . ".", "color" => "green"]);
         } catch (Exception $e) {
-            dd($e);
+            //dd($e);
+            return redirect()->route("director.profesores")->with(["message" => "Error al actualizar los datos del profesor.", "color" => "red"]);
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -591,8 +592,10 @@ class DirectorController extends Controller
             ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
             ->first();
         $personal->delete();
-        $usuarioTipoUsuario->delete();
         $usuario->delete();
+        if ($usuarioTipoUsuario) {
+            $usuarioTipoUsuario->delete();
+        }
         $direccion->delete();
         return redirect()->route('director.directivos')->With(["message" => "Directivo eliminado correctamente", "color" => "green"]);
     }

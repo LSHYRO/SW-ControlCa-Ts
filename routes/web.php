@@ -216,6 +216,7 @@ Route::middleware(['directorS'])->group(function () {
         Route::put('/director/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('director.actualizarProfesores');
 
         Route::delete('/director/directivos/{idPersonal}', 'eliminarDirectivos')->name('director.eliminarDirectivos');
+        Route::delete('/administrador/directivos/delete/{personalIds}', 'elimDirectivos')->name('director.elimDirectivos');
         Route::put('/director/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('director.actualizarDirectivos');
 
         Route::delete('/director/materias/delete/{materiasIds}', 'elimMaterias')->name('director.elimMaterias');

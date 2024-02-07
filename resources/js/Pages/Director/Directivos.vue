@@ -141,7 +141,7 @@ const eliminarDirectivo = (idPersonal, nombre) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('director.eliminarProfesores', idPersonal));
+            form.delete(route('director.eliminarDirectivos', idPersonal));
         }
 
     })
