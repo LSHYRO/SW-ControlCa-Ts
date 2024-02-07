@@ -84,17 +84,24 @@ class DirectorController extends Controller
         $message = '';
         $color = '';
 
+        $now = Carbon::now();
+
+        // Consulta los avisos que cumplan con las condiciones
+        $avisos = avisos::where('fechaHoraInicio', '<=', $now)
+            ->where('fechaHoraFin', '>=', $now)
+            ->get();
+
         if ($usuario->cambioContrasenia === 0) {
             $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
             $fechaFormateada = $fechaLimite->format('d/m/Y');
             $horaFormateada = $fechaLimite->format('H:i');
             $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivara y sera necesario acudir a la dirección para solucionar la situación";
             $color = "red";
-            return Inertia::render('Director/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color]);
+            return Inertia::render('Director/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos]);
         }
 
         return Inertia::render('Director/Inicio', [
-            'usuario' => $usuario, 'message' => $message, 'color' => $color
+            'usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos
         ]);
     }
 
@@ -250,8 +257,33 @@ class DirectorController extends Controller
     public function eliminarProfesores($idPersonal)
     {
         try {
-            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'Profesor')->first(); //Le puse P mayuscula
+            $clasesProfesor = clases::where('idPersonal', $idPersonal)->get();
+            if (!$clasesProfesor->isEmpty()) {
+                //Se eliminan calificacionesPeriodos, calificaciones y clases alumnos para al final eliminar las clases del profesor
+                foreach ($clasesProfesor as $clase) {
+                    $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+                    $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
+                    $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
 
+                    if (!$calificacionesPeriodos->isEmpty()) {
+                        foreach ($calificacionesPeriodos as $calPer) {
+                            $calPer->delete();
+                        }
+                    }
+                    if (!$calificaciones->isEmpty()) {
+                        foreach ($calificaciones as $calificacion) {
+                            $calificacion->delete();
+                        }
+                    }
+                    if (!$clases_alumnos->isEmpty()) {
+                        foreach ($clases_alumnos as $clasAlu) {
+                            $clasAlu->delete();
+                        }
+                    }
+                    $clase->delete();
+                }
+            }
+            $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first(); //Le puse P mayuscula
             $personal = personal::find($idPersonal);
             $usuario = usuarios::find($personal->idUsuario);
             $direccion = direcciones::find($personal->idDireccion);
@@ -262,9 +294,10 @@ class DirectorController extends Controller
             $usuarioTipoUsuario->delete();
             $usuario->delete();
             $direccion->delete();
-            return redirect()->route('director.profesores')->With("message", "Profesor eliminado correctamente");
+
+            return redirect()->route('director.profesores')->With(["message" => "Profesor eliminado correctamente", "color" => "green"]);
         } catch (Exception $e) {
-            return redirect()->route('director.profesores')->With(["message" => "Error al eliminar Profesor" . $e, "color" => "red"]);
+            return redirect()->route('director.profesores')->with(["message" => "Error al eliminar los datos del profesor", "color" => "red"]);
         }
     }
 
@@ -622,7 +655,7 @@ class DirectorController extends Controller
                 'genero' => 'required',
                 'curp' => 'required',
                 'rfc' => 'required',
-                'tipo_sangre' => 'required',
+                'tipoSangre' => 'required',
                 'calle' => 'required',
                 'numero' => 'required',
                 'asentamiento' => 'required',
@@ -652,7 +685,7 @@ class DirectorController extends Controller
             $personal->fechaNacimiento = $request->fechaNacimiento;
             $personal->CURP = $request->curp;
             $personal->RFC = $request->rfc;
-            $personal->idTipoSangre = $request->tipo_sangre;
+            $personal->idTipoSangre = $request->tipoSangre;
             $personal->alergias = $request->alergias;
             $personal->discapacidad = $request->discapacidad;
             $personal->idDireccion = $domicilio->idDireccion;
