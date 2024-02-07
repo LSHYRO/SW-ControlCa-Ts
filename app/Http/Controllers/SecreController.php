@@ -6,6 +6,7 @@ use App\Models\personas;
 use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
+use App\Models\avisos;
 use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
@@ -53,18 +54,25 @@ class SecreController extends Controller{
         $message = '';
         $color = '';
 
+        $now = Carbon::now();
+
+        // Consulta los avisos que cumplan con las condiciones
+        $avisos = avisos::where('fechaHoraInicio', '<=', $now)
+            ->where('fechaHoraFin', '>=', $now)
+            ->get();
+
         if ($usuario->cambioContrasenia === 0) {
             $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
             $fechaFormateada = $fechaLimite->format('d/m/Y');
             $horaFormateada = $fechaLimite->format('H:i');
             $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivara y sera necesario acudir a la dirección para solucionar la situación";
             $color = "red";
-            return Inertia::render('Secre/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color]);
+            return Inertia::render('Secre/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos]);
         }
 
 
         return Inertia::render('Secre/Inicio', [
-            'usuario' => $usuario, 'message' => $message, 'color' => $color
+            'usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos
         ]);
     }
 
