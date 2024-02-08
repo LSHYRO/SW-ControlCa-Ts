@@ -1355,4 +1355,300 @@ class SecreController extends Controller{
             return redirect()->route("secre.profesores")->with(["message" => "Error al actualizar los datos del profesor.", "color" => "red"]);
         }
     }
+
+    public function directivos()
+    {
+        $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
+            ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
+            //->where('tipo_personal.tipo_personal', 'profesor')
+            ->where(function ($query) {
+                $query->where('tipo_personal.tipo_personal', 'Director')
+                    ->orWhere('tipo_personal.tipo_personal', 'Personal escolar');
+            })
+            ->get();
+
+        $tipo_sangre = tipo_Sangre::all();
+        $generos = generos::all();
+        $direcciones = direcciones::all();
+        $tipo_personal = tipo_personal::all();
+
+
+        $personalConNombres = $personal->map(function ($persona) use ($generos, $tipo_sangre, $direcciones) {
+            $genero = $generos->where('idGenero', $persona->idGenero)->first();
+            $tipo_sangre = $tipo_sangre->where('idTipoSangre', $persona->idTipoSangre)->first();
+            $direccion = $direcciones->where('idDireccion', $persona->idDireccion)->first();
+            $persona->genero = $genero ? $genero->genero : null;
+            $persona->tipoSangre = $tipo_sangre ? $tipo_sangre->tipoSangre : null;
+            $persona->direccion = $direccion ? $direccion->calle . " #" . $direccion->numero . ", " . $direccion->asentamientos->asentamiento . ", " . $direccion->asentamientos->municipios->municipio . ", " .  $direccion->asentamientos->municipios->estados->estado . ", " . $direccion->asentamientos->codigoPostal->codigoPostal : null;
+            $persona->calle = $direccion ? $direccion->calle : null;
+            $persona->numero = $direccion ? $direccion->numero : null;
+            $persona->codigoPos = $direccion ? $direccion->asentamientos->codigoPostal->codigoPostal : null;
+            $persona->idAsentamiento = $direccion ? $direccion->asentamientos->idAsentamiento : null;
+            $persona->idMunicipio = $direccion ? $direccion->asentamientos->municipios->idMunicipio : null;
+            $persona->idEstado = $direccion ? $direccion->asentamientos->municipios->estados->idEstado : null;
+            return $persona;
+        });
+
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Secre/Directivos', [
+            'personal' => $personalConNombres,
+            'tipoSangre' => $tipo_sangre,
+            'generos' => $generos,
+            'tipo_personal' => $tipo_personal,
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function addDirectivos(Request $request)
+    {
+        try {
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'rfc' => 'required',
+                'tipoSangre' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+                'tipoPersonal' => 'required',
+            ]);
+
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Contraseña generada
+            $contrasenia = $this->generarContraseña();
+            //Creacion de usuario
+            $usuario = new usuarios();
+            $usuario->usuario = strtolower(substr($this->quitarAcentos($request->apellidoP), 0, 2) . substr($this->quitarAcentos($request->apellidoM), 0, 1) . substr($this->quitarAcentos($request->nombre), 0, 1) . $fechaFormateada . Str::random(3));
+            $usuario->contrasenia = $contrasenia;
+            $usuario->password = bcrypt($contrasenia);
+
+            $tipo_personal = tipo_personal::find($request->tipoPersonal);
+
+            // Se asigna el tipo de usuario según el tipo_personal seleccionado
+            if ($tipo_personal->tipo_personal === 'Director') {
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'director')->first();
+            } elseif ($tipo_personal->tipo_personal === 'Personal escolar') {
+                $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'directivo')->first();
+            } else {
+                // Manejo de caso no previsto
+                // Puedes decidir qué hacer en caso de que el tipo_personal no sea 'Director' ni 'Personal escolar'
+            }
+
+            $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+
+            $usuario->save();
+
+            //Se busca el tipo de usuario en la BD
+            //$tipoUsuario = tipoUsuarios::where('tipoUsuario', 'profesor')->first();
+
+            $usuarioTipoUsuario = new usuarios_tiposUsuarios();
+            $usuarioTipoUsuario->idUsuario = $usuario->idUsuario;
+            $usuarioTipoUsuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+            $usuarioTipoUsuario->save();
+
+            //Se guarda el domicilio del profesor
+            $domicilio = new direcciones();
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+
+            //$personal = new personal($request->input());
+            $personal = new personal();
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->nombre = $request->nombre;
+            $personal->correoElectronico = $request->correoElectronico;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->idGenero = $request->genero;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->CURP = $request->curp;
+            $personal->rfc = $request->rfc;
+            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->alergias = $request->alergias;
+            $personal->discapacidad = $request->discapacidad;
+            $personal->idDireccion = $domicilio->idDireccion;
+            $personal->idUsuario = $usuario->idUsuario;
+            $personal->id_tipo_personal = $request->tipoPersonal;
+            //$personal->activo = 1;
+
+            $existingPersonal = personal::where([
+                ['nombre', $request->nombre],
+                ['apellidoP', $request->apellidoP],
+                ['apellidoM', $request->apellidoM],
+                ['numTelefono', $request->numTelefono],
+                ['correoElectronico', $request->correoElectronico],
+                ['curp', $request->curp],
+                ['rfc', $request->rfc],
+                ['id_tipo_personal', $tipo_personal->id_tipo_personal],
+            ])->exists();
+
+            if ($existingPersonal) {
+                return redirect()->route('secre.directivos')->with([
+                    "message" => "El directivo ya está registrado",
+                    "color" => "red"
+                ]);
+            }
+
+            //columna nombre completo
+            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+            $personal->nombre_completo = $nombreCompleto;
+
+            if ($personal->alergias == null) {
+                $personal->alergias = "Ninguna";
+            }
+
+            if ($personal->discapacidad == null) {
+                $personal->discapacidad = "Ninguna";
+            }
+
+            //Guardado
+            $personal->save();
+            return redirect()->route('secre.directivos')->With(["message" => "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia, "color" => "green"]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function eliminarDirectivos($idPersonal)
+    {
+
+        $tipoUsuario = tipoUsuarios::where(function ($query) {
+            $query->where('tipoUsuario', 'Director')
+                ->orWhere('tipoUsuario', 'Personal escolar');
+        })->first(); //cambie get()
+
+        $personal = personal::find($idPersonal);
+        $usuario = usuarios::find($personal->idUsuario);
+        $direccion = direcciones::find($personal->idDireccion);
+        $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+            ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+            ->first();
+        $personal->delete();
+        $usuario->delete();
+        if ($usuarioTipoUsuario) {
+            $usuarioTipoUsuario->delete();
+        }
+        $direccion->delete();
+        return redirect()->route('secre.directivos')->With(["message" => "Directivo eliminado correctamente", "color" => "green"]);
+    }
+
+    public function elimDirectivos($personalIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $personalIdsArray = explode(',', $personalIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $personalIdsArray = array_map('intval', $personalIdsArray);
+
+            $tipoUsuario = tipoUsuarios::where(function ($query) {
+                $query->where('tipoUsuario', 'Director')
+                    ->orWhere('tipoUsuario', 'Personal escolar');
+            })->first(); //cambie get()
+
+            for ($i = 0; $i < count($personalIdsArray); $i++) {
+                $personal = personal::find($personalIdsArray[$i]);
+                $direccion = direcciones::find($personal->idDireccion);
+                $usuario = usuarios::find($personal->idUsuario);
+                $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
+                    ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
+                    ->first();
+
+                if ($usuarioTipoUsuario) {
+                    $usuarioTipoUsuario->delete();
+                }
+                $personal->delete();
+                $usuario->delete();
+                //$usuarioTipoUsuario->delete();
+                $direccion->delete();
+            }
+            return redirect()->route('secre.directivos')->With(["message" => "Directivos eliminados correctamente", "color" => "green"]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
+    }
+
+    public function actualizarDirectivo(Request $request, $idPersonal)
+    {
+        try {
+            $personal = personal::find($idPersonal);
+            $request->validate([
+                'nombre' => 'required',
+                'apellidoP' => 'required',
+                'apellidoM' => 'required',
+                'numTelefono' => 'required',
+                'correoElectronico' => 'required',
+                'genero' => 'required',
+                'fechaNacimiento' => 'required',
+                'genero' => 'required',
+                'curp' => 'required',
+                'rfc' => 'required',
+                'tipoSangre' => 'required',
+                'calle' => 'required',
+                'numero' => 'required',
+                'asentamiento' => 'required',
+            ]);
+
+            //$personal->fill($request->input())->saveOrFail();
+            //Se guarda el domicilio del profesor
+            $domicilio = direcciones::findOrFail($request->idDomicilio);
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+
+            $tipo_personal = tipo_personal::where(function ($query) {
+                $query->where('tipo_personal', 'Director')
+                    ->orWhere('tipo_personal', 'Personal escolar');
+            })->first();
+
+            //$personal = new personal($request->input());
+            $personal = personal::findOrFail($request->idPersonal);
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->nombre = $request->nombre;
+            $personal->correoElectronico = $request->correoElectronico;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->idGenero = $request->genero;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->CURP = $request->curp;
+            $personal->RFC = $request->rfc;
+            $personal->idTipoSangre = $request->tipoSangre;
+            $personal->alergias = $request->alergias;
+            $personal->discapacidad = $request->discapacidad;
+            $personal->idDireccion = $domicilio->idDireccion;
+            $personal->id_tipo_personal = $tipo_personal->id_tipo_personal;
+
+            //columna nombre completo
+            $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
+            $personal->nombre_completo = $nombreCompleto;
+
+            if ($personal->alergias == null) {
+                $personal->alergias = "Ninguna";
+            }
+
+            if ($personal->discapacidad == null) {
+                $personal->discapacidad = "Ninguna";
+            }
+
+            //Guardado
+            $personal->save();
+            return redirect()->route('secre.directivos')->With(["message" => "Informacion del directivo actualizado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM, "color" => "green"]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
 }
