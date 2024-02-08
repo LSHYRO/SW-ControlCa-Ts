@@ -4,7 +4,8 @@ import SecreLayout from '@/Layouts/SecreLayout.vue';
 const props = defineProps({
     usuario: { type: Object },
     message: { String, default: '' },
-    color: { String, default: '' }
+    color: { String, default: '' },
+    avisos: { type: Object },
 });
 </script>
 
@@ -20,6 +21,26 @@ const props = defineProps({
                     {{ $props.message }}
                 </span>
             </div>
+        </div>
+        <div class="mt-8 bg-white p-4 shadow rounded-lg h-5/6">
+            <h2 class="font-bold text-center text-xl pt-5">Avisos</h2>
+            <div class="mx-14 my-8 justify-items-center">
+                <ul v-for="aviso in props.avisos" :key="aviso.idAviso"
+                class="w-full rounded-xl shadow-md border border-cyan-200 hover:border-cyan-300 my-4 p-2">
+                <li>
+                    <div class="w-full">
+                        <h4 class="text-lg font-semibold text-center m-2">
+                            {{ aviso.titulo }} 
+                        </h4>                        
+                    </div>
+                    <div class="w-full px-1 border-t-2 border-cyan-200">
+                        <p class="text-base mx-6 my-3 text-justify">
+                            {{ aviso.descripcion }}
+                        </p>                                                                        
+                    </div>
+                </li>
+            </ul>
+            </div>            
         </div>
     </SecreLayout>
 </template>

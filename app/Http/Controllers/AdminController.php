@@ -607,7 +607,9 @@ class AdminController extends Controller
             ->first();
         $personal->delete();
         $usuario->delete();
-        $usuarioTipoUsuario->delete();
+        if ($usuarioTipoUsuario) {
+            $usuarioTipoUsuario->delete();
+        }
         $direccion->delete();
         return redirect()->route('admin.directivos')->With(["message" => "Directivo eliminado correctamente", "color" => "green"]);
     }
@@ -1540,7 +1542,7 @@ class AdminController extends Controller
 
             $clase->save();
 
-            return redirect()->route('admin.clases')->with(['message' => "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo, 'color' => 'green']);
+            return redirect()->route('admin.clases')->with(['message' => "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo, "color" => "green"]);
         } catch (Exception $e) {
             Log::info('Error en guardar la clase: ' . $e);
             return redirect()->route('admin.clases')->withErrors(['message' => 'Error al guardar la clase.', "color" => "red"]);

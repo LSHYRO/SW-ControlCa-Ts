@@ -36,6 +36,9 @@ const props = defineProps({
     clases_alumnos: { type: Object }
 });
 
+console.log(props.clases_alumnos);
+console.log(props.alumnos);
+
 const getMateria = (idMateria) => {
     const materia = props.materias.find(m => m.idMateria === idMateria);
     return materia ? materia.materia : 'N/A';
@@ -194,7 +197,7 @@ const eliminarAlumnosClases = () => {
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de las clases seleccionadas?',
+        title: '¿Estas seguro que deseas eliminar a los alumnos seleccionados de la clase?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -269,12 +272,11 @@ onMounted(() => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- flash message start -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-                role="alert">
-                <span class="font-medium">
-                    {{ $page.props.flash.message }}
-                </span>
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+            <span class="font-medium">
+                {{ $page.props.flash.message }}
+            </span>
             </div>
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
@@ -320,7 +322,7 @@ onMounted(() => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Calificación
+                                Calificación Final
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
