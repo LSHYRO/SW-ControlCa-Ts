@@ -60,7 +60,6 @@ class LoginController extends Controller
             ]);
 
             $remember = $request->remember;
-
             $user = usuarios::where('usuario', $request->usuario)->first();
             if ($user) {
                 if ($user->cambioContrasenia === 0) {
@@ -72,7 +71,7 @@ class LoginController extends Controller
                     if ($user && Hash::check($request->password, $user->password)) {
                         $user->intentos = 10;
                         $user->save();
-                        Auth::login($user, $remember);
+                        Auth::login($user, $remember);                        
                         $request->session()->regenerate();
 
                         $usuario = usuarios::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuarios'])->get();

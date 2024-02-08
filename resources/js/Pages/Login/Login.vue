@@ -16,13 +16,13 @@ defineProps({
 const form = useForm({
     usuario: '',
     password: '',
-    remember: false,
+    remember: true,
 });
 
 const submit = () => {
     form.transform(data => ({
         ...data,
-        remember: form.remember ? 'on' : '',
+        remember: form.remember ? true : false,
     })).post(route('inicioSesion'), {
         onFinish: () => form.reset('password'),
     });
@@ -65,14 +65,14 @@ const submit = () => {
                     autocomplete="password" />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
-
+            <!--
             <div class="block mt-4">
                 <label class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
                     <span class="ml-2 text-sm text-gray-600">Recuerdame</span>
                 </label>
             </div>
-
+            -->
             <div class="flex items-center justify-end mt-4">
 
 
