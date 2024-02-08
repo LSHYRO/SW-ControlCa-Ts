@@ -1114,7 +1114,7 @@ class DirectorController extends Controller
             ])->exists();
 
             if ($existingAlumno) {
-                return redirect()->route('admin.tutoresAlum')->with(["message" => "El alumno ya está registrado.", "color" => "red"]);
+                return redirect()->route('director.tutoresAlum')->with(["message" => "El alumno ya está registrado.", "color" => "red"]);
             }
 
             //fechaFormateada
@@ -1402,7 +1402,7 @@ class DirectorController extends Controller
             ])->first();
 
             if ($claseExistente) {
-                return redirect()->route('director.clases')->with('message', 'La clase no se puede agregar, porque ya se encunetra registrado.');
+                return redirect()->route('director.clases')->with(['message' => 'La clase no se puede agregar, porque ya se encunetra registrado.', "color" => "red"]);
             }
 
             // Crear y guardar la nueva clase
@@ -1415,10 +1415,10 @@ class DirectorController extends Controller
 
             $clase->save();
 
-            return redirect()->route('director.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
+            return redirect()->route('director.clases')->with(['message' => "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo, "color" => "green"]);
         } catch (Exception $e) {
             Log::info('Error en guardar la clase: ' . $e);
-            return redirect()->route('director.clases')->withErrors(['message' => 'Error al guardar la clase.']);
+            return redirect()->route('director.clases')->withErrors(['message' => 'Error al guardar la clase.', "color" => "red"]);
         }
     }
 
@@ -1426,7 +1426,7 @@ class DirectorController extends Controller
     {
         $clase = clases::find($idClase);
         $clase->delete();
-        return redirect()->route('director.clases')->with('message', "Clase eliminada correctamente");
+        return redirect()->route('director.clases')->with(['message' => "Clase eliminada correctamente", "color" => "green"]);
     }
 
     public function elimClases($clasesIds)
@@ -1442,7 +1442,7 @@ class DirectorController extends Controller
             clases::whereIn('idClase', $clasesIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('director.clases')->with('message', "Clases eliminadas correctamente");
+            return redirect()->route('director.clases')->with(['message' => "Clases eliminadas correctamente", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
@@ -2233,13 +2233,13 @@ class DirectorController extends Controller
                     } else {
                         // Si al menos un alumno ya existe, hacer rollback y redirigir
                         DB::rollBack();
-                        return redirect()->route('director.alumnosclases')->with('message', "El alumno ya está agregado en la clase seleccionada");
+                        return redirect()->route('director.alumnosclases')->with(['message' => "El alumno ya está agregado en la clase seleccionada", "color" => "red"]);
                     }
                 }
                 // Commit solo si no hubo problemas
                 DB::commit();
 
-                return redirect()->route('director.alumnosclases')->with('message', "Alumno(s) agregado(s) correctamente");
+                return redirect()->route('director.alumnosclases')->with(['message' => "Alumno(s) agregado(s) correctamente", "color" => "green"]);
             } catch (\Exception $e) {
                 // Manejar excepciones específicas
                 DB::rollBack();
@@ -2255,7 +2255,7 @@ class DirectorController extends Controller
     {
         $clase_alumno = clases_alumnos::find($idClaseAlumno);
         $clase_alumno->delete();
-        return redirect()->route('director.alumnosclases')->with('message', "Clase eliminada correctamente");
+        return redirect()->route('director.alumnosclases')->with(['message' => "Alumn@ eliminad@ correctamente de la clase", "color" => "green"]);
     }
 
     public function elimAlumnosClases($clases_alumnosIds)
@@ -2271,7 +2271,7 @@ class DirectorController extends Controller
             clases_alumnos::whereIn('idClaseAlumno', $clasesAlumnosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('director.alumnosclases')->with('message', "Clases eliminadas correctamente");
+            return redirect()->route('director.alumnosclases')->with(['message' => "Alumnos eliminados correctamente de la clase", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");

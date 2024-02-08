@@ -1443,7 +1443,7 @@ class AdminController extends Controller
             ])->first();
 
             if ($claseExistente) {
-                return redirect()->route('admin.clases')->with('message', 'La clase no se puede agregar, porque ya se encunetra registrado.');
+                return redirect()->route('admin.clases')->with(['message' => 'La clase no se puede agregar, porque ya se encunetra registrado.', "color" => "red"]);
             }
 
             // Crear y guardar la nueva clase
@@ -1456,7 +1456,7 @@ class AdminController extends Controller
 
             $clase->save();
 
-            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
+            return redirect()->route('admin.clases')->with(['message' => "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo, "color" => "green"]);
         } catch (Exception $e) {
             Log::info('Error en guardar la clase: ' . $e);
             return redirect()->route('admin.clases')->withErrors(['message' => 'Error al guardar la clase.', "color" => "red"]);
@@ -1483,7 +1483,7 @@ class AdminController extends Controller
             clases::whereIn('idClase', $clasesIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.clases')->with('message', "Clases eliminadas correctamente");
+            return redirect()->route('admin.clases')->with(['message' => "Clases eliminadas correctamente", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");
