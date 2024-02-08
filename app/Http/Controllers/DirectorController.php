@@ -2279,29 +2279,41 @@ class DirectorController extends Controller
             $alumno->idEstado = $alumno->direcciones->asentamientos->municipios->estados->idEstado;
             $alumno->idMunicipio = $alumno->direcciones->asentamientos->municipios->idMunicipio;
             $alumno->idAsentamiento = $alumno->direcciones->asentamientos->idAsentamiento;
-            $alumno->grado = $alumno->grados->grado;
-            $alumno->grupo = $alumno->grupos->grupo;
+
+            $grado_grupo_alumno = grado_grupo_alumno::where('idAlumno', $alumno->idAlumno)
+                ->where('estatus', '1')
+                ->first();
+            $alumno->idGradGrupAl = $grado_grupo_alumno->idGradGrupAl;
+            $alumno->grado = $grado_grupo_alumno->grados->grado;
+            $alumno->grupo = $grado_grupo_alumno->grupos->grupo;
+
+            $alumno->idGrado = $grado_grupo_alumno->idGrado;
+            $alumno->idGrupo = $grado_grupo_alumno->idGrupo;
+            $alumno->idCiclo = $grado_grupo_alumno->idCiclo;
+            /* $alumno->grado = $alumno->grados->grado;
+            $alumno->grupo = $alumno->grupos->grupo; */
             if ($alumno->materias != null) {
                 $alumno->materia = $alumno->materias->materia;
             } else {
                 $alumno->materia = "Ninguno";
             }
+            
             $alumno->tutor = $alumno->tutores->nombre_completo;
             $alumno->tipoSangre = $alumno->tipo_sangre->tipoSangre;
             $alumno->tutorC = $alumno->tutores;
-            $alumno->gradoC = $alumno->grados;
-            $alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
+            //$alumno->gradoC = $alumno->grados;
+            //$alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
             return $alumno;
         });
 
         $tipo_sangre = tipo_Sangre::all();
 
-        $gradosPrincipal = grados::with('ciclos')->get();
+        /* $gradosPrincipal = grados::with('ciclos')->get();
         $grados = $gradosPrincipal->map(function ($grado) {
             $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
 
             return $grado;
-        });
+        }); */
 
         $grupos = grupos::all();
         $materiasT = materias::where('esTaller', '1')->get();
@@ -2312,7 +2324,7 @@ class DirectorController extends Controller
             'alumnos' => $alumnos,
             'generos' => $generos,
             'tipoSangre' => $tipo_sangre,
-            'grados' => $grados,
+            //'grados' => $grados,
             'grupos' => $grupos,
             'talleres' => $materiasT,
             'usuario' =>  $usuario
