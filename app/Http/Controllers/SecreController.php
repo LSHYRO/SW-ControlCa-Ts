@@ -39,6 +39,30 @@ use Mockery\Undefined;
 
 class SecreController extends Controller{
 
+    public function generarContraseña()
+    {
+        // Generar una parte de la contraseña sin dígitos
+        $parteAlfanumerica = Str::random(5, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+
+        // Generar exactamente 3 dígitos
+        $parteNumerica = '';
+        for ($i = 0; $i < 3; $i++) {
+            $parteNumerica .= mt_rand(0, 9);
+        }
+
+        // Mezclar las partes de la contraseña para asegurar aleatoriedad
+        $password = str_shuffle($parteAlfanumerica . $parteNumerica);
+        return $password;
+    }
+
+    public function quitarAcentos($palabra)
+    {
+        $textoConAcentos = $palabra;
+        // Remplazar caracteres con tilde
+        $textoSinAcentos = strtr($textoConAcentos, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U']);
+        return $textoSinAcentos;
+    }
+
     public function obtenerInfoUsuario()
     {
         $idUsuario = auth()->user()->idUsuario;

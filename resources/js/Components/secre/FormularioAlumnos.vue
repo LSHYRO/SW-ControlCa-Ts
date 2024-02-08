@@ -485,7 +485,7 @@ const obtenerInformacion = (query) => {
     if (query.lenght < 1) {
         return;
     }
-    axios.get('/director/buscar/tutor', { params: { query } }).then(response => {
+    axios.get('/secre/buscar/tutor', { params: { query } }).then(response => {
         tutores.value = response.data;
     }).catch(error => {
         console.error('Error al obtener tutores: ', error);
