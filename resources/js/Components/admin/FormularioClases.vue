@@ -51,8 +51,8 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-const grupos = ref([]);
-const ciclos = ref([]);
+//const grupos = ref([]);
+//const ciclos = ref([]);
 
 const close = () => {
     emit('close');
@@ -73,7 +73,7 @@ const form = useForm({
     //grados: props.clase.grado,
     grupos: props.clase.idGrupo,
     //grupos: props.clase.grupo,
-    personal: props.clase.idPersonal,
+    personal: props.clase.personalP,
     //personal: props.clases.nombre_completo,
     materias: props.clase.idMateria,
     //materias: props.clases.materia,
@@ -162,11 +162,11 @@ watch(() => props.clase, (newVal) => {
     form.idClase = newVal.idClase;
     form.grados = newVal.idGrado;
     form.grupos = newVal.idGrupo;
-    form.personal = newVal.idPersonal;
+    form.personal = newVal.personalP;
     form.materias = newVal.idMateria;
     form.ciclos = newVal.idCiclo;
 }, { deep: true });
-
+/*
 watch(() => form.grados, async () => {
     await obtenerGruposXGrado();
     await obtenerCicloXGrado();
@@ -197,7 +197,7 @@ const obtenerCicloXGrado = async () => {
         console.log('Error al obtener ciclos: ', error);
     }
 }
-
+*/
 
 </script>
 
@@ -225,12 +225,14 @@ const obtenerCicloXGrado = async () => {
                         <div class="sm:col-span-3">
                             <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
-                                <v-select name="grado" :id="'grado' + op" v-model="form.grados"
+                                <select name="grado" :id="'grado' + op" v-model="form.grados"
                                     placeholder="Seleccione el grado"
-                                    class="grado-class-func block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    :options="grados" :filterable="true" label="descripcion" modelValue="idGrado"
-                                    modelProp="idGrado" :on-change="obtenerGruposXGrado && obtenerCicloXGrado" >
-                                </v-select>
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione un grado</option>
+                                    <option v-for="grado in grados" :key="grado.idgrado" :value="grado.idGrado">
+                                        {{ grado.grado }}
+                                    </option>
+                                </select>
                             </div>
                             <div v-if="gradoError != ''" class="text-red-500 text-xs mt-1">{{ gradoError }}</div>
                         </div>
@@ -240,11 +242,10 @@ const obtenerCicloXGrado = async () => {
                             <div class="mt-2">
                                 <select name="grupo" :id="'grupo' + op" v-model="form.grupos"
                                     placeholder="Seleccione el grupo"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    disabled>
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Seleccione un grupo</option>
-                                    <option v-for="grupo in grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
-                                        {{ grupo.grupoC }}
+                                    <option v-for="grupo in props.grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
+                                        {{ grupo.grupo }}
                                     </option>
                                 </select>
                             </div>
@@ -254,6 +255,7 @@ const obtenerCicloXGrado = async () => {
                         <div class="sm:col-span-6">
                             <label for="docente" class="block text-sm font-medium leading-6 text-gray-900">Docente</label>
                             <div class="mt-2">
+                                <!--
                                 <select name="docente" :id="'docente' + op" v-model="form.personal"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un docente</option>
@@ -262,6 +264,11 @@ const obtenerCicloXGrado = async () => {
                                         {{ docente.nombre_completo }}
                                     </option>
                                 </select>
+                                -->
+                                <v-select type="text" name="docente" label="nombre_completo" placeholder="Ingrese el nombre del docente"
+                                    :options="props.personal" v-model="form.personal" :id="'docente' + op" 
+                                    :minimum-input-length="1" :filterable="true" modelValue="idPersonal" modelProp="idPersonal"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                             </div>
                             <div v-if="personalError != ''" class="text-red-500 text-xs">{{ personalError }}</div>
                         </div>
@@ -283,10 +290,10 @@ const obtenerCicloXGrado = async () => {
                         <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
-                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos" disabled
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos" 
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Selecciona un ciclo</option>
-                                    <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
+                                    <option v-for="ciclo in props.ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
                                         {{ ciclo.descripcionCiclo }}
                                     </option>
                                 </select>

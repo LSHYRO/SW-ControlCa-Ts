@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('grupos', function (Blueprint $table) {
             $table->id(column:'idGrupo');
             $table->char(column:'grupo')->nullable(false);
+            /*
             $table->foreignId(column:'idCiclo')->references('idCiclo')->on('ciclos');
+            */
             $table->timestamps();
         });
     }

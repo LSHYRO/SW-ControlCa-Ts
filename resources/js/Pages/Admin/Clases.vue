@@ -219,6 +219,12 @@ const eliminarClases = () => {
 
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedClases.value = [];
+                const botonEliminar = document.getElementById("eliminarMBtn");
+                if (selectedClases.value.length > 0) {
+                    botonEliminar.removeAttribute("disabled");                    
+                } else {
+                    botonEliminar.setAttribute("disabled", "");                    
+                }
             } catch (error) {
                 console.log('El error se origina aquí');
                 console.log(error);
@@ -227,11 +233,6 @@ const eliminarClases = () => {
     });
 };
 
-const searchQuery = ref("");
-
-const handleSearch = (term) => {
-    searchQuery.value = term;
-};
 
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
@@ -266,7 +267,7 @@ onMounted(() => {
     $('#clasesTablaId').on('click', '.eliminar-button', function () {
         const claseId = $(this).data('id');
         const clase = props.clases.find(c => c.idClase === claseId);
-        eliminarClase(claseId, clase.idClase);
+        eliminarClase(claseId, clase.descripcionClase);
     });
 });
 
@@ -279,9 +280,8 @@ onMounted(() => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- flash message start -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg"
-                role="alert">
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}`">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
                 </span>
@@ -357,8 +357,9 @@ onMounted(() => {
             :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'" :grados="props.grados" :grupos="props.grupos"
             :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
         <formulario-clases :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :clase="claseE" :grados="props.grados" :grupos="props.grupos"
-            :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
+            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :clase="claseE" :grados="props.grados"
+            :grupos="props.grupos" :personal="props.personal" :materias="props.materias"
+            :ciclos="props.ciclos"></formulario-clases>
 
     </AdminLayout>
 </template>

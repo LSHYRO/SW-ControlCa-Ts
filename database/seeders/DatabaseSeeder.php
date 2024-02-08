@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoSangreSeeder::class);
         $this->call(GeneroSeeder::class);
         $this->call(TiposActividadesSeeder::class);
+        $this->call(GradosGruposSeeder::class);
         //$this->call(AsentamientosSeeder::class);
         
         //usuarios::factory(50)->create();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\actividades;
 use App\Models\personas;
 use App\Models\profesores;
 use App\Models\usuarios;
@@ -18,6 +19,7 @@ use App\Models\tutores;
 use App\Models\direcciones;
 use App\Models\estados;
 use App\Models\generos;
+use App\Models\grado_grupo_alumno;
 use App\Models\grados;
 use App\Models\grupos;
 use App\Models\personal;
@@ -206,8 +208,8 @@ class AdminController extends Controller
                 ['rfc', $request->rfc],
                 ['id_tipo_personal', $tipo_personal->id_tipo_personal], // Asegura que solo verifique profesores
             ])->exists();
-            
-            if ($existingPersonal ) {
+
+            if ($existingPersonal) {
                 return redirect()->route('admin.profesores')->with(["message" => "El profesor ya está registrado", "color" => "red"]);
             }
 
@@ -242,6 +244,7 @@ class AdminController extends Controller
                     $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
                     $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
                     $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+                    $actividades = actividades::where('idClase', $clase->idClase)->get();
 
                     if (!$calificacionesPeriodos->isEmpty()) {
                         foreach ($calificacionesPeriodos as $calPer) {
@@ -258,6 +261,12 @@ class AdminController extends Controller
                             $clasAlu->delete();
                         }
                     }
+                    if (!$actividades->isEmpty()) {
+                        foreach ($actividades as $actividad) {
+                            $actividad->delete();
+                        }
+                    }
+
                     $clase->delete();
                 }
             }
@@ -300,6 +309,7 @@ class AdminController extends Controller
                         $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
                         $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
                         $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+                        $actividades = actividades::where('idClase', $clase->idClase)->get();
 
                         if (!$calificacionesPeriodos->isEmpty()) {
                             foreach ($calificacionesPeriodos as $calPer) {
@@ -316,6 +326,12 @@ class AdminController extends Controller
                                 $clasAlu->delete();
                             }
                         }
+                        if (!$actividades->isEmpty()) {
+                            foreach ($actividades as $actividad) {
+                                $actividad->delete();
+                            }
+                        }
+
                         $clase->delete();
                     }
                 }
@@ -537,23 +553,23 @@ class AdminController extends Controller
             $personal->id_tipo_personal = $request->tipoPersonal;
             //$personal->activo = 1;
             // Verificar duplicados solo para tipo de personal 'Director' o 'Personal escolar'
-        $existingPersonal = personal::where([
-            ['nombre', $request->nombre],
-            ['apellidoP', $request->apellidoP],
-            ['apellidoM', $request->apellidoM],
-            ['numTelefono', $request->numTelefono],
-            ['correoElectronico', $request->correoElectronico],
-            ['curp', $request->curp],
-            ['rfc', $request->rfc],
-            ['id_tipo_personal', $tipo_personal->id_tipo_personal],
-        ])->exists();
+            $existingPersonal = personal::where([
+                ['nombre', $request->nombre],
+                ['apellidoP', $request->apellidoP],
+                ['apellidoM', $request->apellidoM],
+                ['numTelefono', $request->numTelefono],
+                ['correoElectronico', $request->correoElectronico],
+                ['curp', $request->curp],
+                ['rfc', $request->rfc],
+                ['id_tipo_personal', $tipo_personal->id_tipo_personal],
+            ])->exists();
 
-        if ($existingPersonal) {
-            return redirect()->route('admin.directivos')->with([
-                "message" => "El directivo ya está registrado",
-                "color" => "red"
-            ]);
-        }
+            if ($existingPersonal) {
+                return redirect()->route('admin.directivos')->with([
+                    "message" => "El directivo ya está registrado",
+                    "color" => "red"
+                ]);
+            }
 
             //columna nombre completo
             $nombreCompleto = $personal->nombre . ' ' . $personal->apellidoP . ' ' . $personal->apellidoM;
@@ -569,7 +585,7 @@ class AdminController extends Controller
 
             //Guardado
             $personal->save();
-            return redirect()->route('admin.directivos')->With(["message" => "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia , "color" => "green"]);
+            return redirect()->route('admin.directivos')->With(["message" => "Directivo agregado correctamente: " . $personal->nombre . " " . $personal->apellidoP . " " . $personal->apellidoM . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia, "color" => "green"]);
         } catch (Exception $e) {
             dd($e);
         }
@@ -720,14 +736,23 @@ class AdminController extends Controller
             ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
 
-        $clases = clases::all();
+        $clasesA = clases::all();
+        $clases = $clasesA->map(function ($clase) {
+            $clase->descripcionClase = $clase->materias->materia . " " . $clase->grados->grado . " " . $clase->grupos->grupo;
+            $clase->personalP = $clase->personal;
+            return $clase;
+        });
+
         $grupos = grupos::all();
+        $grados = grados::all();
+        /*
         $gradosPrincipal = grados::with('ciclos')->get();
         $grados = $gradosPrincipal->map(function ($grado) {
             $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
 
             return $grado;
         });
+        */
         //$personal = personal::all();
         $materias = materias::all();
         $ciclos = ciclos::all();
@@ -789,8 +814,18 @@ class AdminController extends Controller
             $alumno->idEstado = $alumno->direcciones->asentamientos->municipios->estados->idEstado;
             $alumno->idMunicipio = $alumno->direcciones->asentamientos->municipios->idMunicipio;
             $alumno->idAsentamiento = $alumno->direcciones->asentamientos->idAsentamiento;
-            $alumno->grado = $alumno->grados->grado;
-            $alumno->grupo = $alumno->grupos->grupo;
+
+            $grado_grupo_alumno = grado_grupo_alumno::where('idAlumno', $alumno->idAlumno)
+                ->where('estatus', '1')
+                ->first();
+            $alumno->idGradGrupAl = $grado_grupo_alumno->idGradGrupAl;
+            $alumno->grado = $grado_grupo_alumno->grados->grado;
+            $alumno->grupo = $grado_grupo_alumno->grupos->grupo;
+
+            $alumno->idGrado = $grado_grupo_alumno->idGrado;
+            $alumno->idGrupo = $grado_grupo_alumno->idGrupo;
+            $alumno->idCiclo = $grado_grupo_alumno->idCiclo;
+
             if ($alumno->materias != null) {
                 $alumno->materia = $alumno->materias->materia;
             } else {
@@ -800,22 +835,27 @@ class AdminController extends Controller
             $alumno->tutorTel = $alumno->tutores->numTelefono;
             $alumno->tipoS = $alumno->tipo_Sangre->tipoSangre;
             $alumno->tutorC = $alumno->tutores;
-            $alumno->gradoC = $alumno->grados;
-            $alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
+            //$alumno->gradoC = $alumno->grados;
+            //$alumno->grados->descripcion = $alumno->grados->grado . " - " . $alumno->grados->ciclos->descripcionCiclo;
             return $alumno;
         });
 
         $tipo_sangre = tipo_Sangre::all();
 
-        $gradosPrincipal = grados::with('ciclos')->get();
+        //$gradosPrincipal = grados::with('ciclos')->get();
+        /*
         $grados = $gradosPrincipal->map(function ($grado) {
             $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
 
             return $grado;
         });
+        */
+        $grados = grados::all();
+        $grupos = grupos::all();
+        $ciclos = ciclos::all();
 
         $usuario = $this->obtenerInfoUsuario();
-        $grupos = grupos::all();
+        //$grupos = grupos::all();
         $materiasT = materias::where('esTaller', '1')->get();
         //$materias = materias::where('esTaller', 'true')->get();
         //$alumnos = alumnos::all();
@@ -827,7 +867,8 @@ class AdminController extends Controller
             'grados' => $grados,
             'grupos' => $grupos,
             'talleres' => $materiasT,
-            'usuario' => $usuario
+            'usuario' => $usuario,
+            'ciclos' => $ciclos,
         ]);
     }
 
@@ -914,13 +955,13 @@ class AdminController extends Controller
                 ['numTelefono', $request->numTelefono],
                 ['correoElectronico', $request->correoElectronico],
             ])->exists();
-            
+
             $existingAddress = direcciones::where([
                 ['calle', $request->calle],
                 ['numero', $request->numero],
                 ['idAsentamiento', $request->asentamiento],
             ])->exists();
-            
+
             if ($existingTutor || $existingAddress) {
                 return redirect()->route('admin.tutoresAlum')->with(["message" => "El tutor ya está registrado o la dirección ya existe.", "color" => "red"]);
             }
@@ -1118,10 +1159,11 @@ class AdminController extends Controller
                 ['numTelefono', $request->numTelefono],
                 ['correoElectronico', $request->correoElectronico],
                 ['curp', $request->curp],
+                ['fechaNacimiento', $request->fechaNacimiento]
             ])->exists();
-            
+
             if ($existingAlumno) {
-                return redirect()->route('admin.tutoresAlum')->with(["message" => "El alumno ya está registrado.","color" => "red"]);
+                return redirect()->route('admin.tutoresAlum')->with(["message" => "El alumno ya está registrado.", "color" => "red"]);
             }
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
@@ -1165,8 +1207,10 @@ class AdminController extends Controller
             $alumno->discapacidad = $request->discapacidad;
             $alumno->idDireccion = $domicilio->idDireccion;
             $alumno->esForaneo = $request->foraneo;
+            /*
             $alumno->idGrado = $request->grado["idGrado"];
             $alumno->idGrupo = $request->grupo;
+            */
             $alumno->idMateria = $request->taller["idMateria"];
             $alumno->idTutor = $request->tutor["idTutor"];
             $alumno->idUsuario = $usuario->idUsuario;
@@ -1183,6 +1227,13 @@ class AdminController extends Controller
             }
 
             $alumno->save();
+
+            $grado_grupo_alumno = new grado_grupo_alumno();
+            $grado_grupo_alumno->idAlumno = $alumno->idAlumno;
+            $grado_grupo_alumno->idGrado = $request->grado;
+            $grado_grupo_alumno->idGrupo = $request->grupo;
+            $grado_grupo_alumno->idCiclo = $request->ciclos;
+            $grado_grupo_alumno->save();
             return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno agregado correctamente: " . $nombreCompleto . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green"]);
         } catch (Exception $e) {
             return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al agregar al alumno.", "color" => "red"]);
@@ -1207,9 +1258,29 @@ class AdminController extends Controller
                 'numero' => 'required',
                 'asentamiento' => 'required',
             ]);
+            $conflictingAlumno = alumnos::where('idAlumno', '!=', $request->idAlumno) // Excluir el propio periodo que se está actualizando
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('nombre', $request->nombre)
+                            ->where('apellidoM', $request->apellidoM)
+                            ->where('apellidoP', $request->apellidoP)
+                            ->where('apellidoP', $request->apellidoP)
+                            ->where('numTelefono', $request->numTelefono)
+                            ->where('correoElectronico', $request->correoElectronico)
+                            ->where('idGenero', $request->genero)
+                            ->where('CURP', $request->curp)
+                            ->where('fechaNacimiento', $request->fechaNacimiento);
+                    });
+                })
+                ->first();
+
+            if ($conflictingAlumno) {
+                return redirect()->route('admin.tutoresAlum')->with(['message' => "Los datos del alumno ya existen", "color" => "yellow"]);
+            }
+
             $alumno = alumnos::find($request->idAlumno);
             $domicilio = direcciones::find($alumno->idDireccion);
-
+            $grado_grupo_alumno = grado_grupo_alumno::find($request->idGradGrupAl);
             $domicilio->calle = $request->calle;
             $domicilio->numero = $request->numero;
             $domicilio->idAsentamiento = $request->asentamiento;
@@ -1228,8 +1299,13 @@ class AdminController extends Controller
             $alumno->discapacidad = $request->discapacidad;
             $alumno->idDireccion = $domicilio->idDireccion;
             $alumno->esForaneo = $request->foraneo;
+            $grado_grupo_alumno->idGrado = $request->grado;
+            $grado_grupo_alumno->idGrupo = $request->grupo;
+            $grado_grupo_alumno->idCiclo = $request->ciclos;
+            /*
             $alumno->idGrado = $request->grado["idGrado"];
             $alumno->idGrupo = $request->grupo;
+            */
             $alumno->idMateria = $request->taller["idMateria"];
             $alumno->idTutor = $request->tutor["idTutor"];
 
@@ -1245,8 +1321,10 @@ class AdminController extends Controller
             }
 
             $alumno->save();
+            $grado_grupo_alumno->save();
             return redirect()->route('admin.tutoresAlum')->with(['message' => "Alumno actualizado correctamente: " . $nombreCompleto . ".", "color" => "green"]);
         } catch (Exception $e) {
+            dd($e);
             return redirect()->route('admin.tutoresAlum')->With(["message" => "Error al actualizar la informacion del alumno.", "color" => "red"]);
         }
     }
@@ -1256,6 +1334,9 @@ class AdminController extends Controller
         try {
             $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'estudiante')->first();
             $alumno = alumnos::find($idAlumno);
+            $grado_grupo_alumno = grado_grupo_alumno::where('idAlumno', $alumno->idAlumno)
+                ->where('estatus', '1')
+                ->first();
             //Alumnos y clases
             $calif_Per = calificaciones_periodos::where('idAlumno', $alumno->idAlumno)->get();
             $calificaciones = calificaciones::where('idAlumno', $alumno->idAlumno)->get();
@@ -1282,6 +1363,7 @@ class AdminController extends Controller
             $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                 ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
                 ->first();
+            $grado_grupo_alumno->delete();
             $alumno->delete();
             $usuarioTipoUsuario->delete();
             $usuario->delete();
@@ -1310,6 +1392,9 @@ class AdminController extends Controller
                 $calif_Per = calificaciones_periodos::where('idAlumno', $alumno->idAlumno)->get();
                 $calificaciones = calificaciones::where('idAlumno', $alumno->idAlumno)->get();
                 $cl_alumnos = clases_alumnos::where('idAlumno', $alumno->idAlumno)->get();
+                $grado_grupo_alumno = grado_grupo_alumno::where('idAlumno', $alumno->idAlumno)
+                    ->where('estatus', '1')
+                    ->first();
 
                 if (!$calif_Per->isEmpty()) {
                     foreach ($calif_Per as $c_per) {
@@ -1331,6 +1416,7 @@ class AdminController extends Controller
                 $usuarioTipoUsuario = usuarios_tiposUsuarios::where('idUsuario', $usuario->idUsuario)
                     ->where('idTipoUsuario', $tipoUsuario->idTipoUsuario)
                     ->first();
+                $grado_grupo_alumno->delete();
                 $alumno->delete();
                 $usuarioTipoUsuario->delete();
                 $usuario->delete();
@@ -1352,7 +1438,7 @@ class AdminController extends Controller
 
         if ($existingMateria) {
             // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
-            return redirect()->route('admin.materias')->with(['message'=> "La materia ya está registrada: " . $request->materia, "color" => "red"]);
+            return redirect()->route('admin.materias')->with(['message' => "La materia ya está registrada: " . $request->materia, "color" => "red"]);
         }
 
         // Si la materia no existe, proceder a agregarla a la base de datos
@@ -1363,7 +1449,7 @@ class AdminController extends Controller
 
         $materia->save();
 
-        return redirect()->route('admin.materias')->with(['message'=> "Materia agregada correctamente: " . $materia->materia, "color" => "green"]);
+        return redirect()->route('admin.materias')->with(['message' => "Materia agregada correctamente: " . $materia->materia, "color" => "green"]);
     }
 
     public function eliminarMaterias($idMateria)
@@ -1407,7 +1493,7 @@ class AdminController extends Controller
         ]);
 
         $materias->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.materias')->with(['message'=> "Materia actualizada correctamente: " . $materias->materia, "color" => "green"]);
+        return redirect()->route('admin.materias')->with(['message' => "Materia actualizada correctamente: " . $materias->materia, "color" => "green"]);
     }
 
     public function getMaterias($searchTerm)
@@ -1433,28 +1519,28 @@ class AdminController extends Controller
 
             // Verificar si la clase ya existe
             $claseExistente = clases::where([
-                'idGrado' => $request->grados['idGrado'],
+                'idGrado' => $request->grados,
                 'idGrupo' => $request->grupos,
-                'idPersonal' => $request->personal,
+                'idPersonal' => $request->personal['idPersonal'],
                 'idMateria' => $request->materias,
                 'idCiclo' => $request->ciclos,
             ])->first();
 
             if ($claseExistente) {
-                return redirect()->route('admin.clases')->with('message', 'La clase no se puede agregar, porque ya se encunetra registrado.');
+                return redirect()->route('admin.clases')->with(['message' => 'La clase no se puede agregar, porque ya se encunetra registrado.', 'color' => 'yellow']);
             }
 
             // Crear y guardar la nueva clase
             $clase = new clases();
-            $clase->idGrado = $request->grados['idGrado'];
+            $clase->idGrado = $request->grados;
             $clase->idGrupo = $request->grupos;
-            $clase->idPersonal = $request->personal;
+            $clase->idPersonal = $request->personal['idPersonal'];
             $clase->idMateria = $request->materias;
             $clase->idCiclo = $request->ciclos;
 
             $clase->save();
 
-            return redirect()->route('admin.clases')->with('message', "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo);
+            return redirect()->route('admin.clases')->with(['message' => "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo, 'color' => 'green']);
         } catch (Exception $e) {
             Log::info('Error en guardar la clase: ' . $e);
             return redirect()->route('admin.clases')->withErrors(['message' => 'Error al guardar la clase.', "color" => "red"]);
@@ -1463,61 +1549,134 @@ class AdminController extends Controller
 
     public function eliminarClases($idClase)
     {
-        $clase = clases::find($idClase);
-        $clase->delete();
-        return redirect()->route('admin.clases')->with(['message' => "Clase eliminada correctamente", "color" => "green"]);
+        try {
+            $clase = clases::find($idClase);
+            $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+            $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
+            $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+            $actividades = actividades::where('idClase', $clase->idClase)->get();
+
+            if (!$calificacionesPeriodos->isEmpty()) {
+                foreach ($calificacionesPeriodos as $calPer) {
+                    $calPer->delete();
+                }
+            }
+            if (!$calificaciones->isEmpty()) {
+                foreach ($calificaciones as $calificacion) {
+                    $calificacion->delete();
+                }
+            }
+            if (!$clases_alumnos->isEmpty()) {
+                foreach ($clases_alumnos as $clasAlu) {
+                    $clasAlu->delete();
+                }
+            }
+            if (!$actividades->isEmpty()) {
+                foreach ($actividades as $actividad) {
+                    $actividad->delete();
+                }
+            }
+            $clase->delete();
+            return redirect()->route('admin.clases')->with(['message' => "Clase eliminada correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.clases')->with(['message' => "Error al eliminar la clase", "color" => "red"]);
+        }
     }
 
     public function elimClases($clasesIds)
     {
-        try {
-            // Convierte la cadena de IDs en un array
-            $clasesIdsArray = explode(',', $clasesIds);
+        if (Auth::check()) {
+            try {
+                // Convierte la cadena de IDs en un array
+                $clasesIdsArray = explode(',', $clasesIds);
 
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $clasesIdsArray = array_map('intval', $clasesIdsArray);
+                // Limpia los IDs para evitar posibles problemas de seguridad
+                $clasesIdsArray = array_map('intval', $clasesIdsArray);
 
-            // Elimina los ciclos
-            clases::whereIn('idClase', $clasesIdsArray)->delete();
+                for ($i = 0; $i < count($clasesIdsArray); $i++) {
+                    $clase = clases::find($clasesIdsArray[$i]);
+                    $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+                    $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
+                    $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+                    $actividades = actividades::where('idClase', $clase->idClase)->get();
 
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.clases')->with('message', "Clases eliminadas correctamente");
-        } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+                    if (!$calificacionesPeriodos->isEmpty()) {
+                        foreach ($calificacionesPeriodos as $calPer) {
+                            $calPer->delete();
+                        }
+                    }
+                    if (!$calificaciones->isEmpty()) {
+                        foreach ($calificaciones as $calificacion) {
+                            $calificacion->delete();
+                        }
+                    }
+                    if (!$clases_alumnos->isEmpty()) {
+                        foreach ($clases_alumnos as $clasAlu) {
+                            $clasAlu->delete();
+                        }
+                    }
+                    if (!$actividades->isEmpty()) {
+                        foreach ($actividades as $actividad) {
+                            $actividad->delete();
+                        }
+                    }
+                    $clase->delete();
+                }
+
+                return redirect()->route('admin.clases')->with(['message' => "Clases eliminadas correctamente", "color" => "green"]);
+            } catch (\Exception $e) {
+                return redirect()->route('admin.clases')->with(['message' => "Error al eliminar las clases seleccionadas", "color" => "red"]);
+            }
         }
+        return redirect()->route('admin.inicio')->with(['message' => "No tiene acceso a esta función", "color" => "red"]);
     }
 
     public function actualizarClases(Request $request, $idClase)
     {
-        try {
-            $clases = clases::find($idClase);
-            $request->validate([
-                'grados' => 'required',
-                'grupos' => 'required',
-                'personal' => 'required',
-                'materias' => 'required',
-                'ciclos' => 'required',
-            ]);
+        if (Auth::check()) {
+            try {
+                $clases = clases::find($idClase);
+                $request->validate([
+                    'grados' => 'required',
+                    'grupos' => 'required',
+                    'personal' => 'required',
+                    'materias' => 'required',
+                    'ciclos' => 'required',
+                ]);
 
-            $clases->idGrupo = $request->grupos;
-            $clases->idGrado = $request->grados;
-            $clases->idPersonal = $request->personal;
-            $clases->idMateria = $request->materias;
-            $clases->idCiclo = $request->ciclos;
+                $conflictingClase = clases::where('idClase', '!=', $idClase) // Excluir el propio periodo que se está actualizando
+                    ->where(function ($query) use ($request) {
+                        $query->where(function ($subquery) use ($request) {
+                            $subquery->where('idGrado', $request->grados)
+                                ->where('idGrupo', $request->grupos)
+                                ->where('idPersonal', $request->personal['idPersonal'])
+                                ->where('idMateria', $request->materias)
+                                ->where('idCiclo', $request->ciclos);
+                        });
+                    })
+                    ->first();
 
-            $clases->fill($request->input())->saveOrFail();
-            //return redirect()->route('admin.clases')->with('message',"Clase actualizada correctamente");
+                if ($conflictingClase) {
+                    return redirect()->route('admin.clases')->with(['message' => "Los datos de la clase ya existen.", "color" => "yellow"]);
+                }
 
-        } catch (Exception $e) {
-            dd($e);
+                $clases->idGrupo = $request->grupos;
+                $clases->idGrado = $request->grados;
+                $clases->idPersonal = $request->personal['idPersonal'];
+                $clases->idMateria = $request->materias;
+                $clases->idCiclo = $request->ciclos;
+
+                $clases->save();
+                //return redirect()->route('admin.clases')->with('message',"Clase actualizada correctamente");
+
+            } catch (Exception $e) {
+                return redirect()->route('admin.clases')->with(['message' => "Error al actualizar la clase.", "color" => "red"]);
+            }
+
+            //$clases->fill($request->input())->saveOrFail();
+            return redirect()->route('admin.clases')->with(['message' => "Clase actualizada correctamente.", "color" => "green"]);
         }
-
-        //$clases->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.clases')->with('message', "Clase actualizada correctamente");
+        return redirect()->route('admin.inicio')->with(['message' => "No se tiene acceso a esta función.", "color" => "red"]);
     }
 
     public function getClases($searchTerm)
@@ -1536,79 +1695,101 @@ class AdminController extends Controller
 
     public function addGrados(Request $request)
     {
-        $request->validate([
-            'ciclos' => 'required',
-            'grado' => 'required',
-        ]);
+        try {
+            $request->validate([
+                //'ciclos' => 'required',
+                'grado' => 'required',
+            ]);
 
-        // Verifica si ya existe un grado con el mismo valor en la base de datos
-        $existingGrado = grados::where('grado', $request->grado)
-            ->where('idCiclo', $request->ciclos)
-            ->first();
+            // Verifica si ya existe un grado con el mismo valor en la base de datos
+            $existingGrado = grados::where('grado', $request->grado)
+                //->where('idCiclo', $request->ciclos)
+                ->first();
 
-        if ($existingGrado) {
-            return redirect()->route('admin.gradosgrupos')->with(['message' => "El grado ya está registrado", "color" => "red"]);
+            if ($existingGrado) {
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "El grado ya está registrado", "color" => "red"]);
+            }
+
+            $grado = new grados();
+            $grado->grado = $request->grado;
+            //$grado->idCiclo = $request->ciclos;
+
+            $grado->save();
+
+            return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado agregado correctamente: " . $grado->grado, "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al agregar el grado.", "color" => "red"]);
         }
-
-        $grado = new grados();
-        $grado->grado = $request->grado;
-        $grado->idCiclo = $request->ciclos;
-
-        $grado->save();
-
-        return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado agregado correctamente: " . $grado->grado, "color" => "green"]);
     }
 
     public function eliminarGrados($idGrado)
     {
-        $grado = grados::find($idGrado);
-        $grado->delete();
-        return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado eliminado correctamente", "color" => "green"]);
+        if (Auth::check()) {
+            try {
+                $grado = grados::find($idGrado);
+                $grado->delete();
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado eliminado correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al eliminar el grado.", "color" => "red"]);
+            }
+        }
+        return redirect()->route('admin.gradosgrupos')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
     }
 
     public function elimGrados($gradosIds)
     {
-        try {
-            // Convierte la cadena de IDs en un array
-            $gradosIdsArray = explode(',', $gradosIds);
+        if (Auth::check()) {
+            try {
+                $gradosIdsArray = explode(',', $gradosIds);
 
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $gradosIdsArray = array_map('intval', $gradosIdsArray);
+                $gradosIdsArray = array_map('intval', $gradosIdsArray);
 
-            // Elimina los ciclos
-            grados::whereIn('idGrado', $gradosIdsArray)->delete();
+                grados::whereIn('idGrado', $gradosIdsArray)->delete();
 
-            // Redirige a la página deseada después de la eliminación
-
-            return redirect()->route('admin.gradosgrupos')->with(['message' =>'message', "Grados eliminados correctamente", "color" => "green"]);
-        } catch (\Exception $e) {
-            // Manejo de errores
-            dd($e);
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Grados eliminados correctamente", "color" => "green"]);
+            } catch (\Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al eliminar los grados", "color" => "red"]);
+            }
+            return redirect()->route('admin.gradosgrupos')->with(['message' => "No tienes acceso a esta función", "color" => "red"]);
         }
     }
 
     public function actualizarGrados(Request $request, $idGrado)
     {
-        try {
-            $grados = grados::find($idGrado);
-            $request->validate([
-                'grado' => 'required',
-                'ciclos' => 'required',
-            ]);
+        if (Auth::check()) {
+            try {
+                $grados = grados::find($idGrado);
+                $request->validate([
+                    'grado' => 'required',
+                    //'ciclos' => 'required',
+                ]);
 
-            $grados->grado = $request->grado;
-            $grados->idCiclo = $request->ciclos;
+                $conflictingGrado = grados::where('idGrado', '!=', $idGrado) // Excluir el propio periodo que se está actualizando
+                    ->where(function ($query) use ($request) {
+                        $query->where(function ($subquery) use ($request) {
+                            $subquery->where('grado', $request->grado);
+                        });
+                    })
+                    ->first();
 
-            $grados->fill($request->input())->saveOrFail();
-        } catch (Exception $e) {
-            dd($e);
+                if ($conflictingGrado) {
+                    return redirect()->route('admin.gradosgrupos')->with(['message' => "El grado ya existe.", "color" => "yellow"]);
+                }
+                $grados->grado = $request->grado;
+                //$grados->idCiclo = $request->ciclos;
+
+                $grados->save();
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al actualizar el grado. ", "color" => "red"]);
+            }
+
+            //$grados->fill($request->input())->saveOrFail();
+            return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado actualizado correctamente: " . $grados->grado, "color" => "green"]);
         }
-
-        //$grados->fill($request->input())->saveOrFail();
-        return redirect()->route('admin.gradosgrupos')->with(['message' => "Grado actualizado correctamente: " . $grados->grado, "color" => "green"]);
+        return redirect()->route('admin.gradosgrupos')->with(['message' => "No tienes acceso a esta función. ", "color" => "red"]);
     }
 
     public function getGrados($searchTerm)
@@ -1635,55 +1816,73 @@ class AdminController extends Controller
 
     public function addGrupos(Request $request)
     {
-        $request->validate([
-            'grupo' => 'required',
-            'ciclos' => 'required',
-        ]);
+        if (Auth::check()) {
+            try {
+                $request->validate([
+                    'grupo' => 'required',
+                    //'ciclos' => 'required',
+                ]);
 
-        // Verificar si ya existe un grupo con los mismos datos
-        $existingGroup = grupos::where('grupo', $request->grupo)
-            ->where('idCiclo', $request->ciclos)
-            ->first();
+                // Verificar si ya existe un grupo con los mismos datos
+                $existingGroup = grupos::where('grupo', $request->grupo)
+                    //->where('idCiclo', $request->ciclos)
+                    ->first();
 
-        if ($existingGroup) {
-            return redirect()->route('admin.gradosgrupos')->with(['message' => 'El grupo ya está registrado.', "color" => "red"]);
+                if ($existingGroup) {
+                    return redirect()->route('admin.gradosgrupos')->with(['message' => 'El grupo ya está registrado.', "color" => "red"]);
+                }
+
+                // Si no existe, proceder con el registro
+                $grupo = new grupos();
+                $grupo->grupo = $request->grupo;
+                //$grupo->idCiclo = $request->ciclos;
+                $grupo->save();
+
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Grupo agregado correctamente: " . $grupo->grupo, "color" => "green"]);
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al agregar el grupo", "color" => "red"]);
+            }
         }
-
-        // Si no existe, proceder con el registro
-        $grupo = new grupos();
-        $grupo->grupo = $request->grupo;
-        $grupo->idCiclo = $request->ciclos;
-        $grupo->save();
-
-        return redirect()->route('admin.gradosgrupos')->with(['message' => "Grupo agregado correctamente: " . $grupo->grupo, "color" => "green"]);
+        return redirect()->route('admin.inicio')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
     }
 
     public function eliminarGrupos($idGrupo)
     {
-        $grupo = grupos::find($idGrupo);
-        $grupo->delete();
-        return redirect()->route('admin.gradosgrupos')->with(['message' =>'message', "Grupo eliminada correctamente", "color" => "green"]);
+        if (Auth::check()) {
+            try {
+                $grupo = grupos::find($idGrupo);
+                $grupo->delete();
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Grupo eliminada correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                Log::info("Error: " . $e->getMessage());
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al eliminar el grupo", "color" => "red"]);
+            }
+            return redirect()->route('admin.inicio')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
+        }
     }
 
     public function elimGrupos($gruposIds)
     {
-        try {
-            // Convierte la cadena de IDs en un array
-            $gruposIdsArray = explode(',', $gruposIds);
+        if (Auth::check()) {
+            try {
+                // Convierte la cadena de IDs en un array
+                $gruposIdsArray = explode(',', $gruposIds);
 
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $gruposIdsArray = array_map('intval', $gruposIdsArray);
+                // Limpia los IDs para evitar posibles problemas de seguridad
+                $gruposIdsArray = array_map('intval', $gruposIdsArray);
 
-            // Elimina los ciclos
-            grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
+                // Elimina los ciclos
+                grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
 
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('admin.gradosgrupos')->with(['message' => "Grupos eliminadas correctamente", "color" => "green"]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
+                // Redirige a la página deseada después de la eliminación
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Grupos eliminados correctamente", "color" => "green"]);
+            } catch (\Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al eliminar los grupos", "color" => "red"]);
+            }
         }
+        return redirect()->route('admin.inicio')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
     }
 
     public function actualizarGrupos(Request $request, $idGrupo)
@@ -1692,13 +1891,27 @@ class AdminController extends Controller
             $grupos = grupos::find($idGrupo);
             $request->validate([
                 'grupo' => 'required',
-                'ciclos' => 'required',
+                //'ciclos' => 'required',
             ]);
-            $grupos->grupo = $request->grupo;
-            $grupos->idCiclo = $request->ciclos;
 
-            $grupos->fill($request->input())->saveOrFail();
+            $conflictingGrupo = grupos::where('idGrupo', '!=', $idGrupo) // Excluir el propio periodo que se está actualizando
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('grupo', $request->grupo);
+                    });
+                })
+                ->first();
+
+            if ($conflictingGrupo) {
+                return redirect()->route('admin.gradosgrupos')->with(['message' => "El grupo ya existe.", "color" => "yellow"]);
+            }
+            $grupos->grupo = $request->grupo;
+            //$grupos->idCiclo = $request->ciclos;
+
+            $grupos->save();
         } catch (Exception $e) {
+            Log::info("Error: " . $e);
+            return redirect()->route('admin.gradosgrupos')->with(['message' => "Error al actualizar el grupo.", "color" => "yellow"]);
         }
         return redirect()->route('admin.gradosgrupos')->with(['message' => "Grupo actualizado correctamente: " . $grupos->grupo, "color" => "green"]);
     }

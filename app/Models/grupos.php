@@ -17,14 +17,16 @@ class grupos extends Model
 
     protected $fillable = [
         'grupo',
+        /*
         'idCiclo',
+        */
     ];
-
+    /*
     public function ciclos(): HasOne
     {
         return $this->hasOne(ciclos::class, 'idCiclo', 'idCiclo');
     }
-
+    */
     public function alumnos(): BelongsToMany
     {
         return $this->belongsToMany(alumnos::class, 'idGrupo', 'idGrupo');
@@ -33,5 +35,10 @@ class grupos extends Model
     public function clases(): BelongsToMany
     {
         return $this->belongsToMany(clases::class, 'idGrupo', 'idGrupo');
+    }
+
+    public function grado_grupo_alumno(): BelongsToMany
+    {
+        return $this->belongsToMany(grado_grupo_alumno::class, 'idGrupo', 'idGrupo');
     }
 }

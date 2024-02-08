@@ -27,8 +27,10 @@ return new class extends Migration
             $table->string(column:'discapacidad')->nullable(true);
             $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
             $table->boolean(column:'esForaneo');
+            /*
             $table->foreignId(column: 'idGrado')->references('idGrado')->on('grados');
             $table->foreignId(column: 'idGrupo')->references('idGrupo')->on('grupos');
+            */
             $table->foreignId(column: 'idMateria')->references('idMateria')->on('materias')->nullable();
             $table->foreignId(column: 'idTutor')->references('idTutor')->on('tutores');
             $table->foreignId(column: 'idUsuario')->references('idUsuario')->on('usuarios');

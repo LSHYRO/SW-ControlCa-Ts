@@ -28,7 +28,7 @@ DataTable.use(Select);
 
 const props = defineProps({
     grupos: { type: Object },
-    ciclos: { type: Object },
+    //ciclos: { type: Object },
 
 });
 
@@ -67,7 +67,7 @@ const columnsGrupos = [
     {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
-    { data: 'grupo' },
+    { data: 'grupo' },/*
     {
         data: 'idCiclo',
         render: function (data, type, row, meta) {
@@ -75,7 +75,7 @@ const columnsGrupos = [
             const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === data);
             return ciclo ? ciclo.descripcionCiclo : '';
         }
-    },
+    },*/
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idGrupo}"><i class="fa fa-pencil"></i></button>`;
@@ -265,7 +265,7 @@ const optionsGrupo = {
         </div>
         <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
         <!-- Línea con gradiente -->
-        <div class="overflow-x-auto">
+        <div class="">
             <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column" id="gruposTablaId"
                 :columns="columnsGrupos" :data="grupos" :options="optionsGrupo">
                 <thead>
@@ -281,10 +281,12 @@ const optionsGrupo = {
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             Grupo
                         </th>
+                        <!--
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             Ciclo
                         </th>
+                        -->
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         </th>

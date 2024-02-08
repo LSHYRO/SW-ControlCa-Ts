@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('grados', function (Blueprint $table) {
             $table->id(column:'idGrado');
             $table->integer(column:'grado')->nullable(false);
+            /*
             $table->foreignId(column:'idCiclo')->references('idCiclo')->on('ciclos');
+            */
             $table->timestamps();
         });
     }

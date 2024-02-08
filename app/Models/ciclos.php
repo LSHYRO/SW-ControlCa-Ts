@@ -44,6 +44,11 @@ class ciclos extends Model
     {
         return $this->belongsToMany(ciclos::class, 'idCiclo', 'idCiclo');
     }
+
+    public function grado_grupo_alumno(): BelongsToMany
+    {
+        return $this->belongsToMany(grado_grupo_alumno::class, 'idCiclo', 'idCiclo');
+    }
     /*
     protected function fechaInicio(): Attribute
     {

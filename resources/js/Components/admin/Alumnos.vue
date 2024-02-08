@@ -34,8 +34,10 @@ const props = defineProps({
     alumnos: { type: Object },
     generos: { type: Object },
     grados: { type: Object },
+    grupos: { type: Object },
     tipoSangre: { type: Object },
     talleres: { type: Object },
+    ciclos: { type: Object },
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -239,6 +241,12 @@ const eliminarAlumnos = () => {
                 await form.delete(route('admin.elimAlumnos', $alumnosIds));
                 // Limpia las materias seleccionadas después de la eliminación
                 alumnosSeleccionados.value = [];
+                const botonEliminar = document.getElementById("eliminarABtn");
+                if (alumnosSeleccionados.value.length > 0) {
+                    botonEliminar.removeAttribute("disabled");
+                } else {
+                    botonEliminar.setAttribute("disabled", "");
+                }
             } catch (error) {
                 console.log("Error al eliminar varios alumnos: " + error);
             }
@@ -318,7 +326,7 @@ onMounted(() => {
                         infoFiltered: '(filtrado de un total de _MAX_ registros)',
                         lengthMenu: 'Mostrar _MENU_ registros',
                         paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                    }, buttons: [botones2], 
+                    }, buttons: [botones2],
                 }">
                 <thead>
                     <tr class="text-sm leading-normal">
@@ -413,10 +421,12 @@ onMounted(() => {
     </div>
     <formulario-alumnos :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
         :title="'Añadir alumno'" :op="'1'" :modal="'modalCreate'" :generos="props.generos" :talleres="props.talleres"
-        :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
+        :tipoSangre="props.tipoSangre" :grados="props.grados" :grupos="props.grupos"
+        :ciclos="props.ciclos"></formulario-alumnos>
     <formulario-alumnos :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
         :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :alumno="alumnoE" :generos="props.generos"
-        :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
+        :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados" :grupos="props.grupos"
+        :ciclos="props.ciclos"></formulario-alumnos>
 </template>
 <style>
 .swal2-popup {

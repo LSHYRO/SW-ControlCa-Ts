@@ -29,7 +29,7 @@ DataTable.use(Select);
 const props = defineProps({
     grados: { type: Object },
     grupos: { type: Object },
-    ciclos: { type: Object },
+    //ciclos: { type: Object },
 
 });
 
@@ -69,6 +69,7 @@ const columnsGrados = [
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     { data: 'grado' },
+    /*
     {
         data: 'idCiclo',
         render: function (data, type, row, meta) {
@@ -77,6 +78,7 @@ const columnsGrados = [
             return ciclo ? ciclo.descripcionCiclo : '';
         }
     },
+    */
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idGrado}"><i class="fa fa-pencil"></i></button>`;
@@ -143,7 +145,7 @@ const eliminarGrado = (idGrado, grado) => {
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + grado + '?',
+        title: `¿Estas seguro que deseas eliminar el ` + grado + '?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -268,7 +270,7 @@ const optionsGrado = {
         </div>
         <!--<div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>-->
         <!-- Línea con gradiente -->
-        <div class="overflow-x-auto">
+        <div class="">
             <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column" id="gradosTablaId"
                 :columns="columnsGrados" :data="grados" :options="optionsGrado">
                 <thead>
@@ -284,10 +286,12 @@ const optionsGrado = {
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             Grado
                         </th>
+                        <!--
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             Ciclo
                         </th>
+                        -->
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         </th>
@@ -300,7 +304,7 @@ const optionsGrado = {
         </div>
     </div>
     <formulario-grado :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-        :title="'Añadir grado'" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"></formulario-grado>
+        :title="'Añadir grado'" :op="'1'" :modal="'modalCreate'" ></formulario-grado>
     <formulario-grado :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar grado'" :op="'2'" :modal="'modalEdit'" :grados="gradoE" :ciclos="props.ciclos"></formulario-grado>
+        :title="'Editar grado'" :op="'2'" :modal="'modalEdit'" :grados="gradoE" ></formulario-grado>
 </template>

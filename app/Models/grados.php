@@ -17,14 +17,16 @@ class grados extends Model
 
     protected $fillable = [
         'grado',
+        /*
         'idCiclo',
+        */
     ];
-
+    /*
     public function ciclos(): HasOne
     {
         return $this->hasOne(ciclos::class, 'idCiclo', 'idCiclo');
     }
-
+    */
     public function alumnos(): BelongsToMany
     {
         return $this->belongsToMany(alumnos::class, 'idGrado', 'idGrado');
@@ -33,5 +35,10 @@ class grados extends Model
     public function clases(): BelongsToMany
     {
         return $this->belongsToMany(clases::class, 'idGrado', 'idGrado');
+    }
+
+    public function grado_grupo_alumno(): BelongsToMany
+    {
+        return $this->belongsToMany(grado_grupo_alumno::class, 'idGrado', 'idGrado');
     }
 }

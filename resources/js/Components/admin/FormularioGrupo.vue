@@ -22,11 +22,11 @@ const props = defineProps({
     grupos: {
         type: Object,
         default: () => ({}),
-    },
+    },/*
     ciclos: {
         type: Object,
         default: () => ({}),
-    },
+    },*/
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -45,14 +45,14 @@ const close = () => {
 const form = useForm({
     idGrupo: props.grupos.idGrupo,
     grupo: props.grupos.grupo,
-    ciclos: props.grupos.idCiclo,//Le agregué la s
-    ciclos: props.grupos.descripcionCiclo//Le agregue la s a ciclo
+    //ciclos: props.grupos.idCiclo,//Le agregué la s
+    //ciclos: props.grupos.descripcionCiclo//Le agregue la s a ciclo
 
 });
 
 // Variables para los mensajes de validación
 const grupoError = ref('');
-const ciclosError = ref('');
+//const ciclosError = ref('');
 
 // Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
@@ -69,10 +69,10 @@ const validateSelect = (selectedValue) => {
 
 const save = () => {
     grupoError.value = validateStringNotEmpty(form.grupo) ? '' : 'Ingrese el grupo';
-    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+    //ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
-        grupoError.value || ciclosError.value
+        grupoError.value //|| ciclosError.value
     ) {
 
         return;
@@ -82,17 +82,17 @@ const save = () => {
         onSuccess: () => {
             close()
             grupoError.value = '';
-            ciclosError.value = '';
+            //ciclosError.value = '';
         }
     });
 }
 
 const update = () => {
     grupoError.value = validateStringNotEmpty(form.grupo) ? '' : 'Ingrese el grupo';
-    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+    //ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
-        grupoError.value || ciclosError.value
+        grupoError.value //|| ciclosError.value
     ) {
 
         return;
@@ -105,7 +105,7 @@ const update = () => {
         onSuccess: () => {
             close()
             grupoError.value = '';
-            ciclosError.value = '';
+            //ciclosError.value = '';
         }
     });
 }
@@ -113,7 +113,7 @@ const update = () => {
 watch(() => props.grupos, (newVal) => {
     form.idGrupo = newVal.idGrupo;
     form.grupo = newVal.grupo;
-    form.ciclos = newVal.idCiclo;
+    //form.ciclos = newVal.idCiclo;
 }, { deep: true });
 
 </script>
@@ -149,7 +149,7 @@ watch(() => props.grupos, (newVal) => {
                             </div>
                             <div v-if="grupoError != ''" class="text-red-500 text-xs">{{ grupoError }}</div>
                         </div>
-
+                        <!--
                         <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
@@ -163,7 +163,7 @@ watch(() => props.grupos, (newVal) => {
                             </div>
                             <div v-if="ciclosError != ''" class="text-red-500 text-xs">{{ ciclosError }}</div>
                         </div>
-
+                        -->
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">

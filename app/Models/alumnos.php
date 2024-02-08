@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -30,15 +31,17 @@ class alumnos extends Model
         'discapacidad',
         'idDireccion',
         'esForaneo',
+        /*
         'idGrado',
         'idGrupo',
+        */
         'idMateria',
         'idTutor',
         'idUsuario',
         'nombre_completo',
     ];
 
-    public function clases()
+    public function clases(): HasMany
     {
     return $this->hasMany(clases::class, 'idAlumno');
     }
@@ -106,5 +109,10 @@ class alumnos extends Model
     public function clasesInscritas()
     {
         return $this->belongsToMany(clases::class, 'clases_alumnos', 'idAlumno', 'idClase');
+    }
+
+    public function grado_grupo_alumno(): BelongsToMany
+    {
+        return $this->belongsToMany(grado_grupo_alumno::class, 'idAlumno', 'idAlumno');
     }
 }

@@ -15,6 +15,7 @@ const props = defineProps({
     generos: { type: Object },
     grados: { type: Object},
     grupos: { type: Object },
+    ciclos: { type: Object },
     tipoSangre: { type: Object },
     talleres: { type: Object },
     usuario: { type: Object }
@@ -73,7 +74,7 @@ onMounted(() => {
                 <Tutores :tutores="props.tutores" :generos="props.generos"></Tutores>
             </div>
             <div v-if="alumnosB">
-                <Alumnos :alumnos="props.alumnos" :talleres="props.talleres" :generos="props.generos" :grados="props.grados"  :tipoSangre="props.tipoSangre"> </Alumnos>                
+                <Alumnos :alumnos="props.alumnos" :talleres="props.talleres" :generos="props.generos" :grados="props.grados" :grupos="props.grupos" :tipoSangre="props.tipoSangre" :ciclos="props.ciclos"> </Alumnos>                
             </div>
         </div>
     </AdminLayout>
