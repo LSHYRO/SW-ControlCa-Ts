@@ -40,6 +40,14 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    grupos: {
+        type: Object,
+        default: () => ({}),
+    },
+    ciclos: {
+        type: Object,
+        default: () => ({}),
+    },
     talleres: {
         type: Object,
         default: () => ({}),
@@ -57,7 +65,8 @@ const estados = ref([]);
 const municipios = ref([]);
 const asentamientos = ref([]);
 const tutores = ref([]);
-const grupos = ref([]);
+//const grupos = ref([]);
+const ciclosError = ref('');
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +106,7 @@ const form = useForm({
     curp: props.alumno.CURP,    
     alergias: props.alumno.alergias,
     discapacidad: props.alumno.discapacidad,
-    grado: props.alumno.gradoC,
+    grado: props.alumno.idGrado,
     grupo: props.alumno.idGrupo,
     calle: props.alumno.calle,
     numero: props.alumno.numero,
@@ -110,6 +119,8 @@ const form = useForm({
     tutor: props.alumno.tutorC,
     foraneo: props.alumno.esForaneo,
     taller: props.alumno.materias,
+    ciclos: props.alumno.idCiclo,
+    idGradGrupAl: props.alumno.idGradGrupAl,
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -129,8 +140,8 @@ watch(() => props.alumno, async (newVal) => {
     form.curp = newVal.CURP;
     form.alergias = newVal.alergias;
     form.discapacidad = newVal.discapacidad;
-    form.grado = await newVal.gradoC;    
-    form.grupo = newVal.idGrupo;
+    form.grado = await newVal.idGrado;    
+    form.grupo = await newVal.idGrupo;
     form.calle = newVal.calle;
     form.numero = newVal.numero;
     form.codigoPostal = await newVal.codigoPos;
@@ -145,6 +156,8 @@ watch(() => props.alumno, async (newVal) => {
     form.tutor = newVal.tutorC;
     form.foraneo = newVal.esForaneo;
     form.taller = newVal.materias;
+    form.ciclos = newVal.idCiclo;
+    form.idGradGrupAl = newVal.idGradGrupAl;
 }, { deep: true }
 );
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,12 +281,13 @@ const save = async () => {
     codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
     //  taller
     //tallerError.value = validateSelect(form.taller) ? '' : 'Seleccione el taller';
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
         nombreError.value || apellidoMError.value || apellidoPError.value ||
         correoEError.value || codigoPError.value || numeroTError.value || calleError.value ||
         numeroCError.value || generoError.value || fechaNError.value || gradoError.value || grupoError.value ||
-        curpError.value || tipoSError.value || tutorError.value //|| tallerError.value
+        curpError.value || tipoSError.value || tutorError.value || ciclosError.value //|| tallerError.value
     ) {
 
         return;
@@ -302,6 +316,7 @@ const save = async () => {
             curpError.value = '';
             tutorError.value = '';
             tallerError.value = '';
+            ciclosError.value = '';
         }
     });
 }
@@ -345,13 +360,15 @@ const update = async () => {
     // Verificar que el codigo postal sea al correspondiente
     codigoPError.value = await validatePostal(form.asentamiento) ? '' : 'Ingrese el codigo postal correcto';
     //  taller
-    //tallerError.value = validateSelect(form.taller) ? '' : 'Seleccione el taller';
+    tallerError.value = validateSelect(form.taller) ? '' : 'Seleccione el taller';
+
+    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
         nombreError.value || apellidoMError.value || apellidoPError.value ||
         correoEError.value || codigoPError.value || numeroTError.value || calleError.value ||
         numeroCError.value || generoError.value || fechaNError.value || gradoError.value || grupoError.value ||
-        curpError.value || tipoSError.value || tutorError.value //|| tallerError.value
+        curpError.value || tipoSError.value || tutorError.value || ciclosError.value//|| tallerError.value
     ) {
 
         return;
@@ -378,7 +395,8 @@ const update = async () => {
             fechaNError.value = '';
             curpError.value = '';
             tutorError.value = '';
-            //tallerError.value = '';
+            tallerError.value = '';
+            ciclosError.value = '';
         }
     });
 }
@@ -413,7 +431,7 @@ const cargarAsentamientos = async () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-const obtenerGruposXGrado = async () => {
+/* const obtenerGruposXGrado = async () => {
     const grupoS = document.getElementById('grupo' + props.op);
     grupoS.removeAttribute("disabled");
     try {
@@ -423,7 +441,7 @@ const obtenerGruposXGrado = async () => {
     } catch (error) {
         console.log('Error al obtener grupos: ', error);
     }
-};
+}; */
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -477,9 +495,9 @@ const obtenerInformacion = (query) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Un watch para observar el formulario para el form.grado
-watch(() => form.grado, async () => {
+/* watch(() => form.grado, async () => {
     await obtenerGruposXGrado();
-})
+}) */
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -649,12 +667,15 @@ onMounted(async () => {
                         <div class="sm:col-span-2">
                             <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
-                                <v-select name="grado" :id="'grado' + op" v-model="form.grado"
-                                    placeholder="Seleccione el tipo de sangre"
-                                    class="grado-class-func block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    :options="grados" :filterable="true" label="descripcion" modelValue="idGrado"
-                                    modelProp="idGrado" :on-change="obtenerGruposXGrado">
-                                </v-select>
+                                <select name="grado" :id="'grado' + op" v-model="form.grado"
+                                placeholder="Seleccione el grado"
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                >
+                                <option value="" disabled selected>Seleccione un grado</option>
+                                <option v-for="grado in grados" :key="grado.idGrado" :value="grado.idGrado">
+                                    {{ grado.grado }}
+                                </option>
+                            </select>
                             </div>
                             <div v-if="gradoError != ''" class="text-red-500 text-xs mt-1">{{ gradoError }}</div>
                         </div>
@@ -662,16 +683,29 @@ onMounted(async () => {
                             <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
                             <div class="mt-2">
                                 <select name="grupo" :id="'grupo' + op" v-model="form.grupo"
-                                    placeholder="Seleccione el tipo de sangre"
+                                    placeholder="Seleccione el grupo"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    disabled>
+                                    >
                                     <option value="" disabled selected>Seleccione un grupo</option>
-                                    <option v-for="grupo in grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
-                                        {{ grupo.grupoC }}
+                                    <option v-for="grupo in props.grupos" :key="grupo.idGrupo" :value="grupo.idGrupo">
+                                        {{ grupo.grupo}}
                                     </option>
                                 </select>
                             </div>
                             <div v-if="grupoError != ''" class="text-red-500 text-xs mt-1">{{ grupoError }}</div>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
+                            <div class="mt-2">
+                                <select name="ciclo" :id="'ciclo' + op" v-model="form.ciclos"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Selecciona un ciclo</option>
+                                    <option v-for="ciclo in ciclos" :key="ciclo.idCiclo" :value="ciclo.idCiclo">
+                                        {{ ciclo.descripcionCiclo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="ciclosError != ''" class="text-red-500 text-xs">{{ ciclosError }}</div>
                         </div>
                         <div class="sm:col-span-2">
                             <label for="taller" class="block text-sm font-medium leading-6 text-gray-900">Taller</label>
@@ -776,6 +810,15 @@ onMounted(async () => {
                             <div class="mt-2">
                                 <input type="text" name="idUsuario" :id="'idUsuario' + op" v-model="form.idUsuario"
                                     placeholder="Ingrese el Usuario"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-3" hidden>
+                            <label for="idGradGrupAl"
+                                class="block text-sm font-medium leading-6 text-gray-900">idGradGrupAl</label>
+                            <div class="mt-2">
+                                <input type="text" name="idGradGrupAl" :id="'idGradGrupAl' + op" v-model="form.idGradGrupAl"
+                                    placeholder="Ingrese el gradoGrupoAlumno"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>

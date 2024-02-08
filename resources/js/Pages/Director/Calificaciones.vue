@@ -34,6 +34,8 @@ const props = defineProps({
     talleres: { type: Object },
     usuario: { type: Object },
 });
+console.log("Alumnos:");
+console.log(props.alumnos);
 /*
 const verCalificaciones = (alumnoId) => {
     console.log("Esta dentro del const verCalificaciones");
