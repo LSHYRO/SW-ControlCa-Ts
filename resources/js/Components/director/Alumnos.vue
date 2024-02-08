@@ -34,11 +34,13 @@ const props = defineProps({
     alumnos: { type: Object },
     generos: { type: Object },
     grados: { type: Object },
+    grupos: { type: Object },
     tipoSangre: { type: Object },
     talleres: { type: Object },
+    ciclos: { type: Object },
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
-console.log(props.alumnos);
+console.log(props.grupos);
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Constantes para los modales
 const mostrarModal = ref(false);
@@ -98,7 +100,7 @@ const columns2 = [
         }
     },
     { data: 'correoElectronico' },
-    { data: 'tipoSangre' },
+    { data: 'tipoS' },
     { data: 'alergias' },
     { data: 'discapacidad' },
     { data: 'domicilio' },
@@ -132,30 +134,46 @@ const columns2 = [
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Creación de los botones para al generación de documentos, ademas de la configuración de los
 // titulos de los documentos
-const botones2 = [{
-    title: 'Alumnos registrados',
-    extend: 'excelHtml5',
-    text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
-{
-    title: 'Alumnos registrados',
-    extend: 'pdfHtml5',
-    text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
-{
-    title: 'Alumnos registrados',
-    extend: 'print',
-    text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
-{
-    title: 'Alumnos registrados',
-    extend: 'copy',
-    text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
-},
+const botones2 = [
+    {
+        title: 'Alumnos registrados',
+        extend: 'excelHtml5',
+        text: '<i class="fa-solid fa-file-excel"></i> Excel',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        },
+    },
+    {
+        title: 'Alumnos registrados',
+        extend: 'pdfHtml5',
+        text: '<i class="fa-solid fa-file-pdf"></i> PDF',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        },
+        orientation: 'landscape',
+        pageSize: 'TABLOID'
+    },
+    {
+        title: 'Alumnos registrados',
+        extend: 'print',
+        text: '<i class="fa-solid fa-print"></i> Imprimir',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        },
+        orientation: 'landscape',
+    },
+    {
+        title: 'Alumnos registrados',
+        extend: 'copy',
+        text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        }
+    },
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -188,7 +206,7 @@ const eliminarAlumno = (idAlumno, alumno) => {
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + alumno + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + alumno + '?' + '\nTodos lo relacionado al alumno (calificaciones) sera eliminado.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -204,13 +222,13 @@ const eliminarAlumno = (idAlumno, alumno) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Función para eliminar varios alumnos a la vez (a tráves del bóton eliminar)
- const eliminarAlumnos = () => {
+// Función para eliminar varios alumnos a la vez (a tráves del bóton eliminar)
+const eliminarAlumnos = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los alumnos seleccionadas?',
+        title: '¿Estas seguro que deseas eliminar los datos de los alumnos seleccionadas?' + '\nTodo lo relacionado a los alumnos seleccionados (calificaciones) sera eliminado.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -223,6 +241,12 @@ const eliminarAlumno = (idAlumno, alumno) => {
                 await form.delete(route('director.elimAlumnos', $alumnosIds));
                 // Limpia las materias seleccionadas después de la eliminación
                 alumnosSeleccionados.value = [];
+                const botonEliminar = document.getElementById("eliminarABtn");
+                if (alumnosSeleccionados.value.length > 0) {
+                    botonEliminar.removeAttribute("disabled");
+                } else {
+                    botonEliminar.setAttribute("disabled", "");
+                }
             } catch (error) {
                 console.log("Error al eliminar varios alumnos: " + error);
             }
@@ -293,8 +317,8 @@ onMounted(() => {
             </button>
         </div>
         <div>
-            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column" id="alumnosTablaId" name="alumnosTablaId"
-                :columns="columns2" :data="alumnos" :options="{
+            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
+                id="alumnosTablaId" name="alumnosTablaId" :columns="columns2" :data="alumnos" :options="{
                     responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                         search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                         info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -302,7 +326,7 @@ onMounted(() => {
                         infoFiltered: '(filtrado de un total de _MAX_ registros)',
                         lengthMenu: 'Mostrar _MENU_ registros',
                         paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                    }, buttons: botones2
+                    }, buttons: [botones2],
                 }">
                 <thead>
                     <tr class="text-sm leading-normal">
@@ -394,10 +418,18 @@ onMounted(() => {
                 </thead>
             </DataTable>
         </div>
-    </div>    
+    </div>
     <formulario-alumnos :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-        :title="'Añadir alumno'" :op="'1'" :modal="'modalCreate'" :generos="props.generos" :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados"></formulario-alumnos>
+        :title="'Añadir alumno'" :op="'1'" :modal="'modalCreate'" :generos="props.generos" :talleres="props.talleres"
+        :tipoSangre="props.tipoSangre" :grados="props.grados" :grupos="props.grupos"
+        :ciclos="props.ciclos"></formulario-alumnos>
     <formulario-alumnos :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :alumno="alumnoE" :generos="props.generos" :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados" ></formulario-alumnos>
-    
+        :title="'Editar alumno'" :op="'2'" :modal="'modalEdit'" :alumno="alumnoE" :generos="props.generos"
+        :talleres="props.talleres" :tipoSangre="props.tipoSangre" :grados="props.grados" :grupos="props.grupos"
+        :ciclos="props.ciclos"></formulario-alumnos>
 </template>
+<style>
+.swal2-popup {
+    font-size: 14px !important;
+}
+</style>

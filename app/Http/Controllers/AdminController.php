@@ -733,7 +733,6 @@ class AdminController extends Controller
 
     public function clases()
     {
-
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
             ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
@@ -776,7 +775,6 @@ class AdminController extends Controller
     {
         // Obtención de datos de tutores
         $tutoresPrincipal = tutores::with(['generos', 'direcciones'])->get();
-        //dd($tutoresPrincipal);
 
         $tutores = $tutoresPrincipal->map(function ($tutor) {
             $genero = $tutor->generos ? $tutor->generos->genero : null;
@@ -1954,9 +1952,7 @@ class AdminController extends Controller
         $ciclo = new Ciclos();
         $ciclo->fecha_inicio = $request->fecha_inicio;
         $ciclo->fecha_fin = $request->fecha_fin;
-
         $ciclo->descripcionCiclo = $anioInicio . "-" . $anioFin;
-        //$ciclo->descripcionCiclo = $request->descripcionCiclo;
 
         $ciclo->save();
         return redirect()->route('admin.ciclosperiodos')->With(["message" => "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo, "color" => "green"]);

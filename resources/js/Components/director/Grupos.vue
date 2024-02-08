@@ -28,7 +28,7 @@ DataTable.use(Select);
 
 const props = defineProps({
     grupos: { type: Object },
-    ciclos: { type: Object },
+    //ciclos: { type: Object },
 
 });
 
@@ -68,14 +68,14 @@ const columnsGrupos = [
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     { data: 'grupo' },
-    {
+    /* {
         data: 'idCiclo',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === data);
             return ciclo ? ciclo.descripcionCiclo : '';
         }
-    },
+    }, */
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idGrupo}"><i class="fa fa-pencil"></i></button>`;
@@ -281,10 +281,12 @@ const optionsGrupo = {
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             Grupo
                         </th>
+                        <!--
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             Ciclo
                         </th>
+                        -->
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                         </th>
