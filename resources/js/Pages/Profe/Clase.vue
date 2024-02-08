@@ -79,7 +79,7 @@ const mostrarCalificaciones = () => {
                 <li class="w-full">
                     <a @click="mostrarAlumnos()" id="btnMAl"
                         class="inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">
-                        Alumnos</a>
+                        Asistencias</a>
                 </li>
                 <li class="w-full">
                     <a @click="mostrarCalificaciones()" id="btnMCal"
