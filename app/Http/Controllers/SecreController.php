@@ -1979,4 +1979,242 @@ class SecreController extends Controller{
 
         return response()->json($clases);
     }
+
+    public function gradosgrupos()
+    {
+        $ciclos = ciclos::all();
+        $grados = grados::all();
+        $grupos = grupos::all();
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Secre/GradosGrupos', [
+            'ciclos' => $ciclos,
+            'grados' => $grados,
+            'grupos' => $grupos,
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function addGrados(Request $request)
+    {
+        try {
+            $request->validate([
+                //'ciclos' => 'required',
+                'grado' => 'required',
+            ]);
+
+            // Verifica si ya existe un grado con el mismo valor en la base de datos
+            $existingGrado = grados::where('grado', $request->grado)
+                //->where('idCiclo', $request->ciclos)
+                ->first();
+
+            if ($existingGrado) {
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "El grado ya está registrado", "color" => "red"]);
+            }
+
+            $grado = new grados();
+            $grado->grado = $request->grado;
+            //$grado->idCiclo = $request->ciclos;
+
+            $grado->save();
+
+            return redirect()->route('secre.gradosgrupos')->with(['message' => "Grado agregado correctamente: " . $grado->grado, "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al agregar el grado.", "color" => "red"]);
+        }
+    }
+
+    public function eliminarGrados($idGrado)
+    {
+        if (Auth::check()) {
+            try {
+                $grado = grados::find($idGrado);
+                $grado->delete();
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Grado eliminado correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al eliminar el grado.", "color" => "red"]);
+            }
+        }
+        return redirect()->route('secre.gradosgrupos')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
+    }
+
+    public function elimGrados($gradosIds)
+    {
+        if (Auth::check()) {
+            try {
+                $gradosIdsArray = explode(',', $gradosIds);
+
+                $gradosIdsArray = array_map('intval', $gradosIdsArray);
+
+                grados::whereIn('idGrado', $gradosIdsArray)->delete();
+
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Grados eliminados correctamente", "color" => "green"]);
+            } catch (\Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al eliminar los grados", "color" => "red"]);
+            }
+            return redirect()->route('secre.gradosgrupos')->with(['message' => "No tienes acceso a esta función", "color" => "red"]);
+        }
+    }
+
+    public function actualizarGrados(Request $request, $idGrado)
+    {
+        if (Auth::check()) {
+            try {
+                $grados = grados::find($idGrado);
+                $request->validate([
+                    'grado' => 'required',
+                    //'ciclos' => 'required',
+                ]);
+
+                $conflictingGrado = grados::where('idGrado', '!=', $idGrado) // Excluir el propio periodo que se está actualizando
+                    ->where(function ($query) use ($request) {
+                        $query->where(function ($subquery) use ($request) {
+                            $subquery->where('grado', $request->grado);
+                        });
+                    })
+                    ->first();
+
+                if ($conflictingGrado) {
+                    return redirect()->route('secre.gradosgrupos')->with(['message' => "El grado ya existe.", "color" => "yellow"]);
+                }
+                $grados->grado = $request->grado;
+                //$grados->idCiclo = $request->ciclos;
+
+                $grados->save();
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al actualizar el grado. ", "color" => "red"]);
+            }
+
+            //$grados->fill($request->input())->saveOrFail();
+            return redirect()->route('secre.gradosgrupos')->with(['message' => "Grado actualizado correctamente: " . $grados->grado, "color" => "green"]);
+        }
+        return redirect()->route('secre.gradosgrupos')->with(['message' => "No tienes acceso a esta función. ", "color" => "red"]);
+    }
+
+    public function getGrados($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsquedastoo
+        $grados = grados::where('grado', 'like', '%' . $searchTerm . '%')
+            ->orWhere('grado', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($grados);
+    }
+
+    public function getGrupos($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $grupos = grupos::where('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($grupos);
+    }
+
+    public function addGrupos(Request $request)
+    {
+        if (Auth::check()) {
+            try {
+                $request->validate([
+                    'grupo' => 'required',
+                    //'ciclos' => 'required',
+                ]);
+
+                // Verificar si ya existe un grupo con los mismos datos
+                $existingGroup = grupos::where('grupo', $request->grupo)
+                    //->where('idCiclo', $request->ciclos)
+                    ->first();
+
+                if ($existingGroup) {
+                    return redirect()->route('secre.gradosgrupos')->with(['message' => 'El grupo ya está registrado.', "color" => "red"]);
+                }
+
+                // Si no existe, proceder con el registro
+                $grupo = new grupos();
+                $grupo->grupo = $request->grupo;
+                //$grupo->idCiclo = $request->ciclos;
+                $grupo->save();
+
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Grupo agregado correctamente: " . $grupo->grupo, "color" => "green"]);
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al agregar el grupo", "color" => "red"]);
+            }
+        }
+        return redirect()->route('secre.inicio')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
+    }
+
+    public function eliminarGrupos($idGrupo)
+    {
+        if (Auth::check()) {
+            try {
+                $grupo = grupos::find($idGrupo);
+                $grupo->delete();
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Grupo eliminada correctamente", "color" => "green"]);
+            } catch (Exception $e) {
+                Log::info("Error: " . $e->getMessage());
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al eliminar el grupo", "color" => "red"]);
+            }
+            return redirect()->route('secre.inicio')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
+        }
+    }
+
+    public function elimGrupos($gruposIds)
+    {
+        if (Auth::check()) {
+            try {
+                // Convierte la cadena de IDs en un array
+                $gruposIdsArray = explode(',', $gruposIds);
+
+                // Limpia los IDs para evitar posibles problemas de seguridad
+                $gruposIdsArray = array_map('intval', $gruposIdsArray);
+
+                // Elimina los ciclos
+                grupos::whereIn('idGrupo', $gruposIdsArray)->delete();
+
+                // Redirige a la página deseada después de la eliminación
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Grupos eliminados correctamente", "color" => "green"]);
+            } catch (\Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al eliminar los grupos", "color" => "red"]);
+            }
+        }
+        return redirect()->route('secre.inicio')->with(['message' => "No tienes acceso a esta función.", "color" => "red"]);
+    }
+
+    public function actualizarGrupos(Request $request, $idGrupo)
+    {
+        try {
+            $grupos = grupos::find($idGrupo);
+            $request->validate([
+                'grupo' => 'required',
+                //'ciclos' => 'required',
+            ]);
+
+            $conflictingGrupo = grupos::where('idGrupo', '!=', $idGrupo) // Excluir el propio periodo que se está actualizando
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('grupo', $request->grupo);
+                    });
+                })
+                ->first();
+
+            if ($conflictingGrupo) {
+                return redirect()->route('secre.gradosgrupos')->with(['message' => "El grupo ya existe.", "color" => "yellow"]);
+            }
+            $grupos->grupo = $request->grupo;
+            //$grupos->idCiclo = $request->ciclos;
+
+            $grupos->save();
+        } catch (Exception $e) {
+            Log::info("Error: " . $e);
+            return redirect()->route('secre.gradosgrupos')->with(['message' => "Error al actualizar el grupo.", "color" => "yellow"]);
+        }
+        return redirect()->route('secre.gradosgrupos')->with(['message' => "Grupo actualizado correctamente: " . $grupos->grupo, "color" => "green"]);
+    }
 }

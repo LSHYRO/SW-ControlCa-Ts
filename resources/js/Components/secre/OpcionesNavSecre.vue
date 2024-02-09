@@ -38,7 +38,7 @@ defineProps({
         <i class="fa fa-user-plus" aria-hidden="true"></i> Agregar alumnos a clases
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-        :href="route('secre.inicio')">
+        :href="route('secre.gradosgrupos')">
         <i class="fas fa-balance-scale mr-2"></i>Grados y grupos
     </a>
     <a class="block text-black py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
