@@ -389,6 +389,10 @@ Route::controller(SecreController::class)->group(function () {
     Route::put('/secre/cuentas/{idUsuario}/edit', 'actualizarCuentas')->name('secre.actualizarCuentas');
     Route::delete('/secre/cuentas/delete/{usuariosIds}', 'elimUsuarios')->name('secre.elimCuentas');
 
+    Route::get('/secre/clasesAlumno/{idAlumno}', 'clasesDeAlumno')->name('secre.verCalificaciones');
+    Route::get('/secre/clasesA/clase/{idClase}/alum/{idAlumno}', 'mostrarClase')->name('secre.mostrarClase');
+    Route::get('/secre/calificaciones', 'calificaciones')->name('secre.calificaciones');
+
     Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
 });
 
