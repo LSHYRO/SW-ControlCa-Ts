@@ -79,17 +79,6 @@ const columns = [
             return directivo ? directivo.tipo_personal : '';
         }
     },
-    {
-        data: null, render: function (data, type, row, meta) {
-            return `<button class="editar-button" data-id="${row.idPersonal}"><i class="fa fa-pencil"></i></button>`;
-        }
-    },
-    {
-        data: null, render: function (data, type, row, meta) {
-            return `<button class="eliminar-button" data-id="${row.idPersonal}"><i class="fa fa-trash"></i></button>`;
-        }
-
-    }
 ];
 
 const botones = [{
@@ -129,110 +118,7 @@ const cerrarModal = () => {
 const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
-
-// Función para elimnar profesores a través del botón del datatable
-const eliminarDirectivo = (idPersonal, nombre) => {
-    const swal = Swal.mixin({
-        buttonsStyling: true
-    })
-    swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + nombre + '?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.delete(route('secre.eliminarDirectivos', idPersonal));
-        }
-
-    })
-};
-
-// Función para el llenado de selectedPersonal a través de los checkboxes
-const togglePersonalSelection = (personal) => {
-    if (selectedPersonal.value.includes(personal)) {
-        // Si la personal ya está seleccionada, la eliminamos del array
-        selectedPersonal.value = selectedPersonal.value.filter((m) => m !== personal);
-    } else {
-        // Si la personal no está seleccionada, la agregamos al array
-        selectedPersonal.value.push(personal);
-    }
-    const botonEliminar = document.getElementById("eliminarPBtn");
-
-    if (selectedPersonal.value.length > 0) {
-        botonEliminar.removeAttribute("disabled");
-    } else {
-        botonEliminar.setAttribute("disabled", "");
-    }
-};
 ////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-// Función para eliminar varios profesores con el botón eliminar
-const eliminarDirectivos = () => {
-    const swal = Swal.mixin({
-        buttonsStyling: true
-    })
-
-    swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los dirctivos seleccionados?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const personalS = selectedPersonal.value.map((personal) => personal.idPersonal);
-                const $personalIds = personalS.join(',');
-                await form.delete(route('secre.elimDirectivos', $personalIds));
-                const botonEliminar = document.getElementById("eliminarPBtn");
-                // Limpia las materias seleccionadas después de la eliminación
-                selectedPersonal.value = [];
-                botonEliminar.setAttribute("disabled", "");
-            } catch (error) {
-                console.log("Error al eliminar varias materias: " + error);
-            }
-        }
-    });
-};
-////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Función onMounted que se ejecuta al iniciar la página 
-onMounted(() => {
-    // Agrega un escuchador de eventos fuera de la lógica de Vue
-    document.getElementById('directivosTablaId').addEventListener('click', (event) => {
-        const checkbox = event.target;
-        if (checkbox.classList.contains('profesor-checkbox')) {
-            const personalId = parseInt(checkbox.getAttribute('data-id'));
-            // Asegúrate de que props.materias.data esté definido antes de usar find
-            console.log(props.personal);
-            if (props.personal) {
-                const personal = props.personal.find(personal => personal.idPersonal === personalId);
-                if (personal) {
-                    togglePersonalSelection(personal);
-                } else {
-                    console.log("No se tiene materia");
-                }
-            }
-        }
-    });
-
-    // Manejar clic en el botón de editar
-    $('#directivosTablaId').on('click', '.editar-button', function () {
-        const personalId = $(this).data('id');
-        const personal = props.personal.find(m => m.idPersonal === personalId);
-        abrirE(personal);
-    });
-
-    // Manejar clic en el botón de eliminar
-    $('#directivosTablaId').on('click', '.eliminar-button', function () {
-        const personalId = $(this).data('id');
-        const personal = props.personal.find(m => m.idPersonal === personalId);
-        eliminarDirectivo(personalId, personal.nombre + " " + personal.apellidoP + " " + personal.apellidoM);
-    });
-});
 
 </script>
 
@@ -252,20 +138,6 @@ onMounted(() => {
                 </span>
             </div>
             <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-            <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-                <!-- <div class="w-full md:w-1/3 mb-4 md:mb-0 "></div> -->
-                <!-- <div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-end"> -->
-                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-plus mr-2"></i>Agregar directivo
-                </button>
-                <button id="eliminarPBtn" disabled="true"
-                    class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarDirectivos">
-                    <i class="fa fa-trash mr-2"></i>Borrar Directivo(s)
-                </button>
-                <!-- </div> -->
-            </div>
             <div>
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
                     id="directivosTablaId" :columns="columns" :data="personal" :options="{
