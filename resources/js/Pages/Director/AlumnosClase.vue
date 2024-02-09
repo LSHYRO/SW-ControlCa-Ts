@@ -86,11 +86,11 @@ const columns = [
     {
         data: 'calificacionClase',
     },
-    {
+    /* {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idClaseAlumno}"><i class="fa fa-pencil"></i></button>`;
         }
-    },
+    }, */
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="eliminar-button" data-id="${row.idClaseAlumno}"><i class="fa fa-trash"></i></button>`;
@@ -324,9 +324,9 @@ onMounted(() => {
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Calificación Final
                             </th>
-                            <th
+                            <!-- <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
+                            </th> -->
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>

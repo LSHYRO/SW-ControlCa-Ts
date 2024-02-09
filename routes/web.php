@@ -357,9 +357,12 @@ Route::controller(SecreController::class)->group(function () {
     Route::delete('/secre/clases/delete/{clasesIds}', 'elimClases')->name('secre.elimClases');
     Route::put('/secre/clases/{idClase}/edit', 'actualizarClases')->name('secre.actualizarClases');
 
-    Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
+    Route::get('/secre/alumnosclases', 'alumnosclases')->name('secre.alumnosclases');
+    Route::post('/secre/alumnosclases', 'addAlumnosClases')->name('secre.addAlumnosClases');
     Route::delete('/secre/alumnosclases/{idClase}', 'eliminarAlumnosClases')->name('secre.eliminarAlumnosClases');
     Route::delete('/secre/alumnosclases/delete/{clases_alumnosIds}', 'elimAlumnosClases')->name('secre.elimAlumnosClases');
+
+    Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
 });
 
 Route::controller(TutorController::class)->group(function () {

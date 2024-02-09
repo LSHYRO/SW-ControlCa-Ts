@@ -197,9 +197,20 @@ class SecreController extends Controller{
 
     public function alumnosclases()
     {
-
         $clases = clases::all();
-        $alumnos = alumnos::all();
+        $alumnosE = alumnos::all();
+        $alumnos = $alumnosE->map(function ($alumno) {
+            $gradGrupAl = grado_grupo_alumno::where('idAlumno', $alumno->idAlumno)
+                ->where('estatus', '1')
+                ->first();
+            
+            $alumno->idGrado = $gradGrupAl->idGrado;
+            $alumno->idGrupo = $gradGrupAl->idGrupo;
+            $alumno->idCiclo = $gradGrupAl->idCiclo;
+            $alumno->calificacion = $gradGrupAl->calificacion;
+
+            return $alumno;
+        });
         $materias = materias::all();
         $grados = grados::all();
         $grupos = grupos::all();
@@ -232,7 +243,7 @@ class SecreController extends Controller{
                 // Verificar si ya existe una entrada con el mismo idClase e idAlumno
                 foreach ($alumnos as $alumno_id) {
                     $existingEntry = clases_alumnos::where('idClase', $clase_id)->where('idAlumno', $alumno_id)->first();
-    
+
                     if (!$existingEntry) {
                         $clase_alumno = new clases_alumnos();
                         $clase_alumno->idClase = $clase_id;
@@ -242,13 +253,13 @@ class SecreController extends Controller{
                     } else {
                         // Si al menos un alumno ya existe, hacer rollback y redirigir
                         DB::rollBack();
-                        return redirect()->route('secre.alumnosclases')->with('message', "El alumno ya está agregado en la clase seleccionada");
+                        return redirect()->route('secre.alumnosclases')->with(['message' => "El alumno ya está agregado en la clase seleccionada", "color" => "red"]);
                     }
                 }
                 // Commit solo si no hubo problemas
                 DB::commit();
-    
-                return redirect()->route('secre.alumnosclases')->with('message', "Alumno(s) agregado(s) correctamente");
+
+                return redirect()->route('secre.alumnosclases')->with(['message' => "Alumno(s) agregado(s) correctamente", "color" => "green"]);
             } catch (\Exception $e) {
                 // Manejar excepciones específicas
                 DB::rollBack();
@@ -260,12 +271,11 @@ class SecreController extends Controller{
         }
     }
 
-
     public function eliminarAlumnosClases($idClaseAlumno)
     {
         $clase_alumno = clases_alumnos::find($idClaseAlumno);
-        $clase_alumno ->delete();
-        return redirect()->route('secre.alumnosclases')->with('message', "Clase eliminada correctamente");
+        $clase_alumno->delete();
+        return redirect()->route('secre.alumnosclases')->with(['message' => "Alumn@ eliminad@ correctamente de la clase", "color" => "green"]);
     }
 
     public function elimAlumnosClases($clases_alumnosIds)
@@ -281,7 +291,7 @@ class SecreController extends Controller{
             clases_alumnos::whereIn('idClaseAlumno', $clasesAlumnosIdsArray)->delete();
 
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('secre.alumnosclases')->with('message', "Clases eliminadas correctamente");
+            return redirect()->route('secre.alumnosclases')->with(['message' => "Alumnos eliminados correctamente de la clase", "color" => "green"]);
         } catch (\Exception $e) {
             // Manejo de errores
             dd("Controller error");

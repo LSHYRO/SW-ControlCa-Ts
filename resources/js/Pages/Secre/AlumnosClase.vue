@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed, getCurrentInstance, onMounted } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
-import DirectorLayout from '@/Layouts/DirectorLayout.vue';
-import FormularioAlumnosClase from '@/Components/director/FormularioAlumnosClase.vue';
+import SecreLayout from '@/Layouts/SecreLayout.vue';
+import FormularioAlumnosClase from '@/Components/secre/FormularioAlumnosClase.vue';
 import MenuOpcionesDirec from '@/Components/director/MenuOpcionesDirec.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
@@ -35,6 +35,9 @@ const props = defineProps({
     usuario: { type: Object },
     clases_alumnos: { type: Object }
 });
+
+console.log(props.clases_alumnos);
+console.log(props.alumnos);
 
 const getMateria = (idMateria) => {
     const materia = props.materias.find(m => m.idMateria === idMateria);
@@ -83,11 +86,11 @@ const columns = [
     {
         data: 'calificacionClase',
     },
-    {
+    /* {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idClaseAlumno}"><i class="fa fa-pencil"></i></button>`;
         }
-    },
+    }, */
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="eliminar-button" data-id="${row.idClaseAlumno}"><i class="fa fa-trash"></i></button>`;
@@ -182,7 +185,7 @@ const eliminarAlumnosClase = (idClaseAlumno, clase_alumno) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('director.eliminarAlumnosClases', idClaseAlumno));
+            form.delete(route('secre.eliminarAlumnosClases', idClaseAlumno));
         }
 
     })
@@ -194,7 +197,7 @@ const eliminarAlumnosClases = () => {
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de las clases seleccionadas?',
+        title: '¿Estas seguro que deseas eliminar a los alumnos seleccionados de la clase?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -205,7 +208,7 @@ const eliminarAlumnosClases = () => {
                 const clasesS_alumnos = selectedAlumnosClase.value.map((clase_alumno) => clase_alumno.idClaseAlumno);
                 const $clases_alumnosIds = clasesS_alumnos.join(',');
                 console.log(clasesS_alumnos);
-                await form.delete(route('director.elimAlumnosClases', $clases_alumnosIds));
+                await form.delete(route('secre.elimAlumnosClases', $clases_alumnosIds));
 
                 // Limpia las materias seleccionadas después de la eliminación
                 selectedAlumnosClase.value = [];
@@ -263,18 +266,17 @@ onMounted(() => {
 </script>
 
 <template>
-    <DirectorLayout title="clases" :usuario="props.usuario">
+    <SecreLayout title="clases" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
             <h2 class="text-black text-2xl text-center font-semibold p-5">Agregar alumnos a clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- flash message start -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
-                role="alert">
-                <span class="font-medium">
-                    {{ $page.props.flash.message }}
-                </span>
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+            <span class="font-medium">
+                {{ $page.props.flash.message }}
+            </span>
             </div>
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
@@ -320,11 +322,11 @@ onMounted(() => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Calificación
+                                Calificación Final
                             </th>
-                            <th
+                            <!-- <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
+                            </th> -->
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
@@ -342,5 +344,5 @@ onMounted(() => {
             :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :clases="props.clases"
             :alumnos="props.alumnos"></formulario-alumnos-clase>
 
-    </DirectorLayout>
+    </SecreLayout>
 </template>
