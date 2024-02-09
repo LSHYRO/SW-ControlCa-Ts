@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, getCurrentInstance, onMounted, watch } from 'vue';
-import SearchBar from '@/Components/SearchBar.vue';
 import DirectorLayout from '@/Layouts/DirectorLayout.vue';
+import FormCalifCiclo from '@/Components/director/FormularioCalificacionCiclo.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -33,19 +33,15 @@ const props = defineProps({
     tipoSangre: { type: Object },
     talleres: { type: Object },
     usuario: { type: Object },
+    ciclos: { type: Object },
 });
-console.log("Alumnos:");
-console.log(props.alumnos);
-/*
-const verCalificaciones = (alumnoId) => {
-    console.log("Esta dentro del const verCalificaciones");
-    try {
-        $inertia.visit(route('director.verCalificaciones', { idAlumno: alumnoId }));
-    } catch (error) {
-        console.error("Error al visitar la página de calificaciones:", error);
-    }
+
+const mostrarModal = ref(false);
+
+const actDesModal = () => {
+    mostrarModal.value = !mostrarModal.value;
 };
-*/
+
 const verCalificaciones = async (alumno) => {
     console.log("Esta dentro del const verCalificaciones");
     console.log(alumno);
@@ -161,14 +157,24 @@ const closeable = true;
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente una materia            -->
-            <div v-if="$page.props.flash.message"
-                class="p-4 mb-4 text-sm rounded-lg text-green-700 bg-green-100 dark:bg-green-200 dark:text-green-800"
-                role="alert">
+            <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
                 <span class="font-medium">
                     {{ $page.props.flash.message }}
                 </span>
             </div>
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+            <div class="m-1 py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+                <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
+                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    @click="actDesModal()" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-check-to-slot mr-2"></i>Calificar ciclo
+                </button>
+                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-user-graduate mr-2"></i>Pasar de ciclo
+                </button>
+            </div>
             <div>
                 <DataTable class="w-full table-auto text-sm nowrap display stripe compact cell-border order-column"
                     id="alumnosTablaId" :columns="columns2" :data="alumnos" :options="{
@@ -220,9 +226,9 @@ const closeable = true;
                 </thead>
                 </DataTable>
             </div>
-
         </div>
-
+        <FormCalifCiclo :title="'Calificar ciclo'" :show="mostrarModal" :max-width="maxWidth" :closeable="closeable"
+        @close="actDesModal()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
     </DirectorLayout>
 </template>
 <style>

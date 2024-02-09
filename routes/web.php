@@ -200,6 +200,7 @@ Route::middleware(['directorS'])->group(function () {
         Route::post('/director/cuentas', 'addCuentas')->name('director.addCuentas');
         Route::post('/director/alumnosclases', 'addAlumnosClases')->name('director.addAlumnosClases');
         Route::post('/director/avisos', 'agregarAviso')->name('director.agregarAv');
+        Route::post('/director/calificaciones/calificar-ciclo', 'calificarCiclo')->name('director.calificarCiclo');
 
         Route::get('/director/buscar/tutor', 'buscarTutor')->name('director.busquedaTutor');
 

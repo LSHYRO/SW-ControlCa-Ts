@@ -31,6 +31,7 @@ use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -288,7 +289,7 @@ class DirectorController extends Controller
                             $actividad->delete();
                         }
                     }
-                    
+
                     $clase->delete();
                 }
             }
@@ -2297,7 +2298,7 @@ class DirectorController extends Controller
             } else {
                 $alumno->materia = "Ninguno";
             }
-            
+
             $alumno->tutor = $alumno->tutores->nombre_completo;
             $alumno->tipoSangre = $alumno->tipo_sangre->tipoSangre;
             $alumno->tutorC = $alumno->tutores;
@@ -2314,7 +2315,7 @@ class DirectorController extends Controller
 
             return $grado;
         }); */
-
+        $ciclos = ciclos::all();
         $grupos = grupos::all();
         $materiasT = materias::where('esTaller', '1')->get();
         $usuario = $this->obtenerInfoUsuario();
@@ -2327,7 +2328,8 @@ class DirectorController extends Controller
             //'grados' => $grados,
             'grupos' => $grupos,
             'talleres' => $materiasT,
-            'usuario' =>  $usuario
+            'usuario' =>  $usuario,
+            'ciclos' => $ciclos,
         ]);
     }
 
@@ -2474,7 +2476,7 @@ class DirectorController extends Controller
             $gradGrupAl = grado_grupo_alumno::where('idAlumno', $alumno->idAlumno)
                 ->where('estatus', '1')
                 ->first();
-            
+
             $alumno->idGrado = $gradGrupAl->idGrado;
             $alumno->idGrupo = $gradGrupAl->idGrupo;
             $alumno->idCiclo = $gradGrupAl->idCiclo;
@@ -2654,7 +2656,8 @@ class DirectorController extends Controller
         }
     }
 
-    public function actualizarAviso(Request $request){
+    public function actualizarAviso(Request $request)
+    {
         if (Auth::check()) {
             try {
                 $request->validate([
@@ -2690,7 +2693,7 @@ class DirectorController extends Controller
             $avisosIdsArray = array_map('intval', $avisosIdsArray);
             // Elimina las materias
             avisos::whereIn('idAviso', $avisosIdsArray)->delete();
-            
+
             // Redirige a la página deseada después de la eliminación
             return redirect()->route('director.avisos')->with(['message' => "Avisos eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
@@ -2702,17 +2705,17 @@ class DirectorController extends Controller
         }
     }
 
-    public function mostrarClase($idClase,$idAlumno)
+    public function mostrarClase($idClase, $idAlumno)
     {
         try {
             $usuario = $this->obtenerInfoUsuario();
             //$alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
             $alumno = alumnos::where('idAlumno', $idAlumno)->first();
-            $clasesA = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$idAlumno)->first();
+            $clasesA = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $idAlumno)->first();
             if ($clasesA) {
 
                 $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
-                $clasesA = clases::where('idClase', $idClase)->with(['materias','ciclos'])->first();
+                $clasesA = clases::where('idClase', $idClase)->with(['materias', 'ciclos'])->first();
 
                 //Aqui en adelante le agregué
                 $tiposActividadesAlum = tiposActividades::where('tipoActividad', 'Asistencia')
@@ -2720,10 +2723,10 @@ class DirectorController extends Controller
                 $actividadesCA = actividades::where('idClase', $clasesA->idClase)
                     ->whereHas('tiposActividades', function ($query) {
                         $query->where('tipoActividad', 'Asistencia')
-                        ->orWhere('tipoActividad', 'Vestuario');
+                            ->orWhere('tipoActividad', 'Vestuario');
                     })
                     ->get();
-                $actividadesAlum = $actividadesCA->map(function ($actividad)use($clasesA,$alumno) {
+                $actividadesAlum = $actividadesCA->map(function ($actividad) use ($clasesA, $alumno) {
                     $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
                     $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
                     $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
@@ -2737,11 +2740,11 @@ class DirectorController extends Controller
                         ->where('idAlumno', $alumno->idAlumno)
                         ->first();
 
-                        if($calificacionAlum){
-                            $actividad->calificacion = $calificacionAlum->calificacion;
-                            }else{
-                            $actividad->calificacion = "Sin calificar";
-                            }
+                    if ($calificacionAlum) {
+                        $actividad->calificacion = $calificacionAlum->calificacion;
+                    } else {
+                        $actividad->calificacion = "Sin calificar";
+                    }
 
                     return $actividad;
                 });
@@ -2755,7 +2758,7 @@ class DirectorController extends Controller
                     })
                     ->get();
 
-                $actividades = $actividadesC->map(function ($actividad)use($clasesA,$alumno) {
+                $actividades = $actividadesC->map(function ($actividad) use ($clasesA, $alumno) {
                     $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
                     $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
                     $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
@@ -2769,21 +2772,21 @@ class DirectorController extends Controller
                         ->where('idAlumno', $alumno->idAlumno)
                         ->first();
 
-                        if($calificacion){
-                            $actividad->calificacion = $calificacion->calificacion;
-                            }else{
-                            $actividad->calificacion = "Sin calificar";
-                            }
+                    if ($calificacion) {
+                        $actividad->calificacion = $calificacion->calificacion;
+                    } else {
+                        $actividad->calificacion = "Sin calificar";
+                    }
                     return $actividad;
                 });
 
                 $periodos = periodos::all();
 
                 $calificacionPer = calificaciones_periodos::where('idClase', $idClase)
-                ->where('idAlumno', $alumno->idAlumno)
-                ->get();
+                    ->where('idAlumno', $alumno->idAlumno)
+                    ->get();
 
-                $clasesFinal = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
+                $clasesFinal = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $alumno->idAlumno)->first();
                 return Inertia::render('Director/Curso', [
                     'clasesA' => $clasesA,
                     'ciclos' => $ciclos,
@@ -2827,11 +2830,11 @@ class DirectorController extends Controller
         ]);
     }
 
-    public function obtenerDatosClase($idAlumno)//El error es aquí
+    public function obtenerDatosClase($idAlumno) //El error es aquí
     {
         try {
             $alumnos = alumnos::where('idAlumno', $idAlumno)->first();
-            $clasesA = clases_alumnos::where('idAlumno',$alumnos->idAlumno)->get();
+            $clasesA = clases_alumnos::where('idAlumno', $alumnos->idAlumno)->get();
             //dd($alumnos);            //$clasesA = $alumnos->clases_alumnos->toArray();
             Log::info($clasesA);
             $clasesM = [];
@@ -2847,5 +2850,35 @@ class DirectorController extends Controller
             Log::info($e);
             return ['clases_alumnos' => 'Sin asignar'];
         }
+    }
+
+    public function calificarCiclo(Request $request)
+    {
+        if (Auth::check()) {
+            try {
+                $ciclo = ciclos::find($request->ciclo)->first();
+                $gradGrupAl = grado_grupo_alumno::where('idCiclo', $ciclo->idCiclo)
+                    ->where('estatus', '1')
+                    ->get();
+
+                foreach ($gradGrupAl as $gga) {
+                    $clase_alumno= clases_alumnos::where('idAlumno', $gga->idAlumno)
+                        ->get();
+                    $sumaCalificacion = 0;
+                    foreach($clase_alumno as $cl){
+                        $sumaCalificacion += $cl->calificacionClase;
+                    }
+                    $promedio = round($sumaCalificacion / count($clase_alumno));
+                    $gga->calificacion = $promedio;
+                    $gga->save();
+                }
+                return redirect(route('director.calificaciones'))->with(['message'=>'Se ha calificado el ciclo correctamente', 'color'=>'green']);
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                return redirect(route('director.calificaciones'))->with(['message'=>'Error al calificar el ciclo', 'color'=>'red']);
+            }
+            
+        }
+        return redirect(route('director.inicio'))->with(['message'=>'No tiene acceso a esta función', 'color'=>'red']);
     }
 }
