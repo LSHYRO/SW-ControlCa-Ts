@@ -2217,4 +2217,344 @@ class SecreController extends Controller{
         }
         return redirect()->route('secre.gradosgrupos')->with(['message' => "Grupo actualizado correctamente: " . $grupos->grupo, "color" => "green"]);
     }
+
+    public function ciclosperiodos()
+    {
+        $ciclosA = ciclos::all();
+        $ciclos = $ciclosA->map(function ($ciclo) {
+            $fecha_ic = Carbon::parse($ciclo->fecha_inicio)->format('d/m/Y');
+            $fecha_fc = Carbon::parse($ciclo->fecha_fin)->format('d/m/Y');
+            $ciclo->descCiclo = $ciclo->descripcionCiclo . " (" . $fecha_ic . " - " . $fecha_fc . ")";
+            return $ciclo;
+        });
+        $periodos = periodos::all();
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Secre/CiclosPeriodos', [
+            'ciclos' => $ciclos,
+            'periodos' => $periodos,
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function addCiclos(Request $request)
+    {
+        // Validación para evitar ciclos duplicados
+        $existingCiclo = Ciclos::where('fecha_inicio', $request->fecha_inicio)
+            ->where('fecha_fin', $request->fecha_fin)
+            ->where('descripcionCiclo', $request->descripcionCiclo)
+            ->first();
+
+        if ($existingCiclo) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "El ciclo ya se encuentra registrado", "color" => "red"]);
+        }
+
+        // Verificar si las fechas del nuevo ciclo se superponen con otro ciclo existente
+        $conflictingCiclo = Ciclos::where(function ($query) use ($request) {
+            $query->where(function ($subquery) use ($request) {
+                $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                    ->where('fecha_inicio', '<=', $request->fecha_fin);
+            })
+                ->orWhere(function ($subquery) use ($request) {
+                    $subquery->where('fecha_fin', '>=', $request->fecha_inicio)
+                        ->where('fecha_fin', '<=', $request->fecha_fin);
+                });
+        })
+            ->first();
+
+        if ($conflictingCiclo) {
+            return redirect()->route('secre.ciclosperiodos')->with(["message" => "No se puede agregar el ciclo, las fechas se superponen con otro ciclo.", "color" => "red"]);
+        }
+
+        $anioInicio = date('Y', strtotime($request->fecha_inicio));
+        $anioFin = date('Y', strtotime($request->fecha_fin));
+
+        // Si no hay ciclos duplicados, procede con la creación y guardado del nuevo ciclo
+        $ciclo = new Ciclos();
+        $ciclo->fecha_inicio = $request->fecha_inicio;
+        $ciclo->fecha_fin = $request->fecha_fin;
+        $ciclo->descripcionCiclo = $anioInicio . "-" . $anioFin;
+
+        $ciclo->save();
+        return redirect()->route('secre.ciclosperiodos')->With(["message" => "Ciclo agregado correctamente: " . $ciclo->descripcionCiclo, "color" => "green"]);
+    }
+
+    public function eliminarCiclos($idCiclo)
+    {
+        try {
+            $ciclo = ciclos::find($idCiclo);
+            if (!$ciclo) {
+                return redirect()->route('secre.ciclosperiodos')->With(["message" => "El ciclo no existe", "color" => "red"]);
+            }
+            $ciclo->delete();
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Ciclo eliminado correctamente", "color" => "green"]);
+        } catch (QueryException $e) {
+            // Verificar si la excepción es debida a una restricción de clave externa
+            $errorCode = $e->errorInfo[1];
+
+            if ($errorCode == 1451) {
+                // El código 1451 generalmente indica una violación de clave externa
+                return redirect()->route('secre.ciclosperiodos')->With(["message" => "Es necesario que se elimine los datos que hagan referecia a este ciclo", "color" => "red"]);
+            }
+        } catch (Exception $e) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Error al eliminar el ciclo", "color" => "red"]);
+        }
+    }
+
+    public function elimCiclos($ciclosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $ciclosIdsArray = explode(',', $ciclosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $ciclosIdsArray = array_map('intval', $ciclosIdsArray);
+
+            // Elimina los ciclos
+            ciclos::whereIn('idCiclo', $ciclosIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Ciclos eliminados correctamente", "color" => "green"]);
+        } catch (\Exception $e) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Error al eliminar los ciclos", "color" => "red"]);
+        }
+    }
+
+    public function actualizarCiclos(Request $request, $idCiclo)
+    {
+        try {
+            $ciclos = ciclos::find($idCiclo);
+            $request->validate([
+                'fecha_inicio' => 'required',
+                'fecha_fin' => 'required',
+                'descripcionCiclo' => 'required',
+            ]);
+
+            // Validación para evitar ciclos duplicados
+            $existingCiclo = Ciclos::where('idCiclo', '!=', $idCiclo)
+                ->where('fecha_inicio', $request->fecha_inicio)
+                ->where('fecha_fin', $request->fecha_fin)
+                ->where('descripcionCiclo', $request->descripcionCiclo)
+                ->first();
+
+            if ($existingCiclo) {
+                return redirect()->route('secre.ciclosperiodos')->with(["message" => "El ciclo ya se encuentra registrado", "color" => "red"]);
+            }
+
+            // Verificar si las fechas del ciclo actualizado se superponen con otro ciclo existente
+            $conflictingCiclo = Ciclos::where('idCiclo', '!=', $idCiclo)
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('fecha_inicio', '<=', $request->fecha_fin)
+                            ->where('fecha_fin', '>=', $request->fecha_inicio);
+                    })
+                        ->orWhere(function ($subquery) use ($request) {
+                            $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                                ->where('fecha_inicio', '<=', $request->fecha_fin)
+                                ->where('fecha_fin', '>=', $request->fecha_fin);
+                        });
+                })
+                ->first();
+
+            if ($conflictingCiclo) {
+                return redirect()->route('secre.ciclosperiodos')->with(["message" => "No se puede actualizar el ciclo, las fechas se superponen con otro ciclo.", "color" => "red"]);
+            }
+            $anioInicio = date('Y', strtotime($request->fecha_inicio));
+            $anioFin = date('Y', strtotime($request->fecha_fin));
+
+            $ciclos->fecha_inicio = $request->fecha_inicio;
+            $ciclos->fecha_fin = $request->fecha_fin;
+            $ciclos->descripcionCiclo = $anioInicio . "-" . $anioFin;
+
+            $ciclos->save();
+        } catch (Exception $e) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Error al actualizar el ciclo", "color" => "red"]);
+        }
+        return redirect()->route('secre.ciclosperiodos')->with(["message" => "Ciclo actualizado correctamente: " . $ciclos->descripcionCiclo, "color" => "green"]);
+    }
+
+    public function getCiclos($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $ciclos = ciclos::where('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_inicio', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_fin', 'like', '%' . $searchTerm . '%')
+            ->orWhere('descripcionCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($ciclos);
+    }
+
+    public function addPeriodos(Request $request)
+    {
+        $request->validate([
+            'periodo' => 'required',
+            'fecha_inicio' => 'required',
+            'fecha_fin' => 'required',
+            'ciclos' => 'required',
+        ]);
+
+        // Verificar si ya existe un periodo con los mismos datos
+        $existingPeriodo = periodos::where('periodo', $request->periodo)
+            ->where('fecha_inicio', $request->fecha_inicio)
+            ->where('fecha_fin', $request->fecha_fin)
+            ->where('idCiclo', $request->ciclos)
+            ->first();
+
+        if ($existingPeriodo) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => 'El periodo ya existe en la base de datos.', "color" => "red"]);
+        }
+
+        // Verificar si las fechas están dentro de otro periodo
+        $conflictingPeriodo = periodos::where('idCiclo', $request->ciclos)
+            ->where(function ($query) use ($request) {
+                $query->where(function ($subquery) use ($request) {
+                    $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                        ->where('fecha_inicio', '<=', $request->fecha_fin);
+                })
+                    ->orWhere(function ($subquery) use ($request) {
+                        $subquery->where('fecha_fin', '>=', $request->fecha_inicio)
+                            ->where('fecha_fin', '<=', $request->fecha_fin);
+                    });
+            })
+            ->first();
+
+        if ($conflictingPeriodo) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => 'No se puede agregar un periodo dentro de las fechas de otro.', "color" => "red"]);
+        }
+
+        // Si no existe, proceder con la inserción
+        $periodo = new periodos();
+        $periodo->periodo = $request->periodo;
+        $periodo->fecha_inicio = $request->fecha_inicio;
+        $periodo->fecha_fin = $request->fecha_fin;
+        $periodo->idCiclo = $request->ciclos;
+
+        $periodo->save();
+
+        return redirect()->route('secre.ciclosperiodos')->With(["message" => "Periodo agregado correctamente: " . $periodo->periodo, "color" => "green"]);
+    }
+
+    public function eliminarPeriodos($idPeriodo)
+    {
+        try {
+            $periodo = periodos::find($idPeriodo);
+            $periodo->delete();
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Periodo eliminado correctamente", "color" => "green"]);
+        } catch (Exception $a) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Error al eliminar el periodo", "color" => "red"]);
+        }
+    }
+
+    public function elimPeriodos($periodosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $periodosIdsArray = explode(',', $periodosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $periodosIdsArray = array_map('intval', $periodosIdsArray);
+
+            // Elimina los ciclos
+            periodos::whereIn('idPeriodo', $periodosIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Periodos eliminados correctamente", "color" => "green"]);
+        } catch (\Exception $e) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Error al eliminar los periodos", "color" => "red"]);
+        }
+    }
+
+    public function actualizarPeriodos(Request $request, $idPeriodo)
+    {
+        try {
+            $periodos = periodos::find($idPeriodo);
+            $request->validate([
+                'periodo' => 'required',
+                'fecha_inicio' => 'required',
+                'fecha_fin' => 'required',
+                'ciclos' => 'required',
+            ]);
+            $periodos->periodo = $request->periodo;
+            $periodos->fecha_inicio = $request->fecha_inicio;
+            $periodos->fecha_fin = $request->fecha_fin;
+            $periodos->idCiclo = $request->ciclos;
+
+            // Verificar si ya existe un periodo con los mismos datos
+            $existingPeriodo = periodos::where('idPeriodo', '!=', $idPeriodo) // Excluir el propio periodo que se está actualizando
+                ->where('periodo', $request->periodo)
+                ->where('fecha_inicio', $request->fecha_inicio)
+                ->where('fecha_fin', $request->fecha_fin)
+                ->where('idCiclo', $request->ciclos)
+                ->first();
+
+            if ($existingPeriodo) {
+                return redirect()->route('secre.ciclosperiodos')->with(["message" => "El periodo ya existe en la base de datos.", "color" => "red"]);
+            }
+
+            // Verificar si las fechas están dentro de otro periodo
+            $conflictingPeriodo = periodos::where('idCiclo', $request->ciclos)
+                ->where('idPeriodo', '!=', $idPeriodo) // Excluir el propio periodo que se está actualizando
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subquery) use ($request) {
+                        $subquery->where('fecha_inicio', '>=', $request->fecha_inicio)
+                            ->where('fecha_inicio', '<=', $request->fecha_fin);
+                    })
+                        ->orWhere(function ($subquery) use ($request) {
+                            $subquery->where('fecha_fin', '>=', $request->fecha_inicio)
+                                ->where('fecha_fin', '<=', $request->fecha_fin);
+                        });
+                })
+                ->first();
+
+            if ($conflictingPeriodo) {
+                return redirect()->route('secre.ciclosperiodos')->with(["message" => "No se puede actualizar el periodo con fechas que se superponen con otro periodo.", "color" => "red"]);
+            }
+
+            $periodos->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
+            return redirect()->route('secre.ciclosperiodos')->With(["message" => "Error al actualizar el periodo", "color" => "red"]);
+        }
+        return redirect()->route('secre.ciclosperiodos')->With(["message" => "Periodo actualizado correctamente", "color" => "green"]);
+    }
+
+    public function getPeriodos($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $periodos = periodos::where('grupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('periodo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_inicio', 'like', '%' . $searchTerm . '%')
+            ->orWhere('fecha_fin', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($periodos);
+    }
+
+    public function obtenerCicloXGrado($idGrado)
+    {
+        try {
+            $grado = grados::find($idGrado);
+            $fecha = $grado->idCiclo;
+            $ciclo = ciclos::where('idCiclo', $fecha)->get();
+
+            return response()->json($ciclo);
+        } catch (Exception $e) {
+            dd($grado);
+        }
+    }
+
+    public function obtenerGruposXGrado($idGrado)
+    {
+        $grado = grados::find($idGrado);
+        $fecha = $grado->idCiclo;
+        $gruposPr = grupos::where('idCiclo', $fecha)->get();
+        $grupos = $gruposPr->map(function ($grupo) {
+            $grupo->grupoC = $grupo->grupo . " - " . $grupo->ciclos->descripcionCiclo;
+
+            return $grupo;
+        });
+
+        return response()->json($grupos);
+    }
 }

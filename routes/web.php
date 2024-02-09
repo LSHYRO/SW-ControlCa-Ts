@@ -372,6 +372,19 @@ Route::controller(SecreController::class)->group(function () {
     Route::put('/secre/grupos/{idGrupo}/edit', 'actualizarGrupos')->name('secre.actualizarGrupos');
     Route::delete('/secre/grupos/delete/{gruposIds}', 'elimGrupos')->name('secre.elimGrupos');
 
+    Route::get('/secre/ciclosperiodos', 'ciclosperiodos')->name('secre.ciclosperiodos');
+    Route::post('/secre/ciclos', 'addCiclos')->name('secre.addCiclos');
+    Route::post('/secre/periodos', 'addPeriodos')->name('secre.addPeriodos');
+    Route::delete('/secre/ciclos/{idCiclo}', 'eliminarCiclos')->name('secre.eliminarCiclos');
+    Route::put('/secre/ciclos/{idCiclo}/edit', 'actualizarCiclos')->name('secre.actualizarCiclos');
+    Route::delete('/secre/ciclos/delete/{ciclosIds}', 'elimCiclos')->name('secre.elimCiclos');
+    Route::delete('/secre/periodos/{idPeriodo}', 'eliminarPeriodos')->name('secre.eliminarPeriodos');
+    Route::put('/secre/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('secre.actualizarPeriodos');
+    Route::delete('/secre/periodos/delete/{periodosIds}', 'elimPeriodos')->name('secre.elimPeriodos');
+
+    Route::get('/secre/obtener/datos/ciclo/xgrados/{idGrado}', 'obtenerCicloXGrado')->name('secre.cicloXgrupos');
+    Route::get('/secre/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('secre.gradosXgrupos');
+
     Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
 });
 
