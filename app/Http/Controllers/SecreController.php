@@ -7,6 +7,10 @@ use App\Models\profesores;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\avisos;
+use App\Models\actividades;
+use App\Models\tiposActividades;
+use App\Models\calificaciones_periodos;
+use App\Models\calificaciones;
 use App\Models\alumnos;
 use App\Models\materias;
 use App\Models\clases;
@@ -1737,5 +1741,232 @@ class SecreController extends Controller{
             ->get();
 
         return response()->json($materias);
+    }
+
+    public function clases()
+    {
+        $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
+            ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
+            ->get();
+
+        $clasesA = clases::all();
+        $clases = $clasesA->map(function ($clase) {
+            $clase->descripcionClase = $clase->materias->materia . " " . $clase->grados->grado . " " . $clase->grupos->grupo;
+            $clase->personalP = $clase->personal;
+            return $clase;
+        });
+
+        $grupos = grupos::all();
+        $grados = grados::all();
+        /*
+        $gradosPrincipal = grados::with('ciclos')->get();
+        $grados = $gradosPrincipal->map(function ($grado) {
+            $grado->descripcion = $grado->grado . " - " . $grado->ciclos->descripcionCiclo;
+
+            return $grado;
+        });
+        */
+        //$personal = personal::all();
+        $materias = materias::all();
+        $ciclos = ciclos::all();
+
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Secre/Clases', [
+            'clases' => $clases,
+            'grupos' => $grupos,
+            'grados' => $grados,
+            'personal' => $personal,
+            'materias' => $materias,
+            'ciclos' => $ciclos,
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function addClases(Request $request)
+    {
+        try {
+            $request->validate([
+                'grupos' => 'required',
+                'grados' => 'required',
+                'personal' => 'required',
+                'materias' => 'required',
+                'ciclos' => 'required',
+            ]);
+
+            // Verificar si la clase ya existe
+            $claseExistente = clases::where([
+                'idGrado' => $request->grados,
+                'idGrupo' => $request->grupos,
+                'idPersonal' => $request->personal['idPersonal'],
+                'idMateria' => $request->materias,
+                'idCiclo' => $request->ciclos,
+            ])->first();
+
+            if ($claseExistente) {
+                return redirect()->route('secre.clases')->with(['message' => 'La clase no se puede agregar, porque ya se encunetra registrado.', 'color' => 'red']);
+            }
+
+            // Crear y guardar la nueva clase
+            $clase = new clases();
+            $clase->idGrado = $request->grados;
+            $clase->idGrupo = $request->grupos;
+            $clase->idPersonal = $request->personal['idPersonal'];
+            $clase->idMateria = $request->materias;
+            $clase->idCiclo = $request->ciclos;
+
+            $clase->save();
+
+            return redirect()->route('secre.clases')->with(['message' => "Clase agregada correctamente: " . $clase->materias->materia . ", " . $clase->grados->grado . " " . $clase->grupos->grupo . " " . $clase->ciclos->descripcionCiclo, "color" => "green"]);
+        } catch (Exception $e) {
+            Log::info('Error en guardar la clase: ' . $e);
+            return redirect()->route('secre.clases')->withErrors(['message' => 'Error al guardar la clase.', "color" => "red"]);
+        }
+    }
+
+    public function eliminarClases($idClase)
+    {
+        try {
+            $clase = clases::find($idClase);
+            $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+            $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
+            $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+            $actividades = actividades::where('idClase', $clase->idClase)->get();
+
+            if (!$calificacionesPeriodos->isEmpty()) {
+                foreach ($calificacionesPeriodos as $calPer) {
+                    $calPer->delete();
+                }
+            }
+            if (!$calificaciones->isEmpty()) {
+                foreach ($calificaciones as $calificacion) {
+                    $calificacion->delete();
+                }
+            }
+            if (!$clases_alumnos->isEmpty()) {
+                foreach ($clases_alumnos as $clasAlu) {
+                    $clasAlu->delete();
+                }
+            }
+            if (!$actividades->isEmpty()) {
+                foreach ($actividades as $actividad) {
+                    $actividad->delete();
+                }
+            }
+            $clase->delete();
+            return redirect()->route('secre.clases')->with(['message' => "Clase eliminada correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            return redirect()->route('secre.clases')->with(['message' => "Error al eliminar la clase", "color" => "red"]);
+        }
+    }
+
+    public function elimClases($clasesIds)
+    {
+        if (Auth::check()) {
+            try {
+                // Convierte la cadena de IDs en un array
+                $clasesIdsArray = explode(',', $clasesIds);
+
+                // Limpia los IDs para evitar posibles problemas de seguridad
+                $clasesIdsArray = array_map('intval', $clasesIdsArray);
+
+                for ($i = 0; $i < count($clasesIdsArray); $i++) {
+                    $clase = clases::find($clasesIdsArray[$i]);
+                    $calificacionesPeriodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+                    $calificaciones = calificaciones::where('idClase', $clase->idClase)->get();
+                    $clases_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
+                    $actividades = actividades::where('idClase', $clase->idClase)->get();
+
+                    if (!$calificacionesPeriodos->isEmpty()) {
+                        foreach ($calificacionesPeriodos as $calPer) {
+                            $calPer->delete();
+                        }
+                    }
+                    if (!$calificaciones->isEmpty()) {
+                        foreach ($calificaciones as $calificacion) {
+                            $calificacion->delete();
+                        }
+                    }
+                    if (!$clases_alumnos->isEmpty()) {
+                        foreach ($clases_alumnos as $clasAlu) {
+                            $clasAlu->delete();
+                        }
+                    }
+                    if (!$actividades->isEmpty()) {
+                        foreach ($actividades as $actividad) {
+                            $actividad->delete();
+                        }
+                    }
+                    $clase->delete();
+                }
+
+                return redirect()->route('secre.clases')->with(['message' => "Clases eliminadas correctamente", "color" => "green"]);
+            } catch (\Exception $e) {
+                return redirect()->route('secre.clases')->with(['message' => "Error al eliminar las clases seleccionadas", "color" => "red"]);
+            }
+        }
+        return redirect()->route('secre.inicio')->with(['message' => "No tiene acceso a esta función", "color" => "red"]);
+    }
+
+    public function actualizarClases(Request $request, $idClase)
+    {
+        if (Auth::check()) {
+            try {
+                $clases = clases::find($idClase);
+                $request->validate([
+                    'grados' => 'required',
+                    'grupos' => 'required',
+                    'personal' => 'required',
+                    'materias' => 'required',
+                    'ciclos' => 'required',
+                ]);
+
+                $conflictingClase = clases::where('idClase', '!=', $idClase) // Excluir el propio periodo que se está actualizando
+                    ->where(function ($query) use ($request) {
+                        $query->where(function ($subquery) use ($request) {
+                            $subquery->where('idGrado', $request->grados)
+                                ->where('idGrupo', $request->grupos)
+                                ->where('idPersonal', $request->personal['idPersonal'])
+                                ->where('idMateria', $request->materias)
+                                ->where('idCiclo', $request->ciclos);
+                        });
+                    })
+                    ->first();
+
+                if ($conflictingClase) {
+                    return redirect()->route('secre.clases')->with(['message' => "Los datos de la clase ya existen.", "color" => "yellow"]);
+                }
+
+                $clases->idGrupo = $request->grupos;
+                $clases->idGrado = $request->grados;
+                $clases->idPersonal = $request->personal['idPersonal'];
+                $clases->idMateria = $request->materias;
+                $clases->idCiclo = $request->ciclos;
+
+                $clases->save();
+                //return redirect()->route('admin.clases')->with('message',"Clase actualizada correctamente");
+
+            } catch (Exception $e) {
+                return redirect()->route('secre.clases')->with(['message' => "Error al actualizar la clase.", "color" => "red"]);
+            }
+
+            //$clases->fill($request->input())->saveOrFail();
+            return redirect()->route('secre.clases')->with(['message' => "Clase actualizada correctamente.", "color" => "green"]);
+        }
+        return redirect()->route('secre.inicio')->with(['message' => "No se tiene acceso a esta función.", "color" => "red"]);
+    }
+
+    public function getClases($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $clases = clases::where('clase', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idGrupo', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idGrado', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idProfesor', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idMateria', 'like', '%' . $searchTerm . '%')
+            ->orWhere('idCiclo', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($clases);
     }
 }
