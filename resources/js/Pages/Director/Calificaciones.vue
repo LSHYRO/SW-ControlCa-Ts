@@ -34,6 +34,7 @@ const props = defineProps({
     talleres: { type: Object },
     usuario: { type: Object },
     ciclos: { type: Object },
+    ciclosE0: { type: Object },
 });
 
 const mostrarModal = ref(false);

@@ -2320,6 +2320,11 @@ class DirectorController extends Controller
         $materiasT = materias::where('esTaller', '1')->get();
         $usuario = $this->obtenerInfoUsuario();
 
+        $ciclosConEstatusCero = grado_grupo_alumno::where('estatus', 0)
+            ->distinct('idCiclo')
+            ->get()
+            ->pluck('ciclos');
+
         return Inertia::render('Director/Calificaciones', [
             'tutores' => $tutores,
             'alumnos' => $alumnos,
@@ -2330,6 +2335,7 @@ class DirectorController extends Controller
             'talleres' => $materiasT,
             'usuario' =>  $usuario,
             'ciclos' => $ciclos,
+            'ciclosE0'=> $ciclosConEstatusCero,
         ]);
     }
 
@@ -2862,23 +2868,88 @@ class DirectorController extends Controller
                     ->get();
 
                 foreach ($gradGrupAl as $gga) {
-                    $clase_alumno= clases_alumnos::where('idAlumno', $gga->idAlumno)
+                    $clase_alumno = clases_alumnos::where('idAlumno', $gga->idAlumno)
                         ->get();
                     $sumaCalificacion = 0;
-                    foreach($clase_alumno as $cl){
+                    foreach ($clase_alumno as $cl) {
                         $sumaCalificacion += $cl->calificacionClase;
                     }
                     $promedio = round($sumaCalificacion / count($clase_alumno));
                     $gga->calificacion = $promedio;
                     $gga->save();
                 }
-                return redirect(route('director.calificaciones'))->with(['message'=>'Se ha calificado el ciclo correctamente', 'color'=>'green']);
+                return redirect(route('director.calificaciones'))->with(['message' => 'Se ha calificado el ciclo correctamente.', 'color' => 'green']);
             } catch (Exception $e) {
                 Log::info("Error: " . $e);
-                return redirect(route('director.calificaciones'))->with(['message'=>'Error al calificar el ciclo', 'color'=>'red']);
+                return redirect(route('director.calificaciones'))->with(['message' => 'Error al calificar el ciclo.', 'color' => 'red']);
             }
-            
         }
-        return redirect(route('director.inicio'))->with(['message'=>'No tiene acceso a esta función', 'color'=>'red']);
+        return redirect(route('director.inicio'))->with(['message' => 'No tiene acceso a esta función.', 'color' => 'red']);
+    }
+
+    public function pasarCiclo(Request $request)
+    {
+        if (Auth::check()) {
+            try {
+                $ciclo = ciclos::find($request->ciclo)->first();
+                $gradGrupAl = grado_grupo_alumno::where('idCiclo', $ciclo->idCiclo)
+                    ->where('estatus', '1')
+                    ->get();
+
+                foreach ($gradGrupAl as $gga) {
+                    $clase_alumno = clases_alumnos::where('idAlumno', $gga->idAlumno)
+                        ->get();
+                    $materiasReprobadas = 0;
+                    foreach ($clase_alumno as $cl) {
+                        if ($cl->calificacionClase < 6) {
+                            $materiasReprobadas++;
+                        }
+                    }
+                    if ($materiasReprobadas >= 5) {
+                        $gga->estatus = 0;
+                        $gga2 = new grado_grupo_alumno();
+                        $gga2->idGrado = $gga->idGrado;
+                        $gga2->idGrupo = $gga->idGrupo;
+                        $gga2->idAlumno = $gga->idAlumno;
+                        $gga2->idCiclo = $request->cicloN;
+                        $gga->save();
+                        $gga2->save();
+                    } else {
+                        $grado = grados::find($gga->idGrado)->first();
+                        if ($grado->grado = 3) {
+                            $gga->estatus = 0;
+                            $gga->save();
+                        } else {
+                            $gga->estatus = 0;
+                            $gga2 = new grado_grupo_alumno();
+                            if ($grado->grado = 2) {
+                                $nuevoGrado = grados::where('grado', 3)->first();
+                                $gga2->idGrado = $nuevoGrado->idGrado;
+                            } elseif ($grado->idGrado = 1) {
+                                $nuevoGrado = grados::where('grado', 2)->first();
+                                $gga2->idGrado = $nuevoGrado->idGrado;
+                            }
+                            $gga2->idGrupo = $gga->idGrupo;
+                            $gga2->idAlumno = $gga->idAlumno;
+                            $gga2->idCiclo = $request->cicloN;
+                            $gga->save();
+                            $gga2->save();
+                        }
+                    }
+                }
+                $ciclo->delete();
+                return redirect(route('director.calificaciones'))->with(['message' => 'Se ha pasado de ciclo correctamente.', 'color' => 'green']);
+            } catch (Exception $e) {
+                Log::error("Error: " . $e);
+                return redirect(route('director.calificaciones'))->with(['message' => 'Hubo un error al pasar de ciclo.', 'color' => 'red']);
+            }
+        }
+        return redirect(route('director.calificaciones'))->with(['message' => 'No se tiene acceso a esta función.', 'color' => 'red']);
+    }
+
+    public function eliminarClasesCiclo(Request $request)
+    {
+        //Eliminar las clase que no esten en el ciclo actual
+
     }
 }
