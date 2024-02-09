@@ -219,7 +219,6 @@ Route::middleware(['directorS'])->group(function () {
         Route::put('/director/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('director.actualizarDirectivos');
 
         Route::delete('/director/materias/delete/{materiasIds}', 'elimMaterias')->name('director.elimMaterias');
-
         Route::delete('/director/materias/{idMateria}', 'eliminarMaterias')->name('director.eliminarMaterias');
         Route::put('/director/materias/{idMateria}/edit', 'actualizarMateria')->name('director.actualizarMaterias');
 
@@ -345,6 +344,12 @@ Route::controller(SecreController::class)->group(function () {
     Route::delete('/secre/directivos/{idPersonal}', 'eliminarDirectivos')->name('secre.eliminarDirectivos');
     Route::delete('/secre/directivos/delete/{personalIds}', 'elimDirectivos')->name('secre.elimDirectivos');
     Route::put('/secre/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('secre.actualizarDirectivos');
+
+    Route::get('/secre/materias', 'materias')->name('secre.materias');
+    Route::post('/secre/materias', 'addMaterias')->name('secre.addMaterias');
+    Route::delete('/secre/materias/delete/{materiasIds}', 'elimMaterias')->name('secre.elimMaterias');
+    Route::delete('/secre/materias/{idMateria}', 'eliminarMaterias')->name('secre.eliminarMaterias');
+    Route::put('/secre/materias/{idMateria}/edit', 'actualizarMateria')->name('secre.actualizarMaterias');
 
     Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
     Route::delete('/secre/alumnosclases/{idClase}', 'eliminarAlumnosClases')->name('secre.eliminarAlumnosClases');

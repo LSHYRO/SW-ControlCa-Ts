@@ -1651,4 +1651,91 @@ class SecreController extends Controller{
             dd($e);
         }
     }
+
+    public function materias()
+    {
+        $materias = materias::all();
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Secre/Materias', [
+            'materias' => $materias,
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function addMaterias(Request $request)
+    {
+        // Verificar si la materia ya existe en la base de datos
+        $existingMateria = Materias::where('materia', $request->materia)->first();
+        //$existingMateria = materias::where('materia', $request->materia)->whereNull('deleted_at')->first();
+
+        if ($existingMateria) {
+            // Si ya existe, puedes manejar la situación como desees, por ejemplo, redirigir con un mensaje de error.
+            return redirect()->route('secre.materias')->with(['message' => "La materia ya está registrada: " . $request->materia, "color" => "red"]);
+        }
+
+        // Si la materia no existe, proceder a agregarla a la base de datos
+        $materia = new Materias();
+        $materia->materia = $request->materia;
+        $materia->descripcion = $request->descripcion;
+        $materia->esTaller = $request->esTaller;
+
+        $materia->save();
+
+        return redirect()->route('secre.materias')->with(['message' => "Materia agregada correctamente: " . $materia->materia, "color" => "green"]);
+    }
+
+    public function eliminarMaterias($idMateria)
+    {
+        $materia = materias::find($idMateria);
+        $materia->delete();
+        return redirect()->route('secre.materias')->with(['message' => "Materia eliminada correctamente", "color" => "green"]);
+    }
+
+    public function elimMaterias($materiasIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $materiasIdsArray = explode(',', $materiasIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $materiasIdsArray = array_map('intval', $materiasIdsArray);
+
+            // Elimina las materias
+            materias::whereIn('idMateria', $materiasIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('secre.materias')->with(['message' => "Materias eliminadas correctamente", "color" => "green"]);
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
+    }
+
+    public function actualizarMateria(Request $request, $idMateria)
+    {
+
+        $materias = materias::find($idMateria);
+        $request->validate([
+            'materia' => 'required',
+            'descripcion' => 'required',
+            'esTaller' => 'required',
+        ]);
+
+        $materias->fill($request->input())->saveOrFail();
+        return redirect()->route('secre.materias')->with(['message' => "Materia actualizada correctamente: " . $materias->materia, "color" => "green"]);
+    }
+
+    public function getMaterias($searchTerm)
+    {
+        // Lógica para obtener las materias según el término de búsqueda
+        $materias = materias::where('materia', 'like', '%' . $searchTerm . '%')
+            ->orWhere('descripcion', 'like', '%' . $searchTerm . '%')
+            ->get();
+
+        return response()->json($materias);
+    }
 }
