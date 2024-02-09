@@ -87,27 +87,32 @@ const validateSelectMultiple = (selectedValues) => {
     return Array.isArray(selectedValues) && selectedValues.length > 0;
 };
 
+
 const save = async () => {
     claseError.value = validateSelect(form.clase) ? '' : 'Seleccione la clase';
-    //  Tipo de sangre
     alumnoError.value = validateSelectMultiple(form.alumno) ? '' : 'Seleccione los alumnos';
 
-    if (
-        claseError.value || alumnoError.value
-    ) {
-
+    if (claseError.value || alumnoError.value) {
         return;
     }
 
-    console.log(form);
-    await form.post(route('director.addAlumnosClases'), {
+    // Verificar si ya existe una entrada con el mismo idClase e idAlumno
+    const exists = props.alumnos.some(entry => entry.idClase === form.clase && entry.idAlumno === form.alumno);
+
+    if (exists) {
+        claseError.value = 'Ya existe una entrada para esta clase y alumno.';
+        return;
+    }
+
+    await form.post(route('secre.addAlumnosClases'), {
         onSuccess: () => {
-            close();//le agregué el ;
+            close();
             claseError.value = '';
             alumnoError.value = '';
         }
     });
-}
+};
+
 
 const getMateria = (idMateria) => {
     const materia = props.materias.find(m => m.idMateria === idMateria);
@@ -151,7 +156,7 @@ watch(() => form.clase, () => {
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
-                    <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
+                    <h2 class="text-base font-semibold leading-7 text-gray-900">Añadir alumno(s) a clase</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar a los
                         alumnos a una clase
                     </p>

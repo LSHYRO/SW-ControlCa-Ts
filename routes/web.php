@@ -212,16 +212,14 @@ Route::middleware(['directorS'])->group(function () {
         Route::put('/director/alumnos/{idAlumno}/edit', 'actualizarAlumno')->name('director.actualizarAlumno');
 
         Route::delete('/director/profesores/delete/{personalIds}', 'elimProfesores')->name('director.elimProfesores');
-
         Route::delete('/director/profesores/{idPersonal}', 'eliminarProfesores')->name('director.eliminarProfesores');
         Route::put('/director/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('director.actualizarProfesores');
 
         Route::delete('/director/directivos/{idPersonal}', 'eliminarDirectivos')->name('director.eliminarDirectivos');
-        Route::delete('/administrador/directivos/delete/{personalIds}', 'elimDirectivos')->name('director.elimDirectivos');
+        Route::delete('/director/directivos/delete/{personalIds}', 'elimDirectivos')->name('director.elimDirectivos');
         Route::put('/director/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('director.actualizarDirectivos');
 
         Route::delete('/director/materias/delete/{materiasIds}', 'elimMaterias')->name('director.elimMaterias');
-
         Route::delete('/director/materias/{idMateria}', 'eliminarMaterias')->name('director.eliminarMaterias');
         Route::put('/director/materias/{idMateria}/edit', 'actualizarMateria')->name('director.actualizarMaterias');
 
@@ -314,13 +312,89 @@ Route::middleware(['profesorS'])->group(function () {
 
 Route::controller(SecreController::class)->group(function () {
     Route::get('/secre', 'inicio')->name('secre.inicio');
-    Route::get('/secre/alumnosclases', 'alumnosclases')->name('secre.alumnosclases');
-
-    Route::get('/secre/cuentas', 'cuentas')->name('secre.cuentas');
     Route::get('/secre/perfil', 'perfil')->name('secre.perfil');
-    Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
+
+    Route::get('/secre/avisos', 'avisos')->name('secre.avisos');
+    Route::post('/secre/avisos', 'agregarAviso')->name('secre.agregarAv');
+    Route::delete('/secre/avisos/eliminar/vrsAvisos/{avisosIds}','eliminarAvisos')->name('secre.eliminarAvs');
+    Route::delete('/secre/avisos/eliminar/{idAviso}', 'eliminarAviso')->name('secre.eliminarAv');
+    Route::put('/secre/avisos/actualizar/aviso', 'actualizarAviso')->name('secre.actualizarAv'); 
+    
+    Route::get('/secre/tutores_alumnos', 'tutores_alumnos')->name('secre.tutoresAlum');
+    Route::post('/secre/tutores', 'addTutores')->name('secre.addTutores');
+    Route::get('/secre/buscar/tutor', 'buscarTutor')->name('secre.busquedaTutor');
+    Route::delete('/secre/tutores/delete/{tutoresIds}', 'elimTutores')->name('secre.elimTutores');
+    Route::delete('/secre/tutores/{idTutor}', 'eliminarTutor')->name('secre.eliminarTutor');
+    Route::put('/secre/tutores/{idTutor}/edit', 'actualizarTutor')->name('secre.actualizarTutor');
+    Route::post('/secre/alumnos', 'agregarAlumno')->name('secre.addAlumnos');
+    Route::delete('/secre/alumnos/delete/{alumnosIds}', 'eliminarAlumnos')->name('secre.elimAlumnos');
+    Route::delete('/secre/alumnos/{idAlumno}', 'eliminarAlumno')->name('secre.eliminarAlumno');
+    Route::put('/secre/alumnos/{idAlumno}/edit', 'actualizarAlumno')->name('secre.actualizarAlumno');
+
+    Route::get('/secre/profesores', 'profesores')->name('secre.profesores');
+    Route::post('/secre/profesores', 'addProfesores')->name('secre.addProfesores');
+    Route::delete('/secre/profesores/delete/{personalIds}', 'elimProfesores')->name('secre.elimProfesores');
+    Route::delete('/secre/profesores/{idPersonal}', 'eliminarProfesores')->name('secre.eliminarProfesores');
+    Route::put('/secre/profesores/{idPersonal}/edit', 'actualizarProfesor')->name('secre.actualizarProfesores');
+
+    Route::get('/secre/directivos', 'directivos')->name('secre.directivos');
+    Route::post('/secre/directivos', 'addDirectivos')->name('secre.addDirectivos');
+    Route::delete('/secre/directivos/{idPersonal}', 'eliminarDirectivos')->name('secre.eliminarDirectivos');
+    Route::delete('/secre/directivos/delete/{personalIds}', 'elimDirectivos')->name('secre.elimDirectivos');
+    Route::put('/secre/directivos/{idPersonal}/edit', 'actualizarDirectivo')->name('secre.actualizarDirectivos');
+
+    Route::get('/secre/materias', 'materias')->name('secre.materias');
+    Route::post('/secre/materias', 'addMaterias')->name('secre.addMaterias');
+    Route::delete('/secre/materias/delete/{materiasIds}', 'elimMaterias')->name('secre.elimMaterias');
+    Route::delete('/secre/materias/{idMateria}', 'eliminarMaterias')->name('secre.eliminarMaterias');
+    Route::put('/secre/materias/{idMateria}/edit', 'actualizarMateria')->name('secre.actualizarMaterias');
+
+    Route::get('/secre/clases', 'clases')->name('secre.clases');
+    Route::post('/secre/clases', 'addClases')->name('secre.addClases');
+    Route::delete('/secre/clases/{idClase}', 'eliminarClases')->name('secre.eliminarClases');
+    Route::delete('/secre/clases/delete/{clasesIds}', 'elimClases')->name('secre.elimClases');
+    Route::put('/secre/clases/{idClase}/edit', 'actualizarClases')->name('secre.actualizarClases');
+
+    Route::get('/secre/alumnosclases', 'alumnosclases')->name('secre.alumnosclases');
+    Route::post('/secre/alumnosclases', 'addAlumnosClases')->name('secre.addAlumnosClases');
     Route::delete('/secre/alumnosclases/{idClase}', 'eliminarAlumnosClases')->name('secre.eliminarAlumnosClases');
     Route::delete('/secre/alumnosclases/delete/{clases_alumnosIds}', 'elimAlumnosClases')->name('secre.elimAlumnosClases');
+
+    Route::get('/secre/gradosgrupos', 'gradosgrupos')->name('secre.gradosgrupos');
+    Route::post('/secre/grados', 'addGrados')->name('secre.addGrados');
+    Route::post('/secre/grupos', 'addGrupos')->name('secre.addGrupos');
+    Route::delete('/secre/grados/{idGrado}', 'eliminarGrados')->name('secre.eliminarGrados');
+    Route::put('/secre/grados/{idGrado}/edit', 'actualizarGrados')->name('secre.actualizarGrados');
+    Route::delete('/secre/grados/delete/{gradosIds}', 'elimGrados')->name('secre.elimGrados');
+    Route::delete('/secre/grupos/{idGrupo}', 'eliminarGrupos')->name('secre.eliminarGrupos');
+    Route::put('/secre/grupos/{idGrupo}/edit', 'actualizarGrupos')->name('secre.actualizarGrupos');
+    Route::delete('/secre/grupos/delete/{gruposIds}', 'elimGrupos')->name('secre.elimGrupos');
+
+    Route::get('/secre/ciclosperiodos', 'ciclosperiodos')->name('secre.ciclosperiodos');
+    Route::post('/secre/ciclos', 'addCiclos')->name('secre.addCiclos');
+    Route::post('/secre/periodos', 'addPeriodos')->name('secre.addPeriodos');
+    Route::delete('/secre/ciclos/{idCiclo}', 'eliminarCiclos')->name('secre.eliminarCiclos');
+    Route::put('/secre/ciclos/{idCiclo}/edit', 'actualizarCiclos')->name('secre.actualizarCiclos');
+    Route::delete('/secre/ciclos/delete/{ciclosIds}', 'elimCiclos')->name('secre.elimCiclos');
+    Route::delete('/secre/periodos/{idPeriodo}', 'eliminarPeriodos')->name('secre.eliminarPeriodos');
+    Route::put('/secre/periodos/{idPeriodo}/edit', 'actualizarPeriodos')->name('secre.actualizarPeriodos');
+    Route::delete('/secre/periodos/delete/{periodosIds}', 'elimPeriodos')->name('secre.elimPeriodos');
+
+    Route::get('/secre/obtener/datos/ciclo/xgrados/{idGrado}', 'obtenerCicloXGrado')->name('secre.cicloXgrupos');
+    Route::get('/secre/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('secre.gradosXgrupos');
+
+    Route::get('/secre/cuentas', 'cuentas')->name('secre.cuentas');
+    Route::post('/secre/cuentas', 'addCuentas')->name('secre.addCuentas');
+    Route::put('/secre/usuarios/restaurar-usuario/{idUsuario}', 'restaurarUsuario')->name('secre.restUsuario');
+    Route::delete('/secre/cuentas/{idUsuario}', 'eliminarCuentas')->name('secre.eliminarCuentas');
+    Route::put('/secre/cuentas/{idUsuario}/edit', 'actualizarCuentas')->name('secre.actualizarCuentas');
+    Route::delete('/secre/cuentas/delete/{usuariosIds}', 'elimUsuarios')->name('secre.elimCuentas');
+
+    Route::get('/secre/clasesAlumno/{idAlumno}', 'clasesDeAlumno')->name('secre.verCalificaciones');
+    Route::get('/secre/clasesA/clase/{idClase}/alum/{idAlumno}', 'mostrarClase')->name('secre.mostrarClase');
+    Route::get('/secre/calificaciones', 'calificaciones')->name('secre.calificaciones');
+
+    Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
 });
 
 Route::controller(TutorController::class)->group(function () {

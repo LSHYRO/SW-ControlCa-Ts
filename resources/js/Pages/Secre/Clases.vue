@@ -2,7 +2,7 @@
 import { ref, computed, getCurrentInstance, onMounted } from 'vue';
 import SearchBar from '@/Components/SearchBar.vue';
 import SecreLayout from '@/Layouts/SecreLayout.vue';
-import FormularioAlumnosClase from '@/Components/secre/FormularioAlumnosClase.vue';
+import FormularioClases from '@/Components/secre/FormularioClases.vue';
 import MenuOpcionesDirec from '@/Components/director/MenuOpcionesDirec.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
@@ -29,96 +29,103 @@ const props = defineProps({
     clases: { type: Object },
     grados: { type: Object },
     grupos: { type: Object },
-    alumnos: { type: Object },
     personal: { type: Object },
     materias: { type: Object },
-    usuario: { type: Object },
-    clases_alumnos: { type: Object }
+    ciclos: { type: Object },
+    usuario: { type: Object }
 });
-
-console.log(props.clases_alumnos);
-console.log(props.alumnos);
-
-const getMateria = (idMateria) => {
-    const materia = props.materias.find(m => m.idMateria === idMateria);
-    return materia ? materia.materia : 'N/A';
-};
-
-const getGrado = (idGrado) => {
-    const grado = props.grados.find(g => g.idGrado === idGrado);
-    return grado ? grado.grado : 'N/A';
-};
-
-const getGrupo = (idGrupo) => {
-    const grupo = props.grupos.find(g => g.idGrupo === idGrupo);
-    return grupo ? grupo.grupo : 'N/A';
-};
 
 const columns = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="alumnosclase-checkbox" data-id="${row.idClaseAlumno}" ">`;
+            return `<input type="checkbox" class="clase-checkbox" data-id="${row.idClase}" ">`;
         }
     },
     {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     {
-        data: 'idClase',
-        render: function (data, type, row, meta) {
-            const clase = props.clases.find(clase => clase.idClase === data);
-            const materia = clase ? getMateria(clase.idMateria) : '';
-            const grado = clase ? getGrado(clase.idGrado) : '';
-            const grupo = clase ? getGrupo(clase.idGrupo) : '';
-
-            return `${materia} - Grado: ${grado} - Grupo: ${grupo}`;
-        }
-    },
-    {
-        data: 'idAlumno',
+        data: 'idGrado',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
-            const alumno = props.alumnos.find(alumno => alumno.idAlumno === data);
-            return alumno ? alumno.nombre_completo : '';
+            const grado = props.grados.find(grado => grado.idGrado === data);
+            return grado ? grado.grado : '';
         }
     },
     {
-        data: 'calificacionClase',
-    },
-    /* {
-        data: null, render: function (data, type, row, meta) {
-            return `<button class="editar-button" data-id="${row.idClaseAlumno}"><i class="fa fa-pencil"></i></button>`;
+        data: 'idGrupo',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const grupo = props.grupos.find(grupo => grupo.idGrupo === data);
+            return grupo ? grupo.grupo : '';
         }
-    }, */
+    },
+    {
+        data: 'idPersonal',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const docente = props.personal.find(docente => docente.idPersonal === data);
+            return docente ? docente.nombre_completo : '';
+        }
+    },
+    {
+        data: 'idMateria',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const materia = props.materias.find(materia => materia.idMateria === data);
+            return materia ? materia.materia : '';
+        }
+    },
+    {
+        data: 'idCiclo',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const ciclo = props.ciclos.find(ciclo => ciclo.idCiclo === data);
+            return ciclo ? ciclo.descripcionCiclo : '';
+        }
+    },
     {
         data: null, render: function (data, type, row, meta) {
-            return `<button class="eliminar-button" data-id="${row.idClaseAlumno}"><i class="fa fa-trash"></i></button>`;
+            return `<button class="editar-button" data-id="${row.idClase}"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="eliminar-button" data-id="${row.idClase}"><i class="fa fa-trash"></i></button>`;
         }
 
     }
+    /*
+    <button @click="abrirE(mmateria)" data-bs-toggle="modal" data-bs-target="#modalEdit">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                <button @click="eliminarMateria(mmateria.idMateria, mmateria.materia)">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+    */
 ];
 
 const botones = [{
-    title: 'Alumnos registrados',
+    title: 'Clases registradas',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Alumnos registrados',
+    title: 'Clases registradas',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Alumnos registrados',
+    title: 'Clases registradas',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
 },
 {
-    title: 'Alumnos registrados',
+    title: 'Clases registradas',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
     className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
@@ -130,24 +137,24 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-var clase_alumnoE = ({});
+var claseE = ({});
 
-const selectedAlumnosClase = ref([]);
+const selectedClases = ref([]);
 
-const toggleAlumnosClaseSelection = (clase_alumno) => {
-    if (selectedAlumnosClase.value.includes(clase_alumno)) {
+const toggleClaseSelection = (clase) => {
+    if (selectedClases.value.includes(clase)) {
         // Si la materia ya está seleccionada, la eliminamos del array
         console.log("Se quito la materia del la seleccion");
-        selectedAlumnosClase.value = selectedAlumnosClase.value.filter((c) => c !== clase_alumno);
+        selectedClases.value = selectedClases.value.filter((c) => c !== clase);
     } else {
         // Si la materia no está seleccionada, la agregamos al array
         console.log("Se agrego una materia a la selección");
-        selectedAlumnosClase.value.push(clase_alumno);
+        selectedClases.value.push(clase);
 
     }
     const botonEliminar = document.getElementById("eliminarMBtn");
 
-    if (selectedAlumnosClase.value.length > 0) {
+    if (selectedClases.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
         console.log("Se ha habilitado el botón");
     } else {
@@ -159,10 +166,10 @@ const toggleAlumnosClaseSelection = (clase_alumno) => {
 const form = useForm({});
 
 const abrirE = ($clasee) => {
-    clase_alumnoE = $clasee;
+    claseE = $clasee;
     mostrarModalE.value = true;
     console.log($clasee);
-    console.log(clase_alumnoE);
+    console.log(claseE);
 }
 
 const cerrarModal = () => {
@@ -173,31 +180,31 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
-const eliminarAlumnosClase = (idClaseAlumno, clase_alumno) => {
+const eliminarClase = (idClase, clase) => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + clase_alumno + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + clase + '?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('secre.eliminarAlumnosClases', idClaseAlumno));
+            form.delete(route('secre.eliminarClases', idClase));
         }
 
     })
 };
 
-const eliminarAlumnosClases = () => {
+const eliminarClases = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar a los alumnos seleccionados de la clase?',
+        title: '¿Estas seguro que deseas eliminar los datos de las clases seleccionadas?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -205,13 +212,13 @@ const eliminarAlumnosClases = () => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                const clasesS_alumnos = selectedAlumnosClase.value.map((clase_alumno) => clase_alumno.idClaseAlumno);
-                const $clases_alumnosIds = clasesS_alumnos.join(',');
-                console.log(clasesS_alumnos);
-                await form.delete(route('secre.elimAlumnosClases', $clases_alumnosIds));
+                const clasesS = selectedClases.value.map((clase) => clase.idClase);
+                const $clasesIds = clasesS.join(',');
+                console.log(clasesS);
+                await form.delete(route('secre.elimClases', $clasesIds));
 
                 // Limpia las materias seleccionadas después de la eliminación
-                selectedAlumnosClase.value = [];
+                selectedClases.value = [];
             } catch (error) {
                 console.log('El error se origina aquí');
                 console.log(error);
@@ -228,18 +235,18 @@ const handleSearch = (term) => {
 
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
-    document.getElementById('alumnosClasesTablaId').addEventListener('click', (event) => {
+    document.getElementById('clasesTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('alumnosclase-checkbox')) {
-            const claseAlumnoId = parseInt(checkbox.getAttribute('data-id'));
-            console.log(claseAlumnoId);
+        if (checkbox.classList.contains('clase-checkbox')) {
+            const claseId = parseInt(checkbox.getAttribute('data-id'));
+            console.log(claseId);
             // Asegúrate de que props.materias.data esté definido antes de usar find
-            console.log(props.clases_alumnos);
-            if (props.clases_alumnos) {
-                const clase_alumno = props.clases_alumnos.find(clase_alumno => clase_alumno.idClaseAlumno === claseAlumnoId);
-                console.log(clase_alumno);
-                if (clase_alumno) {
-                    toggleAlumnosClaseSelection(clase_alumno);
+            console.log(props.clases);
+            if (props.clases) {
+                const clase = props.clases.find(clase => clase.idClase === claseId);
+                console.log(clase);
+                if (clase) {
+                    toggleClaseSelection(clase);
                 } else {
                     console.log("No se tiene clase");
                 }
@@ -248,27 +255,28 @@ onMounted(() => {
     });
 
     // Manejar clic en el botón de editar
-    $('#alumnosClasesTablaId').on('click', '.editar-button', function () {
+    $('#clasesTablaId').on('click', '.editar-button', function () {
         console.log("Entró en editar");
-        const claseAlumnoId = $(this).data('id');
-        const clase_alumno = props.clases_alumnos.find(c => c.idClaseAlumno === claseAlumnoId);
-        abrirE(clase_alumno);
+        const claseId = $(this).data('id');
+        const clase = props.clases.find(c => c.idClase === claseId);
+        abrirE(clase);
     });
 
     // Manejar clic en el botón de eliminar
-    $('#alumnosClasesTablaId').on('click', '.eliminar-button', function () {
-        const claseAlumnoId = $(this).data('id');
-        const clase_alumno = props.clases_alumnos.find(c => c.idClaseAlumno === claseAlumnoId);
-        eliminarAlumnosClase(claseAlumnoId, clase_alumno.idClaseAlumno);
+    $('#clasesTablaId').on('click', '.eliminar-button', function () {
+        const claseId = $(this).data('id');
+        const clase = props.clases.find(c => c.idClase === claseId);
+        eliminarClase(claseId, clase.idClase);
     });
 });
+
 
 </script>
 
 <template>
     <SecreLayout title="clases" :usuario="props.usuario">
         <div class="mt-8 bg-white p-4 shadow rounded-lg">
-            <h2 class="text-black text-2xl text-center font-semibold p-5">Agregar alumnos a clases</h2>
+            <h2 class="text-black text-2xl text-center font-semibold p-5">Clases</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
             <!-- flash message start -->
@@ -282,18 +290,18 @@ onMounted(() => {
                 <!--<div class="w-full md:w-2/3 space-y-4 md:space-y-0 md:space-x-4 md:flex md:items-center md:justify-start">-->
                 <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-plus mr-2"></i>Agregar Alumnos a Clase
+                    <i class="fa fa-plus mr-2"></i>Agregar Clase
                 </button>
                 <button id="eliminarMBtn" disabled="true"
                     class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarAlumnosClases">
-                    <i class="fa fa-trash mr-2"></i>Borrar Alumnos de clase(s)
+                    @click="eliminarClases">
+                    <i class="fa fa-trash mr-2"></i>Borrar Clase(s)
                 </button>
                 <!--</div>-->
             </div>
             <div class="overflow-x-auto ">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="alumnosClasesTablaId" :columns="columns" :data="clases_alumnos" :options="{
+                    id="clasesTablaId" :columns="columns" :data="clases" :options="{
                         responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -314,19 +322,27 @@ onMounted(() => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Clase
+                                Grado
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre del alumno
+                                Grupo
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Calificación Final
+                                Docente
                             </th>
-                            <!-- <th
+                            <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th> -->
+                                Materia
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Ciclo
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
@@ -337,12 +353,12 @@ onMounted(() => {
 
         </div>
 
-        <formulario-alumnos-clase :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'" :clases="props.clases" :materias="props.materias"
-            :grados="props.grados" :grupos="props.grupos" :alumnos="props.alumnos"></formulario-alumnos-clase>
-        <formulario-alumnos-clase :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :clases="props.clases"
-            :alumnos="props.alumnos"></formulario-alumnos-clase>
+        <formulario-clases :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+            :title="'Añadir clase'" :op="'1'" :modal="'modalCreate'" :grados="props.grados" :grupos="props.grupos"
+            :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
+        <formulario-clases :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+            :title="'Editar clase'" :op="'2'" :modal="'modalEdit'" :clase="claseE" :grados="props.grados" :grupos="props.grupos"
+            :personal="props.personal" :materias="props.materias" :ciclos="props.ciclos"></formulario-clases>
 
     </SecreLayout>
 </template>

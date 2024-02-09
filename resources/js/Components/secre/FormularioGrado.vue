@@ -5,7 +5,6 @@ import { useForm } from '@inertiajs/vue3';
 import { onMounted, watch, ref } from 'vue';
 import axios from 'axios';
 
-
 const props = defineProps({
     show: {
         type: Boolean,
@@ -19,7 +18,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    grupos: {
+    grados: {
         type: Object,
         default: () => ({}),
     },/*
@@ -30,7 +29,7 @@ const props = defineProps({
     title: { type: String },
     modal: { type: String },
     op: { type: String },
-    grupo: String,
+    grado: Number,
     idCiclo: String,
 },
 );
@@ -43,21 +42,25 @@ const close = () => {
 };
 
 const form = useForm({
-    idGrupo: props.grupos.idGrupo,
-    grupo: props.grupos.grupo,
-    //ciclos: props.grupos.idCiclo,//Le agregué la s
-    //ciclos: props.grupos.descripcionCiclo//Le agregue la s a ciclo
+    idGrado: props.grados.idGrado,
+    grado: props.grados.grado,
+    //ciclos: props.grados.idCiclo,//Le agregué la s
+    //ciclos: props.grados.descripcionCiclo//Le agregue la s a ciclo
 
 });
 
 // Variables para los mensajes de validación
-const grupoError = ref('');
+const gradoError = ref('');
 //const ciclosError = ref('');
 
 // Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
     return typeof value === 'string' && value.trim() !== '';
 }
+
+const validateInteger = (value) => {
+    return /^\d+$/.test(value); // Verifica si el valor es una cadena de dígitos
+};
 
 // Validación del select 
 const validateSelect = (selectedValue) => {
@@ -68,51 +71,50 @@ const validateSelect = (selectedValue) => {
 };
 
 const save = () => {
-    grupoError.value = validateStringNotEmpty(form.grupo) ? '' : 'Ingrese el grupo';
+    gradoError.value = validateInteger(form.grado) ? '' : 'Ingrese el grado en número';
     //ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
-        grupoError.value //|| ciclosError.value
+        gradoError.value //|| ciclosError.value
     ) {
 
         return;
     }
 
-    form.post(route('director.addGrupos'), {
+    form.post(route('secre.addGrados'), {
         onSuccess: () => {
             close()
-            grupoError.value = '';
-            //ciclosError.value = '';
+            gradoError.value = '';
+           // ciclosError.value = '';
         }
     });
 }
 
 const update = () => {
-    grupoError.value = validateStringNotEmpty(form.grupo) ? '' : 'Ingrese el grupo';
+    gradoError.value = validateInteger(form.grado) ? '' : 'Ingrese el grado';
     //ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
-        grupoError.value //|| ciclosError.value
+        gradoError.value //|| ciclosError.value
     ) {
 
         return;
     }
 
-    var idGrupo = document.getElementById('idGrupo2').value;
-    console.log(idGrupo);
-    console.log(document.getElementById('grupo2').value);
-    form.put(route('director.actualizarGrupos', idGrupo), {
+    var idGrado = document.getElementById('idGrado2').value;
+    console.log(idGrado);
+    console.log(document.getElementById('grado2').value);
+    form.put(route('secre.actualizarGrados', idGrado), {
         onSuccess: () => {
             close()
-            grupoError.value = '';
+            gradoError.value = '';
             //ciclosError.value = '';
         }
     });
 }
-
-watch(() => props.grupos, (newVal) => {
-    form.idGrupo = newVal.idGrupo;
-    form.grupo = newVal.grupo;
+watch(() => props.grados, (newVal) => {
+    form.idGrado = newVal.idGrado;
+    form.grado = newVal.grado;
     //form.ciclos = newVal.idCiclo;
 }, { deep: true });
 
@@ -127,27 +129,26 @@ watch(() => props.grupos, (newVal) => {
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un nuevo
-                        grupo
+                        grado
                     </p>
 
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1 md:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idGrupo" class="block text-sm font-medium leading-6 text-gray-900">id</label>
+                            <label for="idGrado" class="block text-sm font-medium leading-6 text-gray-900">id</label>
                             <div class="mt-2">
-                                <input type="number" name="idGrado" v-model="form.idGrupo" placeholder="Ingrese id"
-                                    :id="'idGrupo' + op"
+                                <input type="number" name="idGrado" v-model="form.idGrado" placeholder="Ingrese id"
+                                    :id="'idGrado' + op"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
-
                         <div class="sm:col-span-1 md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="grupo" class="block text-sm font-medium leading-6 text-gray-900">Grupo</label>
+                            <label for="grado" class="block text-sm font-medium leading-6 text-gray-900">Grado</label>
                             <div class="mt-2">
-                                <input type="text" name="grupo" :id="'grupo' + op" v-model="form.grupo"
-                                    placeholder="Ingrese grupo"
+                                <input type="text" name="grado" :id="'grado' + op" v-model="form.grado"
+                                    placeholder="Ingrese grado"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
-                            <div v-if="grupoError != ''" class="text-red-500 text-xs">{{ grupoError }}</div>
+                            <div v-if="gradoError != ''" class="text-red-500 text-xs">{{ gradoError }}</div>
                         </div>
                         <!--
                         <div class="sm:col-span-3">
