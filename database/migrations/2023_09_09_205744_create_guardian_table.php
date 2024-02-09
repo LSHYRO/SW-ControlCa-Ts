@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string(column: 'apellidoM')->nullable(false);
             $table->string(column: 'nombre')->nullable(false);
             $table->string(column: 'numTelefono')->nullable(false);
-            $table->string(column:'correoElectronico')->nullable(false);
+            $table->string(column:'correoElectronico')->nullable(true);
             $table->foreignId(column:'idGenero')->references('idGenero')->on('generos');
             $table->foreignId(column: 'idDireccion')->references('idDireccion')->on('direcciones');
             $table->foreignId(column: 'idUsuario')->references('idUsuario')->on('usuarios');
