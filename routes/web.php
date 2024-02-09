@@ -311,9 +311,6 @@ Route::middleware(['profesorS'])->group(function () {
 
 Route::controller(SecreController::class)->group(function () {
     Route::get('/secre', 'inicio')->name('secre.inicio');
-    Route::get('/secre/alumnosclases', 'alumnosclases')->name('secre.alumnosclases');
-
-    Route::get('/secre/cuentas', 'cuentas')->name('secre.cuentas');
     Route::get('/secre/perfil', 'perfil')->name('secre.perfil');
 
     Route::get('/secre/avisos', 'avisos')->name('secre.avisos');
@@ -384,6 +381,13 @@ Route::controller(SecreController::class)->group(function () {
 
     Route::get('/secre/obtener/datos/ciclo/xgrados/{idGrado}', 'obtenerCicloXGrado')->name('secre.cicloXgrupos');
     Route::get('/secre/obtener/datos/grupos/xgrados/{idGrado}', 'obtenerGruposXGrado')->name('secre.gradosXgrupos');
+
+    Route::get('/secre/cuentas', 'cuentas')->name('secre.cuentas');
+    Route::post('/secre/cuentas', 'addCuentas')->name('secre.addCuentas');
+    Route::put('/secre/usuarios/restaurar-usuario/{idUsuario}', 'restaurarUsuario')->name('secre.restUsuario');
+    Route::delete('/secre/cuentas/{idUsuario}', 'eliminarCuentas')->name('secre.eliminarCuentas');
+    Route::put('/secre/cuentas/{idUsuario}/edit', 'actualizarCuentas')->name('secre.actualizarCuentas');
+    Route::delete('/secre/cuentas/delete/{usuariosIds}', 'elimUsuarios')->name('secre.elimCuentas');
 
     Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
 });

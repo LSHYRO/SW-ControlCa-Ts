@@ -122,79 +122,6 @@ class SecreController extends Controller{
         }
     }
 
-    public function cuentas()
-    {
-        $usuarios = usuarios::whereHas('tipoUsuarios', function ($query) {
-        $query->whereIn('tipoUsuario', ['profesor','estudiante','tutor']);//Para ver cuentas solo de esos tipos de usuarios
-        })
-        ->get();
-
-        return Inertia::render('Secre/Cuentas', [
-            'usuarios' => $usuarios,
-        ]);
-    }
-
-    public function addCuentas(Request $request)
-    {
-        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
-        $usuario = new usuarios();
-        $usuario->usuario = $request->usuario;
-        $usuario->contrasenia = $request->contrasenia;
-        $usuario->password = bcrypt($request->contrasenia);
-        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
-
-        $usuario->save();
-        return redirect()->route('secre.cuentas')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
-    }
-
-    public function elimCuentas($usuariosIds)
-    {
-        try {
-            // Convierte la cadena de IDs en un array
-            $usuariosIdsArray = explode(',', $usuariosIds);
-
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
-
-            // Elimina los ciclos
-            usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
-
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('secre.usuarios')->with('message', "Usuarios eliminados correctamente");
-        } catch (\Exception $e) {
-            // Manejo de errores
-            dd("Controller error");
-            return response()->json([
-                'error' => 'Ocurrió un error al eliminar'
-            ], 500);
-        }
-    }
-
-    public function eliminarCuentas($idUsuario)
-    {
-        $usuario = usuarios::find($idUsuario);
-        $usuario->delete();
-        return redirect()->route('secre.cuentas')->with('message', "Usuario eliminado correctamente");
-    }
-
-    public function actualizarCuentas(Request $request, $idUsuario)
-    {
-        try {
-            $usuarios = usuarios::find($idUsuario);
-            $request->validate([
-                'usuario' => 'required',
-                'contrasenia' => 'required',
-            ]);
-            $usuarios->usuario = $request->usuario;
-            $usuarios->contrasenia = $request->contrasenia;
-
-            $usuarios->fill($request->input())->saveOrFail();
-        } catch (Exception $e) {
-            dd($e);
-        }
-        return redirect()->route('secre.cuentas')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
-    }
-
     public function alumnosclases()
     {
         $clases = clases::all();
@@ -2556,5 +2483,109 @@ class SecreController extends Controller{
         });
 
         return response()->json($grupos);
+    }
+
+    public function cuentas()
+    {
+        $usuarios = usuarios::leftJoin('alumnos', 'usuarios.idUsuario', '=', 'alumnos.idUsuario')
+            ->leftJoin('personal', 'usuarios.idUsuario', '=', 'personal.idUsuario')
+            ->leftJoin('tutores', 'usuarios.idUsuario', '=', 'tutores.idUsuario')
+            ->where(function ($query) {
+                $query->whereNotNull('alumnos.idUsuario')
+                    ->orWhereNotNull('personal.idUsuario')
+                    ->orWhereNotNull('tutores.idUsuario')
+                    ->orWhereNull('usuarios.idTipoUsuario');
+            })
+            ->whereNotIn('usuarios.idTipoUsuario', function ($query) {
+                $query->select('idTipoUsuario')
+                    ->from('tipoUsuarios')
+                    ->whereIn('tipoUsuario', ['administrador', 'director']);
+            }) // Excluir administrador y director (ajusta los valores según tus tipos de usuario)
+            ->select('usuarios.*', DB::raw('COALESCE(alumnos.nombre_completo, personal.nombre_completo, tutores.nombre_completo) as nombre_completo'))
+            ->get();
+
+        $usuario = $this->obtenerInfoUsuario();
+
+        return Inertia::render('Secre/Cuentas', [
+            'usuarios' => $usuarios,
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function addCuentas(Request $request)
+    {
+        $tipoUsuario = tipoUsuarios::where('tipoUsuario', 'administrador')->first();
+        $usuario = new usuarios();
+        $usuario->usuario = $request->usuario;
+        $usuario->contrasenia = $request->contrasenia;
+        $usuario->password = bcrypt($request->contrasenia);
+        $usuario->idTipoUsuario = $tipoUsuario->idTipoUsuario;
+
+        $usuario->save();
+        return redirect()->route('secre.cuentas')->with('message', "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||");
+    }
+
+    public function elimCuentas($usuariosIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $usuariosIdsArray = explode(',', $usuariosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $usuariosIdsArray = array_map('intval', $usuariosIdsArray);
+
+            // Elimina los ciclos
+            usuarios::whereIn('idUsuario', $usuariosIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('secre.usuarios')->with('message', "Usuarios eliminados correctamente");
+        } catch (\Exception $e) {
+            // Manejo de errores
+            dd("Controller error");
+            return response()->json([
+                'error' => 'Ocurrió un error al eliminar'
+            ], 500);
+        }
+    }
+
+    public function eliminarCuentas($idUsuario)
+    {
+        $usuario = usuarios::find($idUsuario);
+        $usuario->delete();
+        return redirect()->route('secre.cuentas')->with('message', "Usuario eliminado correctamente");
+    }
+
+    public function actualizarCuentas(Request $request, $idUsuario)
+    {
+        try {
+            $usuarios = usuarios::find($idUsuario);
+            $request->validate([
+                'usuario' => 'required',
+                'contrasenia' => 'required',
+            ]);
+            $usuarios->usuario = $request->usuario;
+            $usuarios->contrasenia = $request->contrasenia;
+
+            $usuarios->fill($request->input())->saveOrFail();
+        } catch (Exception $e) {
+            dd($e);
+        }
+        return redirect()->route('secre.cuentas')->with('message', "Usuario actualizado correctamente: " . $usuarios->usuario);;
+    }
+
+    public function restaurarUsuario($idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = Usuarios::where("idUsuario", $idUsuario)->first();
+                $usuario->intentos = 10;
+                $usuario->fecha_Creacion = now();
+                $usuario->save();
+                return redirect()->route('secre.cuentas')->With(["message" => "Usuario restaurado correctamente: " . $usuario->usuario, "color" => "green"]);
+            } catch (Exception $e) {
+                return redirect()->route('secre.cuentas')->With(["message" => "Error al restaurar al usuario", "color" => "red"]);
+            }
+        }
+        return redirect()->route('secre.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red"]);
     }
 }

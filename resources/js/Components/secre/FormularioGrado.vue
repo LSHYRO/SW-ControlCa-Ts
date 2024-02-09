@@ -21,11 +21,11 @@ const props = defineProps({
     grados: {
         type: Object,
         default: () => ({}),
-    },
+    },/*
     ciclos: {
         type: Object,
         default: () => ({}),
-    },
+    },*/
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -44,14 +44,14 @@ const close = () => {
 const form = useForm({
     idGrado: props.grados.idGrado,
     grado: props.grados.grado,
-    ciclos: props.grados.idCiclo,//Le agregué la s
-    ciclos: props.grados.descripcionCiclo//Le agregue la s a ciclo
+    //ciclos: props.grados.idCiclo,//Le agregué la s
+    //ciclos: props.grados.descripcionCiclo//Le agregue la s a ciclo
 
 });
 
 // Variables para los mensajes de validación
 const gradoError = ref('');
-const ciclosError = ref('');
+//const ciclosError = ref('');
 
 // Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
@@ -72,10 +72,10 @@ const validateSelect = (selectedValue) => {
 
 const save = () => {
     gradoError.value = validateInteger(form.grado) ? '' : 'Ingrese el grado en número';
-    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+    //ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
-        gradoError.value || ciclosError.value
+        gradoError.value //|| ciclosError.value
     ) {
 
         return;
@@ -85,17 +85,17 @@ const save = () => {
         onSuccess: () => {
             close()
             gradoError.value = '';
-            ciclosError.value = '';
+           // ciclosError.value = '';
         }
     });
 }
 
 const update = () => {
     gradoError.value = validateInteger(form.grado) ? '' : 'Ingrese el grado';
-    ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
+    //ciclosError.value = validateSelect(form.ciclos) ? '' : 'Seleccione el ciclo';
 
     if (
-        gradoError.value || ciclosError.value
+        gradoError.value //|| ciclosError.value
     ) {
 
         return;
@@ -108,14 +108,14 @@ const update = () => {
         onSuccess: () => {
             close()
             gradoError.value = '';
-            ciclosError.value = '';
+            //ciclosError.value = '';
         }
     });
 }
 watch(() => props.grados, (newVal) => {
     form.idGrado = newVal.idGrado;
     form.grado = newVal.grado;
-    form.ciclos = newVal.idCiclo;
+    //form.ciclos = newVal.idCiclo;
 }, { deep: true });
 
 </script>
@@ -150,7 +150,7 @@ watch(() => props.grados, (newVal) => {
                             </div>
                             <div v-if="gradoError != ''" class="text-red-500 text-xs">{{ gradoError }}</div>
                         </div>
-
+                        <!--
                         <div class="sm:col-span-3">
                             <label for="ciclo" class="block text-sm font-medium leading-6 text-gray-900">Ciclo</label>
                             <div class="mt-2">
@@ -164,7 +164,7 @@ watch(() => props.grados, (newVal) => {
                             </div>
                             <div v-if="ciclosError != ''" class="text-red-500 text-xs">{{ ciclosError }}</div>
                         </div>
-
+                        -->
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
