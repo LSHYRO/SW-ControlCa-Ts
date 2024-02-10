@@ -238,7 +238,7 @@ const closeable = true;
         <FormCalifCiclo :title="'Calificar ciclo'" :show="mostrarModal" :max-width="maxWidth" :closeable="closeable"
         @close="actDesModal()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
         <FormPasCiclo :title="'Pasar de ciclo'" :show="mostrarModalPC" :max-width="maxWidth" :closeable="closeable"
-        @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>/>
+        @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
     </DirectorLayout>
 </template>
 <style>

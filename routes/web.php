@@ -394,6 +394,8 @@ Route::controller(SecreController::class)->group(function () {
     Route::get('/secre/clasesAlumno/{idAlumno}', 'clasesDeAlumno')->name('secre.verCalificaciones');
     Route::get('/secre/clasesA/clase/{idClase}/alum/{idAlumno}', 'mostrarClase')->name('secre.mostrarClase');
     Route::get('/secre/calificaciones', 'calificaciones')->name('secre.calificaciones');
+    Route::post('/secre/calificaciones/calificar-ciclo', 'calificarCiclo')->name('secre.calificarCiclo');
+    Route::post('/secre/calificaciones/pasar-ciclo', 'pasarCiclo')->name('secre.pasarCiclo');
 
     Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
 });
