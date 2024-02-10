@@ -65,6 +65,46 @@ class personal extends Model
             }
         );
     }
+
+    protected function apellidoP(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
+    }
+
+    protected function apellidoM(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
+    }
+
+    protected function CURP(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => strtoupper($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtoupper($value);
+            }
+        );
+    }
+
+    protected function RFC(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => strtoupper($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtoupper($value);
+            }
+        );
+    }
     /*
     protected function activo(): Attribute
     {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,6 +41,46 @@ class alumnos extends Model
         'idUsuario',
         'nombre_completo',
     ];
+
+    protected function nombre(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
+    }
+
+    protected function apellidoP(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
+    }
+
+    protected function apellidoM(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtolower($value);
+            }
+        );
+    }
+
+    protected function CURP(): Attribute
+    {
+        return new Attribute(
+            get: fn($value) => strtoupper($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function($value){
+                return strtoupper($value);
+            }
+        );
+    }
 
     public function clases(): HasMany
     {

@@ -2,6 +2,7 @@
 import { ref, computed, getCurrentInstance, onMounted, watch } from 'vue';
 import DirectorLayout from '@/Layouts/DirectorLayout.vue';
 import FormCalifCiclo from '@/Components/director/FormularioCalificacionCiclo.vue';
+import FormPasCiclo from '@/Components/director/FormularioPaseCiclo.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
 import DataTable from 'datatables.net-vue3';
@@ -41,6 +42,12 @@ const mostrarModal = ref(false);
 
 const actDesModal = () => {
     mostrarModal.value = !mostrarModal.value;
+};
+
+const mostrarModalPC = ref(false);
+
+const actDesModalPC = () => {
+    mostrarModalPC.value = !mostrarModalPC.value;
 };
 
 const verCalificaciones = async (alumno) => {
@@ -172,7 +179,7 @@ const closeable = true;
                     <i class="fa fa-check-to-slot mr-2"></i>Calificar ciclo
                 </button>
                 <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
-                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    @click="actDesModalPC()" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-user-graduate mr-2"></i>Pasar de ciclo
                 </button>
             </div>
@@ -230,6 +237,8 @@ const closeable = true;
         </div>
         <FormCalifCiclo :title="'Calificar ciclo'" :show="mostrarModal" :max-width="maxWidth" :closeable="closeable"
         @close="actDesModal()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
+        <FormPasCiclo :title="'Pasar de ciclo'" :show="mostrarModalPC" :max-width="maxWidth" :closeable="closeable"
+        @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>/>
     </DirectorLayout>
 </template>
 <style>

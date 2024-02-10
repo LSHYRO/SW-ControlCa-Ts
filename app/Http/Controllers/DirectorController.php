@@ -2335,7 +2335,7 @@ class DirectorController extends Controller
             'talleres' => $materiasT,
             'usuario' =>  $usuario,
             'ciclos' => $ciclos,
-            'ciclosE0'=> $ciclosConEstatusCero,
+            'ciclosE0' => $ciclosConEstatusCero,
         ]);
     }
 
@@ -2721,6 +2721,7 @@ class DirectorController extends Controller
             if ($clasesA) {
 
                 $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
+                
                 $clasesA = clases::where('idClase', $idClase)->with(['materias', 'ciclos'])->first();
 
                 //Aqui en adelante le agregué
@@ -2868,15 +2869,19 @@ class DirectorController extends Controller
                     ->get();
 
                 foreach ($gradGrupAl as $gga) {
-                    $clase_alumno = clases_alumnos::where('idAlumno', $gga->idAlumno)
-                        ->get();
+                    $clase_alumno = clases_alumnos::whereHas('clases', function ($query) use ($ciclo) {
+                        $query->where('idCiclo', $ciclo->idCiclo);
+                    })->where('idAlumno', $gga->idAlumno)->get();
+
                     $sumaCalificacion = 0;
-                    foreach ($clase_alumno as $cl) {
-                        $sumaCalificacion += $cl->calificacionClase;
+                    if (!$clase_alumno->isEmpty()) {
+                        foreach ($clase_alumno as $cl) {
+                            $sumaCalificacion += $cl->calificacionClase;
+                        }
+                        $promedio = round($sumaCalificacion / count($clase_alumno));
+                        $gga->calificacion = $promedio;
+                        $gga->save();
                     }
-                    $promedio = round($sumaCalificacion / count($clase_alumno));
-                    $gga->calificacion = $promedio;
-                    $gga->save();
                 }
                 return redirect(route('director.calificaciones'))->with(['message' => 'Se ha calificado el ciclo correctamente.', 'color' => 'green']);
             } catch (Exception $e) {
@@ -2911,29 +2916,30 @@ class DirectorController extends Controller
                         $gga2->idGrado = $gga->idGrado;
                         $gga2->idGrupo = $gga->idGrupo;
                         $gga2->idAlumno = $gga->idAlumno;
-                        $gga2->idCiclo = $request->cicloN;
-                        $gga->save();
+                        $gga2->idCiclo = $request->cicloN['idCiclo'];
                         $gga2->save();
+                        $gga->save();
                     } else {
                         $grado = grados::find($gga->idGrado)->first();
-                        if ($grado->grado = 3) {
+                        //dd($grado);
+                        if ($grado->grado == '3') {
                             $gga->estatus = 0;
                             $gga->save();
                         } else {
                             $gga->estatus = 0;
                             $gga2 = new grado_grupo_alumno();
-                            if ($grado->grado = 2) {
-                                $nuevoGrado = grados::where('grado', 3)->first();
+                            if ($grado->grado == '2') {
+                                $nuevoGrado = grados::where('grado', '3')->first();
                                 $gga2->idGrado = $nuevoGrado->idGrado;
-                            } elseif ($grado->idGrado = 1) {
-                                $nuevoGrado = grados::where('grado', 2)->first();
+                            } elseif ($grado->grado == '1') {
+                                $nuevoGrado = grados::where('grado', '2')->first();
                                 $gga2->idGrado = $nuevoGrado->idGrado;
                             }
                             $gga2->idGrupo = $gga->idGrupo;
                             $gga2->idAlumno = $gga->idAlumno;
-                            $gga2->idCiclo = $request->cicloN;
-                            $gga->save();
+                            $gga2->idCiclo = $request->cicloN['idCiclo'];
                             $gga2->save();
+                            $gga->save();
                         }
                     }
                 }
