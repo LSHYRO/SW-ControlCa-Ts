@@ -103,9 +103,18 @@ const generoError = ref('');
 //////////////////////////////////////////////////////////////////////
 // Validación del correo a través de una expresion regular 
 const validateEmail = (email) => {
+    // Verificar si el valor de correo electrónico es nulo o undefined
+    if (email === null || email === undefined) {
+        return true; // Permitir valores nulos
+    }
+
+    // Expresión regular para validar el correo electrónico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Verificar si el correo electrónico cumple con la expresión regular
     return emailRegex.test(email);
 };
+
 
 // Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
