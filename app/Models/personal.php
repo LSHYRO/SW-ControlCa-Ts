@@ -38,7 +38,7 @@ class personal extends Model
 
     public function clases()
     {
-    return $this->hasMany(clases::class, 'idPersonal');
+        return $this->hasMany(clases::class, 'idPersonal');
     }
 
     public function usuarios(): HasOne
@@ -53,15 +53,25 @@ class personal extends Model
 
     public function direcciones(): HasOne
     {
-        return $this->hasOne(direcciones::class,'idDireccion', 'idDireccion');
+        return $this->hasOne(direcciones::class, 'idDireccion', 'idDireccion');
     }
-    
+
+    protected function apellidoM(): Attribute
+    {
+        return new Attribute(
+            get: fn ($value) => ucwords($value),
+            set: function ($value) {
+                return  ucwords(strtolower($value));
+            }
+        );
+    }
+
     protected function nombre(): Attribute
     {
         return new Attribute(
-            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
-            set: function($value){
-                return strtolower($value);
+            get: fn ($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function ($value) {
+                return ucwords(strtolower($value));
             }
         );
     }
@@ -69,28 +79,20 @@ class personal extends Model
     protected function apellidoP(): Attribute
     {
         return new Attribute(
-            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
-            set: function($value){
-                return strtolower($value);
+            get: fn ($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function ($value) {
+                return ucwords(strtolower($value));
             }
         );
     }
 
-    protected function apellidoM(): Attribute
-    {
-        return new Attribute(
-            get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
-            set: function($value){
-                return strtolower($value);
-            }
-        );
-    }
+    
 
     protected function CURP(): Attribute
     {
         return new Attribute(
-            get: fn($value) => strtoupper($value), //Funcion flecha (Como en JavaScript), Laravel > 8
-            set: function($value){
+            get: fn ($value) => strtoupper($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function ($value) {
                 return strtoupper($value);
             }
         );
@@ -99,8 +101,8 @@ class personal extends Model
     protected function RFC(): Attribute
     {
         return new Attribute(
-            get: fn($value) => strtoupper($value), //Funcion flecha (Como en JavaScript), Laravel > 8
-            set: function($value){
+            get: fn ($value) => strtoupper($value), //Funcion flecha (Como en JavaScript), Laravel > 8
+            set: function ($value) {
                 return strtoupper($value);
             }
         );
@@ -114,14 +116,13 @@ class personal extends Model
         );
     }
     */
-    public function tipo_Sangre(): HasOne 
+    public function tipo_Sangre(): HasOne
     {
-        return $this->hasOne(tipo_Sangre::class, 'idTipoSangre','idTipoSangre');
+        return $this->hasOne(tipo_Sangre::class, 'idTipoSangre', 'idTipoSangre');
     }
-    
+
     public function generos(): HasOne
     {
         return $this->hasOne(generos::class, 'idGenero', 'idGenero');
     }
-
 }

@@ -57,7 +57,7 @@ class alumnos extends Model
         return new Attribute(
             get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
             set: function($value){
-                return strtolower($value);
+                return ucwords(strtolower($value));
             }
         );
     }
@@ -67,7 +67,7 @@ class alumnos extends Model
         return new Attribute(
             get: fn($value) => ucwords($value), //Funcion flecha (Como en JavaScript), Laravel > 8
             set: function($value){
-                return strtolower($value);
+                return ucwords(strtolower($value));
             }
         );
     }
