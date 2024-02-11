@@ -59,9 +59,9 @@ onMounted(async () => {
         <!-- Ícono de Notificación y Perfil -->
         <div class="space-x-5">
             <!-- Botón de Perfil -->
-            <div>
+            <div class="text-center">
                 <i class="fas fa-user text-white font-thin font-['DM Sans']"></i>
-                <i class="text-white font-['DM Sans']">  {{ " " + props.usuario.tipoUsuario1}} </i>
+                <i class="text-white font-['DM Sans']">  {{ " " + props.usuario.tipoUsuario1.charAt(0).toUpperCase() + props.usuario.tipoUsuario1.slice(1) }} </i>
             </div>
         </div>
     </div>

@@ -27,7 +27,7 @@ console.log(props.avisos);
         </div>
         <div class="mt-8 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-5">Avisos</h2>
-            <div class="mx-14 my-8 justify-items-center">
+            <div class="mx-1 my-8 justify-items-center md:mx-14">
                 <ul v-for="aviso in props.avisos" :key="aviso.idAviso"
                 class="w-full rounded-xl shadow-md border border-cyan-200 hover:border-cyan-300 my-4 p-2">
                 <li>
