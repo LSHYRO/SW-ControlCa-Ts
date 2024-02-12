@@ -58,7 +58,7 @@ onMounted(() => {
             <div v-show="ciclosB">
                 <Ciclos :ciclos="props.ciclos"></Ciclos>
             </div>
-            <div v-show="periodosB">
+            <div v-if="periodosB">
                 <Periodos :periodos="props.periodos" :ciclos="props.ciclos"></Periodos>
             </div>
         </div>

@@ -64,6 +64,12 @@ const columnsUsuario = [
     {
         data: null,
         render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
             return `<input type="checkbox" class="usuario-checkbox" data-id="${row.idUsuario}" ">`;
         }
     },
@@ -102,25 +108,38 @@ const botonesUsuario = [{
     title: 'Usuarios registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4]
+        },
 },
 {
     title: 'Usuarios registrados',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4]
+        },
+        orientation: 'landscape',          
 },
 {
     title: 'Usuarios registrados',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4]
+        },
 },
 {
     title: 'Usuarios registrados',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4]
+        },
 },
 ];
 
@@ -283,7 +302,7 @@ const optionsUsuario = {
         lengthMenu: 'Mostrar _MENU_ registros',
         paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
     },
-    buttons: botonesUsuario,
+    buttons: botonesUsuario,  
 };
 
 </script>
@@ -322,6 +341,9 @@ const optionsUsuario = {
                     id="usuariosTablaId" :responsive="true" :columns="columnsUsuario" :data="usuarios" :options="optionsUsuario">
                     <thead>
                         <tr class="text-sm leading-normal">
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>

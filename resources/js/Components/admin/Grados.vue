@@ -96,25 +96,38 @@ const botonesGrado = [{
     title: 'Grados registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [1, 2]
+        },
 },
 {
     title: 'Grados registrados',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [1, 2]
+        },
+        orientation: 'landscape'
 },
 {
     title: 'Grados registrados',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [1, 2]
+        },
 },
 {
     title: 'Grados registrados',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [1, 2]
+        },
 },
 ];
 

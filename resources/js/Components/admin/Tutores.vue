@@ -118,25 +118,39 @@ const botones = [{
     title: 'Tutores registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9]
+        },
 },
 {
     title: 'Tutores registrados',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    orientation: 'landscape',
+    exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9]
+        },
 },
 {
     title: 'Tutores registrados',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    orientation: 'landscape',
+    exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9]
+        },
 },
 {
     title: 'Tutores registrados',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9]
+        },
 },
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////

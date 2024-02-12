@@ -44,6 +44,12 @@ const columns = [
     {
         data: null,
         render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
             return `<input type="checkbox" class="materia-checkbox" data-id="${row.idMateria}" ">`;
         }
     },
@@ -79,25 +85,38 @@ const botones = [{
     title: 'Materias registradas',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4, 5]
+        },
 },
 {
     title: 'Materias registradas',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4, 5]
+        },
+        orientation: 'landscape',
 },
 {
     title: 'Materias registradas',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4, 5]
+        },
 },
 {
     title: 'Materias registradas',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+            columns: [2, 3, 4, 5]
+        },
 },
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,6 +301,9 @@ onMounted(() => {
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
