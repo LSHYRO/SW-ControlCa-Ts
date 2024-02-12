@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, getCurrentInstance, onMounted, watch } from 'vue';
 import DirectorLayout from '@/Layouts/DirectorLayout.vue';
-import FormElimCla from '@/Components/director/FormularioElimClasCiclo.vue'
+import FormElimCla from '@/Components/director/FormularioElimClasCiclo.vue';
 import FormCalifCiclo from '@/Components/director/FormularioCalifCiclo.vue';
 import FormPasCiclo from '@/Components/director/FormularioPaseCiclo.vue';
 import Swal from 'sweetalert2';
@@ -250,7 +250,7 @@ const closeable = true;
         <FormCalifCiclo :title="'Calificar ciclo'" :show="mostrarModal" :max-width="maxWidth" :closeable="closeable"
         @close="actDesModal()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
         <FormPasCiclo :title="'Pasar de ciclo'" :show="mostrarModalPC" :max-width="maxWidth" :closeable="closeable"
-        @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>/>
+        @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
         <FormElimCla :title="'Eliminar clases del ciclo'" :show="mostrarModalEMC" :max-width="maxWidth" :closeable="closeable"
         @close="actDesModalEMC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclosElim"/>
     </DirectorLayout>

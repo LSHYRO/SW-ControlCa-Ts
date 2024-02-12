@@ -399,6 +399,7 @@ Route::controller(SecreController::class)->group(function () {
     Route::post('/secre/calificaciones/pasar-ciclo', 'pasarCiclo')->name('secre.pasarCiclo');
 
     Route::put('/secre/perfil/actualizar/contraseña','actualizarContrasenia')->name('secre.actualizarContrasenia');
+    Route::delete('/secre/calificaciones/eliminar-materias/ciclos', 'eliminarClasesCiclo')->name('secre.elimClasCiclo');
 });
 
 Route::controller(TutorController::class)->group(function () {

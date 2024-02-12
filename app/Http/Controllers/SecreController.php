@@ -2930,4 +2930,57 @@ class SecreController extends Controller{
         }
         return redirect(route('secre.calificaciones'))->with(['message' => 'No se tiene acceso a esta función.', 'color' => 'red']);
     }
+
+    public function eliminarClasesCiclo(Request $request)
+    {
+        if (Auth::check()) {
+            try {
+                //Eliminar las clase que no esten en el ciclo actual
+                $ciclo = $request->ciclo;
+                $clases = clases::where('idCiclo', $ciclo['idCiclo'])->get();
+
+                if ($clases->isEmpty()) {
+                    return redirect(route('secre.calificaciones'))->with(['message' => 'No existen clases en este ciclo', 'color' => 'yellow']);
+                }
+
+                foreach ($clases as $clase) {
+                    $clases_alum = clases_alumnos::where('idClase', $clase->idClase)->get();
+                    $actividades = actividades::where('idClase', $clase->idClase)->get();
+                    $calific = calificaciones::where('idClase', $clase->idClase)->get();
+                    $calificacionesP = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+                    
+                    if(!$calificacionesP->isEmpty()){
+                        foreach($calificacionesP as $calificacionP){
+                            $calificacionP->delete();
+                        }
+                    }
+                    
+                    if(!$calific->isEmpty()){
+                        foreach($calific as $calif){
+                            $calif->delete();
+                        }
+                    }                   
+
+                    if(!$actividades->isEmpty()){
+                        foreach($actividades  as $act){                           
+                            $act->delete();
+                        }
+                    }
+
+                    if (!$clases_alum->isEmpty()) {
+                        foreach ($clases_alum as $clase_alumno) {
+                            $clase_alumno->delete();
+                        }
+                    }
+                    $clase->delete();
+                    return redirect(route('secre.calificaciones'))->with(['message' => 'Se han eliminado las materias correctamente.', 'color' => 'green']);
+                }
+            } catch (Exception $e) {
+                Log::info("Error: " . $e);
+                dd($e);
+                return redirect(route('secre.calificaciones'))->with(['message' => 'Ha ocurrido un error al eliminar las materias.', 'color' => 'red']);
+            }
+        }
+        return redirect(route('secre.calificaciones'))->with(['message' => 'No tiene acceso a esta función.', 'color' => 'red']);
+    }
 }
