@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed, getCurrentInstance, onMounted, watch } from 'vue';
 import DirectorLayout from '@/Layouts/DirectorLayout.vue';
-import FormCalifCiclo from '@/Components/director/FormularioCalificacionCiclo.vue';
+import FormElimCla from '@/Components/director/FormularioElimClasCiclo.vue'
+import FormCalifCiclo from '@/Components/director/FormularioCalifCiclo.vue';
 import FormPasCiclo from '@/Components/director/FormularioPaseCiclo.vue';
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/vue3';
@@ -36,6 +37,7 @@ const props = defineProps({
     usuario: { type: Object },
     ciclos: { type: Object },
     ciclosE0: { type: Object },
+    ciclosElim: { type: Object },
 });
 
 const mostrarModal = ref(false);
@@ -48,6 +50,12 @@ const mostrarModalPC = ref(false);
 
 const actDesModalPC = () => {
     mostrarModalPC.value = !mostrarModalPC.value;
+};
+
+const mostrarModalEMC = ref(false);
+
+const actDesModalEMC = () => {
+    mostrarModalEMC.value = !mostrarModalEMC.value;
 };
 
 const verCalificaciones = async (alumno) => {
@@ -182,6 +190,10 @@ const closeable = true;
                     @click="actDesModalPC()" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-user-graduate mr-2"></i>Pasar de ciclo
                 </button>
+                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                    @click="actDesModalEMC()" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-book mr-2"></i>Eliminar materias del ciclo
+                </button>
             </div>
             <div>
                 <DataTable class="w-full table-auto text-sm nowrap display stripe compact cell-border order-column"
@@ -239,6 +251,8 @@ const closeable = true;
         @close="actDesModal()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
         <FormPasCiclo :title="'Pasar de ciclo'" :show="mostrarModalPC" :max-width="maxWidth" :closeable="closeable"
         @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>/>
+        <FormElimCla :title="'Eliminar clases del ciclo'" :show="mostrarModalEMC" :max-width="maxWidth" :closeable="closeable"
+        @close="actDesModalEMC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclosElim"/>
     </DirectorLayout>
 </template>
 <style>

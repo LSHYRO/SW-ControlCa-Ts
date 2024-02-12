@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId(column:'idMateria')->references('idMateria')->on('materias');
             $table->foreignId(column:'idCiclo')->references('idCiclo')->on('ciclos');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
