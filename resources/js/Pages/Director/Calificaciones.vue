@@ -96,11 +96,12 @@ const columns2 = [
             return row.tutor + " " + `<a href="tel:${row.tutorTel} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
         }
     },
+    { data: 'calificacionCiclo' },
     {
         data: null,
         render: function (data, type, row, meta) {
             return `<div class="flex justify-center items-center">
-                <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded ver-calificaciones-btn" data-id="${row.idAlumno}" href="/director/clasesAlumno/${ row.idAlumno }"">
+                <a class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded ver-calificaciones-btn" data-id="${row.idAlumno}" href="/director/clasesAlumno/${row.idAlumno}"">
                     Ver calificaciones
                 </a>
             </div>`;
@@ -137,25 +138,39 @@ const botones = [{
     title: 'Alumnos registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7]
+    },
 },
+
 {
     title: 'Alumnos registrados',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7]
+    },
+    orientation: 'landscape',
 },
 {
     title: 'Alumnos registrados',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7]
+    },
 },
 {
     title: 'Alumnos registrados',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7]
+    },
 },
 ];
 
@@ -208,51 +223,55 @@ const closeable = true;
                         }, buttons: botones
                     }">
                     <thead>
-                    <tr class="text-sm leading-normal">
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            #
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Nombre
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Grado
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Grupo
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Taller
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Tutor
-                        </th>
-                        <th
-                            class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                        </th>
-                    </tr>
-                </thead>
+                        <tr class="text-sm leading-normal">
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                #
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Nombre
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Grado
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Grupo
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Taller
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Tutor
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Calificacion
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                        </tr>
+                    </thead>
                 </DataTable>
             </div>
         </div>
         <FormCalifCiclo :title="'Calificar ciclo'" :show="mostrarModal" :max-width="maxWidth" :closeable="closeable"
-        @close="actDesModal()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
+            @close="actDesModal()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos" />
         <FormPasCiclo :title="'Pasar de ciclo'" :show="mostrarModalPC" :max-width="maxWidth" :closeable="closeable"
-        @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos"/>
-        <FormElimCla :title="'Eliminar clases del ciclo'" :show="mostrarModalEMC" :max-width="maxWidth" :closeable="closeable"
-        @close="actDesModalEMC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclosElim"/>
+            @close="actDesModalPC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclos" />
+        <FormElimCla :title="'Eliminar clases del ciclo'" :show="mostrarModalEMC" :max-width="maxWidth"
+            :closeable="closeable" @close="actDesModalEMC()" :op="'1'" :modal="'modalCreate'" :ciclos="props.ciclosElim" />
     </DirectorLayout>
 </template>
 <style>

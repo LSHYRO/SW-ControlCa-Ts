@@ -2287,6 +2287,7 @@ class DirectorController extends Controller
             $alumno->idGradGrupAl = $grado_grupo_alumno->idGradGrupAl;
             $alumno->grado = $grado_grupo_alumno->grados->grado;
             $alumno->grupo = $grado_grupo_alumno->grupos->grupo;
+            $alumno->calificacionCiclo = $grado_grupo_alumno->calificacion != null ? $grado_grupo_alumno->calificacion : 'Sin calificar';
 
             $alumno->idGrado = $grado_grupo_alumno->idGrado;
             $alumno->idGrupo = $grado_grupo_alumno->idGrupo;

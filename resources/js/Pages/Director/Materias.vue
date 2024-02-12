@@ -42,6 +42,11 @@ const props = defineProps({
 // la creacion de las checkboxes y los botones de editar y modificar
 const columns = [
     {
+        data: null, render: function () {
+            return '';
+        }
+    },
+    {
         data: null,
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="materia-checkbox" data-id="${row.idMateria}" ">`;
@@ -79,25 +84,38 @@ const botones = [{
     title: 'Materias registradas',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5]
+    },
 },
 {
     title: 'Materias registradas',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5]
+    },
+    orientation: 'landscape',
 },
 {
     title: 'Materias registradas',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5]
+    },
 },
 {
     title: 'Materias registradas',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5]
+    },
 },
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,10 +267,10 @@ onMounted(() => {
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente una materia            -->
             <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
             </div>
             <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
@@ -269,7 +287,7 @@ onMounted(() => {
                 <!--</div>-->
             </div>
             <div>
-                <DataTable class="w-full table-auto text-sm nowrap display stripe compact cell-border order-column"
+                <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
                     id="materiasTablaId" :columns="columns" :data="materias" :options="{
                         responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
@@ -282,6 +300,9 @@ onMounted(() => {
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>

@@ -88,9 +88,11 @@ const columns = [
     { data: 'apellidoP' },
     { data: 'apellidoM' },
     { data: 'nombre' },
-    { data: null, render: function(data, type, row, meta){
-        return row.numTelefono + " " +`<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
-    }},
+    {
+        data: null, render: function (data, type, row, meta) {
+            return row.numTelefono + " " + `<a href="tel:${row.numTelefono} "><i class="fa fa-phone" aria-hidden="true"></i></a>`
+        }
+    },
     { data: 'correoElectronico' },
     { data: 'genero' },
     { data: 'domicilio' },
@@ -118,25 +120,38 @@ const botones = [{
     title: 'Tutores registrados',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7, 8, 9]
+    },
 },
 {
     title: 'Tutores registrados',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7, 8, 9]
+    },    
+    orientation: 'landscape',
 },
 {
     title: 'Tutores registrados',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7, 8, 9]
+    },
 },
 {
     title: 'Tutores registrados',
     extend: 'copy',
     text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded'
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded',
+    exportOptions: {
+        columns: [2, 3, 4, 5, 6, 7, 8, 9]
+    },
 },
 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,8 +201,8 @@ const eliminarTutor = (idTutor, tutor) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
- // Función para eliminar varios tutores a la vez (a tráves del bóton eliminar)
- const eliminarTutores = () => {
+// Función para eliminar varios tutores a la vez (a tráves del bóton eliminar)
+const eliminarTutores = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -257,7 +272,7 @@ onMounted(() => {
         <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
         <!--  //Mensaje para mostrar el mensaje de que se ha borrado o agregado correctamente un tutor               -->
         <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-        :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
             <span class="font-medium">
                 {{ $page.props.flash.message }}
             </span>
@@ -274,8 +289,8 @@ onMounted(() => {
             </button>
         </div>
         <div>
-            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column" id="tutoresTablaId" name="tutoresTablaId"
-                :columns="columns" :data="tutores" :options="{
+            <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
+                id="tutoresTablaId" name="tutoresTablaId" :columns="columns" :data="tutores" :options="{
                     responsive: true, autoWidth: false, dom: 'Bfrtip', language: {
                         search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                         info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -323,7 +338,7 @@ onMounted(() => {
                         </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            Dirrecion
+                            Direccion
                         </th>
                         <th
                             class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -339,5 +354,5 @@ onMounted(() => {
     <formulario-tutores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
         :title="'Añadir tutor'" :op="'1'" :modal="'modalCreate'" :generos="props.generos"></formulario-tutores>
     <formulario-tutores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-        :title="'Editar tutor'" :op="'2'" :modal="'modalEdit'" :tutor="tutorE" :generos="props.generos"></formulario-tutores>
-</template>
+        :title="'Editar tutor'" :op="'2'" :modal="'modalEdit'" :tutor="tutorE"
+    :generos="props.generos"></formulario-tutores></template>

@@ -6,7 +6,7 @@ export default defineConfig({
     
     server: {
         //port: 5173, // Puedes especificar el puerto que prefieras
-        host: '192.168.1.72', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
+        //host: '192.168.1.72', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
       }, 
     plugins: [
         laravel({
