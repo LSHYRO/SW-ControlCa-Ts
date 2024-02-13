@@ -15,7 +15,7 @@ const form = useForm({
 
 const submit = () => {
     try {
-        form.post(route('registrarse'));
+        form.post(route('registrarse', { scheme: 'https' }));
     } catch (e) {
         console.log(e);
     }
