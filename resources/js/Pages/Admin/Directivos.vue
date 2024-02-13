@@ -10,7 +10,7 @@ import DataTablesLib from 'datatables.net';
 import Buttons from 'datatables.net-buttons-dt';
 import pdfmake from 'pdfmake';
 import print from 'datatables.net-buttons/js/buttons.print'
-import pdfFonts from 'pdfmake/build/vfs_fonts.js';
+//import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
@@ -18,7 +18,18 @@ import jsZip from 'jszip';
 
 // Variables e inicializaciones para el datatable
 window.JSZip = jsZip;
-pdfmake.vfs = pdfFonts.pdfMake.vfs;
+//pdfmake.vfs = pdfFonts.pdfMake.vfs;
+pdfmake.fonts = {
+  Roboto: {
+    normal:
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
+    bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
+    italics:
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
+    bolditalics:
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
+  },
+};
 DataTable.use(DataTablesLib);
 DataTable.use(ButtonsHtml5);
 DataTable.use(pdfmake);

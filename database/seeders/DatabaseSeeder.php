@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
         
         //usuarios::factory(50)->create();
         //usuarios_tiposUsuarios::factory(50)->create();
-        materias::factory(30)->create();
+        //materias::factory(30)->create();
         //personal::factory(50)->create();
     }
 }

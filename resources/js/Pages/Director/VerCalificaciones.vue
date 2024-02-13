@@ -9,7 +9,7 @@ import DataTablesLib from 'datatables.net';
 import Buttons from 'datatables.net-buttons-dt';
 import pdfmake from 'pdfmake';
 import print from 'datatables.net-buttons/js/buttons.print'
-import pdfFonts from 'pdfmake/build/vfs_fonts.js';
+//import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import 'datatables.net-responsive-dt';
 import Select from 'datatables.net-select-dt';
