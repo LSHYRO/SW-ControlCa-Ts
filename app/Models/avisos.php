@@ -17,6 +17,8 @@ class avisos extends Model
         'idUsuario',
         'titulo',
         'descripcion',
+        'lugar',
+        'fechaRealizacion',
         'fechaHoraInicio',
         'fechaHoraFin',
     ];

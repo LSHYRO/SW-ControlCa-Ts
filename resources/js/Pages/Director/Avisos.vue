@@ -54,6 +54,11 @@ console.log("Estoy en avisos");
 // la creacion de las checkboxes y los botones de editar y modificar
 const columns = [
     {
+        data: null, render: function () {
+            return '';
+        }
+    },
+    {
         data: null,
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="aviso-checkbox" data-id="${row.idAviso}" ">`;
@@ -67,6 +72,8 @@ const columns = [
     { data: 'fecha_ini' },
     { data: 'fecha_fi' },
     { data: 'nombre' },
+    { data: 'lugar' },
+    { data: 'fecha_re' },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idAviso}"><i class="fa fa-pencil"></i></button>`;
@@ -299,6 +306,9 @@ onMounted(() => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 #
                             </th>
                             <th
@@ -320,6 +330,14 @@ onMounted(() => {
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Publicador
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Lugar
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fecha de realización
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">

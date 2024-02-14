@@ -34,12 +34,22 @@ const props = defineProps({
                     <div class="w-full">
                         <h4 class="text-lg font-semibold text-center m-2">
                             {{ aviso.titulo }} 
-                        </h4>                        
+                        </h4>
+                        <p class="text-base mx-6 my-3 text-left">
+                            <strong>Publicador: </strong>{{ aviso.nombre }}
+                        </p>                        
                     </div>
+
                     <div class="w-full px-1 border-t-2 border-cyan-200">
                         <p class="text-base mx-6 my-3 text-justify">
                             {{ aviso.descripcion }}
-                        </p>                                                                        
+                        </p>   
+                        <p class="text-base mx-6 my-3 text-left">
+                            <strong>Fecha: </strong>{{ aviso.fecha_re }}
+                        </p>
+                        <p class="text-base mx-6 my-3 text-left">
+                            <strong>Lugar: </strong>{{ aviso.lugar }}
+                        </p>                                                                       
                     </div>
                 </li>
             </ul>

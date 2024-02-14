@@ -49,6 +49,8 @@ const tituloError = ref('');
 const descripcionError = ref('');
 const fechaHoraInicioError = ref('');
 const fechaHoraFinError = ref('');
+const lugarError = ref('');
+const fechaRealizacionError = ref('');
 ////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////
@@ -64,6 +66,11 @@ const validateDate = (date) => {
     return date !== null && date !== undefined && date !== '' && validarFechasT();
 };
 
+const validateDate2 = (date) => {
+    const now = new Date().toISOString().split('.')[0];
+    return date !== null && date !== undefined && date >= now;
+}
+
 const validarFechasT = () => {
      return form.fechaHoraFin >= form.fechaHoraInicio;
 }
@@ -75,6 +82,8 @@ const form = useForm({
     idAviso: props.aviso.idAviso,
     titulo: props.aviso.titulo,
     descripcion: props.aviso.descripcion,
+    fechaRealizacion: props.aviso.fechaRealizacion,
+    lugar: props.aviso.lugar,
     fechaHoraInicio: props.aviso.fechaHoraInicio,
     fechaHoraFin: props.aviso.fechaHoraFin,
 });
@@ -89,8 +98,10 @@ const save = () => {
     descripcionError.value = validateStringNotEmpty(form.descripcion) ? '' : 'Ingrese la descripcion de la materia';
     fechaHoraInicioError.value = validateDate (form.fechaHoraInicio) ? '' : 'Ingrese la fecha correcta';
     fechaHoraFinError.value = validateDate (form.fechaHoraFin) ? '' : 'Ingrese la fecha correcta';
+    fechaRealizacionError.value = validateDate2 (form.fechaRealizacion) ? '' : 'Ingrese la fecha correcta';
+    lugarError.value = validateStringNotEmpty(form.lugar) ? '' : 'Ingrese el lugar';
 
-    if (tituloError.value || descripcionError.value || fechaHoraInicioError.value || fechaHoraFinError.value) {
+    if (tituloError.value || descripcionError.value || fechaHoraInicioError.value || fechaHoraFinError.value || fechaRealizacionError.value || lugarError.value ) {
         return;
     }
 
@@ -101,6 +112,8 @@ const save = () => {
             descripcionError.value = '';
             fechaHoraInicioError.value = '';
             fechaHoraFinError.value = '';
+            fechaRealizacionError.value = '';
+            lugarError.value = '';
         }
     });
 }
@@ -115,11 +128,12 @@ const update = () => {
     descripcionError.value = validateStringNotEmpty(form.descripcion) ? '' : 'Ingrese la descripcion de la materia';
     fechaHoraInicioError.value = validateDate (form.fechaHoraInicio) ? '' : 'Ingrese la fecha correcta';
     fechaHoraFinError.value = validateDate (form.fechaHoraFin) ? '' : 'Ingrese la fecha correcta';
+    fechaRealizacionError.value = validateDate2 (form.fechaRealizacion) ? '' : 'Ingrese la fecha correcta';
+    lugarError.value = validateStringNotEmpty(form.lugar) ? '' : 'Ingrese el lugar';
 
-    if (tituloError.value || descripcionError.value || fechaHoraInicioError.value || fechaHoraFinError.value) {
+    if (tituloError.value || descripcionError.value || fechaHoraInicioError.value || fechaHoraFinError.value || fechaRealizacionError.value || lugarError.value ) {
         return;
     }
-
     var idAviso = document.getElementById('idAviso2').value;
     form.put(route('director.actualizarAv'), {
         onSuccess: () => {
@@ -128,6 +142,8 @@ const update = () => {
             descripcionError.value = '';
             fechaHoraInicioError.value = '';
             fechaHoraFinError.value = '';
+            fechaRealizacionError.value = '';
+            lugarError.value = '';
         }
     });
 }
@@ -144,6 +160,8 @@ watch(() => props.aviso, (newVal) => {
     form.descripcion = newVal.descripcion;
     form.fechaHoraInicio = newVal.fechaHoraInicio;
     form.fechaHoraFin = newVal.fechaHoraFin;
+    form.lugar = newVal.lugar;
+    form.fechaRealizacion = newVal.fechaRealizacion;
 }, { deep: true });
 ////////////////////////////////////////////////////////////////
 </script>
@@ -190,6 +208,25 @@ watch(() => props.aviso, (newVal) => {
                                 </textarea>
                             </div>
                             <div v-if=" descripcionError != ''" class="text-red-500 text-xs mt-1">{{ descripcionError }}</div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="fechaRealizacion" class="block text-sm font-medium leading-6 text-gray-900">Fecha de realización</label>
+                            <div class="mt-2">
+                                <input type="datetime-local" name="fechaRealizacion" :id="'fechaRealizacion' + op" v-model="form.fechaRealizacion"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <div v-if=" fechaRealizacionError != ''" class="text-red-500 text-xs mt-1">{{ fechaRealizacionError }}</div>
+                        </div>
+                        <div class="sm:col-span-1 md:col-span-4"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="lugar" class="block text-sm font-medium leading-6 text-gray-900">Lugar</label>
+                            <div class="mt-2">
+                                <input type="text" name="lugar" :id="'lugar' + op" v-model="form.lugar" placeholder="Ingrese el lugar"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  //Div para mostrar el mensaje de validación                                                                    -->
+                            <div v-if=" lugarError != ''" class="text-red-500 text-xs mt-1">{{  lugarError }}</div>
+                            <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
                         </div>
                         <div class="sm:col-span-2">
                             <label for="fechaHoraInicio" class="block text-sm font-medium leading-6 text-gray-900">Fecha de inicio</label>

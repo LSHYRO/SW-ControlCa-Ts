@@ -92,6 +92,14 @@ class DirectorController extends Controller
         $avisos = avisos::where('fechaHoraInicio', '<=', $now)
             ->where('fechaHoraFin', '>=', $now)
             ->get();
+            $avisosM = $avisos->map(function ($aviso) {
+                $usuarioAviso = usuarios::where('idUsuario', $aviso->idUsuario)->with(['personal'])->first();
+                $aviso->fecha_ini = Carbon::parse($aviso->fechaHoraInicio)->format('d/m/Y H:i');
+                $aviso->fecha_fi = Carbon::parse($aviso->fechaHoraFin)->format('d/m/Y H:i');
+                $aviso->fecha_re = Carbon::parse($aviso->fechaRealizacion)->format('d/m/Y H:i');
+                $aviso->nombre = $usuarioAviso->personal->nombre_completo;
+                return $aviso;
+            });
 
         if ($usuario->cambioContrasenia === 0) {
             $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
@@ -103,7 +111,7 @@ class DirectorController extends Controller
         }
 
         return Inertia::render('Director/Inicio', [
-            'usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos
+            'usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisosM
         ]);
     }
 
@@ -2609,6 +2617,7 @@ class DirectorController extends Controller
                     $usuarioAviso = usuarios::where('idUsuario', $aviso->idUsuario)->with(['personal'])->first();
                     $aviso->fecha_ini = Carbon::parse($aviso->fechaHoraInicio)->format('d/m/Y H:i');
                     $aviso->fecha_fi = Carbon::parse($aviso->fechaHoraFin)->format('d/m/Y H:i');
+                    $aviso->fecha_re = Carbon::parse($aviso->fechaRealizacion)->format('d/m/Y H:i');
                     $aviso->nombre = $usuarioAviso->personal->nombre_completo;
                     return $aviso;
                 });
@@ -2631,6 +2640,8 @@ class DirectorController extends Controller
                     'descripcion' => 'required',
                     'fechaHoraInicio' => 'required',
                     'fechaHoraFin' => 'required',
+                    'fechaRealizacion' => 'required',
+                    'lugar' => 'required',
                 ]);
                 $usuario = $this->obtenerInfoUsuario();
 
@@ -2639,6 +2650,8 @@ class DirectorController extends Controller
                 $aviso->descripcion = $request->descripcion;
                 $aviso->fechaHoraInicio = $request->fechaHoraInicio;
                 $aviso->fechaHoraFin = $request->fechaHoraFin;
+                $aviso->fechaRealizacion = $request->fechaRealizacion;
+                $aviso->lugar = $request->lugar;
                 $aviso->idUsuario = $usuario->idUsuario;
                 $aviso->save();
 
@@ -2674,6 +2687,8 @@ class DirectorController extends Controller
                     'descripcion' => 'required',
                     'fechaHoraInicio' => 'required',
                     'fechaHoraFin' => 'required',
+                    'fechaRealizacion' => 'required',
+                    'lugar' => 'required'
                 ]);
                 $usuario = $this->obtenerInfoUsuario();
 
@@ -2683,6 +2698,8 @@ class DirectorController extends Controller
                 $aviso->fechaHoraInicio = $request->fechaHoraInicio;
                 $aviso->fechaHoraFin = $request->fechaHoraFin;
                 $aviso->idUsuario = $usuario->idUsuario;
+                $aviso->fechaRealizacion = $request->fechaRealizacion;
+                $aviso->lugar = $request->lugar;
                 $aviso->save();
 
                 return redirect()->route('director.avisos')->With(["message" => "El aviso se ha actualizado correctamente", "color" => "green"]);
