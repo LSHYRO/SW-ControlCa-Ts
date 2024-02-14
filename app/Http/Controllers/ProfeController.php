@@ -67,13 +67,25 @@ class ProfeController extends Controller
             ->where('fechaHoraFin', '>=', $now)
             ->get();
 
+        $avisos = avisos::where('fechaHoraInicio', '<=', $now)
+            ->where('fechaHoraFin', '>=', $now)
+            ->get();
+        $avisosM = $avisos->map(function ($aviso) {
+            $usuarioAviso = usuarios::where('idUsuario', $aviso->idUsuario)->with(['personal'])->first();
+            $aviso->fecha_ini = Carbon::parse($aviso->fechaHoraInicio)->format('d/m/Y H:i');
+            $aviso->fecha_fi = Carbon::parse($aviso->fechaHoraFin)->format('d/m/Y H:i');
+            $aviso->fecha_re = Carbon::parse($aviso->fechaRealizacion)->format('d/m/Y H:i');
+            $aviso->nombre = $usuarioAviso->personal->nombre_completo;
+            return $aviso;
+        });
+
         if ($usuario->cambioContrasenia === 0) {
             $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
             $fechaFormateada = $fechaLimite->format('d/m/Y');
             $horaFormateada = $fechaLimite->format('H:i');
             $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivara y sera necesario acudir a la dirección para solucionar la situación";
             $color = "red";
-            return Inertia::render('Profe/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos]);
+            return Inertia::render('Profe/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisosM]);
         }
         return Inertia::render('Profe/Inicio', [
             'usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos
