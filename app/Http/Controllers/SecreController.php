@@ -31,6 +31,7 @@ use App\Models\tipo_Sangre;
 use App\Models\tipoUsuarios;
 use App\Models\usuarios_tiposUsuarios;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +42,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Mockery\Undefined;
 
-class SecreController extends Controller{
+class SecreController extends Controller
+{
 
     public function generarContraseña()
     {
@@ -90,13 +92,25 @@ class SecreController extends Controller{
             ->where('fechaHoraFin', '>=', $now)
             ->get();
 
+        $avisos = avisos::where('fechaHoraInicio', '<=', $now)
+            ->where('fechaHoraFin', '>=', $now)
+            ->get();
+        $avisosM = $avisos->map(function ($aviso) {
+            $usuarioAviso = usuarios::where('idUsuario', $aviso->idUsuario)->with(['personal'])->first();
+            $aviso->fecha_ini = Carbon::parse($aviso->fechaHoraInicio)->format('d/m/Y H:i');
+            $aviso->fecha_fi = Carbon::parse($aviso->fechaHoraFin)->format('d/m/Y H:i');
+            $aviso->fecha_re = Carbon::parse($aviso->fechaRealizacion)->format('d/m/Y H:i');
+            $aviso->nombre = $usuarioAviso->personal->nombre_completo;
+            return $aviso;
+        });
+
         if ($usuario->cambioContrasenia === 0) {
             $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
             $fechaFormateada = $fechaLimite->format('d/m/Y');
             $horaFormateada = $fechaLimite->format('H:i');
             $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivara y sera necesario acudir a la dirección para solucionar la situación";
             $color = "red";
-            return Inertia::render('Secre/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisos]);
+            return Inertia::render('Secre/Inicio', ['usuario' => $usuario, 'message' => $message, 'color' => $color, 'avisos' => $avisosM]);
         }
 
 
@@ -130,7 +144,7 @@ class SecreController extends Controller{
             $gradGrupAl = grado_grupo_alumno::where('idAlumno', $alumno->idAlumno)
                 ->where('estatus', '1')
                 ->first();
-            
+
             $alumno->idGrado = $gradGrupAl->idGrado;
             $alumno->idGrupo = $gradGrupAl->idGrupo;
             $alumno->idCiclo = $gradGrupAl->idCiclo;
@@ -247,7 +261,7 @@ class SecreController extends Controller{
             dd($e);
         }
     }
-    
+
     public function avisos()
     {
         if (Auth::check()) {
@@ -258,6 +272,7 @@ class SecreController extends Controller{
                     $usuarioAviso = usuarios::where('idUsuario', $aviso->idUsuario)->with(['personal'])->first();
                     $aviso->fecha_ini = Carbon::parse($aviso->fechaHoraInicio)->format('d/m/Y H:i');
                     $aviso->fecha_fi = Carbon::parse($aviso->fechaHoraFin)->format('d/m/Y H:i');
+                    $aviso->fecha_re = Carbon::parse($aviso->fechaRealizacion)->format('d/m/Y H:i');
                     $aviso->nombre = $usuarioAviso->personal->nombre_completo;
                     return $aviso;
                 });
@@ -280,6 +295,8 @@ class SecreController extends Controller{
                     'descripcion' => 'required',
                     'fechaHoraInicio' => 'required',
                     'fechaHoraFin' => 'required',
+                    'fechaRealizacion' => 'required',
+                    'lugar' => 'required',
                 ]);
                 $usuario = $this->obtenerInfoUsuario();
 
@@ -288,6 +305,8 @@ class SecreController extends Controller{
                 $aviso->descripcion = $request->descripcion;
                 $aviso->fechaHoraInicio = $request->fechaHoraInicio;
                 $aviso->fechaHoraFin = $request->fechaHoraFin;
+                $aviso->fechaRealizacion = $request->fechaRealizacion;
+                $aviso->lugar = $request->lugar;
                 $aviso->idUsuario = $usuario->idUsuario;
                 $aviso->save();
 
@@ -314,7 +333,8 @@ class SecreController extends Controller{
         }
     }
 
-    public function actualizarAviso(Request $request){
+    public function actualizarAviso(Request $request)
+    {
         if (Auth::check()) {
             try {
                 $request->validate([
@@ -322,6 +342,8 @@ class SecreController extends Controller{
                     'descripcion' => 'required',
                     'fechaHoraInicio' => 'required',
                     'fechaHoraFin' => 'required',
+                    'fechaRealizacion' => 'required',
+                    'lugar' => 'required'
                 ]);
                 $usuario = $this->obtenerInfoUsuario();
 
@@ -331,6 +353,8 @@ class SecreController extends Controller{
                 $aviso->fechaHoraInicio = $request->fechaHoraInicio;
                 $aviso->fechaHoraFin = $request->fechaHoraFin;
                 $aviso->idUsuario = $usuario->idUsuario;
+                $aviso->fechaRealizacion = $request->fechaRealizacion;
+                $aviso->lugar = $request->lugar;
                 $aviso->save();
 
                 return redirect()->route('secre.avisos')->With(["message" => "El aviso se ha actualizado correctamente", "color" => "green"]);
@@ -350,7 +374,7 @@ class SecreController extends Controller{
             $avisosIdsArray = array_map('intval', $avisosIdsArray);
             // Elimina las materias
             avisos::whereIn('idAviso', $avisosIdsArray)->delete();
-            
+
             // Redirige a la página deseada después de la eliminación
             return redirect()->route('secre.avisos')->with(['message' => "Avisos eliminados correctamente", "color" => "green"]);
         } catch (\Exception $e) {
@@ -1140,7 +1164,7 @@ class SecreController extends Controller{
                             $actividad->delete();
                         }
                     }
-                    
+
                     $clase->delete();
                 }
             }
@@ -2611,11 +2635,11 @@ class SecreController extends Controller{
         ]);
     }
 
-    public function obtenerDatosClase($idAlumno)//El error es aquí
+    public function obtenerDatosClase($idAlumno) //El error es aquí
     {
         try {
             $alumnos = alumnos::where('idAlumno', $idAlumno)->first();
-            $clasesA = clases_alumnos::where('idAlumno',$alumnos->idAlumno)->get();
+            $clasesA = clases_alumnos::where('idAlumno', $alumnos->idAlumno)->get();
             //dd($alumnos);            //$clasesA = $alumnos->clases_alumnos->toArray();
             Log::info($clasesA);
             $clasesM = [];
@@ -2633,17 +2657,17 @@ class SecreController extends Controller{
         }
     }
 
-    public function mostrarClase($idClase,$idAlumno)
+    public function mostrarClase($idClase, $idAlumno)
     {
         try {
             $usuario = $this->obtenerInfoUsuario();
             //$alumno = alumnos::where('idUsuario', $usuario->idUsuario)->first();
             $alumno = alumnos::where('idAlumno', $idAlumno)->first();
-            $clasesA = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$idAlumno)->first();
+            $clasesA = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $idAlumno)->first();
             if ($clasesA) {
 
                 $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
-                $clasesA = clases::where('idClase', $idClase)->with(['materias','ciclos'])->first();
+                $clasesA = clases::where('idClase', $idClase)->with(['materias', 'ciclos'])->first();
 
                 //Aqui en adelante le agregué
                 $tiposActividadesAlum = tiposActividades::where('tipoActividad', 'Asistencia')
@@ -2651,10 +2675,10 @@ class SecreController extends Controller{
                 $actividadesCA = actividades::where('idClase', $clasesA->idClase)
                     ->whereHas('tiposActividades', function ($query) {
                         $query->where('tipoActividad', 'Asistencia')
-                        ->orWhere('tipoActividad', 'Vestuario');
+                            ->orWhere('tipoActividad', 'Vestuario');
                     })
                     ->get();
-                $actividadesAlum = $actividadesCA->map(function ($actividad)use($clasesA,$alumno) {
+                $actividadesAlum = $actividadesCA->map(function ($actividad) use ($clasesA, $alumno) {
                     $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
                     $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
                     $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
@@ -2668,11 +2692,11 @@ class SecreController extends Controller{
                         ->where('idAlumno', $alumno->idAlumno)
                         ->first();
 
-                        if($calificacionAlum){
-                            $actividad->calificacion = $calificacionAlum->calificacion;
-                            }else{
-                            $actividad->calificacion = "Sin calificar";
-                            }
+                    if ($calificacionAlum) {
+                        $actividad->calificacion = $calificacionAlum->calificacion;
+                    } else {
+                        $actividad->calificacion = "Sin calificar";
+                    }
 
                     return $actividad;
                 });
@@ -2686,7 +2710,7 @@ class SecreController extends Controller{
                     })
                     ->get();
 
-                $actividades = $actividadesC->map(function ($actividad)use($clasesA,$alumno) {
+                $actividades = $actividadesC->map(function ($actividad) use ($clasesA, $alumno) {
                     $actividad->fecha_i = Carbon::parse($actividad->fecha_inicio)->format('d-m-Y');
                     $actividad->fecha_e = Carbon::parse($actividad->fecha_entrega)->format('d-m-Y');
                     $actividad->periodos->fecha_ini = Carbon::parse($actividad->periodos->fecha_inicio)->format('d-m-Y');
@@ -2700,21 +2724,21 @@ class SecreController extends Controller{
                         ->where('idAlumno', $alumno->idAlumno)
                         ->first();
 
-                        if($calificacion){
-                            $actividad->calificacion = $calificacion->calificacion;
-                            }else{
-                            $actividad->calificacion = "Sin calificar";
-                            }
+                    if ($calificacion) {
+                        $actividad->calificacion = $calificacion->calificacion;
+                    } else {
+                        $actividad->calificacion = "Sin calificar";
+                    }
                     return $actividad;
                 });
 
                 $periodos = periodos::all();
 
                 $calificacionPer = calificaciones_periodos::where('idClase', $idClase)
-                ->where('idAlumno', $alumno->idAlumno)
-                ->get();
+                    ->where('idAlumno', $alumno->idAlumno)
+                    ->get();
 
-                $clasesFinal = clases_alumnos::where('idClase',$idClase)->where('idAlumno',$alumno->idAlumno)->first();
+                $clasesFinal = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $alumno->idAlumno)->first();
                 return Inertia::render('Secre/Curso', [
                     'clasesA' => $clasesA,
                     'ciclos' => $ciclos,
@@ -2948,21 +2972,21 @@ class SecreController extends Controller{
                     $actividades = actividades::where('idClase', $clase->idClase)->get();
                     $calific = calificaciones::where('idClase', $clase->idClase)->get();
                     $calificacionesP = calificaciones_periodos::where('idClase', $clase->idClase)->get();
-                    
-                    if(!$calificacionesP->isEmpty()){
-                        foreach($calificacionesP as $calificacionP){
+
+                    if (!$calificacionesP->isEmpty()) {
+                        foreach ($calificacionesP as $calificacionP) {
                             $calificacionP->delete();
                         }
                     }
-                    
-                    if(!$calific->isEmpty()){
-                        foreach($calific as $calif){
+
+                    if (!$calific->isEmpty()) {
+                        foreach ($calific as $calif) {
                             $calif->delete();
                         }
-                    }                   
+                    }
 
-                    if(!$actividades->isEmpty()){
-                        foreach($actividades  as $act){                           
+                    if (!$actividades->isEmpty()) {
+                        foreach ($actividades  as $act) {
                             $act->delete();
                         }
                     }
