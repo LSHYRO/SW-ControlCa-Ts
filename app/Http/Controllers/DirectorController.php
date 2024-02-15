@@ -98,6 +98,7 @@ class DirectorController extends Controller
                 $aviso->fecha_fi = Carbon::parse($aviso->fechaHoraFin)->format('d/m/Y H:i');
                 $aviso->fecha_re = Carbon::parse($aviso->fechaRealizacion)->format('d/m/Y H:i');
                 $aviso->nombre = $usuarioAviso->personal->nombre_completo;
+                $aviso->tipoPersonal = $usuarioAviso->personal->tipo_personal->tipo_personal;                
                 return $aviso;
             });
 

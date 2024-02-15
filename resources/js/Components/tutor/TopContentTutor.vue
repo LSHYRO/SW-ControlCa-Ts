@@ -33,10 +33,13 @@ watchEffect(async () => {
         </div>
         <div class="h-full">
             <img src="https://www.nvinoticias.com/sites/default/files/styles/normal_size/public/articulos/2023/Mayo/ieepo.png.webp?itok=lCgzpmJN"
-                alt="IEEPO Logo" class="h-full md:mx-1 border-2 border-cyan-600 object-cover rounded-lg">
+                alt="IEEPO Logo" class="md:h-full h-14 md:mx-1 border-2 border-cyan-600 object-cover rounded-lg">
         </div>
-        <div class="flex items-center justify-center text-center"> <!-- Mostrado en todos los dispositivos -->
+        <div class="md:flex items-center justify-center text-center hidden"> <!-- Mostrado en todos los dispositivos -->
             <h1 class="md:font-bold md:text-2xl font-semibold text-xl">Telesecundaria clave: 20DTV1474D</h1>
+        </div>
+        <div class="flex items-center justify-center text-center md:hidden"> <!-- Mostrado en todos los dispositivos -->
+            <h1 class="md:font-bold md:text-2xl font-semibold text-lg">TS 20DTV1474D</h1>
         </div>
     </div>
     <div class="flex items-center h-full">
@@ -46,7 +49,7 @@ watchEffect(async () => {
         </div>
         <div class="h-full">
             <img src="https://seeklogo.com/images/T/telesecundaria-logo-44765C9421-seeklogo.com.png"
-                alt="Telesecundaria Logo" class="h-full md:mx-1 object-cover rounded-lg border-2 border-cyan-600">
+            alt="Telesecundaria Logo" class="md:h-full h-14 md:mx-1 object-cover rounded-lg border-2 border-cyan-600">
         </div>
     </div>
 </div>
