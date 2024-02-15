@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "dev2": "npm-run-all --parallel serve dev",
-        "serve": "php artisan serve --host=10.168.3.61",
+        "serve": "php artisan serve --host=172.20.10.6",
         "build": "vite build",
         "watch": "vite watch"
     },

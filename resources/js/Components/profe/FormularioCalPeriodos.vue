@@ -169,8 +169,8 @@ watch(() => props.actividad, (newVal) => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una nueva
-                        actividad </p>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Seleccione y rellene los campos necesarios para
+                        calificar un periodo </p>
 
                     <div class="mt-8 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-6 justify-center items-center">
@@ -191,18 +191,18 @@ watch(() => props.actividad, (newVal) => {
                         <div class="sm:col-span-6 justify-center items-center flex">
                             <div v-if="cargando" class="loading-circle"></div>
                         </div>
-                        <div v-if="!cargando" class="sm:col-span-6 justify-center items-center flex">
-                            <div class="" v-for="tipoActividad in tiposActividad" :key="tipoActividad.idTipoActividad">
+                        <div class="sm:col-span-6 justify-center items-center flex flex-wrap">
+                            <div class="w-full sm:w-1/2 md:w-1/3" v-for="tipoActividad in tiposActividad"
+                                :key="tipoActividad.idTipoActividad">
                                 <label for="calTipoAct" class="block text-sm font-medium leading-6 text-gray-900 mt-2 mx-2">
-                                    {{
-                                        tipoActividad.tipoActividad }} </label>
+                                    {{ tipoActividad.tipoActividad }}
+                                </label>
                                 <div class="mt-2">
                                     <input v-model="form.calTipoAct[tipoActividad.idTipoActividad]" type="number" required
                                         placeholder="Porcentaje"
                                         class="text-sm border rounded-md border-gray-300 min-w-32 mx-2" min="0" max="100">
                                 </div>
                             </div>
-
                         </div>
                         <div class="sm:col-span-6 justify-center items-center flex">
                             <div v-if="porcentajesError != ''" class="mx-2 text-red-500 text-xs">{{ porcentajesError }}
@@ -250,7 +250,7 @@ watch(() => props.actividad, (newVal) => {
         transform: rotate(360deg);
     }
 }
+
 .swal2-popup {
     font-size: 15px !important;
-}
-</style>
+}</style>
