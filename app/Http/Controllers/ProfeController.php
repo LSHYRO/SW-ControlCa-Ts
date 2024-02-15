@@ -676,7 +676,8 @@ class ProfeController extends Controller
             $usuario = $this->obtenerInfoUsuario();
             $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
             $clase = clases::where('idClase', $request->idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
-            if ($clase) {
+            if ($clase) { 
+                $mensajeAct = '';
                 $tipos_actividad = $request->calTipoAct;
                 $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
                 $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
@@ -702,7 +703,11 @@ class ProfeController extends Controller
                                         ->where('idActividad', $actividades[$jIndex]->idActividad)
                                         ->where('idAlumno', $alumnos[$index]->idAlumno)
                                         ->first();
-                                    $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                    if($calificacion){
+                                        $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                    }else{
+                                        $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
+                                    }
                                 }
                                 $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
                                 $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
@@ -726,7 +731,11 @@ class ProfeController extends Controller
                                         ->where('idActividad', $actividades[$jIndex]->idActividad)
                                         ->where('idAlumno', $alumnos[$index]->idAlumno)
                                         ->first();
-                                    $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                        if($calificacion){
+                                            $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                        }else{
+                                            $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
+                                        }
                                 }
                                 $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
                                 $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
@@ -738,7 +747,7 @@ class ProfeController extends Controller
                     $fecha_i = Carbon::parse($request->periodo['fecha_inicio'])->format('d-m-Y');
                     $fecha_f = Carbon::parse($request->periodo['fecha_fin'])->format('d-m-Y');
                     $descripcionPeriodo = $request->periodo['periodo'] . ' => ' . $fecha_i . ' - ' . $fecha_f;
-                    return redirect()->route('profe.mostrarClase', $clase->idClase)->with(['message' => "Periodo calificado actualizado: " . $descripcionPeriodo . ". Recuerde volver a realizar la calificacion final en dado caso de ya haberlo hecho antes.", "color" => "green"]);
+                    return redirect()->route('profe.mostrarClase', $clase->idClase)->with(['message' => "Periodo calificado actualizado: " . $descripcionPeriodo . ". Recuerde volver a realizar la calificacion final en dado caso de ya haberlo hecho antes." . " " . $mensajeAct, "color" => "green"]);
                 } else {
                     //Metodo para guardarlos como si fueran nuevos
                     for ($index = 0; $index < count($alumnos); $index++) {
@@ -754,7 +763,11 @@ class ProfeController extends Controller
                                     ->where('idActividad', $actividades[$jIndex]->idActividad)
                                     ->where('idAlumno', $alumnos[$index]->idAlumno)
                                     ->first();
-                                $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                    if($calificacion){
+                                        $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                    }else{
+                                        $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
+                                    }
                             }
                             $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
                             $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
@@ -770,7 +783,7 @@ class ProfeController extends Controller
                     $fecha_i = Carbon::parse($request->periodo['fecha_inicio'])->format('d-m-Y');
                     $fecha_f = Carbon::parse($request->periodo['fecha_fin'])->format('d-m-Y');
                     $descripcionPeriodo = $request->periodo['periodo'] . ' => ' . $fecha_i . ' - ' . $fecha_f;
-                    return redirect()->route('profe.mostrarClase', $clase->idClase)->with(['message' => "Periodo calificado: " . $descripcionPeriodo, "color" => "green"]);
+                    return redirect()->route('profe.mostrarClase', $clase->idClase)->with(['message' => "Periodo calificado: " . $descripcionPeriodo . " " . $mensajeAct, "color" => "green"]);
                 }
             } else {
                 return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
@@ -905,21 +918,9 @@ class ProfeController extends Controller
         $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
         $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
         if ($clase) {
-            $calificaciones_periodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
+            //$calificaciones_periodos = calificaciones_periodos::where('idClase', $clase->idClase)->get();
             $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
             $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
-            if (!$calificaciones_periodos->isEmpty()) {
-                /* $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
-                $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get(); */
-                for ($index = 0; $index < count($alumnos); $index++) {
-                    $clases_alumno = clases_alumnos::where('idAlumno', $alumnos[$index]->idAlumno)
-                        ->where('idClase', $clase->idClase)
-                        ->first();
-                    $clases_alumno->calificacionClase = null;
-                    $clases_alumno->save();
-                }
-                return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Calificaciones finales eliminadas", "color" => "green"]);
-            }
 
             for ($index = 0; $index < count($alumnos); $index++) {
                 $clases_alumno = clases_alumnos::where('idAlumno', $alumnos[$index]->idAlumno)
@@ -929,6 +930,8 @@ class ProfeController extends Controller
                 $clases_alumno->save();
             }
             return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Calificaciones finales eliminadas", "color" => "green"]);
+
+            //return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Calificaciones finales eliminadas", "color" => "green"]);
 
             //return redirect()->route('profe.mostrarClase', $idClase)->with(['message' => "Aun no se ha calificado la clase", "color" => "yellow"]);
         }

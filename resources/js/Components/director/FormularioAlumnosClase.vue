@@ -168,7 +168,6 @@ watch(() => form.clase, () => {
                                 <select name="clase" :id="'clase' + op" v-model="form.clase"
                                     placeholder="Seleccione la clase"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Seleccione la clase</option>
                                     <option v-for="clase in clases" :key="clase.idClase" :value="clase.idClase">
                                         {{ `${getMateria(clase.idMateria)} - Grado: ${getGrado(clase.idGrado)} - Grupo: ${getGrupo(clase.idGrupo)}` }}
                                     </option>
@@ -183,7 +182,6 @@ watch(() => form.clase, () => {
                                 <select name="alumno" :id="'alumno' + op" v-model="form.alumno" multiple
                                     placeholder="Seleccione a los alumnos"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Selecciona los alumnos</option>
                                     <option v-for="alumno in filterAlumnos()" :key="alumno.idAlumno"
                                         :value="alumno.idAlumno">
                                         {{ alumno.nombre_completo }}
