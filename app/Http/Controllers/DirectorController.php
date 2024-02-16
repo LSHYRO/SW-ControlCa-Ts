@@ -998,8 +998,8 @@ class DirectorController extends Controller
                 ['idAsentamiento', $request->asentamiento],
             ])->exists();
 
-            if ($existingTutor || $existingAddress) {
-                return redirect()->route('admin.tutoresAlum')->with(["message" => "El tutor ya está registrado o la dirección ya existe.", "color" => "red"]);
+            if ($existingTutor){ //|| $existingAddress) {
+                return redirect()->route('director.tutoresAlum')->with(["message" => "El tutor ya está registrado o la dirección ya existe.", "color" => "red"]);
             }
             //Contraseña generada
             $contrasenia = $this->generarContraseña();
