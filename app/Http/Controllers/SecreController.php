@@ -988,7 +988,7 @@ class SecreController extends Controller
     public function profesores()
     {
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
+            ->leftJoin('tipo_Sangre', 'personal.idTipoSangre', '=', 'tipo_Sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
             ->where('tipo_personal.tipo_personal', 'Profesor') //Le puse con mayuscula la P
             ->get();
@@ -1325,7 +1325,7 @@ class SecreController extends Controller
     public function directivos()
     {
         $personal = Personal::join('tipo_personal', 'personal.id_tipo_personal', '=', 'tipo_personal.id_tipo_personal')
-            ->leftJoin('tipo_sangre', 'personal.idTipoSangre', '=', 'tipo_sangre.idTipoSangre')
+            ->leftJoin('tipo_Sangre', 'personal.idTipoSangre', '=', 'tipo_Sangre.idTipoSangre')
             ->leftJoin('direcciones', 'personal.idDireccion', '=', 'direcciones.idDireccion')
             //->where('tipo_personal.tipo_personal', 'profesor')
             ->where(function ($query) {
