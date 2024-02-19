@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId(column:'idUsuario')->references('idUsuario')->on('usuarios');
             $table->string(column:'titulo');
             $table->text(column:'descripcion');
+            $table->string(column:'lugar');
+            $table->dateTime(column: 'fechaRealizacion');
             $table->dateTime(column:'fechaHoraInicio');
             $table->dateTime(column:'fechaHoraFin');
             $table->timestamps();

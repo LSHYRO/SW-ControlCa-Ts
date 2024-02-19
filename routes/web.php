@@ -281,7 +281,7 @@ Route::middleware(['profesorS'])->group(function () {
         Route::get('/profesor/perfil', 'perfil')->name('profe.usuario');
         Route::put('/profesor/perfil/actualizar/contraseña','actualizarContrasenia')->name('profe.actualizarContraseña');
         Route::delete('/profesor/clases/clase/{idClase}/periodo/{idPeriodo}/eliminar/calificaciones-periodo', 'eliminarCalificacionesPeriodo')->name('profe.eliminarCalPer');
-        Route::get('/profesor/clases/clase/{idClase}/eliminar/calificaciones-finales', 'eliminarCalificacionFinal')->name('profe.eliminarCalFin');
+        Route::delete('/profesor/clases/clase/{idClase}/eliminar/calificaciones-finales', 'eliminarCalificacionFinal')->name('profe.eliminarCalFin');
         Route::delete('/profesor/clases/clase/{idClase}/actividad/{idActividad}/eliminar', 'eliminarActividad')->name('profe.eliminarAct');
         Route::post('/profesor/calificar/actividad', 'almacenarCalificaciones')->name('profe.almacCalificaciones');
         Route::get('/profesor/clases/clase/{idClase}/pasar-lista/{idActividad}', 'paseLista')->name('profe.paseLista');
