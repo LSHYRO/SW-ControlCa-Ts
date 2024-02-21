@@ -253,7 +253,7 @@ class ProfeController extends Controller
             $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
             $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
             if ($clase) {
-                $cicloTrash = ciclos::onlyTrashed()->where('idCiclo', $clase->idCiclo)->first();                
+                $cicloTrash = ciclos::onlyTrashed()->where('idCiclo', $clase->idCiclo)->first();
                 $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
                 if ($cicloTrash) {
                     $fecha_ic = Carbon::parse($cicloTrash->fecha_inicio)->format('d/m/Y');
@@ -900,8 +900,14 @@ class ProfeController extends Controller
             $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
             $alumnos = Alumnos::whereIn('idAlumno', $idsAlumnos)->get();
             $cl_alumnos = clases_alumnos::where('idClase', $clase->idClase)->get();
-            $fecha_ic = Carbon::parse($clase->ciclos->fecha_inicio)->format('d/m/Y');
-            $fecha_fc = Carbon::parse($clase->ciclos->fecha_fin)->format('d/m/Y');
+            $cicloTrash = ciclos::onlyTrashed()->where('idCiclo', $clase->idCiclo)->first();
+            if ($cicloTrash) {
+                $fecha_ic = Carbon::parse($cicloTrash->fecha_inicio)->format('d/m/Y');
+                $fecha_fc = Carbon::parse($cicloTrash->fecha_fin)->format('d/m/Y');
+            } else {
+                $fecha_ic = Carbon::parse($clase->ciclos->fecha_inicio)->format('d/m/Y');
+                $fecha_fc = Carbon::parse($clase->ciclos->fecha_fin)->format('d/m/Y');
+            }
             $clase->descripcionCiclo = $fecha_ic . " - " . $fecha_fc;
 
             $calificacionesArray = $cl_alumnos->pluck('calificacionClase', 'idAlumno')->toArray();
