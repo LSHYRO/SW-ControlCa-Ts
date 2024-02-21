@@ -33,11 +33,6 @@ const props = defineProps({
         default: () => ({})
     },
 });
-console.log("clasesA en Califficaciones Seccion");
-console.log(props.clasesA);
-
-console.log("ciclos en Califficaciones Seccion");
-console.log(props.ciclos);
 
 const mostrarDetalles = ref({});
 const mostrarDetallesFinal = ref(false);

@@ -7,7 +7,6 @@ import Calificaciones from '@/Components/alumno/CalificacionesSeccion.vue';
 
 const props = defineProps({
     clase: { type: Object },
-    ciclos: { type: Object },
     alumno: { type: Object },
     claseA: { type: Object },
     clasesA: { type: Object },
@@ -106,7 +105,7 @@ const mostrarCalificaciones = () => {
                     :periodos="props.periodos" :actividadesAlum="props.actividadesAlum"/>
             </div>
             <div v-if="mostrarCal">
-                <Calificaciones :periodos="props.periodos" :claseA="props.claseA" :clasesA="props.clasesA" :calificacionPer="props.calificacionPer" :clasesFinal="props.clasesFinal" :ciclos="props.ciclos"/>
+                <Calificaciones :periodos="props.periodos" :claseA="props.claseA" :clasesA="props.clasesA" :calificacionPer="props.calificacionPer" :clasesFinal="props.clasesFinal"/>
             </div>
         </div>
     </AlumnoLayout>

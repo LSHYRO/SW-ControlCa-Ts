@@ -244,12 +244,11 @@ class AlumnoController extends Controller
             $clasesA = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $alumno->idAlumno)->first();
             if ($clasesA) {
 
-                $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
+                //$ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
                 $clasesA = clases::where('idClase', $idClase)->with(['materias', 'ciclos'])->first();  
-                dd($clasesA);
+                
                 if(!$clasesA->ciclos){
-                    $clasesA->ciclos = ciclos::onlyTrashed()->where('idCiclo', $clasesA->idCiclo)->first();
-                    dd($clasesA);
+                    $clasesA->ciclos = ciclos::onlyTrashed()->where('idCiclo', $clasesA->idCiclo)->first();                    
                 }
                 //Aqui en adelante le agregué
                 $tiposActividadesAlum = tiposActividades::where('tipoActividad', 'Asistencia')
@@ -323,7 +322,7 @@ class AlumnoController extends Controller
                 $clasesFinal = clases_alumnos::where('idClase', $idClase)->where('idAlumno', $alumno->idAlumno)->first();
                 return Inertia::render('Alumno/Curso', [
                     'clasesA' => $clasesA,
-                    'ciclos' => $ciclos,
+                    //'ciclos' => $ciclos,
                     'usuario' => $usuario,
                     'actividades' => $actividades,
                     'actividadesC' => $actividadesC,
