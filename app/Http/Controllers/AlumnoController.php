@@ -248,6 +248,7 @@ class AlumnoController extends Controller
                 $clasesA = clases::where('idClase', $idClase)->with(['materias', 'ciclos'])->first();
                 if(!$clasesA['ciclos']){
                     $clasesA['ciclos'] = ciclos::onlyTrashed()->where('idCiclo', $clasesA->idCiclo)->first();
+                    dd($clasesA);
                 }
                 //Aqui en adelante le agregué
                 $tiposActividadesAlum = tiposActividades::where('tipoActividad', 'Asistencia')
