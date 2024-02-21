@@ -245,10 +245,9 @@ class AlumnoController extends Controller
             if ($clasesA) {
 
                 $ciclos = ciclos::all(['idCiclo', 'descripcionCiclo']);
-                $clasesA = clases::where('idClase', $idClase)->with(['materias', 'ciclos'])->first();
-                dd($clasesA->ciclos);
-                if(!$clasesA['ciclos']){
-                    $clasesA['ciclos'] = ciclos::onlyTrashed()->where('idCiclo', $clasesA->idCiclo)->first();
+                $clasesA = clases::where('idClase', $idClase)->with(['materias', 'ciclos'])->first();                
+                if(!$clasesA->ciclos){
+                    $clasesA->ciclos = ciclos::onlyTrashed()->where('idCiclo', $clasesA->idCiclo)->first();
                     dd($clasesA);
                 }
                 //Aqui en adelante le agregué
