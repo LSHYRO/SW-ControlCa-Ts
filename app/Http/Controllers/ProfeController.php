@@ -253,8 +253,7 @@ class ProfeController extends Controller
             $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
             $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
             if ($clase) {
-                $cicloTrash = ciclos::onlyTrashed()->where('idCiclo', $clase->idCiclo)->first();
-                dd($cicloTrash);
+                $cicloTrash = ciclos::onlyTrashed()->where('idCiclo', $clase->idCiclo)->first();                
                 $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
                 if ($cicloTrash) {
                     $fecha_ic = Carbon::parse($cicloTrash->fecha_inicio)->format('d/m/Y');
