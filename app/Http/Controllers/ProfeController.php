@@ -253,11 +253,20 @@ class ProfeController extends Controller
             $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
             $clase = clases::where('idClase', $idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
             if ($clase) {
+                $cicloTrash = ciclos::onlyTrashed()->where('idCiclo', $clase->idCiclo)->first();
+                dd($cicloTrash);
                 $clase = clases::where('idClase', $idClase)->with(['materias'])->first();
-                $fecha_ic = Carbon::parse($clase->ciclos->fecha_inicio)->format('d/m/Y');
-                $fecha_fc = Carbon::parse($clase->ciclos->fecha_fin)->format('d/m/Y');
-                $clase->descripcionCiclo = $fecha_ic . " - " . $fecha_fc;
-                $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
+                if ($cicloTrash) {
+                    $fecha_ic = Carbon::parse($cicloTrash->fecha_inicio)->format('d/m/Y');
+                    $fecha_fc = Carbon::parse($cicloTrash->fecha_fin)->format('d/m/Y');
+                    $clase->descripcionCiclo = $fecha_ic . " - " . $fecha_fc;
+                    $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
+                } else {
+                    $fecha_ic = Carbon::parse($clase->ciclos->fecha_inicio)->format('d/m/Y');
+                    $fecha_fc = Carbon::parse($clase->ciclos->fecha_fin)->format('d/m/Y');
+                    $clase->descripcionCiclo = $fecha_ic . " - " . $fecha_fc;
+                    $periodosC = periodos::where('idCiclo', $clase->idCiclo)->get();
+                }
                 $periodos = $periodosC->map(function ($periodo) {
                     $periodo->fecha_ini = Carbon::parse($periodo->fecha_inicio)->format('d-m-Y');
                     $periodo->fecha_f = Carbon::parse($periodo->fecha_fin)->format('d-m-Y');
@@ -324,7 +333,6 @@ class ProfeController extends Controller
                 return redirect()->route('profe.inicio')->with(['message' => "No tiene acceso a la clase que intenta acceder", "color" => "red"]);
             }
         } catch (Exception $e) {
-            dd($e);
         }
     }
 
@@ -676,7 +684,7 @@ class ProfeController extends Controller
             $usuario = $this->obtenerInfoUsuario();
             $personalDocente = personal::where('idUsuario', $usuario->idUsuario)->first();
             $clase = clases::where('idClase', $request->idClase)->where('idPersonal', $personalDocente->idPersonal)->first();
-            if ($clase) { 
+            if ($clase) {
                 $mensajeAct = '';
                 $tipos_actividad = $request->calTipoAct;
                 $idsAlumnos = $clase->clases_alumnos()->pluck('idAlumno');
@@ -703,9 +711,9 @@ class ProfeController extends Controller
                                         ->where('idActividad', $actividades[$jIndex]->idActividad)
                                         ->where('idAlumno', $alumnos[$index]->idAlumno)
                                         ->first();
-                                    if($calificacion){
+                                    if ($calificacion) {
                                         $sumaCalificacionTipoAct += $calificacion->calificacion;
-                                    }else{
+                                    } else {
                                         $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
                                     }
                                 }
@@ -731,11 +739,11 @@ class ProfeController extends Controller
                                         ->where('idActividad', $actividades[$jIndex]->idActividad)
                                         ->where('idAlumno', $alumnos[$index]->idAlumno)
                                         ->first();
-                                        if($calificacion){
-                                            $sumaCalificacionTipoAct += $calificacion->calificacion;
-                                        }else{
-                                            $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
-                                        }
+                                    if ($calificacion) {
+                                        $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                    } else {
+                                        $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
+                                    }
                                 }
                                 $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
                                 $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
@@ -763,11 +771,11 @@ class ProfeController extends Controller
                                     ->where('idActividad', $actividades[$jIndex]->idActividad)
                                     ->where('idAlumno', $alumnos[$index]->idAlumno)
                                     ->first();
-                                    if($calificacion){
-                                        $sumaCalificacionTipoAct += $calificacion->calificacion;
-                                    }else{
-                                        $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
-                                    }
+                                if ($calificacion) {
+                                    $sumaCalificacionTipoAct += $calificacion->calificacion;
+                                } else {
+                                    $mensajeAct = 'Hay alumnos sin calificar alguna actividad';
+                                }
                             }
                             $calificacionTipoAct = $sumaCalificacionTipoAct / count($actividades);
                             $calificacionPeriodo += ($calificacionTipoAct * $porcentaje) / 100;
