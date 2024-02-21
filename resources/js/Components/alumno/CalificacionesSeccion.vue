@@ -33,7 +33,7 @@ const props = defineProps({
         default: () => ({})
     },
 });
-
+console.log(props.clasesA);
 const mostrarDetalles = ref({});
 const mostrarDetallesFinal = ref(false);
 
