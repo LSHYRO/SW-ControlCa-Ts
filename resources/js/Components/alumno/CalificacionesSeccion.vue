@@ -93,10 +93,10 @@ const obtenerPeriodo = (idPeriodo) => {
                             <i v-if="!mostrarDetallesFinal" class="fa-solid fa-caret-right text-lg"></i>
                             <i v-if="mostrarDetallesFinal" class="fa-solid fa-caret-down text-lg"></i>
                         </div>
-                    </div>
+                    </div>  
                     <div v-if="mostrarDetallesFinal" class="w-full px-1 border-t-2 border-cyan-300">
                         <p class="text-sm m-1">
-                            <strong>Ciclo escolar: </strong>{{ clasesA.ciclos.descripcionCiclo ? clasesA.ciclos.descripcionCiclo : clasesA.c.descripcionCiclo}}
+                            <strong>Ciclo escolar: </strong>{{ clasesA.ciclos.descripcionCiclo != null ? clasesA.ciclos.descripcionCiclo : clasesA.c.descripcionCiclo}}
                         </p>
                     </div>
                 </li>
