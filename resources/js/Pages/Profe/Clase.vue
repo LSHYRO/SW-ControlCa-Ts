@@ -71,7 +71,7 @@ const mostrarCalificaciones = () => {
             <!-- Linea de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-            <ul class="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex m-2 ">
+            <ul class="text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex m-2 ">
                 <li class="w-full">
                     <a @click="mostrarActividades()" id="btnMAc"
                         class="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">Actividades</a>

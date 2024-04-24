@@ -32,7 +32,7 @@ const mostrarActividades = () => {
     const btnActividades = document.getElementById("btnMAc");
     const btnAlumnos = document.getElementById("btnMAl");
     const btnCalificaciones = document.getElementById("btnMCal");
-    btnCalificaciones.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
+    btnCalificaciones.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     btnActividades.className = "inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     btnAlumnos.className = "inline-block w-full p-4 bg-white border-r border-gray-200 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer";
     mostrarAc.value = true;
@@ -80,7 +80,7 @@ const mostrarCalificaciones = () => {
             <!-- Linea de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-            <ul class="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex m-2 ">
+            <ul class="text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex m-2 ">
                 <li class="w-full">
                     <a @click="mostrarActividades()" id="btnMAc"
                         class="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 rounded-s-lg focus:ring-4 focus:ring-blue-300 focus:outline-none cursor-pointer">Actividades</a>
